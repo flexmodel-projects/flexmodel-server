@@ -5,8 +5,10 @@ import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
 import tech.wetech.flexmodel.*;
+import tech.wetech.flexmodel.calculations.DatetimeNowValueCalculator;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
+import tech.wetech.flexmodel.sql.JdbcMappedModels;
 
 import java.util.Map;
 
@@ -30,12 +32,14 @@ public class EngineConfig {
     if (session.getModel(datasourceEntity) == null) {
       session.createEntity(datasourceEntity, entity -> entity
         .addField(new IDField("id"))
+        .addField(new StringField("name"))
         .addField(new StringField("type"))
         .addField(new JsonField("config"))
+        .addField(new DatetimeField("createTime").addCalculation(new DatetimeNowValueCalculator()))
       );
-      session.insert(datasourceEntity, Map.of("type", "mysql", "config",
+      session.insert(datasourceEntity, Map.of("name", "测试数据库A", "type", "mysql", "config",
         Map.of("host", "127.0.0.1", "username", "root", "password", "123456")));
-      session.insert(datasourceEntity, Map.of("type", "oracle", "config",
+      session.insert(datasourceEntity, Map.of("name", "测试数据库B", "type", "oracle", "config",
         Map.of("host", "127.0.0.1", "username", "root", "password", "123456")));
     }
     session.insert("Student", Map.of("id", "001", "name", "张三"));
@@ -50,7 +54,7 @@ public class EngineConfig {
     connectionLifeCycleManager.addDataSourceProvider("default", new JdbcDataSourceProvider(dataSource));
     return SessionFactory.builder()
       .setConnectionLifeCycleManager(connectionLifeCycleManager)
-      .setMappedModels(new MapMappedModels())
+      .setMappedModels(new JdbcMappedModels(dataSource))
       .build();
   }
 

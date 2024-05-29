@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author cjbi
  */
-@Path("/connect/datasource")
+@Path("/api/connect/datasource")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConnectDatasourceResource {
@@ -20,6 +20,7 @@ public class ConnectDatasourceResource {
   ConnectApplicationService connectApplicationService;
 
   @GET
+  @Path("/list")
   public List<Datasource> findAll() {
     return connectApplicationService.findDatasourceList();
   }
@@ -39,6 +40,7 @@ public class ConnectDatasourceResource {
   @DELETE
   @Path("/{id}")
   public void deleteDatasource(@PathParam("id") Long id) {
+    connectApplicationService.deleteDatasource(id);
   }
 
 

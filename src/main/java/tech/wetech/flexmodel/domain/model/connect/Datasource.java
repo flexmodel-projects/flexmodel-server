@@ -3,6 +3,10 @@ package tech.wetech.flexmodel.domain.model.connect;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author cjbi
  */
@@ -10,7 +14,9 @@ import lombok.Setter;
 @Setter
 public class Datasource {
   private Long id;
+  private String name;
   private String type;
-  private Object config;
+  private Map<String, Object> config = new HashMap<>();
+  private LocalDateTime createTime;
 
 }
