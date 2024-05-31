@@ -11,10 +11,10 @@ import java.util.List;
 /**
  * @author cjbi
  */
-@Path("/api/connect/datasource")
+@Path("/api/datasource")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ConnectDatasourceResource {
+public class DatasourceResource {
 
   @Inject
   ConnectApplicationService connectApplicationService;
@@ -32,7 +32,7 @@ public class ConnectDatasourceResource {
 
   @PUT
   @Path("/{id}")
-  public Datasource updateDatasource(@PathParam("id") Long id, Datasource datasource) {
+  public Datasource updateDatasource(@PathParam("id") String id, Datasource datasource) {
     datasource.setId(id);
     return connectApplicationService.updateDatasource(id, datasource);
   }

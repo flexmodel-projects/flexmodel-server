@@ -24,7 +24,7 @@ public class ConnectApplicationService {
     return datasourceService.createDatasource(datasource);
   }
 
-  public Datasource updateDatasource(Long id, Datasource record) {
+  public Datasource updateDatasource(String id, Datasource record) {
     record.setId(id);
     return datasourceService.updateDatasource(record);
   }
