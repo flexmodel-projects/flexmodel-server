@@ -13,7 +13,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class Datasource {
-  private String id;
   private String name;
   private String type;
   private Map<String, Object> config = new HashMap<>();

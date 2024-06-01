@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * @author cjbi
  */
-public abstract class BaseFMRepository<T> {
+public abstract class BaseFmRepository<T> {
   @Inject
   protected Session session;
 

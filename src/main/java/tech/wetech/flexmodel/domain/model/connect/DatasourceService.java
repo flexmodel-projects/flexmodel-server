@@ -26,7 +26,7 @@ public class DatasourceService {
     return datasourceRepository.findAll();
   }
 
-  public void deleteDatasource(Long id) {
+  public void deleteDatasource(String id) {
     datasourceRepository.delete(id);
   }
 }

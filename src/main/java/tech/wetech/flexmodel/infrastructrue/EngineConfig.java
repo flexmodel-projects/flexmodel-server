@@ -11,7 +11,9 @@ import tech.wetech.flexmodel.domain.model.connect.Datasource;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 import tech.wetech.flexmodel.sql.JdbcMappedModels;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @author cjbi
@@ -20,39 +22,64 @@ import java.util.Map;
 @Startup
 public class EngineConfig {
 
+  public static final String SYSTEM_DS_KEY = "system";
+
   @Produces
   public Session session(SessionFactory sessionFactory) {
-    Session session = sessionFactory.createSession("default");
+    Session session = sessionFactory.createSession(SYSTEM_DS_KEY);
+    session.syncModels();
     if (session.getModel("Student") == null) {
       session.createEntity("Student", entity -> entity
-        .addField(new IDField("id").setGeneratedValue(DefaultGeneratedValue.STRING_NO_GEN))
+        .addField(new IDField("id").setGeneratedValue(DefaultGeneratedValue.IDENTITY))
         .addField(new StringField("name"))
       );
     }
     String datasourceEntity = Datasource.class.getSimpleName();
     if (session.getModel(datasourceEntity) == null) {
       session.createEntity(datasourceEntity, entity -> entity
-        .addField(new IDField("id").setGeneratedValue(DefaultGeneratedValue.UUID))
-        .addField(new StringField("name"))
+        .addField(new IDField("name").setGeneratedValue(DefaultGeneratedValue.STRING_NO_GEN))
         .addField(new StringField("type"))
         .addField(new JsonField("config"))
         .addField(new DatetimeField("createTime").addCalculation(new DatetimeNowValueCalculator()))
       );
-      session.insert(datasourceEntity, Map.of("name", "测试数据库A", "type", "mysql", "config",
-        Map.of("dbName", "flexmodel", "host", "127.0.0.1", "port", 3306, "username", "root", "password", "123456")));
-      session.insert(datasourceEntity, Map.of("name", "测试数据库B", "type", "oracle", "config",
-        Map.of("dbName", "flexmodel", "host", "192.168.1.3", "port", 8000, "username", "sa", "password", "sdfweerwe")));
+      session.insertAll(datasourceEntity, JsonUtils.getInstance().parseToObject("""
+        [
+          {
+            "type": "mysql",
+            "config": {
+              "dbKind": "mysql",
+              "url": "jdbc:mysql://wetech.tech:3306/flexmodel",
+              "username": "root",
+              "password": "123456"
+            },
+            "name": "test_ds_a"
+          },
+          {
+            "type": "oracle",
+            "config": {
+              "dbKind": "oracle",
+              "url": "jdbc:oracle://wetech.tech:3306/flexmodel",
+              "username": "sa",
+              "password": "sdfweerwe"
+            },
+            "name": "test_ds_b"
+          }
+        ]
+        """, List.class));
     }
-    session.insert("Student", Map.of("id", "001", "name", "张三"));
+    session.insert("Student", Map.of("name", "测试" + new Random().nextInt()));
     return session;
   }
 
 
   @Produces
-  public SessionFactory sessionFactory(ConnectionLifeCycleManager connectionLifeCycleManager) {
+  public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig, ConnectionLifeCycleManager connectionLifeCycleManager) {
     HikariDataSource dataSource = new HikariDataSource();
-    dataSource.setJdbcUrl("jdbc:sqlite:file::memory:?cache=shared");
-    connectionLifeCycleManager.addDataSourceProvider("default", new JdbcDataSourceProvider(dataSource));
+    FlexmodelConfig.Datasource datasourceConfig = flexmodelConfig.datasource();
+    dataSource.setJdbcUrl(datasourceConfig.url());
+    dataSource.setUsername(datasourceConfig.username().orElse(null));
+    dataSource.setPassword(datasourceConfig.password().orElse(null));
+    connectionLifeCycleManager.addDataSourceProvider(SYSTEM_DS_KEY, new JdbcDataSourceProvider(dataSource));
     return SessionFactory.builder()
       .setConnectionLifeCycleManager(connectionLifeCycleManager)
       .setMappedModels(new JdbcMappedModels(dataSource))

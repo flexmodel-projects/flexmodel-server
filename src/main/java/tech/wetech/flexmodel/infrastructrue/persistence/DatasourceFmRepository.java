@@ -10,7 +10,7 @@ import java.util.List;
  * @author cjbi
  */
 @ApplicationScoped
-public class DatasourceFMRepository extends BaseFMRepository<Datasource> implements DatasourceRepository {
+public class DatasourceFmRepository extends BaseFmRepository<Datasource> implements DatasourceRepository {
 
   @Override
   public List<Datasource> findAll() {
@@ -23,7 +23,7 @@ public class DatasourceFMRepository extends BaseFMRepository<Datasource> impleme
   }
 
   @Override
-  public void delete(Long id) {
+  public void delete(String id) {
     super.delete(id);
   }
 }

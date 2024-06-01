@@ -11,5 +11,5 @@ public interface DatasourceRepository {
 
   Datasource save(Datasource datasource);
 
-  void delete(Long id);
+  void delete(String id);
 }

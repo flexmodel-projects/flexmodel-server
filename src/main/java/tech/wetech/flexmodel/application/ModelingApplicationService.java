@@ -2,8 +2,10 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.Model;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
+import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 
 import java.util.List;
 
@@ -11,10 +13,13 @@ import java.util.List;
  * @author cjbi
  */
 @ApplicationScoped
-public class ConnectApplicationService {
+public class ModelingApplicationService {
 
   @Inject
   DatasourceService datasourceService;
+
+  @Inject
+  ModelService modelService;
 
   public List<Datasource> findDatasourceList() {
     return datasourceService.findAll();
@@ -24,13 +29,15 @@ public class ConnectApplicationService {
     return datasourceService.createDatasource(datasource);
   }
 
-  public Datasource updateDatasource(String id, Datasource record) {
-    record.setId(id);
+  public Datasource updateDatasource(Datasource record) {
     return datasourceService.updateDatasource(record);
   }
 
-  public void deleteDatasource(Long id) {
-    datasourceService.deleteDatasource(id);
+  public void deleteDatasource(String datasourceName) {
+    datasourceService.deleteDatasource(datasourceName);
   }
 
+  public List<Model> findModels(String datasourceName) {
+    return modelService.findModels(datasourceName);
+  }
 }

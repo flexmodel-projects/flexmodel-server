@@ -3,45 +3,71 @@ package tech.wetech.flexmodel.api;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import tech.wetech.flexmodel.application.ConnectApplicationService;
+import tech.wetech.flexmodel.Entity;
+import tech.wetech.flexmodel.FlexmodelConfig;
+import tech.wetech.flexmodel.Model;
+import tech.wetech.flexmodel.application.ModelingApplicationService;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author cjbi
  */
-@Path("/api/datasource")
+@Path("/api/datasources")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DatasourceResource {
 
   @Inject
-  ConnectApplicationService connectApplicationService;
+  ModelingApplicationService modelingApplicationService;
+
+  @Inject
+  FlexmodelConfig config;
+
+  @POST
+  @Path("/{datasourceName}/sync")
+  public void sync(@PathParam("datasourceName") String datasourceName) {
+
+  }
 
   @GET
-  @Path("/list")
   public List<Datasource> findAll() {
-    return connectApplicationService.findDatasourceList();
+    List<Datasource> datasourceList = modelingApplicationService.findDatasourceList();
+    List<Datasource> allList = new ArrayList<>();
+    Datasource system = new Datasource();
+    system.setName("system");
+    system.setType("system");
+    Map<String, Object> configMap = new HashMap<>();
+    configMap.put("url", config.datasource().url());
+    configMap.put("dbKind", config.datasource().dbKind());
+    configMap.put("username", config.datasource().username());
+    configMap.put("password", config.datasource().password());
+    system.setConfig(configMap);
+    allList.add(system);
+    allList.addAll(datasourceList);
+    return allList;
   }
 
   @POST
   public Datasource createDatasource(Datasource datasource) {
-    return connectApplicationService.createDatasource(datasource);
+    return modelingApplicationService.createDatasource(datasource);
   }
 
   @PUT
-  @Path("/{id}")
-  public Datasource updateDatasource(@PathParam("id") String id, Datasource datasource) {
-    datasource.setId(id);
-    return connectApplicationService.updateDatasource(id, datasource);
+  @Path("/{datasourceName}")
+  public Datasource updateDatasource(@PathParam("datasourceName") String datasourceName, Datasource datasource) {
+    datasource.setName(datasourceName);
+    return modelingApplicationService.updateDatasource(datasource);
   }
 
   @DELETE
-  @Path("/{id}")
-  public void deleteDatasource(@PathParam("id") Long id) {
-    connectApplicationService.deleteDatasource(id);
+  @Path("/{datasourceName}")
+  public void deleteDatasource(@PathParam("datasourceName") String datasourceName) {
+    modelingApplicationService.deleteDatasource(datasourceName);
   }
-
 
 }
