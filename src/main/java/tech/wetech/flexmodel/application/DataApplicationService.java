@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 
 import java.util.List;
@@ -16,8 +17,15 @@ public class DataApplicationService {
   @Inject
   DataService dataService;
 
-  public List<Map<String, Object>> findRecords(String datasourceName, String modelName) {
-    return dataService.findRecords(datasourceName, modelName);
+  public PageDTO<Map<String, Object>> findPagingRecords(String datasourceName,
+                                                        String modelName,
+                                                        int currentPage,
+                                                        int pageSize,
+                                                        String filter,
+                                                        String sort) {
+    List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName, currentPage, pageSize, filter, sort);
+    long total = dataService.countRecords(datasourceName, modelName, filter);
+    return new PageDTO<>(list, total);
   }
 
   public Map<String, Object> findOneRecord(String datasourceName, String modelName, String id) {

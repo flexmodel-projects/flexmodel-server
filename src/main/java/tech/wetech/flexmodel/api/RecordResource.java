@@ -3,8 +3,8 @@ package tech.wetech.flexmodel.api;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import tech.wetech.flexmodel.application.DataApplicationService;
+import tech.wetech.flexmodel.application.dto.PageDTO;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,8 +23,13 @@ public class RecordResource {
   DataApplicationService dataApplicationService;
 
   @GET
-  public List<Map<String, Object>> findRecords() {
-    return dataApplicationService.findRecords(datasourceName, modelName);
+  public PageDTO<Map<String, Object>> findPagingRecords(
+    @QueryParam("currentPage") @DefaultValue("1") int currentPage,
+    @QueryParam("pageSize") @DefaultValue("15") int pageSize,
+    @QueryParam("filter") String filter,
+    @QueryParam("sort") String sort
+  ) {
+    return dataApplicationService.findPagingRecords(datasourceName, modelName, currentPage, pageSize, filter, sort);
   }
 
   @GET

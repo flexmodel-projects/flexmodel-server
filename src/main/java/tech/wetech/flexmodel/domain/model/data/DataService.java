@@ -18,9 +18,19 @@ public class DataService {
   @Inject
   SessionFactory sessionFactory;
 
-  public List<Map<String, Object>> findRecords(String datasourceName, String modelName) {
+  public List<Map<String, Object>> findRecords(String datasourceName,
+                                               String modelName,
+                                               int currentPage,
+                                               int pageSize,
+                                               String filter,
+                                               String sort) {
     Session session = sessionFactory.openSession(datasourceName);
-    return session.find(modelName, query -> query);
+    return session.find(modelName, query -> query.setFilter(filter).setLimit(pageSize).setOffset((currentPage - 1) * pageSize));
+  }
+
+  public long countRecords(String datasourceName, String modelName, String filter) {
+    Session session = sessionFactory.openSession(datasourceName);
+    return session.count(modelName, query -> query.setFilter(filter));
   }
 
   public Map<String, Object> findOneRecord(String datasourceName, String modelName, String id) {
