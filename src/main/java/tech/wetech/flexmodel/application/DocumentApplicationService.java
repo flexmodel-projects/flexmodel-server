@@ -76,6 +76,7 @@ public class DocumentApplicationService {
             pageSize.put("type", "integer");
             pageSize.put("format", "int64");
             Map<String, Object> current = new HashMap<>();
+            current.put("name", "current");
             current.put("in", "query");
             current.put("description", "The page (aka. offset) of the paginated list (default to 1).");
             current.put("required", false);

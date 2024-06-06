@@ -19,11 +19,11 @@ public class DataApplicationService {
 
   public PageDTO<Map<String, Object>> findPagingRecords(String datasourceName,
                                                         String modelName,
-                                                        int currentPage,
+                                                        int current,
                                                         int pageSize,
                                                         String filter,
                                                         String sort) {
-    List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName, currentPage, pageSize, filter, sort);
+    List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName, current, pageSize, filter, sort);
     long total = dataService.countRecords(datasourceName, modelName, filter);
     return new PageDTO<>(list, total);
   }

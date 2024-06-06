@@ -24,12 +24,12 @@ public class RecordResource {
 
   @GET
   public PageDTO<Map<String, Object>> findPagingRecords(
-    @QueryParam("currentPage") @DefaultValue("1") int currentPage,
+    @QueryParam("current") @DefaultValue("1") int current,
     @QueryParam("pageSize") @DefaultValue("15") int pageSize,
     @QueryParam("filter") String filter,
     @QueryParam("sort") String sort
   ) {
-    return dataApplicationService.findPagingRecords(datasourceName, modelName, currentPage, pageSize, filter, sort);
+    return dataApplicationService.findPagingRecords(datasourceName, modelName, current, pageSize, filter, sort);
   }
 
   @GET

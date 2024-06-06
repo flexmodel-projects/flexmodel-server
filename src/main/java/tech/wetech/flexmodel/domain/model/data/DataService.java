@@ -20,12 +20,12 @@ public class DataService {
 
   public List<Map<String, Object>> findRecords(String datasourceName,
                                                String modelName,
-                                               int currentPage,
+                                               int current,
                                                int pageSize,
                                                String filter,
                                                String sort) {
     Session session = sessionFactory.openSession(datasourceName);
-    return session.find(modelName, query -> query.setFilter(filter).setLimit(pageSize).setOffset((currentPage - 1) * pageSize));
+    return session.find(modelName, query -> query.setFilter(filter).setLimit(pageSize).setOffset((current - 1) * pageSize));
   }
 
   public long countRecords(String datasourceName, String modelName, String filter) {

@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Dependent
 @Startup
-public class EngineSessions {
+public class FmEngineSessions {
 
   public static final String SYSTEM_DS_KEY = "system";
 
