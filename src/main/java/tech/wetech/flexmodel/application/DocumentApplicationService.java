@@ -90,8 +90,8 @@ public class DocumentApplicationService {
             id.put("in", "path");
             id.put("description", "ID of view to return");
             id.put("required", true);
-            id.put("type", "integer");
-            id.put("format", "int64");
+//            id.put("type", "integer");
+//            id.put("format", "int64");
             yield List.of(id);
           }
           case "create" -> {

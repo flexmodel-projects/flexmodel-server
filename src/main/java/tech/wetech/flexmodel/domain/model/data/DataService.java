@@ -20,8 +20,8 @@ public class DataService {
 
   public List<Map<String, Object>> findRecords(String datasourceName,
                                                String modelName,
-                                               int current,
-                                               int pageSize,
+                                               Integer current,
+                                               Integer pageSize,
                                                String filter,
                                                String sort) {
     Session session = sessionFactory.openSession(datasourceName);
@@ -33,7 +33,7 @@ public class DataService {
     return session.count(modelName, query -> query.setFilter(filter));
   }
 
-  public Map<String, Object> findOneRecord(String datasourceName, String modelName, String id) {
+  public Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id) {
     Session session = sessionFactory.openSession(datasourceName);
     return session.findById(modelName, id);
   }
