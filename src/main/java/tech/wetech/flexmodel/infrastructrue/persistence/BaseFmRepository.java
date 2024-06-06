@@ -9,11 +9,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author cjbi
  */
-public abstract class BaseFmRepository<T> {
+public abstract class BaseFmRepository<T, ID> {
   @Inject
   protected Session session;
 
@@ -22,7 +23,7 @@ public abstract class BaseFmRepository<T> {
   private Class<T> entityType;
 
   public List<T> findAll() {
-    return session.find(getEntityName(), query -> query,getEntityType());
+    return session.find(getEntityName(), query -> query, getEntityType());
   }
 
   public String getEntityName() {
@@ -60,10 +61,10 @@ public abstract class BaseFmRepository<T> {
     } else {
       session.updateById(getEntityName(), recordMap, recordMap.get(entity.getIdField().getName()));
     }
-    return record;
+    return JsonUtils.getInstance().convertValue(recordMap, getEntityType());
   }
 
-  public void delete(Object id) {
+  public void delete(ID id) {
     session.deleteById(getEntityName(), id);
   }
 
@@ -75,4 +76,7 @@ public abstract class BaseFmRepository<T> {
     return id == null || !session.existsById(getEntityName(), id);
   }
 
+  public Optional<T> findById(ID id) {
+    return Optional.ofNullable(session.findById(getEntityName(), id, getEntityType()));
+  }
 }

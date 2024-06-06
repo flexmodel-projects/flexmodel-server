@@ -10,7 +10,7 @@ import java.util.List;
  * @author cjbi
  */
 @ApplicationScoped
-public class DatasourceFmRepository extends BaseFmRepository<Datasource> implements DatasourceRepository {
+public class DatasourceFmRepository extends BaseFmRepository<Datasource, String> implements DatasourceRepository {
 
   @Override
   public List<Datasource> findAll() {
