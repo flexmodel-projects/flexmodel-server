@@ -25,7 +25,16 @@ public class DataService {
                                                String filter,
                                                String sort) {
     Session session = sessionFactory.openSession(datasourceName);
-    return session.find(modelName, query -> query.setFilter(filter).setLimit(pageSize).setOffset((current - 1) * pageSize));
+    return session.find(modelName, query -> {
+      query.setFilter(filter);
+      if (pageSize != null) {
+        query.setLimit(pageSize);
+        if (current != null) {
+          query.setOffset((current - 1) * pageSize);
+        }
+      }
+      return query;
+    });
   }
 
   public long countRecords(String datasourceName, String modelName, String filter) {

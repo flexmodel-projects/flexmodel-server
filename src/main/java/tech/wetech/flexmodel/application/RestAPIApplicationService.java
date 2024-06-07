@@ -10,6 +10,7 @@ import tech.wetech.flexmodel.domain.model.apidesign.ApiInfoService;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.util.UriTemplate;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,11 +42,26 @@ public class RestAPIApplicationService {
         String modelName = (String) model.get("name");
         switch (restAPIType) {
           case "list" -> {
-            List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName,
-              1, 100, null, null);
+            boolean paging = (Boolean) apiInfo.getMeta().get("paging");
+            String filter = routingContext.request().getParam("filter");
+            String sort = routingContext.request().getParam("sort");
+            Map<String, Object> result = new HashMap<>();
+            if (paging) {
+              int current = Integer.parseInt(routingContext.request().getParam("current", "1"));
+              int pageSize = Integer.parseInt(routingContext.request().getParam("pageSize", "30"));
+              List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName,
+                current, pageSize, filter, sort);
+              long total = dataService.countRecords(datasourceName, modelName, filter);
+              result.put("total", total);
+              result.put("list", list);
+            } else {
+              List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName,
+                null, null, filter, sort);
+              result.put("list", list);
+            }
             routingContext.response()
               .putHeader("Content-Type", "application/json")
-              .end(JsonUtils.getInstance().stringify(list));
+              .end(JsonUtils.getInstance().stringify(result));
           }
           case "view" -> {
             Map<String, Object> idField = (Map<String, Object>) model.get("idField");

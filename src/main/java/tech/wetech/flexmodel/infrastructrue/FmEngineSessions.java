@@ -27,11 +27,7 @@ public class FmEngineSessions {
 
   @Produces
   public Session session(SessionFactory sessionFactory) {
-    Session session = sessionFactory.createSession(SYSTEM_DS_KEY);
-    session.syncModels();
-    createDatasourceEntity(session);
-    createApiEntity(session);
-    return session;
+    return sessionFactory.createSession(SYSTEM_DS_KEY);
   }
 
   private void createApiEntity(Session session) {
@@ -228,11 +224,19 @@ public class FmEngineSessions {
     dataSource.setJdbcUrl(datasourceConfig.url());
     dataSource.setUsername(datasourceConfig.username().orElse(null));
     dataSource.setPassword(datasourceConfig.password().orElse(null));
+    dataSource.setConnectionTimeout(3000);
+    dataSource.setValidationTimeout(5000);
     connectionLifeCycleManager.addDataSourceProvider(SYSTEM_DS_KEY, new JdbcDataSourceProvider(dataSource));
-    return SessionFactory.builder()
+    SessionFactory sessionFactory = SessionFactory.builder()
       .setConnectionLifeCycleManager(connectionLifeCycleManager)
       .setMappedModels(new JdbcMappedModels(dataSource))
       .build();
+    Session session = sessionFactory.createSession(SYSTEM_DS_KEY);
+    session.syncModels();
+    createDatasourceEntity(session);
+    createApiEntity(session);
+    session.close();
+    return sessionFactory;
   }
 
   @Produces

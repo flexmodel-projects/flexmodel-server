@@ -15,6 +15,7 @@ import java.util.Optional;
  * @author cjbi
  */
 public abstract class BaseFmRepository<T, ID> {
+
   @Inject
   protected Session session;
 
