@@ -16,6 +16,7 @@ public class Datasource {
   private String name;
   private String type;
   private Map<String, Object> config = new HashMap<>();
-  private LocalDateTime createTime;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
 }

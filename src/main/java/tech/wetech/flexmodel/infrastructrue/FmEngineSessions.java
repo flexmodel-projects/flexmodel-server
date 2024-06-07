@@ -7,14 +7,13 @@ import jakarta.enterprise.inject.Produces;
 import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.IDField.DefaultGeneratedValue;
 import tech.wetech.flexmodel.calculations.DatetimeNowValueCalculator;
-import tech.wetech.flexmodel.domain.model.apidesign.ApiInfo;
+import tech.wetech.flexmodel.domain.model.api.ApiInfo;
+import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 import tech.wetech.flexmodel.sql.JdbcMappedModels;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author cjbi
@@ -30,64 +29,34 @@ public class FmEngineSessions {
     return sessionFactory.createSession(SYSTEM_DS_KEY);
   }
 
-  private void createApiEntity(Session session) {
-    String apiEntity = ApiInfo.class.getSimpleName();
-    if (session.getModel(apiEntity) == null) {
-      session.createEntity(apiEntity, entity -> entity
+  private void createApiInfoEntity(Session session) {
+    String apiInfoEntity = ApiInfo.class.getSimpleName();
+    if (session.getModel(apiInfoEntity) == null) {
+      session.createEntity(apiInfoEntity, entity -> entity
         .addField(new IDField("id").setGeneratedValue(DefaultGeneratedValue.ULID))
         .addField(new StringField("name").setNullable(false))
         .addField(new StringField("parentId"))
         .addField(new StringField("type").setNullable(false).setDefaultValue(ApiInfo.Type.FOLDER.name()))
         .addField(new StringField("method"))
         .addField(new StringField("path"))
-        .addField(new DatetimeField("createTime").setNullable(false).addCalculation(new DatetimeNowValueCalculator()))
+        .addField(new DatetimeField("createdAt").setNullable(false).addCalculation(new DatetimeNowValueCalculator(false)))
+        .addField(new DatetimeField("updatedAt").setNullable(false).addCalculation(new DatetimeNowValueCalculator()))
         .addField(new JsonField("meta"))
       );
-      AtomicReference<String> folderId = new AtomicReference<>();
-      session.insert(apiEntity, JsonUtils.getInstance().parseToObject("""
-        {
-          "name": "分组一",
-          "type": "FOLDER"
-        }
-        """, Map.class), id -> folderId.set((String) id));
-      session.insert(apiEntity, JsonUtils.getInstance().parseToObject(String.format("""
-        {
-          "name": "简单查询接口",
-          "parentId": "%s",
-          "type": "REST_API",
-          "method":"GET",
-          "path":"/hello"
-        }
-        """, folderId), Map.class));
-      session.insert(apiEntity, JsonUtils.getInstance().parseToObject(String.format("""
-        {
-          "name": "简单添加接口",
-          "parentId": "%s",
-          "type": "REST_API",
-          "method":"POST",
-          "path":"/hello/post"
-        }
-        """, folderId), Map.class));
-      session.insert(apiEntity, JsonUtils.getInstance().parseToObject(String.format("""
-        {
-          "name": "简单更新接口",
-          "parentId": "%s",
-          "type": "REST_API",
-          "method":"PUT",
-          "path":"/hello/put"
-        }
-        """, folderId), Map.class));
-      session.insert(apiEntity, JsonUtils.getInstance().parseToObject(String.format("""
-        {
-          "name": "简单删除接口",
-          "parentId": "%s",
-          "type": "REST_API",
-          "method":"DELETE",
-          "path":"/hello/delete"
-        }
-        """, folderId), Map.class));
     }
+  }
 
+  private void createApiLogEntity(Session session) {
+    String apiLogEntity = ApiLog.class.getSimpleName();
+    if (session.getModel(apiLogEntity) == null) {
+      session.createEntity(apiLogEntity, entity -> entity
+        .addField(new IDField("id").setGeneratedValue(DefaultGeneratedValue.ULID))
+        .addField(new StringField("level").setNullable(false))
+        .addField(new TextField("uri").setNullable(false))
+        .addField(new JsonField("data").setNullable(false))
+        .addField(new DatetimeField("createdAt").setNullable(false).addCalculation(new DatetimeNowValueCalculator(false)))
+      );
+    }
   }
 
   private void createDatasourceEntity(Session session) {
@@ -97,7 +66,8 @@ public class FmEngineSessions {
         .addField(new IDField("name").setGeneratedValue(DefaultGeneratedValue.STRING_NO_GEN))
         .addField(new StringField("type"))
         .addField(new JsonField("config"))
-        .addField(new DatetimeField("createTime").addCalculation(new DatetimeNowValueCalculator()))
+        .addField(new DatetimeField("createdAt").addCalculation(new DatetimeNowValueCalculator(false)))
+        .addField(new DatetimeField("updatedAt").addCalculation(new DatetimeNowValueCalculator()))
       );
       session.insertAll(datasourceEntity, JsonUtils.getInstance().parseToObject("""
         [
@@ -232,9 +202,14 @@ public class FmEngineSessions {
       .setMappedModels(new JdbcMappedModels(dataSource))
       .build();
     Session session = sessionFactory.createSession(SYSTEM_DS_KEY);
+    try {
+      createDatasourceEntity(session);
+      createApiInfoEntity(session);
+      createApiLogEntity(session);
+
+    } catch (Exception ignored) {
+    }
     session.syncModels();
-    createDatasourceEntity(session);
-    createApiEntity(session);
     session.close();
     return sessionFactory;
   }

@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.domain.model.apidesign;
+package tech.wetech.flexmodel.domain.model.api;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +23,8 @@ public class ApiInfo {
   private String method;
   private String path;
   private Map<String, Object> meta = new HashMap<>();
-  private LocalDateTime createTime;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
   public enum Type {
     FOLDER, REST_API

@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.domain.model.apidesign;
+package tech.wetech.flexmodel.domain.model.api;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

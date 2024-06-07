@@ -2,16 +2,16 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.domain.model.apidesign.ApiInfo;
-import tech.wetech.flexmodel.domain.model.apidesign.ApiInfoService;
+import tech.wetech.flexmodel.domain.model.api.ApiInfo;
+import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static tech.wetech.flexmodel.domain.model.apidesign.ApiInfo.Type.FOLDER;
-import static tech.wetech.flexmodel.domain.model.apidesign.ApiInfo.Type.REST_API;
+import static tech.wetech.flexmodel.domain.model.api.ApiInfo.Type.FOLDER;
+import static tech.wetech.flexmodel.domain.model.api.ApiInfo.Type.REST_API;
 
 /**
  * @author cjbi
@@ -22,7 +22,7 @@ public class DocumentApplicationService {
   @Inject
   ApiInfoService apiInfoService;
 
-  public Map<String, Object> getOpenAPI() {
+  public Map<String, Object> getOpenApi() {
     Map<String, Object> openAPI = new HashMap<>();
     openAPI.put("swagger", "2.0");
 //    openAPI.put("host", "127.0.0.1");

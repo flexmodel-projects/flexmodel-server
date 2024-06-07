@@ -2,7 +2,7 @@ package tech.wetech.flexmodel.application.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import tech.wetech.flexmodel.domain.model.apidesign.ApiInfo;
+import tech.wetech.flexmodel.domain.model.api.ApiInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class ApiInfoTreeDTO extends ApiInfo {
     this.setMethod(apiInfo.getMethod());
     this.setPath(apiInfo.getPath());
     this.setMeta(apiInfo.getMeta());
-    this.setCreateTime(apiInfo.getCreateTime());
+    this.setCreatedAt(apiInfo.getCreatedAt());
   }
 
 }

@@ -36,6 +36,11 @@
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>tech.wetech.flexmodel</groupId>
+      <artifactId>flexmodel-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-webjars-locator</artifactId>
     </dependency>
@@ -60,11 +65,6 @@
       <artifactId>HikariCP</artifactId>
       <version>${HikariCP.version}</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>tech.wetech.flexmodel</groupId>
-      <artifactId>flexmodel-graphql</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>

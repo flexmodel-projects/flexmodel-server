@@ -53,6 +53,27 @@ public abstract class BaseFmRepository<T, ID> {
     return lookupEntityClass(clazz.getSuperclass());
   }
 
+  public List<T> find(String filter, String sort, Integer current, Integer pageSize) {
+    String entityName = getEntityName();
+    Class<T> resultType = getEntityType();
+    return session.find(entityName, query -> {
+      if (filter != null) {
+        query.setFilter(filter);
+      }
+      if (sort != null) {
+        // todo
+//        query.setSort()
+      }
+      if (pageSize != null) {
+        query.setLimit(pageSize);
+        if (current != null) {
+          query.setOffset((current - 1) * pageSize);
+        }
+      }
+      return query;
+    }, resultType);
+  }
+
   @SuppressWarnings("all")
   public T save(T record) {
     Entity entity = (Entity) session.getModel(getEntityName());

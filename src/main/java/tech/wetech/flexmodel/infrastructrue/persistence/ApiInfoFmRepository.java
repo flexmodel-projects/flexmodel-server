@@ -1,8 +1,8 @@
 package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import tech.wetech.flexmodel.domain.model.apidesign.ApiInfo;
-import tech.wetech.flexmodel.domain.model.apidesign.ApiInfoRepository;
+import tech.wetech.flexmodel.domain.model.api.ApiInfo;
+import tech.wetech.flexmodel.domain.model.api.ApiInfoRepository;
 
 /**
  * @author cjbi

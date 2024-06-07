@@ -3,8 +3,8 @@ package tech.wetech.flexmodel.application;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.application.dto.ApiInfoTreeDTO;
-import tech.wetech.flexmodel.domain.model.apidesign.ApiInfo;
-import tech.wetech.flexmodel.domain.model.apidesign.ApiInfoService;
+import tech.wetech.flexmodel.domain.model.api.ApiInfo;
+import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
 
 import java.util.ArrayList;
 import java.util.List;
