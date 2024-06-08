@@ -5,11 +5,10 @@ import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
 import tech.wetech.flexmodel.*;
-import tech.wetech.flexmodel.IDField.DefaultGeneratedValue;
-import tech.wetech.flexmodel.calculations.DatetimeNowValueCalculator;
 import tech.wetech.flexmodel.domain.model.api.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
+import tech.wetech.flexmodel.generations.DatetimeNowValueGenerator;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 import tech.wetech.flexmodel.sql.JdbcMappedModels;
 
@@ -26,21 +25,21 @@ public class FmEngineSessions {
 
   @Produces
   public Session session(SessionFactory sessionFactory) {
-    return sessionFactory.createSession(SYSTEM_DS_KEY);
+    return sessionFactory.openSession(SYSTEM_DS_KEY);
   }
 
   private void createApiInfoEntity(Session session) {
     String apiInfoEntity = ApiInfo.class.getSimpleName();
     if (session.getModel(apiInfoEntity) == null) {
       session.createEntity(apiInfoEntity, entity -> entity
-        .addField(new IDField("id").setGeneratedValue(DefaultGeneratedValue.ULID))
+        .addField(new IDField("id").setGeneratedValue(IDField.GeneratedValue.ULID))
         .addField(new StringField("name").setNullable(false))
         .addField(new StringField("parentId"))
         .addField(new StringField("type").setNullable(false).setDefaultValue(ApiInfo.Type.FOLDER.name()))
         .addField(new StringField("method"))
         .addField(new StringField("path"))
-        .addField(new DatetimeField("createdAt").setNullable(false).addCalculation(new DatetimeNowValueCalculator(false)))
-        .addField(new DatetimeField("updatedAt").setNullable(false).addCalculation(new DatetimeNowValueCalculator()))
+        .addField(new DatetimeField("createdAt").setNullable(false).addGenration(new DatetimeNowValueGenerator().setSkipIfNonNull(true)))
+        .addField(new DatetimeField("updatedAt").setNullable(false).addGenration(new DatetimeNowValueGenerator()))
         .addField(new JsonField("meta"))
       );
     }
@@ -50,11 +49,11 @@ public class FmEngineSessions {
     String apiLogEntity = ApiLog.class.getSimpleName();
     if (session.getModel(apiLogEntity) == null) {
       session.createEntity(apiLogEntity, entity -> entity
-        .addField(new IDField("id").setGeneratedValue(DefaultGeneratedValue.ULID))
+        .addField(new IDField("id").setGeneratedValue(IDField.GeneratedValue.ULID))
         .addField(new StringField("level").setNullable(false))
         .addField(new TextField("uri").setNullable(false))
         .addField(new JsonField("data").setNullable(false))
-        .addField(new DatetimeField("createdAt").setNullable(false).addCalculation(new DatetimeNowValueCalculator(false)))
+        .addField(new DatetimeField("createdAt").setNullable(false).addGenration(new DatetimeNowValueGenerator().setSkipIfNonNull(true)))
       );
     }
   }
@@ -63,11 +62,11 @@ public class FmEngineSessions {
     String datasourceEntity = Datasource.class.getSimpleName();
     if (session.getModel(datasourceEntity) == null) {
       session.createEntity(datasourceEntity, entity -> entity
-        .addField(new IDField("name").setGeneratedValue(DefaultGeneratedValue.STRING_NO_GEN))
+        .addField(new IDField("name").setGeneratedValue(IDField.GeneratedValue.STRING_NO_GEN))
         .addField(new StringField("type"))
         .addField(new JsonField("config"))
-        .addField(new DatetimeField("createdAt").addCalculation(new DatetimeNowValueCalculator(false)))
-        .addField(new DatetimeField("updatedAt").addCalculation(new DatetimeNowValueCalculator()))
+        .addField(new DatetimeField("createdAt").addGenration(new DatetimeNowValueGenerator().setSkipIfNonNull(true)))
+        .addField(new DatetimeField("updatedAt").addGenration(new DatetimeNowValueGenerator()))
       );
       session.insertAll(datasourceEntity, JsonUtils.getInstance().parseToObject("""
         [
@@ -201,7 +200,7 @@ public class FmEngineSessions {
       .setConnectionLifeCycleManager(connectionLifeCycleManager)
       .setMappedModels(new JdbcMappedModels(dataSource))
       .build();
-    Session session = sessionFactory.createSession(SYSTEM_DS_KEY);
+    Session session = sessionFactory.openSession(SYSTEM_DS_KEY);
     try {
       createDatasourceEntity(session);
       createApiInfoEntity(session);
