@@ -136,7 +136,7 @@ public class ApiRuntimeApplicationService {
 
   }
 
-  private void log(RoutingContext routingContext, LogFn fn) {
+  public void log(RoutingContext routingContext, LogFn fn) {
     ApiLog apiLog = new ApiLog();
     ApiLog.Data apiData = new ApiLog.Data();
     apiLog.setData(apiData);
@@ -167,7 +167,7 @@ public class ApiRuntimeApplicationService {
   }
 
   @FunctionalInterface
-  interface LogFn {
+  public interface LogFn {
     void accept();
   }
 

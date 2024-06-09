@@ -19,6 +19,9 @@ public class FmRestAPIResources {
     router.route()
       .pathRegex("/api/v1/.*")
       .handler(apiRuntimeApplicationService::accept);
+    router.route()
+      .pathRegex("/api/.*")
+      .handler(handler -> apiRuntimeApplicationService.log(handler, handler::next));
   }
 
 }
