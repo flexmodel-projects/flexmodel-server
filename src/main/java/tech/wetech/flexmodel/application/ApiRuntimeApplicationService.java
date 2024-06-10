@@ -136,7 +136,7 @@ public class ApiRuntimeApplicationService {
 
   }
 
-  public void log(RoutingContext routingContext, LogFn fn) {
+  public void log(RoutingContext routingContext, Runnable runnable) {
     ApiLog apiLog = new ApiLog();
     ApiLog.Data apiData = new ApiLog.Data();
     apiLog.setData(apiData);
@@ -147,7 +147,7 @@ public class ApiRuntimeApplicationService {
       apiData.setReferer(routingContext.request().getHeader("Referer"));
       apiData.setRemoteIp(routingContext.request().remoteAddress().host());
       apiData.setUserAgent(routingContext.request().getHeader("User-Agent"));
-      fn.accept();
+      runnable.run();
     } catch (Exception e) {
       routingContext.response()
         .setStatusCode(500);
@@ -164,11 +164,6 @@ public class ApiRuntimeApplicationService {
       apiLogService.create(apiLog);
     }
 
-  }
-
-  @FunctionalInterface
-  public interface LogFn {
-    void accept();
   }
 
 }

@@ -8,11 +8,14 @@ import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.domain.model.api.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
-import tech.wetech.flexmodel.generations.DatetimeNowValueGenerator;
+import tech.wetech.flexmodel.generator.DatetimeNowValueGenerator;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 import tech.wetech.flexmodel.sql.JdbcMappedModels;
 
 import java.util.List;
+
+import static tech.wetech.flexmodel.generator.GenerationTime.ALWAYS;
+import static tech.wetech.flexmodel.generator.GenerationTime.INSERT;
 
 /**
  * @author cjbi
@@ -38,8 +41,8 @@ public class FmEngineSessions {
         .addField(new StringField("type").setNullable(false).setDefaultValue(ApiInfo.Type.FOLDER.name()))
         .addField(new StringField("method"))
         .addField(new StringField("path"))
-        .addField(new DatetimeField("createdAt").setNullable(false).addGenration(new DatetimeNowValueGenerator().setSkipIfNonNull(true)))
-        .addField(new DatetimeField("updatedAt").setNullable(false).addGenration(new DatetimeNowValueGenerator()))
+        .addField(new DatetimeField("createdAt").setNullable(false).setGenerator(new DatetimeNowValueGenerator().setGenerationTime(INSERT)))
+        .addField(new DatetimeField("updatedAt").setNullable(false).setGenerator(new DatetimeNowValueGenerator().setGenerationTime(ALWAYS)))
         .addField(new JsonField("meta"))
       );
     }
@@ -53,7 +56,7 @@ public class FmEngineSessions {
         .addField(new StringField("level").setNullable(false))
         .addField(new TextField("uri").setNullable(false))
         .addField(new JsonField("data").setNullable(false))
-        .addField(new DatetimeField("createdAt").setNullable(false).addGenration(new DatetimeNowValueGenerator().setSkipIfNonNull(true)))
+        .addField(new DatetimeField("createdAt").setNullable(false).setGenerator(new DatetimeNowValueGenerator().setGenerationTime(INSERT)))
       );
     }
   }
@@ -62,11 +65,11 @@ public class FmEngineSessions {
     String datasourceEntity = Datasource.class.getSimpleName();
     if (session.getModel(datasourceEntity) == null) {
       session.createEntity(datasourceEntity, entity -> entity
-        .addField(new IDField("name").setGeneratedValue(IDField.GeneratedValue.STRING_NO_GEN))
+        .addField(new IDField("name").setGeneratedValue(IDField.GeneratedValue.STRING_NOT_GENERATED))
         .addField(new StringField("type"))
         .addField(new JsonField("config"))
-        .addField(new DatetimeField("createdAt").addGenration(new DatetimeNowValueGenerator().setSkipIfNonNull(true)))
-        .addField(new DatetimeField("updatedAt").addGenration(new DatetimeNowValueGenerator()))
+        .addField(new DatetimeField("createdAt").setGenerator(new DatetimeNowValueGenerator().setGenerationTime(INSERT)))
+        .addField(new DatetimeField("updatedAt").setGenerator(new DatetimeNowValueGenerator()))
       );
       session.insertAll(datasourceEntity, JsonUtils.getInstance().parseToObject("""
         [
