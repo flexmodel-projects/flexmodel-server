@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 @Provider
 public class LogFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
-  ThreadLocal<Long> reqBeginTime = new ThreadLocal<>();
+  private final ThreadLocal<Long> reqBeginTime = new ThreadLocal<>();
 
   @Inject
   ApiLogService apiLogService;

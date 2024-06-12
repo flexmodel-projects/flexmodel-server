@@ -4,13 +4,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Singleton;
 import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.domain.model.api.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
 import tech.wetech.flexmodel.generator.DatetimeNowValueGenerator;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
-import tech.wetech.flexmodel.sql.JdbcMappedModels;
 
 import java.util.List;
 
@@ -190,7 +190,8 @@ public class FmEngineSessions {
 
 
   @Produces
-  public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig, ConnectionLifeCycleManager connectionLifeCycleManager) {
+  @Singleton
+  public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig) {
     HikariDataSource dataSource = new HikariDataSource();
     FlexmodelConfig.Datasource datasourceConfig = flexmodelConfig.datasource();
     dataSource.setJdbcUrl(datasourceConfig.url());
@@ -198,12 +199,10 @@ public class FmEngineSessions {
     dataSource.setPassword(datasourceConfig.password().orElse(null));
     dataSource.setConnectionTimeout(3000);
     dataSource.setValidationTimeout(5000);
-    connectionLifeCycleManager.addDataSourceProvider(SYSTEM_DS_KEY, new JdbcDataSourceProvider(dataSource));
     SessionFactory sessionFactory = SessionFactory.builder()
-      .setConnectionLifeCycleManager(connectionLifeCycleManager)
-      .setMappedModels(new JdbcMappedModels(dataSource))
+      .setDefaultDataSourceProvider(SYSTEM_DS_KEY, new JdbcDataSourceProvider(dataSource))
       .build();
-    Session session = sessionFactory.openSession(SYSTEM_DS_KEY);
+    Session session = sessionFactory.createSession(SYSTEM_DS_KEY);
     try {
       createDatasourceEntity(session);
       createApiInfoEntity(session);
@@ -214,11 +213,6 @@ public class FmEngineSessions {
     session.syncModels();
     session.close();
     return sessionFactory;
-  }
-
-  @Produces
-  public ConnectionLifeCycleManager connectionLifeCycleManager() {
-    return new ConnectionLifeCycleManager();
   }
 
 }

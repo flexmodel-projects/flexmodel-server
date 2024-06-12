@@ -4,6 +4,8 @@ import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.JsonUtils;
 import tech.wetech.flexmodel.Session;
+import tech.wetech.flexmodel.SessionFactory;
+import tech.wetech.flexmodel.infrastructrue.FmEngineSessions;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -17,13 +19,18 @@ import java.util.Optional;
 public abstract class BaseFmRepository<T, ID> {
 
   @Inject
-  protected Session session;
+  protected SessionFactory sessionFactory;
 
   private String entityName;
 
   private Class<T> entityType;
 
+  public Session getSession(){
+    return sessionFactory.openSession(FmEngineSessions.SYSTEM_DS_KEY);
+  }
+
   public List<T> findAll() {
+    Session session = sessionFactory.openSession(FmEngineSessions.SYSTEM_DS_KEY);
     return session.find(getEntityName(), query -> query, getEntityType());
   }
 
@@ -56,7 +63,7 @@ public abstract class BaseFmRepository<T, ID> {
   public List<T> find(String filter, String sort, Integer current, Integer pageSize) {
     String entityName = getEntityName();
     Class<T> resultType = getEntityType();
-    return session.find(entityName, query -> {
+    return getSession().find(entityName, query -> {
       if (filter != null) {
         query.setFilter(filter);
       }
@@ -76,6 +83,7 @@ public abstract class BaseFmRepository<T, ID> {
 
   @SuppressWarnings("all")
   public T save(T record) {
+    Session session = sessionFactory.openSession(FmEngineSessions.SYSTEM_DS_KEY);
     Entity entity = (Entity) session.getModel(getEntityName());
     Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
     if (isNew(record)) {
@@ -87,18 +95,18 @@ public abstract class BaseFmRepository<T, ID> {
   }
 
   public void delete(ID id) {
-    session.deleteById(getEntityName(), id);
+    getSession().deleteById(getEntityName(), id);
   }
 
   @SuppressWarnings("all")
   private boolean isNew(T record) {
-    Entity entity = (Entity) session.getModel(getEntityName());
+    Entity entity = (Entity) getSession().getModel(getEntityName());
     Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
     Object id = recordMap.get(entity.getIdField());
-    return id == null || !session.existsById(getEntityName(), id);
+    return id == null || !getSession().existsById(getEntityName(), id);
   }
 
   public Optional<T> findById(ID id) {
-    return Optional.ofNullable(session.findById(getEntityName(), id, getEntityType()));
+    return Optional.ofNullable(getSession().findById(getEntityName(), id, getEntityType()));
   }
 }
