@@ -12,6 +12,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * @author cjbi
@@ -25,13 +26,19 @@ public abstract class BaseFmRepository<T, ID> {
 
   private Class<T> entityType;
 
-  public Session getSession(){
-    return sessionFactory.openSession(FmEngineSessions.SYSTEM_DS_KEY);
+  protected <R> R withSession(Function<Session, R> fn) {
+    return withSession(FmEngineSessions.SYSTEM_DS_KEY, fn);
   }
 
+  protected <R> R withSession(String identifier, Function<Session, R> fn) {
+    try (Session session = sessionFactory.createSession(identifier)) {
+      return fn.apply(session);
+    }
+  }
+
+
   public List<T> findAll() {
-    Session session = sessionFactory.openSession(FmEngineSessions.SYSTEM_DS_KEY);
-    return session.find(getEntityName(), query -> query, getEntityType());
+    return withSession(session -> session.find(getEntityName(), query -> query, getEntityType()));
   }
 
   public String getEntityName() {
@@ -63,7 +70,7 @@ public abstract class BaseFmRepository<T, ID> {
   public List<T> find(String filter, String sort, Integer current, Integer pageSize) {
     String entityName = getEntityName();
     Class<T> resultType = getEntityType();
-    return getSession().find(entityName, query -> {
+    return withSession(session -> session.find(entityName, query -> {
       if (filter != null) {
         query.setFilter(filter);
       }
@@ -78,35 +85,39 @@ public abstract class BaseFmRepository<T, ID> {
         }
       }
       return query;
-    }, resultType);
+    }, resultType));
   }
 
   @SuppressWarnings("all")
   public T save(T record) {
-    Session session = sessionFactory.openSession(FmEngineSessions.SYSTEM_DS_KEY);
-    Entity entity = (Entity) session.getModel(getEntityName());
-    Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
-    if (isNew(record)) {
-      session.insert(getEntityName(), recordMap, id -> recordMap.put(entity.getIdField().getName(), id));
-    } else {
-      session.updateById(getEntityName(), recordMap, recordMap.get(entity.getIdField().getName()));
-    }
-    return JsonUtils.getInstance().convertValue(recordMap, getEntityType());
+    return withSession(session -> {
+      Entity entity = (Entity) session.getModel(getEntityName());
+      Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
+      if (isNew(record)) {
+        session.insert(getEntityName(), recordMap, id -> recordMap.put(entity.getIdField().getName(), id));
+      } else {
+        session.updateById(getEntityName(), recordMap, recordMap.get(entity.getIdField().getName()));
+      }
+      return JsonUtils.getInstance().convertValue(recordMap, getEntityType());
+    });
+
   }
 
   public void delete(ID id) {
-    getSession().deleteById(getEntityName(), id);
+    withSession(session -> session.deleteById(getEntityName(), id));
   }
 
   @SuppressWarnings("all")
   private boolean isNew(T record) {
-    Entity entity = (Entity) getSession().getModel(getEntityName());
-    Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
-    Object id = recordMap.get(entity.getIdField());
-    return id == null || !getSession().existsById(getEntityName(), id);
+    return withSession(session -> {
+      Entity entity = (Entity) session.getModel(getEntityName());
+      Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
+      Object id = recordMap.get(entity.getIdField());
+      return id == null || !session.existsById(getEntityName(), id);
+    });
   }
 
   public Optional<T> findById(ID id) {
-    return Optional.ofNullable(getSession().findById(getEntityName(), id, getEntityType()));
+    return withSession(session -> Optional.ofNullable(session.findById(getEntityName(), id, getEntityType())));
   }
 }

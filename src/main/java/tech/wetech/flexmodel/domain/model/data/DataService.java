@@ -24,45 +24,51 @@ public class DataService {
                                                Integer pageSize,
                                                String filter,
                                                String sort) {
-    Session session = sessionFactory.openSession(datasourceName);
-    return session.find(modelName, query -> {
-      query.setFilter(filter);
-      if (pageSize != null) {
-        query.setLimit(pageSize);
-        if (current != null) {
-          query.setOffset((current - 1) * pageSize);
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      return session.find(modelName, query -> {
+        query.setFilter(filter);
+        if (pageSize != null) {
+          query.setLimit(pageSize);
+          if (current != null) {
+            query.setOffset((current - 1) * pageSize);
+          }
         }
-      }
-      return query;
-    });
+        return query;
+      });
+    }
   }
 
   public long countRecords(String datasourceName, String modelName, String filter) {
-    Session session = sessionFactory.openSession(datasourceName);
-    return session.count(modelName, query -> query.setFilter(filter));
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      return session.count(modelName, query -> query.setFilter(filter));
+    }
   }
 
   public Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id) {
-    Session session = sessionFactory.openSession(datasourceName);
-    return session.findById(modelName, id);
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      return session.findById(modelName, id);
+    }
   }
 
   public Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data) {
-    Session session = sessionFactory.openSession(datasourceName);
-    Entity entity = (Entity) session.getModel(modelName);
-    session.insert(modelName, data, id -> data.put(entity.getIdField().getName(), id));
-    return data;
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      Entity entity = (Entity) session.getModel(modelName);
+      session.insert(modelName, data, id -> data.put(entity.getIdField().getName(), id));
+      return data;
+    }
   }
 
   public Map<String, Object> updateRecord(String datasourceName, String modelName, Object id, Map<String, Object> data) {
-    Session session = sessionFactory.openSession(datasourceName);
-    session.updateById(modelName, data, id);
-    return data;
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      session.updateById(modelName, data, id);
+      return data;
+    }
   }
 
   public void deleteRecord(String datasourceName, String modelName, Object id) {
-    Session session = sessionFactory.openSession(datasourceName);
-    session.deleteById(modelName, id);
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      session.deleteById(modelName, id);
+    }
   }
 
 }

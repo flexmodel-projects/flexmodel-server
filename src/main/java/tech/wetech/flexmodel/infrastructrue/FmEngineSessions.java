@@ -26,11 +26,6 @@ public class FmEngineSessions {
 
   public static final String SYSTEM_DS_KEY = "system";
 
-  @Produces
-  public Session session(SessionFactory sessionFactory) {
-    return sessionFactory.openSession(SYSTEM_DS_KEY);
-  }
-
   private void createApiInfoEntity(Session session) {
     String apiInfoEntity = ApiInfo.class.getSimpleName();
     if (session.getModel(apiInfoEntity) == null) {

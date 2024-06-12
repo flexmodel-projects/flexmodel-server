@@ -16,40 +16,48 @@ public class ModelService {
   SessionFactory sessionFactory;
 
   public List<Model> findModels(String datasourceName) {
-    Session session = sessionFactory.openSession(datasourceName);
-    return session.getAllModels();
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      return session.getAllModels();
+    }
   }
 
   public Entity createModel(String datasourceName, Entity entity) {
-    Session session = sessionFactory.openSession(datasourceName);
-    return session.createEntity(entity);
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      return session.createEntity(entity);
+    }
   }
 
 
   public void dropModel(String datasourceName, String modelName) {
-    Session session = sessionFactory.openSession(datasourceName);
-    session.dropModel(modelName);
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      session.dropModel(modelName);
+
+    }
   }
 
   public TypedField<?, ?> createField(String datasourceName, TypedField<?, ?> field) {
-    Session session = sessionFactory.openSession(datasourceName);
-    session.createField(field);
-    return field;
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      session.createField(field);
+      return field;
+    }
   }
 
   public void dropField(String datasourceName, String modelName, String fieldName) {
-    Session session = sessionFactory.openSession(datasourceName);
-    session.dropField(modelName, fieldName);
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      session.dropField(modelName, fieldName);
+    }
   }
 
   public Index createIndex(String datasourceName, Index index) {
-    Session session = sessionFactory.openSession(datasourceName);
-    session.createIndex(index);
-    return index;
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      session.createIndex(index);
+      return index;
+    }
   }
 
   public void dropIndex(String datasourceName, String modelName, String indexName) {
-    Session session = sessionFactory.openSession(datasourceName);
-    session.dropIndex(modelName, indexName);
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      session.dropIndex(modelName, indexName);
+    }
   }
 }

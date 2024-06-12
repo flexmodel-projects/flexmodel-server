@@ -1,7 +1,6 @@
 package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import tech.wetech.flexmodel.Session;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.ApiLogRepository;
 
@@ -17,20 +16,21 @@ public class ApiLogFmRepository extends BaseFmRepository<ApiLog, String> impleme
 
   @Override
   public List<ApiLog> find(String filter, Integer current, Integer pageSize) {
-    Session session = getSession();
-    String entityName = getEntityName();
-    return session.find(entityName, query -> {
-      if (filter != null) {
-        query.setFilter(filter);
-      }
-      query.setSort(sort -> sort.addOrder("id", DESC));
-      if (pageSize != null) {
-        query.setLimit(pageSize);
-        if (current != null) {
-          query.setOffset((current - 1) * pageSize);
+    return withSession(session -> {
+      String entityName = getEntityName();
+      return session.find(entityName, query -> {
+        if (filter != null) {
+          query.setFilter(filter);
         }
-      }
-      return query;
-    }, ApiLog.class);
+        query.setSort(sort -> sort.addOrder("id", DESC));
+        if (pageSize != null) {
+          query.setLimit(pageSize);
+          if (current != null) {
+            query.setOffset((current - 1) * pageSize);
+          }
+        }
+        return query;
+      }, ApiLog.class);
+    });
   }
 }

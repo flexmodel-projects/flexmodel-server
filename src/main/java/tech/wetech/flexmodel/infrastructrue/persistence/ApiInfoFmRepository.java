@@ -1,7 +1,6 @@
 package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import tech.wetech.flexmodel.Session;
 import tech.wetech.flexmodel.domain.model.api.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiInfoRepository;
 
@@ -13,11 +12,11 @@ public class ApiInfoFmRepository extends BaseFmRepository<ApiInfo, String> imple
 
   @Override
   public void deleteByParentId(String parentId) {
-    Session session = getSession();
-    session.delete(getEntityName(), String.format("""
-      {
-        "==": [{ "var": ["parentId"] }, "%s"]
-      }
-      """, parentId));
+    withSession(session ->
+      session.delete(getEntityName(), String.format("""
+        {
+          "==": [{ "var": ["parentId"] }, "%s"]
+        }
+        """, parentId)));
   }
 }
