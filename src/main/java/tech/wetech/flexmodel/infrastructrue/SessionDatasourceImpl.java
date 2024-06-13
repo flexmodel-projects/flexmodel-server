@@ -19,6 +19,7 @@ import tech.wetech.flexmodel.mongodb.MongoDataSourceProvider;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 
 import javax.sql.DataSource;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
@@ -36,14 +37,15 @@ public class SessionDatasourceImpl implements SessionDatasource {
 
   @Override
   public ValidateResult validate(Datasource datasource) {
-    DataSourceProvider dataSourceProvider = buildDataSourceProvider(datasource);
     long beginTime = System.currentTimeMillis();
-    if (dataSourceProvider instanceof MongoDataSourceProvider mongoDataSourceProvider) {
-      mongoDataSourceProvider.mongoDatabase().listCollections();
-      return new ValidateResult(true, null, System.currentTimeMillis() - beginTime);
+    if (datasource.getConfig() instanceof Datasource.MongoDB mongoDB) {
+      try (MongoClient mongoClient = MongoClients.create(mongoDB.getUrl())) {
+        mongoClient.getClusterDescription();
+        return new ValidateResult(true, null, System.currentTimeMillis() - beginTime);
+      }
     } else {
-      DataSource dataSource = ((JdbcDataSourceProvider) dataSourceProvider).dataSource();
-      try (var conn = dataSource.getConnection()) {
+      Datasource.Database config = datasource.getConfig();
+      try (var conn = DriverManager.getConnection(config.getUrl(), config.getUsername(), config.getPassword())) {
         return new ValidateResult(conn.isValid(3), null, System.currentTimeMillis() - beginTime);
       } catch (SQLException e) {
         return new ValidateResult(false, e.getMessage(), System.currentTimeMillis() - beginTime);

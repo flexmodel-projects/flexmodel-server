@@ -112,7 +112,7 @@ public abstract class BaseFmRepository<T, ID> {
     return withSession(session -> {
       Entity entity = (Entity) session.getModel(getEntityName());
       Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
-      Object id = recordMap.get(entity.getIdField());
+      Object id = recordMap.get(entity.getIdField().getName());
       return id == null || !session.existsById(getEntityName(), id);
     });
   }

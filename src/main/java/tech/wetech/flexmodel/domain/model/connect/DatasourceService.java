@@ -22,6 +22,7 @@ public class DatasourceService {
   }
 
   public Datasource createDatasource(Datasource datasource) {
+    datasource.setType("user");
     datasource = datasourceRepository.save(datasource);
     sessionDatasource.add(datasource);
     return datasource;

@@ -47,7 +47,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
       apiData.setMethod(requestContext.getMethod());
       apiData.setPath(requestContext.getUriInfo().getPath());
       apiData.setReferer(requestContext.getHeaders().getFirst("Referer"));
-      apiData.setRemoteIp(requestContext.getHeaders().getFirst("Host"));
+//      apiData.setRemoteIp(null);
       apiData.setUserAgent(requestContext.getHeaders().getFirst("User-Agent"));
       int statusCode = responseContext.getStatus();
       String reasonPhrase = responseContext.getStatusInfo().getReasonPhrase();
