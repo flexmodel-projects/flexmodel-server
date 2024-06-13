@@ -3,11 +3,12 @@ package tech.wetech.flexmodel.api;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.FlexmodelConfig;
+import tech.wetech.flexmodel.JsonUtils;
 import tech.wetech.flexmodel.Model;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
+import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,9 +30,15 @@ public class DatasourceResource {
   FlexmodelConfig config;
 
   @POST
-  @Path("/{datasourceName}/sync")
-  public void sync(@PathParam("datasourceName") String datasourceName) {
+  @Path("/validate")
+  public ValidateResult validateConnection(Datasource datasource) {
+    return modelingApplicationService.validateConnection(datasource);
+  }
 
+  @GET
+  @Path("/{datasourceName}/refresh")
+  public List<Model> refresh(@PathParam("datasourceName") String datasourceName) {
+    return modelingApplicationService.refresh(datasourceName);
   }
 
   @GET
@@ -46,7 +53,7 @@ public class DatasourceResource {
     configMap.put("dbKind", config.datasource().dbKind());
     configMap.put("username", config.datasource().username());
     configMap.put("password", config.datasource().password());
-    system.setConfig(configMap);
+    system.setConfig(JsonUtils.getInstance().convertValue(configMap, Datasource.Database.class));
     allList.add(system);
     allList.addAll(datasourceList);
     return allList;

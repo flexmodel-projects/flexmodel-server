@@ -2,13 +2,16 @@ package tech.wetech.flexmodel.infrastructrue;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.quarkus.runtime.Startup;
+import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.domain.model.api.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
+import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
 import tech.wetech.flexmodel.generator.DatetimeNowValueGenerator;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 
@@ -66,120 +69,15 @@ public class FmEngineSessions {
         .addField(new DatetimeField("createdAt").setGenerator(new DatetimeNowValueGenerator().setGenerationTime(INSERT)))
         .addField(new DatetimeField("updatedAt").setGenerator(new DatetimeNowValueGenerator()))
       );
-      session.insertAll(datasourceEntity, JsonUtils.getInstance().parseToObject("""
-        [
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "mysql",
-              "url": "jdbc:mysql://wetech.tech:3306/flexmodel",
-              "username": "root",
-              "password": "123456"
-            },
-            "name": "test_ds_a"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "mariadb",
-              "url": "jdbc:mariadb://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_b"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "oracle",
-              "url": "jdbc:oracle://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_c"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "sqlserver",
-              "url": "jdbc:sqlserver://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_d"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "postgresql",
-              "url": "jdbc:postgresql://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_e"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "db2",
-              "url": "jdbc:db2://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_f"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "sqlite",
-              "url": "jdbc:sqlite://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_g"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "gbase",
-              "url": "jdbc:gbase://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_h"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "dm",
-              "url": "jdbc:dm://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_i"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "tidb",
-              "url": "jdbc:tidb://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_j"
-          },
-          {
-            "type": "db",
-            "config": {
-              "dbKind": "mongodb",
-              "url": "jdbc:mongodb://wetech.tech:3306/flexmodel",
-              "username": "sa",
-              "password": "sdfweerwe"
-            },
-            "name": "test_ds_k"
-          }
-        ]
-        """, List.class));
+    }
+  }
+
+  public void installDatasource(@Observes StartupEvent startupEvent, SessionDatasource sessionDatasource, SessionFactory sessionFactory) {
+    try (Session session = sessionFactory.createSession(SYSTEM_DS_KEY)) {
+      List<Datasource> datasourceList = session.find(Datasource.class.getSimpleName(), query -> query, Datasource.class);
+      for (Datasource datasource : datasourceList) {
+        sessionDatasource.add(datasource);
+      }
     }
   }
 

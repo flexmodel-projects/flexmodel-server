@@ -14,19 +14,32 @@ public class DatasourceService {
   @Inject
   DatasourceRepository datasourceRepository;
 
+  @Inject
+  SessionDatasource sessionDatasource;
+
+  public ValidateResult validate(Datasource datasource) {
+    return sessionDatasource.validate(datasource);
+  }
+
   public Datasource createDatasource(Datasource datasource) {
-    return datasourceRepository.save(datasource);
+    datasource = datasourceRepository.save(datasource);
+    sessionDatasource.add(datasource);
+    return datasource;
   }
 
   public Datasource updateDatasource(Datasource datasource) {
-    return datasourceRepository.save(datasource);
+    datasource = datasourceRepository.save(datasource);
+    sessionDatasource.delete(datasource.getName());
+    sessionDatasource.add(datasource);
+    return datasource;
   }
 
   public List<Datasource> findAll() {
     return datasourceRepository.findAll();
   }
 
-  public void deleteDatasource(String id) {
-    datasourceRepository.delete(id);
+  public void deleteDatasource(String datasourceName) {
+    datasourceRepository.delete(datasourceName);
+    sessionDatasource.delete(datasourceName);
   }
 }

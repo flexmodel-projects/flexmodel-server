@@ -8,6 +8,7 @@ import tech.wetech.flexmodel.Model;
 import tech.wetech.flexmodel.TypedField;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
+import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 
 import java.util.List;
@@ -68,4 +69,11 @@ public class ModelingApplicationService {
     modelService.dropIndex(datasourceName, modelName, indexName);
   }
 
+  public List<Model> refresh(String datasourceName) {
+    return modelService.refresh(datasourceName);
+  }
+
+  public ValidateResult validateConnection(Datasource datasource) {
+    return datasourceService.validate(datasource);
+  }
 }

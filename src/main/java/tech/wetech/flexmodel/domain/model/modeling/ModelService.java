@@ -60,4 +60,10 @@ public class ModelService {
       session.dropIndex(modelName, indexName);
     }
   }
+
+  public List<Model> refresh(String datasourceName) {
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      return session.syncModels();
+    }
+  }
 }
