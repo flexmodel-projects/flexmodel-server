@@ -1,6 +1,6 @@
 # flexmodel-server
 
-基于 Quarkus + Vert.x 构建的服务端工程
+基于 Quarkus + Vert.x 构建的服务端工程，目前已经实现支持关联数据源后在线设计Rest API
 
 ## 部署
 
@@ -12,3 +12,12 @@ docker run -p 8080:8080 -e JAVA_OPTS="-Dflexmodel.datasource.db-kind=mysql -Dfle
 
 https://github.com/flexmodel-project/flexmodel-engine
 
+## 示例
+
+![img.png](docs/img.png)
+![img.png](docs/img.png)
+![img2.png](docs/img2.png)
+
+## 在线体验
+
+http://flexmodel.wetech.tech
