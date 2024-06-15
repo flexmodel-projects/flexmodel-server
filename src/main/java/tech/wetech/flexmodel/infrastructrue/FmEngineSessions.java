@@ -85,7 +85,7 @@ public class FmEngineSessions {
   @Produces
   @Singleton
   public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig) {
-    FlexmodelConfig.Datasource datasourceConfig = flexmodelConfig.datasource();
+    FlexmodelConfig.DatasourceConfig datasourceConfig = flexmodelConfig.datasource();
     HikariDataSource dataSource = new HikariDataSource();
     dataSource.setMaximumPoolSize(100);
     dataSource.setMaxLifetime(30000); // 30s

@@ -11,9 +11,9 @@ import java.util.Optional;
 @ConfigMapping(prefix = "flexmodel")
 public interface FlexmodelConfig {
 
-  Datasource datasource();
+  DatasourceConfig datasource();
 
-  interface Datasource {
+  interface DatasourceConfig {
 
     @WithName("db-kind")
     String dbKind();

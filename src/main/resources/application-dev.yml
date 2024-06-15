@@ -6,4 +6,4 @@ quarkus:
       "tech.wetech.flexmodel":
         level: DEBUG
       "com.zaxxer.hikari":
-        level: DEBUG
+        level: INFO

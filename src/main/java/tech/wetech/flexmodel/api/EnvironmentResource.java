@@ -16,10 +16,8 @@ public class EnvironmentResource {
   @Path("/variables")
   public Map<String, Object> getSystemVariables() {
     Map<String, Object> all = new HashMap<>();
-    Map<String, String> env = System.getenv();
-    all.put("environment", env);
+    all.put("environment",  System.getenv());
     all.put("system", System.getProperties());
-    all.put("user", Map.of());
     return all;
   }
 
