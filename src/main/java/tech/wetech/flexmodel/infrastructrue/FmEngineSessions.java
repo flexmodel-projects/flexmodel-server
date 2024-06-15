@@ -85,8 +85,10 @@ public class FmEngineSessions {
   @Produces
   @Singleton
   public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig) {
-    HikariDataSource dataSource = new HikariDataSource();
     FlexmodelConfig.Datasource datasourceConfig = flexmodelConfig.datasource();
+    HikariDataSource dataSource = new HikariDataSource();
+    dataSource.setMaximumPoolSize(100);
+    dataSource.setMaxLifetime(30000); // 30s
     dataSource.setJdbcUrl(datasourceConfig.url());
     dataSource.setUsername(datasourceConfig.username().orElse(null));
     dataSource.setPassword(datasourceConfig.password().orElse(null));
@@ -95,16 +97,13 @@ public class FmEngineSessions {
     SessionFactory sessionFactory = SessionFactory.builder()
       .setDefaultDataSourceProvider(SYSTEM_DS_KEY, new JdbcDataSourceProvider(dataSource))
       .build();
-    Session session = sessionFactory.createSession(SYSTEM_DS_KEY);
-    try {
+    try (Session session = sessionFactory.createSession(SYSTEM_DS_KEY)) {
       createDatasourceEntity(session);
       createApiInfoEntity(session);
       createApiLogEntity(session);
-
+      session.syncModels();
     } catch (Exception ignored) {
     }
-    session.syncModels();
-    session.close();
     return sessionFactory;
   }
 

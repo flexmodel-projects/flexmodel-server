@@ -4,7 +4,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.Index;
-import tech.wetech.flexmodel.Model;
 import tech.wetech.flexmodel.TypedField;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
@@ -41,7 +40,7 @@ public class ModelingApplicationService {
     datasourceService.deleteDatasource(datasourceName);
   }
 
-  public List<Model> findModels(String datasourceName) {
+  public List<Entity> findModels(String datasourceName) {
     return modelService.findModels(datasourceName);
   }
 
@@ -69,7 +68,7 @@ public class ModelingApplicationService {
     modelService.dropIndex(datasourceName, modelName, indexName);
   }
 
-  public List<Model> refresh(String datasourceName) {
+  public List<Entity> refresh(String datasourceName) {
     return modelService.refresh(datasourceName);
   }
 

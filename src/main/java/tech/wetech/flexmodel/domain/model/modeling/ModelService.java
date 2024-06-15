@@ -2,7 +2,9 @@ package tech.wetech.flexmodel.domain.model.modeling;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.*;
+import tech.wetech.flexmodel.Entity;
+import tech.wetech.flexmodel.Index;
+import tech.wetech.flexmodel.TypedField;
 
 import java.util.List;
 
@@ -13,57 +15,42 @@ import java.util.List;
 public class ModelService {
 
   @Inject
-  SessionFactory sessionFactory;
+  ModelRepository modelFmRepository;
 
-  public List<Model> findModels(String datasourceName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.getAllModels();
-    }
+  public List<Entity> findAll(String datasourceName) {
+    return modelFmRepository.findAll(datasourceName);
+  }
+
+  public List<Entity> findModels(String datasourceName) {
+    return modelFmRepository.findModels(datasourceName);
   }
 
   public Entity createModel(String datasourceName, Entity entity) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.createEntity(entity);
-    }
+    return modelFmRepository.createModel(datasourceName, entity);
   }
 
-
   public void dropModel(String datasourceName, String modelName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.dropModel(modelName);
-
-    }
+    modelFmRepository.dropModel(datasourceName, modelName);
   }
 
   public TypedField<?, ?> createField(String datasourceName, TypedField<?, ?> field) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.createField(field);
-      return field;
-    }
+    return modelFmRepository.createField(datasourceName, field);
   }
 
   public void dropField(String datasourceName, String modelName, String fieldName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.dropField(modelName, fieldName);
-    }
+    modelFmRepository.dropField(datasourceName, modelName, fieldName);
   }
 
   public Index createIndex(String datasourceName, Index index) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.createIndex(index);
-      return index;
-    }
+    return modelFmRepository.createIndex(datasourceName, index);
   }
 
   public void dropIndex(String datasourceName, String modelName, String indexName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.dropIndex(modelName, indexName);
-    }
+    modelFmRepository.dropIndex(datasourceName, modelName, indexName);
   }
 
-  public List<Model> refresh(String datasourceName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.syncModels();
-    }
+  public List<Entity> refresh(String datasourceName) {
+    return modelFmRepository.refresh(datasourceName);
   }
+
 }

@@ -3,9 +3,9 @@ package tech.wetech.flexmodel.api;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.JsonUtils;
-import tech.wetech.flexmodel.Model;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
@@ -37,7 +37,7 @@ public class DatasourceResource {
 
   @GET
   @Path("/{datasourceName}/refresh")
-  public List<Model> refresh(@PathParam("datasourceName") String datasourceName) {
+  public List<Entity> refresh(@PathParam("datasourceName") String datasourceName) {
     return modelingApplicationService.refresh(datasourceName);
   }
 
