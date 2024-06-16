@@ -56,12 +56,20 @@ public class ModelingApplicationService {
     return modelService.createField(datasourceName, field);
   }
 
+  public TypedField<?, ?> modifyField(String datasourceName, TypedField<?, ?> field) {
+    return modelService.modifyField(datasourceName, field);
+  }
+
   public void dropField(String datasourceName, String modelName, String fieldName) {
     modelService.dropField(datasourceName, modelName, fieldName);
   }
 
   public Index createIndex(String datasourceName, Index index) {
     return modelService.createIndex(datasourceName, index);
+  }
+
+  public Index modifyIndex(String datasourceName, Index index) {
+    return modelService.modifyIndex(datasourceName, index);
   }
 
   public void dropIndex(String datasourceName, String modelName, String indexName) {
@@ -75,4 +83,6 @@ public class ModelingApplicationService {
   public ValidateResult validateConnection(Datasource datasource) {
     return datasourceService.validate(datasource);
   }
+
+
 }

@@ -87,13 +87,10 @@ public class FmEngineSessions {
   public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig) {
     FlexmodelConfig.DatasourceConfig datasourceConfig = flexmodelConfig.datasource();
     HikariDataSource dataSource = new HikariDataSource();
-    dataSource.setMaximumPoolSize(100);
     dataSource.setMaxLifetime(30000); // 30s
     dataSource.setJdbcUrl(datasourceConfig.url());
     dataSource.setUsername(datasourceConfig.username().orElse(null));
     dataSource.setPassword(datasourceConfig.password().orElse(null));
-    dataSource.setConnectionTimeout(3000);
-    dataSource.setValidationTimeout(5000);
     SessionFactory sessionFactory = SessionFactory.builder()
       .setDefaultDataSourceProvider(SYSTEM_DS_KEY, new JdbcDataSourceProvider(dataSource))
       .build();

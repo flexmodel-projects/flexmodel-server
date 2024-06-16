@@ -15,42 +15,52 @@ import java.util.List;
 public class ModelService {
 
   @Inject
-  ModelRepository modelFmRepository;
+  ModelRepository modelRepository;
 
   public List<Entity> findAll(String datasourceName) {
-    return modelFmRepository.findAll(datasourceName);
+    return modelRepository.findAll(datasourceName);
   }
 
   public List<Entity> findModels(String datasourceName) {
-    return modelFmRepository.findModels(datasourceName);
+    return modelRepository.findModels(datasourceName);
   }
 
   public Entity createModel(String datasourceName, Entity entity) {
-    return modelFmRepository.createModel(datasourceName, entity);
+    return modelRepository.createModel(datasourceName, entity);
   }
 
   public void dropModel(String datasourceName, String modelName) {
-    modelFmRepository.dropModel(datasourceName, modelName);
+    modelRepository.dropModel(datasourceName, modelName);
   }
 
   public TypedField<?, ?> createField(String datasourceName, TypedField<?, ?> field) {
-    return modelFmRepository.createField(datasourceName, field);
+    return modelRepository.createField(datasourceName, field);
+  }
+
+  public TypedField<?, ?> modifyField(String datasourceName, TypedField<?, ?> field) {
+    return modelRepository.modifyField(datasourceName, field);
   }
 
   public void dropField(String datasourceName, String modelName, String fieldName) {
-    modelFmRepository.dropField(datasourceName, modelName, fieldName);
+    modelRepository.dropField(datasourceName, modelName, fieldName);
   }
 
   public Index createIndex(String datasourceName, Index index) {
-    return modelFmRepository.createIndex(datasourceName, index);
+    return modelRepository.createIndex(datasourceName, index);
+  }
+
+  public Index modifyIndex(String datasourceName, Index index) {
+    modelRepository.dropIndex(datasourceName, index.getModelName(), index.getName());
+    modelRepository.createIndex(datasourceName, index);
+    return index;
   }
 
   public void dropIndex(String datasourceName, String modelName, String indexName) {
-    modelFmRepository.dropIndex(datasourceName, modelName, indexName);
+    modelRepository.dropIndex(datasourceName, modelName, indexName);
   }
 
   public List<Entity> refresh(String datasourceName) {
-    return modelFmRepository.refresh(datasourceName);
+    return modelRepository.refresh(datasourceName);
   }
 
 }

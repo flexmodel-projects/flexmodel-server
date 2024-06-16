@@ -47,6 +47,14 @@ public class ModelResource {
     return modelingApplicationService.createField(datasourceName, field);
   }
 
+  @PUT
+  @Path("/{modelName}/fields/{fieldName}")
+  public TypedField<?, ?> modifyField(@PathParam("modelName") String modelName, @PathParam("fieldName") String fieldName, TypedField<?, ?> field) {
+    field.setModelName(modelName);
+    field.setName(fieldName);
+    return modelingApplicationService.modifyField(datasourceName, field);
+  }
+
   @DELETE
   @Path("/{modelName}/fields/{fieldName}")
   public void dropField(@PathParam("modelName") String modelName, @PathParam("fieldName") String fieldName) {
@@ -58,6 +66,14 @@ public class ModelResource {
   public Index createIndex(@PathParam("modelName") String modelName, Index index) {
     index.setModelName(modelName);
     return modelingApplicationService.createIndex(datasourceName, index);
+  }
+
+  @PUT
+  @Path("/{modelName}/indexes/{indexName}")
+  public Index modifyIndex(@PathParam("modelName") String modelName, @PathParam("indexName") String indexName, Index index) {
+    index.setModelName(modelName);
+    index.setName(indexName);
+    return modelingApplicationService.modifyIndex(datasourceName, index);
   }
 
   @DELETE

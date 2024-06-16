@@ -51,6 +51,14 @@ public class ModelFmRepository extends BaseFmRepository<Model, String> implement
   }
 
   @Override
+  public TypedField<?, ?> modifyField(String datasourceName, TypedField<?, ?> field) {
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      session.modifyField(field);
+      return field;
+    }
+  }
+
+  @Override
   public void dropField(String datasourceName, String modelName, String fieldName) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       session.dropField(modelName, fieldName);

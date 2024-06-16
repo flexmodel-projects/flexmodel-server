@@ -21,6 +21,8 @@ public interface ModelRepository {
 
   TypedField<?, ?> createField(String datasourceName, TypedField<?, ?> field);
 
+  TypedField<?,?> modifyField(String datasourceName, TypedField<?, ?> field);
+
   void dropField(String datasourceName, String modelName, String fieldName);
 
   Index createIndex(String datasourceName, Index index);
@@ -28,5 +30,4 @@ public interface ModelRepository {
   void dropIndex(String datasourceName, String modelName, String indexName);
 
   List<Entity> refresh(String datasourceName);
-
 }
