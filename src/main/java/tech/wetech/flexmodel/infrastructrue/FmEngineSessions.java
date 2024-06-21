@@ -12,6 +12,7 @@ import tech.wetech.flexmodel.domain.model.api.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.connect.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
+import tech.wetech.flexmodel.domain.model.idp.IdentityProvider;
 import tech.wetech.flexmodel.generator.DatetimeNowValueGenerator;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 
@@ -72,6 +73,22 @@ public class FmEngineSessions {
     }
   }
 
+  private void createIdentityProvider(Session session) {
+    String identityProviderEntity = IdentityProvider.class.getSimpleName();
+    if (session.getModel(identityProviderEntity) == null) {
+      session.createEntity(identityProviderEntity, entity -> entity
+        .addField(new IDField("name").setGeneratedValue(IDField.GeneratedValue.STRING_NOT_GENERATED))
+        .addField(new JsonField("provider").setNullable(false))
+        .addField(new DatetimeField("createdAt")
+          .setNullable(false)
+          .setGenerator(new DatetimeNowValueGenerator().setGenerationTime(INSERT)))
+        .addField(new DatetimeField("updatedAt")
+          .setNullable(false)
+          .setGenerator(new DatetimeNowValueGenerator().setGenerationTime(ALWAYS)))
+      );
+    }
+  }
+
   public void installDatasource(@Observes StartupEvent startupEvent, SessionDatasource sessionDatasource, SessionFactory sessionFactory) {
     try (Session session = sessionFactory.createSession(SYSTEM_DS_KEY)) {
       List<Datasource> datasourceList = session.find(Datasource.class.getSimpleName(), query -> query, Datasource.class);
@@ -98,6 +115,7 @@ public class FmEngineSessions {
       createDatasourceEntity(session);
       createApiInfoEntity(session);
       createApiLogEntity(session);
+      createIdentityProvider(session);
       session.syncModels();
     } catch (Exception ignored) {
     }
