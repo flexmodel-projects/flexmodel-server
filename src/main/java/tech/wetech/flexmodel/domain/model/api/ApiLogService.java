@@ -18,8 +18,14 @@ public class ApiLogService {
     return apiLogRepository.save(apiLog);
   }
 
-  public List<ApiLog> find(String filter,Integer current, Integer pageSize) {
-    return apiLogRepository.find(filter, current, pageSize);
+  public List<ApiLog> find(String filter, Integer current, Integer pageSize) {
+    String qFilter = null;
+    if (filter != null && !filter.isEmpty()) {
+      qFilter = String.format("""
+        { "contains": [{ "var": "data" }, "%s"] }
+        """, filter);
+    }
+    return apiLogRepository.find(qFilter, current, pageSize);
   }
 
 }
