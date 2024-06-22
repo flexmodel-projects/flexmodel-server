@@ -18,6 +18,11 @@ public class IdentityProviderFmRepository extends BaseFmRepository<IdentityProvi
   }
 
   @Override
+  public IdentityProvider find(String name) {
+    return super.findById(name).orElse(null);
+  }
+
+  @Override
   public IdentityProvider save(IdentityProvider record) {
     return super.save(record);
   }

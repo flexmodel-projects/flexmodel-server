@@ -9,6 +9,8 @@ public interface IdentityProviderRepository {
 
   List<IdentityProvider> findAll();
 
+  IdentityProvider find(String name);
+
   IdentityProvider save(IdentityProvider identityProvider);
 
   void delete(String id);

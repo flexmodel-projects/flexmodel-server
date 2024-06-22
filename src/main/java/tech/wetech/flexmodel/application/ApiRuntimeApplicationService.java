@@ -10,12 +10,14 @@ import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.ApiLogService;
 import tech.wetech.flexmodel.domain.model.data.DataService;
+import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.util.UriTemplate;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author cjbi
@@ -26,6 +28,9 @@ public class ApiRuntimeApplicationService {
 
   @Inject
   ApiInfoService apiInfoService;
+
+  @Inject
+  IdentityProviderService identityProviderService;
 
   @Inject
   ApiLogService apiLogService;
@@ -47,6 +52,23 @@ public class ApiRuntimeApplicationService {
         String method = routingContext.request().method().name();
         if (pathParameters != null && method.equals(apiInfo.getMethod())) {
           log.debug("Matched request for api: {}", apiInfo);
+          boolean isAuth = (boolean) apiInfo.getMeta().get("auth");
+          if (isAuth) {
+            String identityProvider = (String) apiInfo.getMeta().get("identityProvider");
+            String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
+            String token = authorization.replace("Bearer", "").trim();
+            boolean active = identityProviderService.checkToken(identityProvider, token);
+            if (!active) {
+              Map<String, Object> result = new HashMap<>();
+              result.put("messasge", "Authentication failed.");
+              result.put("code", -1);
+              result.put("success", false);
+              routingContext.response()
+                .putHeader("Content-Type", "application/json")
+                .end(JsonUtils.getInstance().stringify(result));
+              return;
+            }
+          }
           String restAPIType = (String) apiInfo.getMeta().get("type");
           String datasourceName = (String) apiInfo.getMeta().get("datasource");
           Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
