@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.application;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -64,6 +65,7 @@ public class ApiRuntimeApplicationService {
               result.put("code", -1);
               result.put("success", false);
               routingContext.response()
+                .setStatusCode(HttpResponseStatus.UNAUTHORIZED.code())
                 .putHeader("Content-Type", "application/json")
                 .end(JsonUtils.getInstance().stringify(result));
               return;
