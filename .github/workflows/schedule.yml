@@ -1,0 +1,21 @@
+name: Deploy to remote server
+
+on:
+  schedule:
+    - cron: 0 1 * * *
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Docker Image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          command_timeout: 10m
+          script: |
+            cd /opt/flexmodel-quickstart
+            docker-compose pull
+            docker-compose up -d
