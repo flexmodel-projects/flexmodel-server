@@ -58,7 +58,7 @@ public class DataFmRepository implements DataRepository {
   public Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       Entity entity = (Entity) session.getModel(modelName);
-      session.insert(modelName, data, id -> data.put(entity.getIdField().getName(), id));
+      session.insert(modelName, data, id -> data.put(entity.findIdField().orElseThrow().getName(), id));
       return data;
     }
   }
