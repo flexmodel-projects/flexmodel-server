@@ -94,9 +94,9 @@ public abstract class BaseFmRepository<T, ID> {
       Entity entity = (Entity) session.getModel(getEntityName());
       Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
       if (isNew(record)) {
-        session.insert(getEntityName(), recordMap, id -> recordMap.put(entity.getIdField().getName(), id));
+        session.insert(getEntityName(), recordMap, id -> recordMap.put(entity.findIdField().orElseThrow().getName(), id));
       } else {
-        session.updateById(getEntityName(), recordMap, recordMap.get(entity.getIdField().getName()));
+        session.updateById(getEntityName(), recordMap, recordMap.get(entity.findIdField().orElseThrow().getName()));
       }
       return JsonUtils.getInstance().convertValue(recordMap, getEntityType());
     });
@@ -112,7 +112,7 @@ public abstract class BaseFmRepository<T, ID> {
     return withSession(session -> {
       Entity entity = (Entity) session.getModel(getEntityName());
       Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
-      Object id = recordMap.get(entity.getIdField().getName());
+      Object id = recordMap.get(entity.findIdField().orElseThrow().getName());
       return id == null || !session.existsById(getEntityName(), id);
     });
   }
