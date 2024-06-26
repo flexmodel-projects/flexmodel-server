@@ -62,8 +62,13 @@ public class IdentityProvider {
         .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
         .collect(Collectors.joining("&"));
 
+      Map<String, Object> discovery = getDiscovery();
+
+      String introspectionEndpoint = (String) discovery.get("introspection_endpoint");
+      // todo 如果不存在introspection_endpoint，则通过userinfo_endpoint获取用户，来判断是否有权限
+
       HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create("http://localhost:8084/auth/realms/myrealm/protocol/openid-connect/token/introspect"))
+        .uri(URI.create(introspectionEndpoint))
         .headers("Content-Type", "application/x-www-form-urlencoded")
         .POST(HttpRequest.BodyPublishers.ofString(paramString))
         .build();
@@ -79,6 +84,22 @@ public class IdentityProvider {
       } catch (IOException | InterruptedException e) {
         log.error("Oidc token introspect error: {}", e.getMessage(), e);
         return false;
+      }
+    }
+
+    @SuppressWarnings("all")
+    private Map<String, Object> getDiscovery() {
+      try {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(HttpRequest.newBuilder()
+          .uri(URI.create(issuer + "/.well-known/openid-configuration"))
+          .GET()
+          .build(), HttpResponse.BodyHandlers.ofString());
+        String bodyString = response.body();
+        return JsonUtils.getInstance().parseToObject(bodyString, Map.class);
+      } catch (IOException | InterruptedException e) {
+        log.error("Oidc token introspect error: {}", e.getMessage(), e);
+        return Map.of();
       }
     }
 
