@@ -2,10 +2,10 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
-import tech.wetech.flexmodel.JsonUtils;
 import tech.wetech.flexmodel.Session;
 import tech.wetech.flexmodel.SessionFactory;
 import tech.wetech.flexmodel.infrastructrue.FmEngineSessions;
+import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

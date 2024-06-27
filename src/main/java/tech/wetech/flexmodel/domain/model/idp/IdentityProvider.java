@@ -3,7 +3,7 @@ package tech.wetech.flexmodel.domain.model.idp;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import tech.wetech.flexmodel.JsonUtils;
+import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.io.IOException;
 import java.net.URI;
