@@ -23,7 +23,7 @@ public class DocumentResource {
 
   @GET
   @Path("/openapi.json")
-  public Map<String, Object> getOpenAPI() {
+  public Map<String, Object> getOpenApi() {
     return documentApplicationService.getOpenApi();
   }
 
