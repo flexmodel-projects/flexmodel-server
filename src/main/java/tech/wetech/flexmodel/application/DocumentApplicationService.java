@@ -87,68 +87,11 @@ public class DocumentApplicationService {
         content.put("operationId", restAPIType);
         content.put("produces", List.of("application/json"));
         content.put("parameters", switch (restAPIType) {
-          case "list" -> {
-            Map<String, Object> pageSize = new HashMap<>();
-            pageSize.put("name", "pageSize");
-            pageSize.put("in", "query");
-            pageSize.put("description", "Specify the max returned records per page (default to 30).");
-            pageSize.put("required", false);
-            pageSize.put("type", "integer");
-            pageSize.put("format", "int64");
-            Map<String, Object> current = new HashMap<>();
-            current.put("name", "current");
-            current.put("in", "query");
-            current.put("description", "The page (aka. offset) of the paginated list (default to 1).");
-            current.put("required", false);
-            current.put("type", "integer");
-            current.put("format", "int64");
-            yield List.of(current, pageSize);
-          }
-          case "view" -> {
-            Map<String, Object> id = new HashMap<>();
-            id.put("name", "id");
-            id.put("in", "path");
-            id.put("description", "ID of view to return");
-            id.put("required", true);
-//            id.put("type", "integer");
-//            id.put("format", "int64");
-            yield List.of(id);
-          }
-          case "create" -> {
-            Map<String, Object> name = new HashMap<>();
-            name.put("name", "id");
-            name.put("in", "body");
-            name.put("description", "ID of view to return");
-            name.put("required", true);
-            name.put("type", "string");
-            yield List.of(name);
-          }
-          case "update" -> {
-            Map<String, Object> id = new HashMap<>();
-            id.put("name", "id");
-            id.put("in", "path");
-            id.put("description", "ID of view to return");
-            id.put("required", true);
-            id.put("type", "integer");
-            id.put("format", "int64");
-            Map<String, Object> name = new HashMap<>();
-            name.put("name", "id");
-            name.put("in", "body");
-            name.put("description", "ID of view to return");
-            name.put("required", true);
-            name.put("type", "string");
-            yield List.of(id, name);
-          }
-          case "delete" -> {
-            Map<String, Object> id = new HashMap<>();
-            id.put("name", "id");
-            id.put("in", "path");
-            id.put("description", "ID of view to return");
-            id.put("required", true);
-            id.put("type", "integer");
-            id.put("format", "int64");
-            yield List.of(id);
-          }
+          case "list" -> getListApiParameter(api);
+          case "view" -> getViewApiParameter(api);
+          case "create" -> getCreateApiParameter(api);
+          case "update" -> getUpdateApiParameter(api);
+          case "delete" -> getDeleteApiParameter(api);
           default -> throw new IllegalStateException("Unexpected value: " + restAPIType);
         });
         Map<String, Object> responses = new HashMap<>();
@@ -170,6 +113,73 @@ public class DocumentApplicationService {
       }
     }
     return paths;
+  }
+
+  private List<Map<String, Object>> getDeleteApiParameter(ApiInfo api) {
+    Map<String, Object> id = new HashMap<>();
+    id.put("name", "id");
+    id.put("in", "path");
+    id.put("description", "ID of view to return");
+    id.put("required", true);
+    id.put("type", "integer");
+    id.put("format", "int64");
+    return List.of(id);
+  }
+
+  private List<Map<String, Object>> getUpdateApiParameter(ApiInfo api) {
+    Map<String, Object> id = new HashMap<>();
+    id.put("name", "id");
+    id.put("in", "path");
+    id.put("description", "ID of view to return");
+    id.put("required", true);
+    id.put("type", "integer");
+    id.put("format", "int64");
+    Map<String, Object> name = new HashMap<>();
+    name.put("name", "id");
+    name.put("in", "body");
+    name.put("description", "ID of view to return");
+    name.put("required", true);
+    name.put("type", "string");
+    return List.of(id, name);
+  }
+
+  private List<Map<String, Object>> getCreateApiParameter(ApiInfo api) {
+    Map<String, Object> name = new HashMap<>();
+    name.put("name", "id");
+    name.put("in", "body");
+    name.put("description", "ID of view to return");
+    name.put("required", true);
+    name.put("type", "string");
+    return List.of(name);
+  }
+
+  private List<Map<String, Object>> getViewApiParameter(ApiInfo api) {
+    Map<String, Object> id = new HashMap<>();
+    id.put("name", "id");
+    id.put("in", "path");
+    id.put("description", "ID of view to return");
+    id.put("required", true);
+//            id.put("type", "integer");
+//            id.put("format", "int64");
+    return List.of(id);
+  }
+
+  private List<Map<String, Object>> getListApiParameter(ApiInfo api) {
+    Map<String, Object> pageSize = new HashMap<>();
+    pageSize.put("name", "pageSize");
+    pageSize.put("in", "query");
+    pageSize.put("description", "Specify the max returned records per page (default to 30).");
+    pageSize.put("required", false);
+    pageSize.put("type", "integer");
+    pageSize.put("format", "int64");
+    Map<String, Object> current = new HashMap<>();
+    current.put("name", "current");
+    current.put("in", "query");
+    current.put("description", "The page (aka. offset) of the paginated list (default to 1).");
+    current.put("required", false);
+    current.put("type", "integer");
+    current.put("format", "int64");
+    return List.of(current, pageSize);
   }
 
 }

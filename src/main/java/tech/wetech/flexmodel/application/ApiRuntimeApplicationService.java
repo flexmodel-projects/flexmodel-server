@@ -25,6 +25,7 @@ import java.util.Objects;
  */
 @ApplicationScoped
 @Slf4j
+@SuppressWarnings("all")
 public class ApiRuntimeApplicationService {
 
   @Inject
@@ -60,96 +61,17 @@ public class ApiRuntimeApplicationService {
             String token = authorization.replace("Bearer", "").trim();
             boolean active = identityProviderService.checkToken(identityProvider, token);
             if (!active) {
-              Map<String, Object> result = new HashMap<>();
-              result.put("messasge", "Authentication failed.");
-              result.put("code", -1);
-              result.put("success", false);
-              routingContext.response()
-                .setStatusCode(HttpResponseStatus.UNAUTHORIZED.code())
-                .putHeader("Content-Type", "application/json")
-                .end(JsonUtils.getInstance().stringify(result));
+              sendAuthField(routingContext);
               return;
             }
           }
           String restAPIType = (String) apiInfo.getMeta().get("type");
-          String datasourceName = (String) apiInfo.getMeta().get("datasource");
-          Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
-          String modelName = (String) model.get("name");
           switch (restAPIType) {
-            case "list" -> {
-              boolean paging = (Boolean) apiInfo.getMeta().get("paging");
-              String filter = routingContext.request().getParam("filter");
-              String sort = routingContext.request().getParam("sort");
-              Map<String, Object> result = new HashMap<>();
-              if (paging) {
-                int current = Integer.parseInt(routingContext.request().getParam("current", "1"));
-                int pageSize = Integer.parseInt(routingContext.request().getParam("pageSize", "30"));
-                List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName,
-                  current, pageSize, filter, sort);
-                long total = dataService.countRecords(datasourceName, modelName, filter);
-                result.put("total", total);
-                result.put("list", list);
-              } else {
-                List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName,
-                  null, null, filter, sort);
-                result.put("list", list);
-              }
-              routingContext.response()
-                .putHeader("Content-Type", "application/json")
-                .end(JsonUtils.getInstance().stringify(result));
-            }
-            case "view" -> {
-              Map<String, Object> idField = (Map<String, Object>) model.get("idField");
-              String id = pathParameters.get(idField.get("name"));
-              if (id == null) {
-                id = routingContext.request().getParam((String) idField.get("name"));
-              }
-              if (id == null) {
-                throw new IllegalArgumentException("Id nust not be null");
-              }
-              Map<String, Object> record = dataService.findOneRecord(datasourceName, modelName, id);
-              routingContext.response()
-                .putHeader("Content-Type", "application/json")
-                .end(JsonUtils.getInstance().stringify(record));
-            }
-            case "create" -> {
-              String body = routingContext.request()
-                .body()
-                .result()
-                .toString();
-              Map<String, Object> data = JsonUtils.getInstance().parseToObject(body, Map.class);
-              dataService.createRecord(datasourceName, modelName, data);
-            }
-            case "update" -> {
-              Map<String, Object> idField = (Map<String, Object>) model.get("idField");
-              String id = pathParameters.get(idField.get("name"));
-              if (id == null) {
-                id = routingContext.request().getParam((String) idField.get("name"));
-              }
-              String body = routingContext.request()
-                .body()
-                .result()
-                .toString();
-              Map<String, Object> data = JsonUtils.getInstance().parseToObject(body, Map.class);
-              if (id == null) {
-                id = (String) data.get(idField.get("name"));
-              }
-              if (id == null) {
-                throw new IllegalArgumentException("Id nust not be null");
-              }
-              dataService.updateRecord(datasourceName, modelName, id, data);
-            }
-            case "delete" -> {
-              Map<String, Object> idField = (Map<String, Object>) model.get("idField");
-              String id = pathParameters.get(idField.get("name"));
-              if (id == null) {
-                id = routingContext.request().getParam((String) idField.get("name"));
-              }
-              if (id == null) {
-                throw new IllegalArgumentException("Id nust not be null");
-              }
-              dataService.deleteRecord(datasourceName, modelName, id);
-            }
+            case "list" -> doList(routingContext, pathParameters, apiInfo);
+            case "view" -> doView(routingContext, pathParameters, apiInfo);
+            case "create" -> doCreate(routingContext, pathParameters, apiInfo);
+            case "update" -> doUpdate(routingContext, pathParameters, apiInfo);
+            case "delete" -> doDelete(routingContext, pathParameters, apiInfo);
             default -> {
               routingContext.response().end("Matched request for path: " + routingContext.normalisedPath());
             }
@@ -158,6 +80,111 @@ public class ApiRuntimeApplicationService {
       }
     });
 
+  }
+
+  private void sendAuthField(RoutingContext routingContext) {
+    Map<String, Object> result = new HashMap<>();
+    result.put("messasge", "Authentication failed.");
+    result.put("code", -1);
+    result.put("success", false);
+    routingContext.response()
+      .setStatusCode(HttpResponseStatus.UNAUTHORIZED.code())
+      .putHeader("Content-Type", "application/json")
+      .end(JsonUtils.getInstance().stringify(result));
+  }
+
+  private void doDelete(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
+    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
+    String datasourceName = (String) apiInfo.getMeta().get("datasource");
+    String modelName = (String) model.get("name");
+    Map<String, Object> idField = (Map<String, Object>) model.get("idField");
+    String id = pathParameters.get(idField.get("name"));
+    if (id == null) {
+      id = routingContext.request().getParam((String) idField.get("name"));
+    }
+    if (id == null) {
+      throw new IllegalArgumentException("Id nust not be null");
+    }
+    dataService.deleteRecord(datasourceName, modelName, id);
+  }
+
+  private void doUpdate(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
+    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
+    String datasourceName = (String) apiInfo.getMeta().get("datasource");
+    String modelName = (String) model.get("name");
+    Map<String, Object> idField = (Map<String, Object>) model.get("idField");
+    String id = pathParameters.get(idField.get("name"));
+    if (id == null) {
+      id = routingContext.request().getParam((String) idField.get("name"));
+    }
+    String body = routingContext.request()
+      .body()
+      .result()
+      .toString();
+    Map<String, Object> data = JsonUtils.getInstance().parseToObject(body, Map.class);
+    if (id == null) {
+      id = (String) data.get(idField.get("name"));
+    }
+    if (id == null) {
+      throw new IllegalArgumentException("Id nust not be null");
+    }
+    dataService.updateRecord(datasourceName, modelName, id, data);
+  }
+
+  private void doCreate(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
+    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
+    String datasourceName = (String) apiInfo.getMeta().get("datasource");
+    String modelName = (String) model.get("name");
+    String body = routingContext.request()
+      .body()
+      .result()
+      .toString();
+    Map<String, Object> data = JsonUtils.getInstance().parseToObject(body, Map.class);
+    dataService.createRecord(datasourceName, modelName, data);
+  }
+
+  private void doView(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
+    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
+    String datasourceName = (String) apiInfo.getMeta().get("datasource");
+    String modelName = (String) model.get("name");
+    Map<String, Object> idField = (Map<String, Object>) model.get("idField");
+    String id = pathParameters.get(idField.get("name"));
+    if (id == null) {
+      id = routingContext.request().getParam((String) idField.get("name"));
+    }
+    if (id == null) {
+      throw new IllegalArgumentException("Id nust not be null");
+    }
+    Map<String, Object> record = dataService.findOneRecord(datasourceName, modelName, id);
+    routingContext.response()
+      .putHeader("Content-Type", "application/json")
+      .end(JsonUtils.getInstance().stringify(record));
+  }
+
+  private void doList(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
+    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
+    String modelName = (String) model.get("name");
+    String datasourceName = (String) apiInfo.getMeta().get("datasource");
+    boolean paging = (Boolean) apiInfo.getMeta().get("paging");
+    String filter = routingContext.request().getParam("filter");
+    String sort = routingContext.request().getParam("sort");
+    Map<String, Object> result = new HashMap<>();
+    if (paging) {
+      int current = Integer.parseInt(routingContext.request().getParam("current", "1"));
+      int pageSize = Integer.parseInt(routingContext.request().getParam("pageSize", "30"));
+      List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName,
+        current, pageSize, filter, sort);
+      long total = dataService.countRecords(datasourceName, modelName, filter);
+      result.put("total", total);
+      result.put("list", list);
+    } else {
+      List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName,
+        null, null, filter, sort);
+      result.put("list", list);
+    }
+    routingContext.response()
+      .putHeader("Content-Type", "application/json")
+      .end(JsonUtils.getInstance().stringify(result));
   }
 
   public void log(RoutingContext routingContext, Runnable runnable) {
