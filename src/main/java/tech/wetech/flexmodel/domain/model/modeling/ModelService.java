@@ -7,6 +7,7 @@ import tech.wetech.flexmodel.Index;
 import tech.wetech.flexmodel.TypedField;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author cjbi
@@ -23,6 +24,10 @@ public class ModelService {
 
   public List<Entity> findModels(String datasourceName) {
     return modelRepository.findModels(datasourceName);
+  }
+
+  public Optional<Entity> findModel(String datasourceName, String modelName) {
+    return modelRepository.findModel(datasourceName, modelName);
   }
 
   public Entity createModel(String datasourceName, Entity entity) {

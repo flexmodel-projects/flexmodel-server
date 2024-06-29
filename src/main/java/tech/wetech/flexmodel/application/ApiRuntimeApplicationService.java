@@ -5,12 +5,15 @@ import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.Entity;
+import tech.wetech.flexmodel.IDField;
 import tech.wetech.flexmodel.domain.model.api.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.ApiLogService;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
+import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.util.JsonUtils;
 import tech.wetech.flexmodel.util.UriTemplate;
 
@@ -36,6 +39,9 @@ public class ApiRuntimeApplicationService {
 
   @Inject
   ApiLogService apiLogService;
+
+  @Inject
+  ModelService modelService;
 
   @Inject
   DataService dataService;
@@ -79,7 +85,6 @@ public class ApiRuntimeApplicationService {
         }
       }
     });
-
   }
 
   private void sendAuthField(RoutingContext routingContext) {
@@ -94,13 +99,13 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doDelete(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
     String datasourceName = (String) apiInfo.getMeta().get("datasource");
-    String modelName = (String) model.get("name");
-    Map<String, Object> idField = (Map<String, Object>) model.get("idField");
-    String id = pathParameters.get(idField.get("name"));
+    String modelName = (String) apiInfo.getMeta().get("model");
+    Entity model = modelService.findModel(datasourceName, modelName).orElseThrow();
+    IDField idField = model.findIdField().orElseThrow();
+    String id = pathParameters.get(idField.getName());
     if (id == null) {
-      id = routingContext.request().getParam((String) idField.get("name"));
+      id = routingContext.request().getParam(idField.getName());
     }
     if (id == null) {
       throw new IllegalArgumentException("Id nust not be null");
@@ -109,13 +114,13 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doUpdate(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
     String datasourceName = (String) apiInfo.getMeta().get("datasource");
-    String modelName = (String) model.get("name");
-    Map<String, Object> idField = (Map<String, Object>) model.get("idField");
-    String id = pathParameters.get(idField.get("name"));
+    String modelName = (String) apiInfo.getMeta().get("model");
+    Entity model = modelService.findModel(datasourceName, modelName).orElseThrow();
+    IDField idField = model.findIdField().orElseThrow();
+    String id = pathParameters.get(idField.getName());
     if (id == null) {
-      id = routingContext.request().getParam((String) idField.get("name"));
+      id = routingContext.request().getParam((String) idField.getName());
     }
     String body = routingContext.request()
       .body()
@@ -123,7 +128,7 @@ public class ApiRuntimeApplicationService {
       .toString();
     Map<String, Object> data = JsonUtils.getInstance().parseToObject(body, Map.class);
     if (id == null) {
-      id = (String) data.get(idField.get("name"));
+      id = (String) data.get(idField.getName());
     }
     if (id == null) {
       throw new IllegalArgumentException("Id nust not be null");
@@ -132,9 +137,10 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doCreate(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
     String datasourceName = (String) apiInfo.getMeta().get("datasource");
-    String modelName = (String) model.get("name");
+    String modelName = (String) apiInfo.getMeta().get("model");
+    Entity model = modelService.findModel(datasourceName, modelName).orElseThrow();
+    IDField idField = model.findIdField().orElseThrow();
     String body = routingContext.request()
       .body()
       .result()
@@ -144,13 +150,13 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doView(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
     String datasourceName = (String) apiInfo.getMeta().get("datasource");
-    String modelName = (String) model.get("name");
-    Map<String, Object> idField = (Map<String, Object>) model.get("idField");
-    String id = pathParameters.get(idField.get("name"));
+    String modelName = (String) apiInfo.getMeta().get("model");
+    Entity model = modelService.findModel(datasourceName, modelName).orElseThrow();
+    IDField idField = model.findIdField().orElseThrow();
+    String id = pathParameters.get(idField.getName());
     if (id == null) {
-      id = routingContext.request().getParam((String) idField.get("name"));
+      id = routingContext.request().getParam((String) idField.getName());
     }
     if (id == null) {
       throw new IllegalArgumentException("Id nust not be null");
@@ -162,9 +168,8 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doList(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    Map<String, Object> model = (Map<String, Object>) apiInfo.getMeta().get("model");
-    String modelName = (String) model.get("name");
     String datasourceName = (String) apiInfo.getMeta().get("datasource");
+    String modelName = (String) apiInfo.getMeta().get("model");
     boolean paging = (Boolean) apiInfo.getMeta().get("paging");
     String filter = routingContext.request().getParam("filter");
     String sort = routingContext.request().getParam("sort");

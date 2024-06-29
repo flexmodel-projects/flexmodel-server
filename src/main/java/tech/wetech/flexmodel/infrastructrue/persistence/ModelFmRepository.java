@@ -5,6 +5,7 @@ import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.domain.model.modeling.ModelRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author cjbi
@@ -25,6 +26,13 @@ public class ModelFmRepository extends BaseFmRepository<Model, String> implement
   public List<Entity> findModels(String datasourceName) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return (List) session.getAllModels();
+    }
+  }
+
+  @Override
+  public Optional<Entity> findModel(String datasourceName, String modelName) {
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      return Optional.ofNullable((Entity) session.getModel(modelName));
     }
   }
 
