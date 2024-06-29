@@ -20,6 +20,7 @@ import static tech.wetech.flexmodel.domain.model.api.ApiInfo.Type.REST_API;
  * @author cjbi
  */
 @ApplicationScoped
+@SuppressWarnings("all")
 public class DocumentApplicationService {
 
   @Inject
@@ -125,28 +126,38 @@ public class DocumentApplicationService {
         ));
         String restAPIType = (String) api.getMeta().get("type");
         content.put("summary", api.getName());
-        content.put("operationId", restAPIType);
-        content.put("produces", List.of("application/json"));
-        content.put("parameters", switch (restAPIType) {
-          case "list" -> getListApiParameter(api);
-          case "view" -> getViewApiParameter(api);
-          case "create" -> getCreateApiParameter(api);
-          case "update" -> getUpdateApiParameter(api);
-          case "delete" -> getDeleteApiParameter(api);
-          default -> throw new IllegalStateException("Unexpected value: " + restAPIType);
-        });
+        content.put("operationId", api.getId());
+
         Map<String, Object> responses = new HashMap<>();
-        responses.put("200", switch (restAPIType) {
-          case "list" -> getListApiResponse200(api);
-          case "view" -> getViewApiResponse200(api);
-          case "create" -> getCreateApiResponse200(api);
-          case "update" -> getUpdateApiResponse200(api);
-          case "delete" -> getDeleteApiResponse200(api);
-          default -> throw new IllegalStateException("Unexpected value: " + restAPIType);
-        });
         responses.put("400", Map.of("description", "invalid input"));
         responses.put("404", Map.of("description", "not found"));
         content.put("responses", responses);
+
+        switch (restAPIType) {
+          case "list" -> {
+            content.put("parameters", buildListParameter(api));
+            responses.put("200", buildListResponse200(api));
+          }
+          case "view" -> {
+            content.put("parameters", buildViewParameter(api));
+            responses.put("200", buildViewResponse200(api));
+          }
+          case "create" -> {
+            content.put("requestBody", buildRequestBody(api));
+            responses.put("200", buildCreateResponse200(api));
+          }
+          case "update" -> {
+            content.put("parameters", buildUpdateParameter(api));
+            content.put("requestBody", buildRequestBody(api));
+            responses.put("200", buildUpdateResponse200(api));
+          }
+          case "delete" -> {
+            content.put("parameters", buildDeleteParameter(api));
+            responses.put("200", buildDeleteResponse200(api));
+          }
+          default -> throw new IllegalStateException("Unexpected value: " + restAPIType);
+        }
+
         boolean isAuth = (boolean) api.getMeta().get("auth");
         if (isAuth) {
           content.put("security", List.of(Map.of("bearerAuth", List.of())));
@@ -164,7 +175,7 @@ public class DocumentApplicationService {
     return paths;
   }
 
-  private List<Map<String, Object>> getDeleteApiParameter(ApiInfo api) {
+  private List<Map<String, Object>> buildDeleteParameter(ApiInfo api) {
     Map<String, Object> id = new HashMap<>();
     id.put("name", "id");
     id.put("in", "path");
@@ -175,7 +186,7 @@ public class DocumentApplicationService {
     return List.of(id);
   }
 
-  private List<Map<String, Object>> getUpdateApiParameter(ApiInfo api) {
+  private List<Map<String, Object>> buildUpdateParameter(ApiInfo api) {
     Map<String, Object> id = new HashMap<>();
     id.put("name", "id");
     id.put("in", "path");
@@ -183,26 +194,27 @@ public class DocumentApplicationService {
     id.put("required", true);
     id.put("type", "integer");
     id.put("format", "int64");
-    Map<String, Object> name = new HashMap<>();
-    name.put("name", "id");
-    name.put("in", "body");
-    name.put("description", "ID of view to return");
-    name.put("required", true);
-    name.put("type", "string");
-    return List.of(id, name);
+    return List.of(id);
   }
 
-  private List<Map<String, Object>> getCreateApiParameter(ApiInfo api) {
-    Map<String, Object> name = new HashMap<>();
-    name.put("name", "id");
-    name.put("in", "body");
-    name.put("description", "ID of view to return");
-    name.put("required", true);
-    name.put("type", "string");
-    return List.of(name);
+  private Map<String, Object> buildRequestBody(ApiInfo api) {
+    String datasourceName = (String) api.getMeta().get("datasource");
+    String modelName = (String) api.getMeta().get("model");
+    Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
+    Map<String, Object> body = new HashMap<>();
+    body.put("description", "json body");
+    body.put("content",
+      Map.of("application/json",
+        Map.of("schema", Map.of("$ref", "#/components/schemas/" + datasourceName + "_" + entity.getName()
+          )
+        )
+      )
+    );
+    body.put("required", true);
+    return body;
   }
 
-  private List<Map<String, Object>> getViewApiParameter(ApiInfo api) {
+  private List<Map<String, Object>> buildViewParameter(ApiInfo api) {
     Map<String, Object> id = new HashMap<>();
     id.put("name", "id");
     id.put("in", "path");
@@ -213,7 +225,7 @@ public class DocumentApplicationService {
     return List.of(id);
   }
 
-  private List<Map<String, Object>> getListApiParameter(ApiInfo api) {
+  private List<Map<String, Object>> buildListParameter(ApiInfo api) {
     Map<String, Object> pageSize = new HashMap<>();
     pageSize.put("name", "pageSize");
     pageSize.put("in", "query");
@@ -231,7 +243,7 @@ public class DocumentApplicationService {
     return List.of(current, pageSize);
   }
 
-  private Map<String, Object> getListApiResponse200(ApiInfo api) {
+  private Map<String, Object> buildListResponse200(ApiInfo api) {
     String datasourceName = (String) api.getMeta().get("datasource");
     String modelName = (String) api.getMeta().get("model");
     boolean paging = (Boolean) api.getMeta().get("paging");
@@ -258,7 +270,7 @@ public class DocumentApplicationService {
     );
   }
 
-  private Map<String, Object> getViewApiResponse200(ApiInfo api) {
+  private Map<String, Object> buildViewResponse200(ApiInfo api) {
     String datasourceName = (String) api.getMeta().get("datasource");
     String modelName = (String) api.getMeta().get("model");
     Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
@@ -271,7 +283,7 @@ public class DocumentApplicationService {
     );
   }
 
-  private Map<String, Object> getCreateApiResponse200(ApiInfo api) {
+  private Map<String, Object> buildCreateResponse200(ApiInfo api) {
     String datasourceName = (String) api.getMeta().get("datasource");
     String modelName = (String) api.getMeta().get("model");
     Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
@@ -284,7 +296,7 @@ public class DocumentApplicationService {
     );
   }
 
-  private Map<String, Object> getUpdateApiResponse200(ApiInfo api) {
+  private Map<String, Object> buildUpdateResponse200(ApiInfo api) {
     String datasourceName = (String) api.getMeta().get("datasource");
     String modelName = (String) api.getMeta().get("model");
     Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
@@ -297,9 +309,8 @@ public class DocumentApplicationService {
     );
   }
 
-  private Map<String, Object> getDeleteApiResponse200(ApiInfo api) {
-    return Map.of();
+  private Map<String, Object> buildDeleteResponse200(ApiInfo api) {
+    return Map.of("description", "success no content");
   }
-
 
 }
