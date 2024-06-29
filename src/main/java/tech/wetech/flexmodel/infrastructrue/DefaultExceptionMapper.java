@@ -21,7 +21,7 @@ public class DefaultExceptionMapper implements ExceptionMapper<Exception> {
     return getDefaultResponse(e);
   }
 
-  private static Response getDefaultResponse(Exception e) {
+  public static Response getDefaultResponse(Exception e) {
     Map<String, Object> body = new HashMap<>();
     body.put("code", -1);
     body.put("message", e.getMessage());

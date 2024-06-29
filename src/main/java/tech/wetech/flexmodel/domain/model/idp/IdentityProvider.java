@@ -1,5 +1,7 @@
 package tech.wetech.flexmodel.domain.model.idp;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +26,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IdentityProvider {
 
-  String name;
-  Provider provider;
+  @NotBlank
+  private String name;
+  @NotNull
+  private Provider provider;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 

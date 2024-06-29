@@ -1,6 +1,7 @@
 package tech.wetech.flexmodel.api;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.Entity;
@@ -61,13 +62,13 @@ public class DatasourceResource {
   }
 
   @POST
-  public Datasource createDatasource(Datasource datasource) {
+  public Datasource createDatasource(@Valid Datasource datasource) {
     return modelingApplicationService.createDatasource(datasource);
   }
 
   @PUT
   @Path("/{datasourceName}")
-  public Datasource updateDatasource(@PathParam("datasourceName") String datasourceName, Datasource datasource) {
+  public Datasource updateDatasource(@PathParam("datasourceName") String datasourceName, @Valid Datasource datasource) {
     datasource.setName(datasourceName);
     return modelingApplicationService.updateDatasource(datasource);
   }

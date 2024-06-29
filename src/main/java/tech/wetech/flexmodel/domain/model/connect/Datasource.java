@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.domain.model.connect;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Datasource {
+  @NotBlank
   private String name;
   private String type;
   private Database config;

@@ -1,6 +1,7 @@
 package tech.wetech.flexmodel.api;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.application.ApiDesignApplicationService;
@@ -26,13 +27,13 @@ public class ApiInfoResource {
   }
 
   @POST
-  public ApiInfo create(ApiInfo apiInfo) {
+  public ApiInfo create(@Valid ApiInfo apiInfo) {
     return apiDesignApplicationService.createApiInfo(apiInfo);
   }
 
   @PUT
   @Path("/{id}")
-  public ApiInfo update(@PathParam("id") String id, ApiInfo apiInfo) {
+  public ApiInfo update(@PathParam("id") String id, @Valid ApiInfo apiInfo) {
     apiInfo.setId(id);
     return apiDesignApplicationService.updateApiInfo(apiInfo);
   }

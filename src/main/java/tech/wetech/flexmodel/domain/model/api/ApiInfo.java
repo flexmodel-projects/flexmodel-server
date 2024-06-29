@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.domain.model.api;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class ApiInfo {
 
   private String id;
+  @NotBlank
   private String name;
   private String parentId;
   private Type type;
