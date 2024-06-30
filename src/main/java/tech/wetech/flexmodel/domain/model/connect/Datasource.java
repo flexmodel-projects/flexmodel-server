@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.domain.model.connect;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ public class Datasource {
   @NotBlank
   private String name;
   private String type;
+  @Valid
   private Database config;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
@@ -25,6 +27,7 @@ public class Datasource {
 
     public abstract String getDbKind();
 
+    @NotBlank
     private String url;
     private String username;
     private String password;
