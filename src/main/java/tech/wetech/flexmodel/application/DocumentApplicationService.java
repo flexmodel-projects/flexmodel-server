@@ -153,7 +153,7 @@ public class DocumentApplicationService {
           }
           case "delete" -> {
             content.put("parameters", buildDeleteParameter(api));
-            responses.put("200", buildDeleteResponse200(api));
+            responses.put("204", buildDeleteResponse204(api));
           }
           default -> throw new IllegalStateException("Unexpected value: " + restAPIType);
         }
@@ -309,7 +309,7 @@ public class DocumentApplicationService {
     );
   }
 
-  private Map<String, Object> buildDeleteResponse200(ApiInfo api) {
+  private Map<String, Object> buildDeleteResponse204(ApiInfo api) {
     return Map.of("description", "success no content");
   }
 

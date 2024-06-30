@@ -111,6 +111,11 @@ public class ApiRuntimeApplicationService {
       throw new IllegalArgumentException("Id nust not be null");
     }
     dataService.deleteRecord(datasourceName, modelName, id);
+    routingContext.response()
+      .putHeader("Content-Type", "application/json")
+      .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
+      .end();
+
   }
 
   private void doUpdate(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
@@ -122,10 +127,7 @@ public class ApiRuntimeApplicationService {
     if (id == null) {
       id = routingContext.request().getParam((String) idField.getName());
     }
-    String body = routingContext.request()
-      .body()
-      .result()
-      .toString();
+    String body = routingContext.body().asString();
     Map<String, Object> data = JsonUtils.getInstance().parseToObject(body, Map.class);
     if (id == null) {
       id = (String) data.get(idField.getName());
@@ -133,7 +135,10 @@ public class ApiRuntimeApplicationService {
     if (id == null) {
       throw new IllegalArgumentException("Id nust not be null");
     }
-    dataService.updateRecord(datasourceName, modelName, id, data);
+    Map<String, Object> result = dataService.updateRecord(datasourceName, modelName, id, data);
+    routingContext.response()
+      .putHeader("Content-Type", "application/json")
+      .end(JsonUtils.getInstance().stringify(result));
   }
 
   private void doCreate(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
@@ -141,12 +146,12 @@ public class ApiRuntimeApplicationService {
     String modelName = (String) apiInfo.getMeta().get("model");
     Entity model = modelService.findModel(datasourceName, modelName).orElseThrow();
     IDField idField = model.findIdField().orElseThrow();
-    String body = routingContext.request()
-      .body()
-      .result()
-      .toString();
+    String body = routingContext.body().asString();
     Map<String, Object> data = JsonUtils.getInstance().parseToObject(body, Map.class);
-    dataService.createRecord(datasourceName, modelName, data);
+    Map<String, Object> result = dataService.createRecord(datasourceName, modelName, data);
+    routingContext.response()
+      .putHeader("Content-Type", "application/json")
+      .end(JsonUtils.getInstance().stringify(result));
   }
 
   private void doView(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
