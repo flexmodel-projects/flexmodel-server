@@ -28,4 +28,14 @@ public class ApiLogService {
     return apiLogRepository.find(qFilter, current, pageSize);
   }
 
+  public List<LogStat> stat(String filter) {
+    String qFilter = null;
+    if (filter != null && !filter.isEmpty()) {
+      qFilter = String.format("""
+        { "contains": [{ "var": "data" }, "%s"] }
+        """, filter);
+    }
+    return apiLogRepository.stat(qFilter);
+  }
+
 }

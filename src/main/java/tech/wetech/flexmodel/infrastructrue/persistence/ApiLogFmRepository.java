@@ -3,10 +3,12 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 import jakarta.enterprise.context.ApplicationScoped;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.ApiLogRepository;
+import tech.wetech.flexmodel.domain.model.api.LogStat;
 
 import java.util.List;
 
 import static tech.wetech.flexmodel.Direction.DESC;
+import static tech.wetech.flexmodel.Projections.*;
 
 /**
  * @author cjbi
@@ -33,4 +35,20 @@ public class ApiLogFmRepository extends BaseFmRepository<ApiLog, String> impleme
       }, ApiLog.class);
     });
   }
+
+
+  @Override
+  public List<LogStat> stat(String filter) {
+    return withSession(session -> session
+      .find(getEntityName(), query -> query
+        .setProjection(projection -> projection
+          .addField("date", dateFormat(field("createdAt" ), "yyyy-MM-dd hh:00:00" ))
+          .addField("total", count(field("id" )))
+        )
+        .setGroupBy(groupBy -> groupBy
+          .addField("date" )
+        )
+        .setFilter(filter), LogStat.class));
+  }
+
 }

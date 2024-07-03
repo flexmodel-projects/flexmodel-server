@@ -5,6 +5,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
 import tech.wetech.flexmodel.domain.model.api.ApiLog;
+import tech.wetech.flexmodel.domain.model.api.LogStat;
 
 import java.util.List;
 
@@ -20,10 +21,16 @@ public class ApiLogResource {
   ApiRuntimeApplicationService apiRuntimeApplicationService;
 
   @GET
-  public List<ApiLog> findApiList(@QueryParam("current") @DefaultValue("1") int current,
-                                  @QueryParam("pageSize") @DefaultValue("50") int pageSize,
-                                  @QueryParam("filter") String filter) {
+  public List<ApiLog> findApiList(@QueryParam("current" ) @DefaultValue("1" ) int current,
+                                  @QueryParam("pageSize" ) @DefaultValue("50" ) int pageSize,
+                                  @QueryParam("filter" ) String filter) {
     return apiRuntimeApplicationService.findApiLogs(filter, current, pageSize);
+  }
+
+  @GET
+  @Path("/stat" )
+  public List<LogStat> stat(@QueryParam("filter" ) String filter) {
+    return apiRuntimeApplicationService.stat(filter);
   }
 
 }

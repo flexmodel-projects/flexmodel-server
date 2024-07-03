@@ -7,10 +7,7 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.IDField;
-import tech.wetech.flexmodel.domain.model.api.ApiInfo;
-import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
-import tech.wetech.flexmodel.domain.model.api.ApiLog;
-import tech.wetech.flexmodel.domain.model.api.ApiLogService;
+import tech.wetech.flexmodel.domain.model.api.*;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
@@ -48,6 +45,10 @@ public class ApiRuntimeApplicationService {
 
   public List<ApiLog> findApiLogs(String filter, int current, int pageSize) {
     return apiLogService.find(filter, current, pageSize);
+  }
+
+  public List<LogStat> stat(String filter) {
+    return apiLogService.stat(filter);
   }
 
   @SuppressWarnings("all")
