@@ -1,0 +1,5 @@
+quarkus:
+  log:
+    category:
+      "tech.wetech.flexmodel":
+        level: DEBUG

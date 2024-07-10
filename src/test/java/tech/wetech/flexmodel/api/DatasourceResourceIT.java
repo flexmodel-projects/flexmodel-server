@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel;
+package tech.wetech.flexmodel.api;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
@@ -6,5 +6,5 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
  * @author cjbi
  */
 @QuarkusIntegrationTest
-public class FlexModelResourceIT extends FlexModelResourceTest {
+public class DatasourceResourceIT extends DatasourceResourceTest {
 }
