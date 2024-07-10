@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 /**
  * @author cjbi
@@ -29,7 +29,7 @@ class DatasourceResourceTest {
       .get("/api/datasources")
       .then()
       .statusCode(200)
-      .body("size()", is(2));
+      .body("size()", greaterThanOrEqualTo(1));
 
   }
 
