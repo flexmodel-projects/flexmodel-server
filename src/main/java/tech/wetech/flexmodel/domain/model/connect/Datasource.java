@@ -34,15 +34,15 @@ public class Datasource {
     private String username;
     private String password;
 
-    public String getUrlWithSystemVariables() {
+    public String urlWithSystemVariables() {
       return StringUtils.simpleRenderTemplate(url, SystemVariablesHolder.getSystemVariables());
     }
 
-    public String getUsernameWithSystemVariables() {
+    public String usernameWithSystemVariables() {
       return StringUtils.simpleRenderTemplate(username, SystemVariablesHolder.getSystemVariables());
     }
 
-    public String getPasswordWithSystemVariables() {
+    public String passwordWithSystemVariables() {
       return StringUtils.simpleRenderTemplate(password, SystemVariablesHolder.getSystemVariables());
     }
   }
@@ -104,8 +104,6 @@ public class Datasource {
   @Getter
   @Setter
   public static class SQLite extends Database {
-    private String url;
-
     @Override
     public String getDbKind() {
       return "sqlite";

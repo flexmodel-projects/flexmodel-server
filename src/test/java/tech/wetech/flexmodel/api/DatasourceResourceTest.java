@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.api;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +19,19 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(MySQLTestResource.class)
 class DatasourceResourceTest {
 
+  @BeforeEach
+  void setUp() {
+  }
+
+  @AfterEach
+  void tearDown() {
+  }
+
   @Test
   void testValidateConnection() {
     given()
       .when()
-      .contentType("application/json")
+      .contentType(ContentType.JSON)
       .body("""
           {
              "name": "mysql_test",
@@ -43,6 +52,12 @@ class DatasourceResourceTest {
 
   @Test
   void testRefresh() {
+    given()
+      .when()
+      .get("/api/datasources/system/refresh")
+      .then()
+      .statusCode(200)
+      .body("size()", greaterThanOrEqualTo(1));
   }
 
   @Test
@@ -58,22 +73,74 @@ class DatasourceResourceTest {
 
   @Test
   void testCreateDatasource() {
+    given()
+      .when()
+      .contentType(ContentType.JSON)
+      .body("""
+          {
+             "name": "mysql_test2",
+             "type": "user",
+             "config": {
+               "url": "${MYSQL_URL}",
+               "dbKind": "mysql",
+               "password": "${MYSQL_PASSWORD}",
+               "username": "${MYSQL_USERNAME}"
+             }
+          }
+        """)
+      .post("/api/datasources")
+      .then()
+      .statusCode(200);
   }
 
   @Test
   void testUpdateDatasource() {
+    given()
+      .when()
+      .contentType(ContentType.JSON)
+      .body("""
+          {
+            "name": "sqlite_test",
+            "type": "user",
+            "config": {
+              "url": "jdbc:sqlite:file::memory:?cache=shared",
+              "dbKind": "sqlite",
+              "password": "",
+              "username": ""
+            }
+          }
+        """)
+      .put("/api/datasources/{datasourceName}", "sqlite_test")
+      .then()
+      .statusCode(200);
   }
 
   @Test
   void testDeleteDatasource() {
-  }
-
-  @BeforeEach
-  void setUp() {
-  }
-
-  @AfterEach
-  void tearDown() {
+    given()
+      .when()
+      .contentType(ContentType.JSON)
+      .body("""
+          {
+             "name": "mysql_test3",
+             "type": "user",
+             "config": {
+               "url": "${MYSQL_URL}",
+               "dbKind": "mysql",
+               "password": "${MYSQL_PASSWORD}",
+               "username": "${MYSQL_USERNAME}"
+             }
+           }
+        """)
+      .post("/api/datasources")
+      .then()
+      .statusCode(200);
+    given()
+      .when()
+      .contentType(ContentType.JSON)
+      .delete("/api/datasources/{datasourceName}", "mysql_test3")
+      .then()
+      .statusCode(204);
   }
 
 }
