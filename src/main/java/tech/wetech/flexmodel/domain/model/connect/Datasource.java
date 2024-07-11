@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import tech.wetech.flexmodel.util.StringUtils;
+import tech.wetech.flexmodel.util.SystemVariablesHolder;
 
 import java.time.LocalDateTime;
 
@@ -32,6 +34,17 @@ public class Datasource {
     private String username;
     private String password;
 
+    public String getUrlWithSystemVariables() {
+      return StringUtils.simpleRenderTemplate(url, SystemVariablesHolder.getSystemVariables());
+    }
+
+    public String getUsernameWithSystemVariables() {
+      return StringUtils.simpleRenderTemplate(username, SystemVariablesHolder.getSystemVariables());
+    }
+
+    public String getPasswordWithSystemVariables() {
+      return StringUtils.simpleRenderTemplate(password, SystemVariablesHolder.getSystemVariables());
+    }
   }
 
   @Getter

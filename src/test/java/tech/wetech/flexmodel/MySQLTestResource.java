@@ -11,14 +11,15 @@ import java.util.Optional;
 /**
  * @author cjbi
  */
-public class MySQLTestResource  implements QuarkusTestResourceLifecycleManager, DevServicesContext.ContextAware {
+public class MySQLTestResource implements QuarkusTestResourceLifecycleManager, DevServicesContext.ContextAware {
 
   private Optional<String> containerNetworkId;
   private static JdbcDatabaseContainer<?> container;
 
   @Override
   public Map<String, String> start() {
-    container = new MySQLContainer<>("mysql:8.0").withLogConsumer(outputFrame -> {});
+    container = new MySQLContainer<>("mysql:8.0").withLogConsumer(outputFrame -> {
+    });
     // apply the network to the container
     containerNetworkId.ifPresent(container::withNetworkMode);
     // start container before retrieving its URL or other properties
@@ -30,9 +31,9 @@ public class MySQLTestResource  implements QuarkusTestResourceLifecycleManager, 
       jdbcUrl = fixJdbcUrl(jdbcUrl);
     }
     return Map.of(
-      "MYSQL_URL", "root",
-      "MYSQL_USERNAME", container.getPassword(),
-      "MYSQL_PASSWORD", jdbcUrl);
+      "MYSQL_URL", jdbcUrl,
+      "MYSQL_USERNAME", "root",
+      "MYSQL_PASSWORD", container.getPassword());
   }
 
   private String fixJdbcUrl(String jdbcUrl) {

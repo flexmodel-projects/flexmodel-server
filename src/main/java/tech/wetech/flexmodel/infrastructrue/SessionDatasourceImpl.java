@@ -39,14 +39,17 @@ public class SessionDatasourceImpl implements SessionDatasource {
   public ValidateResult validate(Datasource datasource) {
     long beginTime = System.currentTimeMillis();
     if (datasource.getConfig() instanceof Datasource.MongoDB mongoDB) {
-      try (MongoClient mongoClient = MongoClients.create(mongoDB.getUrl())) {
+      try (MongoClient mongoClient = MongoClients.create(mongoDB.getUrlWithSystemVariables())) {
         mongoClient.getClusterDescription();
-        return new ValidateResult(true, null, System.currentTimeMillis() - beginTime);
+        return new ValidateResult(true, "ok", System.currentTimeMillis() - beginTime);
       }
     } else {
       Datasource.Database config = datasource.getConfig();
-      try (var conn = DriverManager.getConnection(config.getUrl(), config.getUsername(), config.getPassword())) {
-        return new ValidateResult(conn.isValid(3), null, System.currentTimeMillis() - beginTime);
+      try (var conn = DriverManager.getConnection(
+        config.getUrlWithSystemVariables(),
+        config.getUsernameWithSystemVariables(),
+        config.getPasswordWithSystemVariables())) {
+        return new ValidateResult(conn.isValid(3), "ok", System.currentTimeMillis() - beginTime);
       } catch (SQLException e) {
         return new ValidateResult(false, e.getMessage(), System.currentTimeMillis() - beginTime);
       }
@@ -76,16 +79,16 @@ public class SessionDatasourceImpl implements SessionDatasource {
   public DataSource buildJdbcDataSource(Datasource.Database database) {
     HikariDataSource dataSource = new HikariDataSource();
     dataSource.setMaxLifetime(30000); // 30s
-    dataSource.setJdbcUrl(database.getUrl());
-    dataSource.setUsername(database.getUsername());
-    dataSource.setPassword(database.getPassword());
+    dataSource.setJdbcUrl(database.getUrlWithSystemVariables());
+    dataSource.setUsername(database.getUsernameWithSystemVariables());
+    dataSource.setPassword(database.getPasswordWithSystemVariables());
     return dataSource;
   }
 
   public MongoDatabase buildMongoDatabase(Datasource.MongoDB mongodb) {
     CodecRegistry pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
       fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-    MongoClient mongoClient = MongoClients.create(mongodb.getUrl());
+    MongoClient mongoClient = MongoClients.create(mongodb.getUrlWithSystemVariables());
     return mongoClient.getDatabase("test")
       .withCodecRegistry(pojoCodecRegistry);
   }

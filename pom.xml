@@ -17,6 +17,7 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <HikariCP.version>5.1.0</HikariCP.version>
+    <testcontainers.version>1.19.3</testcontainers.version>
   </properties>
   <dependencyManagement>
     <dependencies>
