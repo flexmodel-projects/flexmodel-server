@@ -7,7 +7,7 @@ import io.quarkus.runtime.annotations.QuarkusMain;
  * @author cjbi
  */
 @QuarkusMain
-public class Main {
+public class FlexmodelMain {
 
   public static void main(String[] args) {
     Quarkus.run(args);

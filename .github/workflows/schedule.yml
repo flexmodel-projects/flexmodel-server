@@ -16,6 +16,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           command_timeout: 10m
           script: |
-            cd /opt/flexmodel-quickstart
+            cd /opt/flexmodel-quickstarts
             docker-compose pull
             docker-compose up -d

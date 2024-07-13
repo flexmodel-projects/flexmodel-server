@@ -3,8 +3,6 @@ package tech.wetech.flexmodel.api;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.MySQLTestResource;
 
@@ -18,14 +16,6 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTest
 @QuarkusTestResource(MySQLTestResource.class)
 class DatasourceResourceTest {
-
-  @BeforeEach
-  void setUp() {
-  }
-
-  @AfterEach
-  void tearDown() {
-  }
 
   @Test
   void testValidateConnection() {

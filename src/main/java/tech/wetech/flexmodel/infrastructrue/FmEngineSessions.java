@@ -43,10 +43,9 @@ public class FmEngineSessions {
     dataSource.setJdbcUrl(datasourceConfig.url());
     dataSource.setUsername(datasourceConfig.username().orElse(null));
     dataSource.setPassword(datasourceConfig.password().orElse(null));
-    SessionFactory sessionFactory = SessionFactory.builder()
+      return SessionFactory.builder()
       .setDefaultDataSourceProvider(SYSTEM_DS_KEY, new JdbcDataSourceProvider(dataSource))
       .build();
-    return sessionFactory;
   }
 
 }
