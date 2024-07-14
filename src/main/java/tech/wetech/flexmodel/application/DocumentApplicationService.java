@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static tech.wetech.flexmodel.RelationField.Cardinality.ONE_TO_ONE;
 import static tech.wetech.flexmodel.domain.model.api.ApiInfo.Type.FOLDER;
 import static tech.wetech.flexmodel.domain.model.api.ApiInfo.Type.REST_API;
 
@@ -91,7 +92,10 @@ public class DocumentApplicationService {
     object.put("properties", properties);
     for (TypedField<?, ?> field : entity.getFields()) {
       if (field instanceof RelationField relationField) {
-        properties.put(field.getName(), Map.of("$ref", addModelDefinition(datasourceName, relationField.getTargetEntity(), definitions)));
+        Map<String, Object> refProp = new HashMap<>();
+        refProp.put("type", relationField.getCardinality() == ONE_TO_ONE ? "object" : "array");
+        refProp.put("items", Map.of("$ref", addModelDefinition(datasourceName, relationField.getTargetEntity(), definitions)));
+        properties.put(field.getName(), refProp);
         continue;
       }
       properties.put(field.getName(), typeMapping.getOrDefault(field.getType(), Map.of("type", "string")));
