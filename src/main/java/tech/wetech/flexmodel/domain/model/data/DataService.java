@@ -15,7 +15,12 @@ public class DataService {
   @Inject
   DataRepository dataRepository;
 
-  public List<Map<String, Object>> findRecords(String datasourceName, String modelName, Integer current, Integer pageSize, String filter, String sort) {
+  public List<Map<String, Object>> findRecords(String datasourceName,
+                                               String modelName,
+                                               Integer current,
+                                               Integer pageSize,
+                                               String filter,
+                                               String sort) {
     return dataRepository.findRecords(datasourceName, modelName, current, pageSize, filter, sort);
   }
 

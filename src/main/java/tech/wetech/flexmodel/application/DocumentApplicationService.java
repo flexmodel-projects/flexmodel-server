@@ -3,6 +3,7 @@ package tech.wetech.flexmodel.application;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
+import tech.wetech.flexmodel.RelationField;
 import tech.wetech.flexmodel.TypedField;
 import tech.wetech.flexmodel.domain.model.api.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
@@ -52,6 +53,20 @@ public class DocumentApplicationService {
   }
 
   private Map<String, Object> buildSchemas(List<ApiInfo> apis) {
+    Map<String, Object> definitions = new HashMap<>();
+    for (ApiInfo api : apis) {
+      if (api.getType() != REST_API) {
+        continue;
+      }
+      String datasourceName = (String) api.getMeta().get("datasource");
+      String modelName = (String) api.getMeta().get("model");
+      Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
+      addModelDefinition(datasourceName, modelName, definitions);
+    }
+    return definitions;
+  }
+
+  private String addModelDefinition(String datasourceName, String modelName, Map<String, Object> definitions) {
     Map<String, Object> typeMapping = new HashMap<>();
     typeMapping.put("string", Map.of("type", "string"));
     typeMapping.put("text", Map.of("type", "string"));
@@ -61,28 +76,27 @@ public class DocumentApplicationService {
     typeMapping.put("boolean", Map.of("type", "boolean"));
 //    typeMapping.put("", Map.of("type", "array"));
     typeMapping.put("json", Map.of("type", "object"));
-//    typeMapping.put("", Map.of("type", "null"));
-    Map<String, Object> definitions = new HashMap<>();
-    for (ApiInfo api : apis) {
-      if (api.getType() != REST_API) {
-        continue;
-      }
-      String datasourceName = (String) api.getMeta().get("datasource");
-      String modelName = (String) api.getMeta().get("model");
-      Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
-      if (entity == null) {
-        continue;
-      }
-      Map<String, Object> object = new HashMap<>();
-      definitions.put(datasourceName + "_" + entity.getName(), object);
-      object.put("type", "object");
-      Map<String, Object> properties = new HashMap<>();
-      object.put("properties", properties);
-      for (TypedField<?, ?> field : entity.getFields()) {
-        properties.put(field.getName(), typeMapping.getOrDefault(field.getType(), Map.of("type", "string")));
-      }
+    Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
+    if (entity == null) {
+      return null;
     }
-    return definitions;
+    Map<String, Object> object = new HashMap<>();
+    String refModelName = datasourceName + "." + entity.getName();
+    if (definitions.containsKey(refModelName)) {
+      return "#/components/schemas/" + refModelName;
+    }
+    definitions.put(refModelName, object);
+    object.put("type", "object");
+    Map<String, Object> properties = new HashMap<>();
+    object.put("properties", properties);
+    for (TypedField<?, ?> field : entity.getFields()) {
+      if (field instanceof RelationField relationField) {
+        properties.put(field.getName(), Map.of("$ref", addModelDefinition(datasourceName, relationField.getTargetEntity(), definitions)));
+        continue;
+      }
+      properties.put(field.getName(), typeMapping.getOrDefault(field.getType(), Map.of("type", "string")));
+    }
+    return "#/components/schemas/" + refModelName;
   }
 
   public Map<String, Object> buildComponents(List<ApiInfo> apis) {
@@ -205,7 +219,7 @@ public class DocumentApplicationService {
     body.put("description", "json body");
     body.put("content",
       Map.of("application/json",
-        Map.of("schema", Map.of("$ref", "#/components/schemas/" + datasourceName + "_" + entity.getName()
+        Map.of("schema", Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName()
           )
         )
       )
@@ -251,7 +265,7 @@ public class DocumentApplicationService {
     var resProps = new HashMap<>();
     resProps.put("list", Map.of(
       "type", "array",
-      "items", Map.of("$ref", "#/components/schemas/" + datasourceName + "_" + entity.getName())
+      "items", Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName())
     ));
     if (paging) {
       resProps.put("total", Map.of("type", "integer", "format", "int64"));
@@ -279,7 +293,7 @@ public class DocumentApplicationService {
       "content", Map.of(
         "application/json",
         Map.of("schema",
-          Map.of("$ref", "#/components/schemas/" + datasourceName + "_" + entity.getName())))
+          Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName())))
     );
   }
 
@@ -292,7 +306,7 @@ public class DocumentApplicationService {
       "content", Map.of(
         "application/json",
         Map.of("schema",
-          Map.of("$ref", "#/components/schemas/" + datasourceName + "_" + entity.getName())))
+          Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName())))
     );
   }
 
@@ -305,7 +319,7 @@ public class DocumentApplicationService {
       "content", Map.of(
         "application/json",
         Map.of("schema",
-          Map.of("$ref", "#/components/schemas/" + datasourceName + "_" + entity.getName())))
+          Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName())))
     );
   }
 

@@ -64,7 +64,7 @@
         {
           "name": "id",
           "type": "id",
-          "unique": false,
+          "unique": true,
           "nullable": true,
           "generator": {
             "type": "ULIDValueGenerator",
