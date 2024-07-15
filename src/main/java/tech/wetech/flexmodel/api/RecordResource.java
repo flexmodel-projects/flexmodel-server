@@ -27,9 +27,10 @@ public class RecordResource {
     @QueryParam("current") @DefaultValue("1") int current,
     @QueryParam("pageSize") @DefaultValue("15") int pageSize,
     @QueryParam("filter") String filter,
+    @QueryParam("deep") @DefaultValue("false") boolean deep,
     @QueryParam("sort") String sort
   ) {
-    return dataApplicationService.findPagingRecords(datasourceName, modelName, current, pageSize, filter, sort);
+    return dataApplicationService.findPagingRecords(datasourceName, modelName, current, pageSize, filter, sort, deep);
   }
 
   @GET

@@ -184,13 +184,13 @@ public class ApiRuntimeApplicationService {
       int current = Integer.parseInt(routingContext.request().getParam("current", "1"));
       int pageSize = Integer.parseInt(routingContext.request().getParam("pageSize", "30"));
       List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName,
-        current, pageSize, filter, sort);
+        current, pageSize, filter, sort, true);
       long total = dataService.countRecords(datasourceName, modelName, filter);
       result.put("total", total);
       result.put("list", list);
     } else {
       List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName,
-        null, null, filter, sort);
+        null, null, filter, sort, true);
       result.put("list", list);
     }
     routingContext.response()

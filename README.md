@@ -10,7 +10,7 @@ docker run -p 8080:8080 -e JAVA_OPTS="-Dflexmodel.datasource.db-kind=mysql -Dfle
 
 支持的数据库请看引擎部分文档
 
-https://github.com/flexmodel-project/flexmodel-engine
+https://github.com/flexmodel-projects/flexmodel-engine
 
 ## 示例
 ![img.png](docs/img0.png)

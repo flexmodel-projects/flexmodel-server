@@ -13,7 +13,8 @@ public interface DataRepository {
                                         Integer current,
                                         Integer pageSize,
                                         String filter,
-                                        String sort);
+                                        String sort,
+                                        boolean deep);
 
   long countRecords(String datasourceName, String modelName, String filter);
 

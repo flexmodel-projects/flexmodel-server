@@ -22,8 +22,9 @@ public class DataApplicationService {
                                                         int current,
                                                         int pageSize,
                                                         String filter,
-                                                        String sort) {
-    List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName, current, pageSize, filter, sort);
+                                                        String sort,
+                                                        boolean deep) {
+    List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName, current, pageSize, filter, sort, deep);
     long total = dataService.countRecords(datasourceName, modelName, filter);
     return new PageDTO<>(list, total);
   }

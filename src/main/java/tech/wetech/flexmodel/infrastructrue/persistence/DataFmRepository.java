@@ -25,7 +25,8 @@ public class DataFmRepository implements DataRepository {
                                                Integer current,
                                                Integer pageSize,
                                                String filter,
-                                               String sort) {
+                                               String sort,
+                                               boolean deep) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return session.find(modelName, query -> {
         query.setFilter(filter);
@@ -35,6 +36,7 @@ public class DataFmRepository implements DataRepository {
             query.setOffset((current - 1) * pageSize);
           }
         }
+        query.setDeep(deep);
         return query;
       });
     }

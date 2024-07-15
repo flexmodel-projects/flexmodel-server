@@ -20,8 +20,9 @@ public class DataService {
                                                Integer current,
                                                Integer pageSize,
                                                String filter,
-                                               String sort) {
-    return dataRepository.findRecords(datasourceName, modelName, current, pageSize, filter, sort);
+                                               String sort,
+                                               boolean deep) {
+    return dataRepository.findRecords(datasourceName, modelName, current, pageSize, filter, sort, deep);
   }
 
   public long countRecords(String datasourceName, String modelName, String filter) {
