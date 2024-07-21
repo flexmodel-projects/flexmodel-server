@@ -167,7 +167,7 @@ public class ApiRuntimeApplicationService {
     if (id == null) {
       throw new IllegalArgumentException("Id nust not be null");
     }
-    Map<String, Object> record = dataService.findOneRecord(datasourceName, modelName, id);
+    Map<String, Object> record = dataService.findOneRecord(datasourceName, modelName, id, true);
     routingContext.response()
       .putHeader("Content-Type", "application/json")
       .end(JsonUtils.getInstance().stringify(record));

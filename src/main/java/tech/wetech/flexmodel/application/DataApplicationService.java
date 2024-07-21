@@ -29,8 +29,8 @@ public class DataApplicationService {
     return new PageDTO<>(list, total);
   }
 
-  public Map<String, Object> findOneRecord(String datasourceName, String modelName, String id) {
-    return dataService.findOneRecord(datasourceName, modelName, id);
+  public Map<String, Object> findOneRecord(String datasourceName, String modelName, String id, boolean deep) {
+    return dataService.findOneRecord(datasourceName, modelName, id, deep);
   }
 
   public Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data) {

@@ -29,8 +29,8 @@ public class DataService {
     return dataRepository.countRecords(datasourceName, modelName, filter);
   }
 
-  public Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id) {
-    return dataRepository.findOneRecord(datasourceName, modelName, id);
+  public Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id, boolean deep) {
+    return dataRepository.findOneRecord(datasourceName, modelName, id, deep);
   }
 
   public Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data) {

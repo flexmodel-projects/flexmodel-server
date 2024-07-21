@@ -35,13 +35,14 @@ public class RecordResource {
 
   @GET
   @Path("/{id}")
-  public Map<String, Object> findOneRecord(@PathParam("id") String id) {
-    return dataApplicationService.findOneRecord(datasourceName, modelName, id);
+  public Map<String, Object> findOneRecord(@PathParam("id") String id, @QueryParam("deep") @DefaultValue("false") boolean deep) {
+    return dataApplicationService.findOneRecord(datasourceName, modelName, id, deep);
   }
 
   @POST
   public Map<String, Object> createRecord(Map<String, Object> record) {
-    return dataApplicationService.createRecord(datasourceName, modelName, record);
+    Map<String, Object> result = dataApplicationService.createRecord(datasourceName, modelName, record);
+    return result;
   }
 
   @PUT
