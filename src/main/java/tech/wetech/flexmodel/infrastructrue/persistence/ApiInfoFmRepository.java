@@ -13,10 +13,6 @@ public class ApiInfoFmRepository extends BaseFmRepository<ApiInfo, String> imple
   @Override
   public void deleteByParentId(String parentId) {
     withSession(session ->
-      session.delete(getEntityName(), String.format("""
-        {
-          "==": [{ "var": ["parentId"] }, "%s"]
-        }
-        """, parentId)));
+      session.delete(getEntityName(), f -> f.equalTo("parentId", parentId)));
   }
 }

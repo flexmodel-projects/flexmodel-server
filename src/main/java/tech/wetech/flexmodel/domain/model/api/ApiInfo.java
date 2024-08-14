@@ -29,6 +29,6 @@ public class ApiInfo {
   private LocalDateTime updatedAt;
 
   public enum Type {
-    FOLDER, REST_API
+    FOLDER, REST_API,
   }
 }

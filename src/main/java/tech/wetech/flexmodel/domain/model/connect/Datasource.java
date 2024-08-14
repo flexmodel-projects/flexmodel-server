@@ -22,6 +22,7 @@ public class Datasource {
   private Database config;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  private Boolean enabled = true;
 
   @Getter
   @Setter

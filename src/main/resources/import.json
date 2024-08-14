@@ -53,6 +53,26 @@
           },
           "modelName": "Datasource",
           "validators": []
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "unique": false,
+          "comment": "",
+          "nullable": false,
+          "generator": {
+            "type": "FixedValueGenerator",
+            "value": true,
+            "generationTime": "INSERT"
+          },
+          "modelName": "Datasource",
+          "validators": [
+            {
+              "type": "NotNullValidator",
+              "message": "must not be null"
+            }
+          ],
+          "defaultValue": true
         }
       ],
       "indexes": []

@@ -36,7 +36,7 @@ public class DatasourceService {
   }
 
   public List<Datasource> findAll() {
-    return datasourceRepository.findAll();
+    return datasourceRepository.find(f -> f.equalTo("enabled", true));
   }
 
   public void deleteDatasource(String datasourceName) {

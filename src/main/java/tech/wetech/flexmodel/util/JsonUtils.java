@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import tech.wetech.flexmodel.supports.jackson.FlexModelCoreModule;
+import tech.wetech.flexmodel.supports.jackson.FlexmodelCoreModule;
 
 import java.io.IOException;
 import java.util.ServiceLoader;
@@ -35,7 +35,7 @@ public class JsonUtils {
     builder.disable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
     builder.disable(FAIL_ON_EMPTY_BEANS);
     builder.addModule(new JavaTimeModule());
-    builder.addModule(new FlexModelCoreModule());
+    builder.addModule(new FlexmodelCoreModule());
     ServiceLoader.load(Module.class).forEach(builder::addModule);
     this.jsonMapper = builder.build();
   }

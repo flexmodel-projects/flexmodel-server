@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.Session;
 import tech.wetech.flexmodel.SessionFactory;
+import tech.wetech.flexmodel.criterion.Example;
 import tech.wetech.flexmodel.infrastructrue.FmEngineSessions;
 import tech.wetech.flexmodel.util.JsonUtils;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * @author cjbi
@@ -67,7 +69,7 @@ public abstract class BaseFmRepository<T, ID> {
     return lookupEntityClass(clazz.getSuperclass());
   }
 
-  public List<T> find(String filter, String sort, Integer current, Integer pageSize) {
+  public List<T> find(UnaryOperator<Example.Criteria> filter, String sort, Integer current, Integer pageSize) {
     String entityName = getEntityName();
     Class<T> resultType = getEntityType();
     return withSession(session -> session.find(entityName, query -> {
