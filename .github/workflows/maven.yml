@@ -25,6 +25,7 @@ jobs:
         uses: whelk-io/maven-settings-xml-action@v20
         with:
           repositories: '[{ "id": "github", "url": "https://maven.pkg.github.com/flexmodel-projects/flexmodel-maven-packages", "snapshots": { "enabled" : true } }]'
+          plugin_repositories: '[{ "id": "github", "url": "https://maven.pkg.github.com/flexmodel-projects/flexmodel-maven-packages", "snapshots": { "enabled" : true } }]'
           servers: '[{ "id": "github", "username": "cjbi", "password": "${{ secrets.MAVEN_TOKEN }}" }]'
       - name: Run tests with Maven
         run: |
