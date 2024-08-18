@@ -1,6 +1,10 @@
 package tech.wetech.flexmodel.domain.model.api;
 
+import tech.wetech.flexmodel.codegen.entity.ApiLog;
+import tech.wetech.flexmodel.criterion.Example;
+
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * @author cjbi
@@ -13,5 +17,5 @@ public interface ApiLogRepository {
 
   ApiLog save(ApiLog record);
 
-  void delete(String condition);
+  void delete(UnaryOperator<Example.Criteria> unaryOperator);
 }

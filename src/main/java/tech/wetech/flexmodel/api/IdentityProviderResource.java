@@ -4,7 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import tech.wetech.flexmodel.application.IdentityProviderApplicationService;
-import tech.wetech.flexmodel.domain.model.idp.IdentityProvider;
+import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
 
 import java.util.List;
 

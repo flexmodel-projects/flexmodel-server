@@ -3,8 +3,12 @@ package tech.wetech.flexmodel.domain.model.idp;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
+import tech.wetech.flexmodel.domain.model.idp.provider.Provider;
+import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.util.List;
+
 
 /**
  * @author cjbi
@@ -38,7 +42,8 @@ public class IdentityProviderService {
       log.warn("IdentityProvider is null, providerName={}, token={}", providerName, token);
       return false;
     }
-    return identityProvider.getProvider().checkToken(token);
+    Provider provider = JsonUtils.getInstance().convertValue(identityProvider.getProvider(), Provider.class);
+    return provider.checkToken(token);
   }
 
 }

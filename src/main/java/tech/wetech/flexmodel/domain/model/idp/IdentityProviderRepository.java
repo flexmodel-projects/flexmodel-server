@@ -1,5 +1,7 @@
 package tech.wetech.flexmodel.domain.model.idp;
 
+import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
+
 import java.util.List;
 
 /**

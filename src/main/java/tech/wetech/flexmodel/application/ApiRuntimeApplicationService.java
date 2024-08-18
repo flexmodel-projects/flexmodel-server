@@ -7,6 +7,8 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.IDField;
+import tech.wetech.flexmodel.codegen.entity.ApiInfo;
+import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.*;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
@@ -56,14 +58,15 @@ public class ApiRuntimeApplicationService {
     log(routingContext, () -> {
       List<ApiInfo> apis = apiInfoService.findList();
       for (ApiInfo apiInfo : apis) {
+        Map<String,Object> meta = (Map<String, Object>) apiInfo.getMeta();
         UriTemplate uriTemplate = new UriTemplate("/api/v1" + apiInfo.getPath());
         Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
         String method = routingContext.request().method().name();
         if (pathParameters != null && method.equals(apiInfo.getMethod())) {
           log.debug("Matched request for api: {}", apiInfo);
-          boolean isAuth = (boolean) apiInfo.getMeta().get("auth");
+          boolean isAuth = (boolean) meta.get("auth");
           if (isAuth) {
-            String identityProvider = (String) apiInfo.getMeta().get("identityProvider");
+            String identityProvider = (String) meta.get("identityProvider");
             String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
             String token = authorization.replace("Bearer", "").trim();
             boolean active = identityProviderService.checkToken(identityProvider, token);
@@ -72,7 +75,7 @@ public class ApiRuntimeApplicationService {
               return;
             }
           }
-          String restAPIType = (String) apiInfo.getMeta().get("type");
+          String restAPIType = (String) meta.get("type");
           switch (restAPIType) {
             case "list" -> doList(routingContext, pathParameters, apiInfo);
             case "view" -> doView(routingContext, pathParameters, apiInfo);
@@ -100,8 +103,9 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doDelete(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    String datasourceName = (String) apiInfo.getMeta().get("datasource");
-    String modelName = (String) apiInfo.getMeta().get("model");
+    Map<String,Object> meta = (Map<String, Object>) apiInfo.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
     Entity model = modelService.findModel(datasourceName, modelName).orElseThrow();
     IDField idField = model.findIdField().orElseThrow();
     String id = pathParameters.get(idField.getName());
@@ -120,8 +124,9 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doUpdate(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    String datasourceName = (String) apiInfo.getMeta().get("datasource");
-    String modelName = (String) apiInfo.getMeta().get("model");
+    Map<String,Object> meta = (Map<String, Object>) apiInfo.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
     Entity model = modelService.findModel(datasourceName, modelName).orElseThrow();
     IDField idField = model.findIdField().orElseThrow();
     String id = pathParameters.get(idField.getName());
@@ -143,8 +148,9 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doCreate(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    String datasourceName = (String) apiInfo.getMeta().get("datasource");
-    String modelName = (String) apiInfo.getMeta().get("model");
+    Map<String,Object> meta = (Map<String, Object>) apiInfo.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
     Entity model = modelService.findModel(datasourceName, modelName).orElseThrow();
     IDField idField = model.findIdField().orElseThrow();
     String body = routingContext.body().asString();
@@ -156,8 +162,9 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doView(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    String datasourceName = (String) apiInfo.getMeta().get("datasource");
-    String modelName = (String) apiInfo.getMeta().get("model");
+    Map<String,Object> meta = (Map<String, Object>) apiInfo.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
     Entity model = modelService.findModel(datasourceName, modelName).orElseThrow();
     IDField idField = model.findIdField().orElseThrow();
     String id = pathParameters.get(idField.getName());
@@ -174,9 +181,10 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doList(RoutingContext routingContext, Map<String, String> pathParameters, ApiInfo apiInfo) {
-    String datasourceName = (String) apiInfo.getMeta().get("datasource");
-    String modelName = (String) apiInfo.getMeta().get("model");
-    boolean paging = (Boolean) apiInfo.getMeta().get("paging");
+    Map<String,Object> meta = (Map<String, Object>) apiInfo.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
+    boolean paging = (Boolean) meta.get("paging");
     String filter = routingContext.request().getParam("filter");
     String sort = routingContext.request().getParam("sort");
     Map<String, Object> result = new HashMap<>();
@@ -200,7 +208,7 @@ public class ApiRuntimeApplicationService {
 
   public void log(RoutingContext routingContext, Runnable runnable) {
     ApiLog apiLog = new ApiLog();
-    ApiLog.Data apiData = new ApiLog.Data();
+    LogData apiData = new LogData();
     apiLog.setData(apiData);
     long beginTime = System.currentTimeMillis();
     try {
@@ -213,7 +221,7 @@ public class ApiRuntimeApplicationService {
     } catch (Exception e) {
       routingContext.response()
         .setStatusCode(500);
-      apiLog.setLevel(ApiLog.Level.ERROR);
+      apiLog.setLevel(LogLevel.ERROR.toString());
       apiData.setStatus(500);
       apiData.setErrors(e.getMessage());
       throw e;

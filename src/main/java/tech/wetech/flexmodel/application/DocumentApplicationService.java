@@ -5,8 +5,9 @@ import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.RelationField;
 import tech.wetech.flexmodel.TypedField;
-import tech.wetech.flexmodel.domain.model.api.ApiInfo;
+import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
+import tech.wetech.flexmodel.domain.model.api.ApiType;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 
 import java.util.ArrayList;
@@ -15,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import static tech.wetech.flexmodel.RelationField.Cardinality.ONE_TO_ONE;
-import static tech.wetech.flexmodel.domain.model.api.ApiInfo.Type.FOLDER;
-import static tech.wetech.flexmodel.domain.model.api.ApiInfo.Type.REST_API;
+import static tech.wetech.flexmodel.domain.model.api.ApiType.FOLDER;
+import static tech.wetech.flexmodel.domain.model.api.ApiType.REST_API;
 
 /**
  * @author cjbi
@@ -56,11 +57,13 @@ public class DocumentApplicationService {
   private Map<String, Object> buildSchemas(List<ApiInfo> apis) {
     Map<String, Object> definitions = new HashMap<>();
     for (ApiInfo api : apis) {
-      if (api.getType() != REST_API) {
+
+      if (ApiType.valueOf(api.getType()) != REST_API) {
         continue;
       }
-      String datasourceName = (String) api.getMeta().get("datasource");
-      String modelName = (String) api.getMeta().get("model");
+      Map<String,Object> meta = (Map<String, Object>) api.getMeta();
+      String datasourceName = (String) meta.get("datasource");
+      String modelName = (String) meta.get("model");
       Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
       addModelDefinition(datasourceName, modelName, definitions);
     }
@@ -119,7 +122,7 @@ public class DocumentApplicationService {
   public List<Map<String, Object>> buildTags(List<ApiInfo> apis) {
     List<Map<String, Object>> tags = new ArrayList<>();
     for (ApiInfo api : apis) {
-      if (api.getType() == FOLDER) {
+      if (ApiType.valueOf(api.getType()) == FOLDER) {
         Map<String, Object> tag = new HashMap<>();
         tag.put("name", api.getName());
         tag.put("description", api.getName());
@@ -132,7 +135,7 @@ public class DocumentApplicationService {
   public Map<String, Object> buildPaths(List<ApiInfo> apis) {
     Map<String, Object> paths = new HashMap<>();
     for (ApiInfo api : apis) {
-      if (api.getType() == REST_API) {
+      if (ApiType.valueOf(api.getType()) == REST_API) {
         Map<String, Object> path = new HashMap<>();
         Map<String, Object> content = new HashMap<>();
         content.put("tags", List.of(
@@ -142,7 +145,8 @@ public class DocumentApplicationService {
             .findFirst()
             .orElseThrow()
         ));
-        String restAPIType = (String) api.getMeta().get("type");
+        Map<String,Object> meta = (Map<String, Object>) api.getMeta();
+        String restAPIType = (String) meta.get("type");
         content.put("summary", api.getName());
         content.put("operationId", api.getId());
 
@@ -176,7 +180,7 @@ public class DocumentApplicationService {
           default -> throw new IllegalStateException("Unexpected value: " + restAPIType);
         }
 
-        boolean isAuth = (boolean) api.getMeta().get("auth");
+        boolean isAuth = (boolean) meta.get("auth");
         if (isAuth) {
           content.put("security", List.of(Map.of("bearerAuth", List.of())));
         }
@@ -216,8 +220,9 @@ public class DocumentApplicationService {
   }
 
   private Map<String, Object> buildRequestBody(ApiInfo api) {
-    String datasourceName = (String) api.getMeta().get("datasource");
-    String modelName = (String) api.getMeta().get("model");
+    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
     Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
     Map<String, Object> body = new HashMap<>();
     body.put("description", "json body");
@@ -262,9 +267,10 @@ public class DocumentApplicationService {
   }
 
   private Map<String, Object> buildListResponse200(ApiInfo api) {
-    String datasourceName = (String) api.getMeta().get("datasource");
-    String modelName = (String) api.getMeta().get("model");
-    boolean paging = (Boolean) api.getMeta().get("paging");
+    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
+    boolean paging = (Boolean) meta.get("paging");
     Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
     var resProps = new HashMap<>();
     resProps.put("list", Map.of(
@@ -289,8 +295,9 @@ public class DocumentApplicationService {
   }
 
   private Map<String, Object> buildViewResponse200(ApiInfo api) {
-    String datasourceName = (String) api.getMeta().get("datasource");
-    String modelName = (String) api.getMeta().get("model");
+    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
     Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
     return Map.of(
       "description", "successful operation",
@@ -302,8 +309,9 @@ public class DocumentApplicationService {
   }
 
   private Map<String, Object> buildCreateResponse200(ApiInfo api) {
-    String datasourceName = (String) api.getMeta().get("datasource");
-    String modelName = (String) api.getMeta().get("model");
+    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
     Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
     return Map.of(
       "description", "successful operation",
@@ -315,8 +323,9 @@ public class DocumentApplicationService {
   }
 
   private Map<String, Object> buildUpdateResponse200(ApiInfo api) {
-    String datasourceName = (String) api.getMeta().get("datasource");
-    String modelName = (String) api.getMeta().get("model");
+    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
+    String datasourceName = (String) meta.get("datasource");
+    String modelName = (String) meta.get("model");
     Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
     return Map.of(
       "description", "successful operation",

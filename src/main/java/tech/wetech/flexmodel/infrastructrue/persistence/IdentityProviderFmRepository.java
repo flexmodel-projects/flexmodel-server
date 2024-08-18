@@ -1,7 +1,9 @@
 package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import tech.wetech.flexmodel.domain.model.idp.IdentityProvider;
+import jakarta.inject.Inject;
+import tech.wetech.flexmodel.codegen.dao.IdentityProviderDAO;
+import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderRepository;
 
 import java.util.List;
@@ -10,25 +12,28 @@ import java.util.List;
  * @author cjbi
  */
 @ApplicationScoped
-public class IdentityProviderFmRepository extends BaseFmRepository<IdentityProvider, String> implements IdentityProviderRepository {
+public class IdentityProviderFmRepository implements IdentityProviderRepository {
+
+  @Inject
+  IdentityProviderDAO identityProviderDAO;
 
   @Override
   public List<IdentityProvider> findAll() {
-    return super.findAll();
+    return identityProviderDAO.find(query -> query);
   }
 
   @Override
   public IdentityProvider find(String name) {
-    return super.findById(name).orElse(null);
+    return identityProviderDAO.findById(name);
   }
 
   @Override
   public IdentityProvider save(IdentityProvider record) {
-    return super.save(record);
+    return identityProviderDAO.save(record);
   }
 
   @Override
   public void delete(String id) {
-    super.delete(id);
+    identityProviderDAO.deleteById(id);
   }
 }

@@ -4,7 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
-import tech.wetech.flexmodel.domain.model.api.ApiLog;
+import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 
 import java.util.List;

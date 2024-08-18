@@ -7,8 +7,10 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
-import tech.wetech.flexmodel.domain.model.api.ApiLog;
+import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.ApiLogService;
+import tech.wetech.flexmodel.domain.model.api.LogData;
+import tech.wetech.flexmodel.domain.model.api.LogLevel;
 import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.io.IOException;
@@ -42,7 +44,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     }
     CompletableFuture.runAsync(() -> {
       ApiLog apiLog = new ApiLog();
-      ApiLog.Data apiData = new ApiLog.Data();
+      LogData apiData = new LogData();
       apiLog.setData(apiData);
       apiData.setMethod(requestContext.getMethod());
       apiData.setPath(requestContext.getUriInfo().getPath());
@@ -53,12 +55,12 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
       String reasonPhrase = responseContext.getStatusInfo().getReasonPhrase();
       apiData.setStatus(statusCode);
       apiData.setMessage(reasonPhrase);
-      apiLog.setLevel(ApiLog.Level.INFO);
+      apiLog.setLevel(LogLevel.INFO.toString());
       if (statusCode >= 400 && statusCode < 500) {
-        apiLog.setLevel(ApiLog.Level.WARN);
+        apiLog.setLevel(LogLevel.WARN.toString());
         apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
       } else if (statusCode >= 500) {
-        apiLog.setLevel(ApiLog.Level.ERROR);
+        apiLog.setLevel(LogLevel.ERROR.toString());
         apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
       }
       apiData.setExecTime(execTime);

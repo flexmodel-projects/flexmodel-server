@@ -2,7 +2,7 @@ package tech.wetech.flexmodel.application.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import tech.wetech.flexmodel.domain.model.api.ApiInfo;
+import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 
 import java.util.ArrayList;
 import java.util.List;

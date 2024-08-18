@@ -1,5 +1,7 @@
 package tech.wetech.flexmodel.domain.model.api;
 
+import tech.wetech.flexmodel.codegen.entity.ApiInfo;
+
 import java.util.List;
 
 /**

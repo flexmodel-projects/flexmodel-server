@@ -10,7 +10,7 @@ import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.SessionFactory;
-import tech.wetech.flexmodel.domain.model.connect.Datasource;
+import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
 import tech.wetech.flexmodel.event.DomainEvent;

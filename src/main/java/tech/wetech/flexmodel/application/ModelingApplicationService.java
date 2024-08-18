@@ -5,7 +5,7 @@ import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.Index;
 import tech.wetech.flexmodel.TypedField;
-import tech.wetech.flexmodel.domain.model.connect.Datasource;
+import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;

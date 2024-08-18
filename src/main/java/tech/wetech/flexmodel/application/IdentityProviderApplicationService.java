@@ -2,7 +2,7 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.domain.model.idp.IdentityProvider;
+import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 
 import java.util.List;

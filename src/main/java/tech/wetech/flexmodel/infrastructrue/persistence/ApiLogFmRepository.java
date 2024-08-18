@@ -1,11 +1,15 @@
 package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import tech.wetech.flexmodel.domain.model.api.ApiLog;
+import jakarta.inject.Inject;
+import tech.wetech.flexmodel.codegen.dao.ApiLogDAO;
+import tech.wetech.flexmodel.codegen.entity.ApiLog;
+import tech.wetech.flexmodel.criterion.Example;
 import tech.wetech.flexmodel.domain.model.api.ApiLogRepository;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import static tech.wetech.flexmodel.Direction.DESC;
 import static tech.wetech.flexmodel.Projections.*;
@@ -14,41 +18,51 @@ import static tech.wetech.flexmodel.Projections.*;
  * @author cjbi
  */
 @ApplicationScoped
-public class ApiLogFmRepository extends BaseFmRepository<ApiLog, String> implements ApiLogRepository {
+public class ApiLogFmRepository implements ApiLogRepository {
+
+  @Inject
+  ApiLogDAO apiLogDAO;
 
   @Override
   public List<ApiLog> find(String filter, Integer current, Integer pageSize) {
-    return withSession(session -> {
-      String entityName = getEntityName();
-      return session.find(entityName, query -> {
-        if (filter != null) {
-          query.setFilter(filter);
+    return apiLogDAO.find(query -> {
+      if (filter != null) {
+        query.setFilter(filter);
+      }
+      query.setSort(sort -> sort.addOrder("id", DESC));
+      if (pageSize != null) {
+        query.setLimit(pageSize);
+        if (current != null) {
+          query.setOffset((current - 1) * pageSize);
         }
-        query.setSort(sort -> sort.addOrder("id", DESC));
-        if (pageSize != null) {
-          query.setLimit(pageSize);
-          if (current != null) {
-            query.setOffset((current - 1) * pageSize);
-          }
-        }
-        return query;
-      }, ApiLog.class);
+      }
+      return query;
     });
   }
 
 
   @Override
   public List<LogStat> stat(String filter) {
-    return withSession(session -> session
-      .find(getEntityName(), query -> query
+    return apiLogDAO.find(query ->
+      query
         .setProjection(projection -> projection
-          .addField("date", dateFormat(field("createdAt" ), "yyyy-MM-dd hh:00:00" ))
-          .addField("total", count(field("id" )))
+          .addField("date", dateFormat(field("createdAt"), "yyyy-MM-dd hh:00:00"))
+          .addField("total", count(field("id")))
         )
         .setGroupBy(groupBy -> groupBy
-          .addField("date" )
+          .addField("date")
         )
-        .setFilter(filter), LogStat.class));
+        .setFilter(filter), LogStat.class);
+  }
+
+  @Override
+  public ApiLog save(ApiLog record) {
+    return apiLogDAO.save(record);
+  }
+
+  @Override
+  public void delete(UnaryOperator<Example.Criteria> unaryOperator) {
+    apiLogDAO.delete(unaryOperator);
   }
 
 }

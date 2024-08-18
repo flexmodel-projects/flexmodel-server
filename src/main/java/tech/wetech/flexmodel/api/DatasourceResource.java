@@ -7,8 +7,9 @@ import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
-import tech.wetech.flexmodel.domain.model.connect.Datasource;
+import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
+import tech.wetech.flexmodel.domain.model.connect.database.Database;
 import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class DatasourceResource {
     configMap.put("username", config.datasource().username());
     configMap.put("password", config.datasource().password());
 
-    system.setConfig(JsonUtils.getInstance().convertValue(configMap, Datasource.Database.class));
+    system.setConfig(JsonUtils.getInstance().convertValue(configMap, Database.class));
     allList.add(system);
     allList.addAll(datasourceList);
     return allList;

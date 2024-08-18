@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.domain.model.connect;
 
+import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.criterion.Example;
 
 import java.util.List;

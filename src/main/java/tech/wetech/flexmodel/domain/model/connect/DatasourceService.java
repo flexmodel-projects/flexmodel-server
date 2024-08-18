@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.domain.model.connect;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.codegen.entity.Datasource;
 
 import java.util.List;
 

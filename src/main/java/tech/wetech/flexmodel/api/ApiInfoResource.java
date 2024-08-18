@@ -6,7 +6,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.application.ApiDesignApplicationService;
 import tech.wetech.flexmodel.application.dto.ApiInfoTreeDTO;
-import tech.wetech.flexmodel.domain.model.api.ApiInfo;
+import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 
 import java.util.List;
 

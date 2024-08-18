@@ -1,5 +1,7 @@
 package tech.wetech.flexmodel.domain.model.connect;
 
+import tech.wetech.flexmodel.codegen.entity.Datasource;
+
 /**
  * @author cjbi
  */
