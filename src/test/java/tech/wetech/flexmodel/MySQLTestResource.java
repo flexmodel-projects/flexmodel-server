@@ -31,6 +31,10 @@ public class MySQLTestResource implements QuarkusTestResourceLifecycleManager, D
       jdbcUrl = fixJdbcUrl(jdbcUrl);
     }
     return Map.of(
+      "flexmodel.datasource.db-kind", "mysql",
+      "flexmodel.datasource.url", jdbcUrl,
+      "flexmodel.datasource.username", "root",
+      "flexmodel.datasource.password", container.getPassword(),
       "MYSQL_URL", jdbcUrl,
       "MYSQL_USERNAME", "root",
       "MYSQL_PASSWORD", container.getPassword());

@@ -241,7 +241,7 @@ class ModelResourceTest {
             {
               "name": "id",
               "type": "id",
-              "modelName": "Student",
+              "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
               "validators": [],
@@ -250,7 +250,7 @@ class ModelResourceTest {
             {
               "name": "studentName",
               "type": "string",
-              "modelName": "Student",
+              "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
               "validators": [],
@@ -259,7 +259,7 @@ class ModelResourceTest {
             {
               "name": "gender",
               "type": "string",
-              "modelName": "Student",
+              "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
               "validators": [],
@@ -268,7 +268,7 @@ class ModelResourceTest {
             {
               "name": "age",
               "type": "int",
-              "modelName": "Student",
+              "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
               "validators": []
@@ -276,7 +276,7 @@ class ModelResourceTest {
             {
               "name": "classId",
               "type": "int",
-              "modelName": "Student",
+              "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
               "validators": []

@@ -427,7 +427,7 @@
         },
         {
           "name": "classId",
-          "type": "int",
+          "type": "bigint",
           "modelName": "Student",
           "unique": false,
           "nullable": true,
@@ -455,7 +455,7 @@
           "cardinality": "ONE_TO_ONE",
           "targetEntity": "StudentDetail",
           "targetField": "studentId",
-          "cascadeDelete": false
+          "cascadeDelete": true
         },
         {
           "name": "teachers",
@@ -487,7 +487,7 @@
         },
         {
           "name": "studentId",
-          "type": "int",
+          "type": "bigint",
           "modelName": "StudentDetail",
           "unique": false,
           "nullable": true,
