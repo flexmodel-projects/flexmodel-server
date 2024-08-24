@@ -26,6 +26,12 @@ public class StaticResources {
         ctx.reroute("/webjars/flexmodel-ui/swagger-ui/" + resource);
       });
     router.route()
+      .path("/graphiql/:resource")
+      .handler(ctx -> {
+        String resource = ctx.pathParam("resource");
+        ctx.reroute("/webjars/flexmodel-ui/graphiql/" + resource);
+      });
+    router.route()
       .path("/logo.svg")
       .handler(handler -> handler.reroute("/webjars/flexmodel-ui/logo.svg"));
     router.route()

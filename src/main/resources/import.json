@@ -621,10 +621,19 @@
             "model": "Classes",
             "enable": true,
             "paging": false,
-            "datasource": "system"
+            "datasource": "system",
+            "execution": {
+              "query": "query MyQuery($order_by: system_Classes_order_by = { id: asc }, $limit: Int = 10, $offset: Int = 0) {\n  systemClassesList(order_by: $order_by, limit: $limit, offset: $offset) {\n    classCode\n    className\n    id\n  }\n}",
+              "variables": {
+                "order_by": {
+                  "id": "desc"
+                }
+              },
+              "operationName": "MyQuery"
+            }
           },
           "name": "Fetch a paginated Classes records list",
-          "path": "/system/Classes",
+          "path": "/system/Classes/list",
           "updatedAt": "2024-07-13T23:21:10",
           "id": "01J2PAY1M8T1R8HM979P4ASM9A",
           "method": "GET",
@@ -638,7 +647,14 @@
             "type": "view",
             "model": "Classes",
             "enable": true,
-            "datasource": "system"
+            "datasource": "system",
+            "execution": {
+              "query": "query MyQuery($id: Int) {\n  systemClasses(where: { id: { _eq: $id } }) {\n    classCode\n    className\n    id\n  }\n}",
+              "variables": {
+                "id": 1
+              },
+              "operationName": "MyQuery"
+            }
           },
           "name": "Fetch a single Classes record",
           "path": "/system/Classes/{id}",
@@ -655,7 +671,11 @@
             "type": "create",
             "model": "Classes",
             "enable": true,
-            "datasource": "system"
+            "datasource": "system",
+            "execution": {
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  createSystemClasses(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "operationName": "MyMutation"
+            }
           },
           "name": "Create a single Classes record",
           "path": "/system/Classes",
@@ -672,7 +692,11 @@
             "type": "update",
             "model": "Classes",
             "enable": true,
-            "datasource": "system"
+            "datasource": "system",
+            "execution": {
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  updateSystemClassesById(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "operationName": "MyMutation"
+            }
           },
           "name": "Update a single Classes record",
           "path": "/system/Classes/{id}",
@@ -689,7 +713,11 @@
             "type": "delete",
             "model": "Classes",
             "enable": true,
-            "datasource": "system"
+            "datasource": "system",
+            "execution": {
+              "query": "mutation MyMutation($id: ID!) {\n  deleteSystemClassesById(id: $id) {\n    classCode\n    className\n    id\n  }\n}",
+              "operationName": "MyMutation"
+            }
           },
           "name": "Delete a single Classes record",
           "path": "/system/Classes/{id}",
