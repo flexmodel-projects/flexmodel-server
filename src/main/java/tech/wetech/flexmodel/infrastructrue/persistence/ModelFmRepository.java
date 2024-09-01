@@ -70,7 +70,7 @@ public class ModelFmRepository implements ModelRepository {
     return lookupEntityClass(clazz.getSuperclass());
   }
 
-  public List<Model> find(UnaryOperator<Example.Criteria> filter, String sort, Integer current, Integer pageSize) {
+  public List<Model> find(UnaryOperator<Example.Criteria> filter, Query.Sort sort, Integer current, Integer pageSize) {
     String entityName = getEntityName();
     Class<Model> resultType = getEntityType();
     return withSession(session -> session.find(entityName, query -> {
@@ -78,14 +78,10 @@ public class ModelFmRepository implements ModelRepository {
         query.setFilter(filter);
       }
       if (sort != null) {
-        // todo
-//        query.setSort()
+        query.setSort(sort);
       }
-      if (pageSize != null) {
-        query.setLimit(pageSize);
-        if (current != null) {
-          query.setOffset((current - 1) * pageSize);
-        }
+      if (current != null && pageSize != null) {
+        query.setPage(current, pageSize);
       }
       return query;
     }, resultType));

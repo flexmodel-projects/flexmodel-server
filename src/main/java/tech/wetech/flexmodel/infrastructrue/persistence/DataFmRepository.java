@@ -31,10 +31,13 @@ public class DataFmRepository implements DataRepository {
       return session.find(modelName, query -> {
         query.setFilter(filter);
         if (pageSize != null) {
-          query.setLimit(pageSize);
-          if (current != null) {
-            query.setOffset((current - 1) * pageSize);
-          }
+          query.setPage(page -> {
+            page.setPageSize(pageSize);
+            if (current != null) {
+              page.setPageNumber(current);
+            }
+            return page;
+          });
         }
         query.setDeep(deep);
         return query;
