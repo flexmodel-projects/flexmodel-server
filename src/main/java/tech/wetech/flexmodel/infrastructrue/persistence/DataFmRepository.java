@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.Session;
 import tech.wetech.flexmodel.SessionFactory;
+import tech.wetech.flexmodel.codegen.StringUtils;
 import tech.wetech.flexmodel.domain.model.data.DataRepository;
 
 import java.util.List;
@@ -29,7 +30,9 @@ public class DataFmRepository implements DataRepository {
                                                boolean deep) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return session.find(modelName, query -> {
-        query.setFilter(filter);
+        if (!StringUtils.isBlank(filter)) {
+          query.setFilter(filter);
+        }
         if (pageSize != null) {
           query.setPage(page -> {
             page.setPageSize(pageSize);
@@ -48,7 +51,12 @@ public class DataFmRepository implements DataRepository {
   @Override
   public long countRecords(String datasourceName, String modelName, String filter) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.count(modelName, query -> query.setFilter(filter));
+      return session.count(modelName, query -> {
+        if (!StringUtils.isBlank(filter)) {
+          query.setFilter(filter);
+        }
+        return query;
+      });
     }
   }
 

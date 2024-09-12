@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.api;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.MySQLTestResource;
@@ -19,6 +20,7 @@ public class RestAPIResourceTest {
 
   @Test
   void testGET() {
+    RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     // list
     given()
       .when()
@@ -26,14 +28,14 @@ public class RestAPIResourceTest {
       .then()
       .statusCode(200)
       .body("size()", greaterThanOrEqualTo(1))
-      .body("data.systemClassesList[0].classCode", notNullValue());
+      .body("data.system_Classes_list[0].classCode", notNullValue());
     // view
     given()
       .when()
       .get("/api/v1/system/Classes/1")
       .then()
       .statusCode(200)
-      .body("data.systemClasses.classCode", notNullValue());
+      .body("data.system_Classes.classCode", notNullValue());
   }
 
   @Test

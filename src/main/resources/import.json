@@ -623,7 +623,7 @@
             "paging": false,
             "datasource": "system",
             "execution": {
-              "query": "query MyQuery($order_by: system_Classes_order_by = { id: asc }, $limit: Int = 10, $offset: Int = 0) {\n  system_Classes_list(order_by: $order_by, limit: $limit, offset: $offset) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "query MyQuery($order_by: system_Classes_order_by = { id: asc }, $size: Int = 10, $page: Int = 1) {\n  system_Classes_list(order_by: $order_by, size: $size, page: $page) {\n    classCode\n    className\n    id\n  }\n}",
               "variables": {
                 "order_by": {
                   "id": "desc"
@@ -739,16 +739,6 @@
             "dbKind": "sqlite",
             "password": "",
             "username": ""
-          }
-        },
-        {
-          "name": "mysql_test",
-          "type": "user",
-          "config": {
-            "url": "${MYSQL_URL}",
-            "dbKind": "mysql",
-            "password": "${MYSQL_PASSWORD}",
-            "username": "${MYSQL_USERNAME}"
           }
         }
       ]

@@ -1,5 +1,8 @@
 package tech.wetech.flexmodel.application;
 
+import graphql.language.*;
+import graphql.parser.Parser;
+import graphql.schema.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
@@ -9,13 +12,14 @@ import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
 import tech.wetech.flexmodel.domain.model.api.ApiType;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
+import tech.wetech.flexmodel.graphql.GraphQLProvider;
+import tech.wetech.flexmodel.util.UriTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static tech.wetech.flexmodel.RelationField.Cardinality.ONE_TO_ONE;
+import static tech.wetech.flexmodel.codegen.StringUtils.*;
 import static tech.wetech.flexmodel.domain.model.api.ApiType.FOLDER;
 import static tech.wetech.flexmodel.domain.model.api.ApiType.REST_API;
 
@@ -31,6 +35,23 @@ public class DocumentApplicationService {
 
   @Inject
   ModelService modelService;
+
+  @Inject
+  GraphQLProvider graphQLProvider;
+
+  public static final Map<String, Map> TYPE_MAPPING = new HashMap<>();
+
+  static {
+    TYPE_MAPPING.put("ID", Map.of("type", "string"));
+    TYPE_MAPPING.put("String", Map.of("type", "string"));
+    TYPE_MAPPING.put("Text", Map.of("type", "string"));
+    TYPE_MAPPING.put("Int", Map.of("type", "integer", "format", "int32"));
+    TYPE_MAPPING.put("Long", Map.of("type", "integer", "format", "int64"));
+    TYPE_MAPPING.put("Float", Map.of("type", "number", "format", "double"));
+    TYPE_MAPPING.put("Boolean", Map.of("type", "boolean"));
+//    typeMapping.put("", Map.of("type", "array"));
+    TYPE_MAPPING.put("JSON", Map.of("type", "object"));
+  }
 
   public Map<String, Object> getOpenApi() {
     List<ApiInfo> apis = apiInfoService.findList();
@@ -54,18 +75,122 @@ public class DocumentApplicationService {
     );
   }
 
+  private GraphQLFieldDefinition getGraphQLFieldDefinition(GraphQLSchema graphQLSchema, Field field) {
+    GraphQLFieldDefinition fieldDefinition = graphQLSchema.getQueryType().getFieldDefinition(field.getName());
+    if (fieldDefinition == null) {
+      fieldDefinition = graphQLSchema.getMutationType().getFieldDefinition(field.getName());
+    }
+    return fieldDefinition;
+  }
+
+  private String getSanitizeName(ApiInfo apiInfo) {
+    return capitalize(snakeToCamel(sanitize(apiInfo.getMethod().toLowerCase() + "_" + apiInfo.getPath())));
+  }
+
   private Map<String, Object> buildSchemas(List<ApiInfo> apis) {
     Map<String, Object> definitions = new HashMap<>();
+    GraphQLSchema graphQLSchema = graphQLProvider.getGraphQL().getGraphQLSchema();
     for (ApiInfo api : apis) {
-
       if (ApiType.valueOf(api.getType()) != REST_API) {
         continue;
       }
-      Map<String,Object> meta = (Map<String, Object>) api.getMeta();
-      String datasourceName = (String) meta.get("datasource");
-      String modelName = (String) meta.get("model");
-      Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
-      addModelDefinition(datasourceName, modelName, definitions);
+      String sanitizeName = getSanitizeName(api);
+      Map<String, Object> meta = (Map<String, Object>) api.getMeta();
+
+      Map<String, Object> execution = (Map<String, Object>) meta.get("execution");
+      String operationName = (String) execution.get("operationName");
+      String query = (String) execution.get("query");
+      Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
+      Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
+
+      Parser parser = new Parser();
+      Document document = parser.parse(query);
+
+      // 3. 提取变量
+      List<VariableDefinition> variableDefinitions = document.getDefinitions().stream()
+        .filter(def -> def instanceof OperationDefinition)
+        .flatMap(def -> ((OperationDefinition) def).getVariableDefinitions().stream())
+        .collect(Collectors.toList());
+
+      Map<String, Object> requestType = new HashMap<>();
+      Map<String, Object> properties = new HashMap<>();
+      requestType.put("type", "object");
+      requestType.put("properties", properties);
+      for (VariableDefinition variableDefinition : variableDefinitions) {
+        String variableName = variableDefinition.getName();
+        String variableType = variableDefinition.getType().toString();
+        Map<String, Object> propertyMap = new HashMap<>();
+        properties.put(variableName, TYPE_MAPPING.getOrDefault(variableType, Map.of("type", "string")));
+      }
+      definitions.put(sanitizeName + "Request", requestType);
+
+      // 3. 提取返回参数
+      List<Field> returnFields = document.getDefinitions().stream()
+        .filter(def -> def instanceof OperationDefinition)
+        .flatMap(def -> ((OperationDefinition) def).getSelectionSet().getSelections().stream())
+        .filter(selection -> selection instanceof Field)
+        .map(selection -> (Field) selection)
+        .collect(Collectors.toList());
+
+      // 4. 输出返回参数信息
+      for (Field field : returnFields) {
+        GraphQLFieldDefinition fieldDefinition = getGraphQLFieldDefinition(graphQLSchema, field);
+        if (fieldDefinition == null) {
+          continue;
+        }
+        GraphQLType originType = fieldDefinition.getType();
+        boolean isList = false;
+        if (originType instanceof GraphQLNonNull graphQLNonNull) {
+          originType = graphQLNonNull.getOriginalWrappedType();
+        }
+        if (originType instanceof GraphQLList graphQLList) {
+          isList = true;
+          originType = graphQLList.getOriginalWrappedType();
+        }
+        if (originType instanceof GraphQLNonNull graphQLNonNull) {
+          originType = graphQLNonNull.getOriginalWrappedType();
+        }
+
+        Map<String, Object> responseType = new HashMap<>();
+        Map<String, Object> wrapperProperties = new HashMap<>();
+        Map<String, Object> typeProperties = new HashMap<>();
+
+        // 如果有子字段，可以进一步提取
+        SelectionSet selectionSet = field.getSelectionSet();
+        if (selectionSet != null) {
+          List<Field> subFields = selectionSet.getSelections().stream()
+            .filter(selection -> selection instanceof Field)
+            .map(selection -> (Field) selection)
+            .collect(Collectors.toList());
+          for (Field subField : subFields) {
+            if (originType instanceof GraphQLObjectType) {
+              GraphQLObjectType objectType = (GraphQLObjectType) originType;
+              GraphQLFieldDefinition subFieldDefinition = objectType.getFieldDefinition(subField.getName());
+              if (subFieldDefinition != null) {
+                GraphQLOutputType definitionType = subFieldDefinition.getType();
+                if (definitionType instanceof GraphQLScalarType graphQLScalarType) {
+                  typeProperties.put(subField.getName(), TYPE_MAPPING.get(graphQLScalarType.getName()));
+                } else {
+                  throw new RuntimeException();
+                }
+              }
+            }
+          }
+        }
+
+        Map<String, Object> returnDataTypeMap = new HashMap<>();
+        if (isList) {
+          returnDataTypeMap.put("type", "array");
+          returnDataTypeMap.put("items", Map.of("type", "object", "properties", typeProperties));
+        } else {
+          returnDataTypeMap.put("type", "object");
+          returnDataTypeMap.put("properties", typeProperties);
+        }
+        wrapperProperties.put("data", returnDataTypeMap);
+        responseType.put("type", "object");
+        responseType.put("properties", wrapperProperties);
+        definitions.put(sanitizeName + "Response", responseType);
+      }
     }
     return definitions;
   }
@@ -135,209 +260,120 @@ public class DocumentApplicationService {
   public Map<String, Object> buildPaths(List<ApiInfo> apis) {
     Map<String, Object> paths = new HashMap<>();
     for (ApiInfo api : apis) {
-      if (ApiType.valueOf(api.getType()) == REST_API) {
-        Map<String, Object> path = new HashMap<>();
-        Map<String, Object> content = new HashMap<>();
-        content.put("tags", List.of(
-          apis.stream()
-            .filter(a -> a.getId().equals(api.getParentId()))
-            .map(ApiInfo::getName)
-            .findFirst()
-            .orElseThrow()
-        ));
-        Map<String,Object> meta = (Map<String, Object>) api.getMeta();
-        String restAPIType = (String) meta.get("type");
-        content.put("summary", api.getName());
-        content.put("operationId", api.getId());
+      if (ApiType.valueOf(api.getType()) != REST_API) {
+        continue;
+      }
+      String sanitizeName = getSanitizeName(api);
+      Map<String, Object> path = new HashMap<>();
+      Map<String, Object> content = new HashMap<>();
+      content.put("tags", List.of(
+        apis.stream()
+          .filter(a -> a.getId().equals(api.getParentId()))
+          .map(ApiInfo::getName)
+          .findFirst()
+          .orElseThrow()
+      ));
+      Map<String, Object> meta = (Map<String, Object>) api.getMeta();
+      String restAPIType = (String) meta.get("type");
+      content.put("summary", api.getName());
+      content.put("operationId", api.getId());
 
-        Map<String, Object> responses = new HashMap<>();
-        responses.put("400", Map.of("description", "invalid input"));
-        responses.put("404", Map.of("description", "not found"));
-        content.put("responses", responses);
+      Map<String, Object> responses = new HashMap<>();
+      responses.put("400", Map.of("description", "invalid input"));
+      responses.put("404", Map.of("description", "not found"));
+      content.put("responses", responses);
 
-        switch (restAPIType) {
-          case "list" -> {
-            content.put("parameters", buildListParameter(api));
-            responses.put("200", buildListResponse200(api));
-          }
-          case "view" -> {
-            content.put("parameters", buildViewParameter(api));
-            responses.put("200", buildViewResponse200(api));
-          }
-          case "create" -> {
-            content.put("requestBody", buildRequestBody(api));
-            responses.put("200", buildCreateResponse200(api));
-          }
-          case "update" -> {
-            content.put("parameters", buildUpdateParameter(api));
-            content.put("requestBody", buildRequestBody(api));
-            responses.put("200", buildUpdateResponse200(api));
-          }
-          case "delete" -> {
-            content.put("parameters", buildDeleteParameter(api));
-            responses.put("204", buildDeleteResponse204(api));
-          }
-          default -> throw new IllegalStateException("Unexpected value: " + restAPIType);
-        }
+      Map<String, Object> execution = (Map<String, Object>) meta.get("execution");
+      String operationName = (String) execution.get("operationName");
+      String query = (String) execution.get("query");
+      Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
+      Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
 
-        boolean isAuth = (boolean) meta.get("auth");
-        if (isAuth) {
-          content.put("security", List.of(Map.of("bearerAuth", List.of())));
-        }
+      UriTemplate uriTemplate = new UriTemplate(api.getPath());
+      Map<String, String> pathParamters = uriTemplate.match(new UriTemplate(api.getPath()));
 
-        path.put(api.getMethod().toLowerCase(), content);
-        if (paths.containsKey(api.getPath())) {
-          Map<String, Object> existPath = (Map<String, Object>) paths.get(api.getPath());
-          existPath.put(api.getMethod().toLowerCase(), content);
-        } else {
-          paths.put(api.getPath(), path);
-        }
+      Parser parser = new Parser();
+      Document document = parser.parse(query);
+
+      boolean supportsBody = !(api.getMethod().equals("GET") || api.getMethod().equals("DELETE"));
+      content.put("parameters", buildParameters(api, document, supportsBody));
+      if (supportsBody) {
+        content.put("requestBody",
+          Map.of(
+            "required", true,
+            "description", "json body",
+            "content",
+            Map.of("application/json",
+              Map.of("schema",
+                Map.of("$ref", "#/components/schemas/" + sanitizeName + "Request")))));
+      }
+
+      boolean isAuth = (boolean) meta.get("auth");
+      if (isAuth) {
+        content.put("security", List.of(Map.of("bearerAuth", List.of())));
+      }
+
+      path.put(api.getMethod().toLowerCase(), content);
+      if (paths.containsKey(api.getPath())) {
+        Map<String, Object> existPath = (Map<String, Object>) paths.get(api.getPath());
+        existPath.put(api.getMethod().toLowerCase(), content);
+      } else {
+        paths.put(api.getPath(), path);
       }
     }
     return paths;
   }
 
-  private List<Map<String, Object>> buildDeleteParameter(ApiInfo api) {
-    Map<String, Object> id = new HashMap<>();
-    id.put("name", "id");
-    id.put("in", "path");
-    id.put("description", "ID of view to return");
-    id.put("required", true);
-    id.put("type", "integer");
-    id.put("format", "int64");
-    return List.of(id);
-  }
+  private List<Map<String, Object>> buildParameters(ApiInfo apiInfo, Document document, boolean supportsBody) {
+    // 遍历每一个操作定义，提取其中的变量定义
+    List<Map<String, Object>> parameters = new ArrayList<>();
 
-  private List<Map<String, Object>> buildUpdateParameter(ApiInfo api) {
-    Map<String, Object> id = new HashMap<>();
-    id.put("name", "id");
-    id.put("in", "path");
-    id.put("description", "ID of view to return");
-    id.put("required", true);
-    id.put("type", "integer");
-    id.put("format", "int64");
-    return List.of(id);
-  }
+    Set<String> pathNames = new UriTemplate(apiInfo.getPath()).match(new UriTemplate(apiInfo.getPath())).keySet();
 
-  private Map<String, Object> buildRequestBody(ApiInfo api) {
-    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
-    String datasourceName = (String) meta.get("datasource");
-    String modelName = (String) meta.get("model");
-    Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
-    Map<String, Object> body = new HashMap<>();
-    body.put("description", "json body");
-    body.put("content",
-      Map.of("application/json",
-        Map.of("schema", Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName()
-          )
+    for (String pathName : pathNames) {
+      parameters.add(
+        Map.of(
+          "name", pathName,
+          "in", "path",
+          "required", true,
+          "schema", Map.of("type", "string")
         )
-      )
-    );
-    body.put("required", true);
-    return body;
-  }
-
-  private List<Map<String, Object>> buildViewParameter(ApiInfo api) {
-    Map<String, Object> id = new HashMap<>();
-    id.put("name", "id");
-    id.put("in", "path");
-    id.put("description", "ID of view to return");
-    id.put("required", true);
-//            id.put("type", "integer");
-//            id.put("format", "int64");
-    return List.of(id);
-  }
-
-  private List<Map<String, Object>> buildListParameter(ApiInfo api) {
-    Map<String, Object> pageSize = new HashMap<>();
-    pageSize.put("name", "pageSize");
-    pageSize.put("in", "query");
-    pageSize.put("description", "Specify the max returned records per page (default to 30).");
-    pageSize.put("required", false);
-    pageSize.put("type", "integer");
-    pageSize.put("format", "int64");
-    Map<String, Object> current = new HashMap<>();
-    current.put("name", "current");
-    current.put("in", "query");
-    current.put("description", "The page (aka. offset) of the paginated list (default to 1).");
-    current.put("required", false);
-    current.put("type", "integer");
-    current.put("format", "int64");
-    return List.of(current, pageSize);
-  }
-
-  private Map<String, Object> buildListResponse200(ApiInfo api) {
-    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
-    String datasourceName = (String) meta.get("datasource");
-    String modelName = (String) meta.get("model");
-    boolean paging = (Boolean) meta.get("paging");
-    Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
-    var resProps = new HashMap<>();
-    resProps.put("list", Map.of(
-      "type", "array",
-      "items", Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName())
-    ));
-    if (paging) {
-      resProps.put("total", Map.of("type", "integer", "format", "int64"));
+      );
     }
-    return Map.of(
-      "description", "successful operation",
-      "content", Map.of(
-        "application/json",
-        Map.of("schema",
-          Map.of(
-            "type", "object",
-            "properties", resProps
-          )
-        )
-      )
-    );
-  }
 
-  private Map<String, Object> buildViewResponse200(ApiInfo api) {
-    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
-    String datasourceName = (String) meta.get("datasource");
-    String modelName = (String) meta.get("model");
-    Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
-    return Map.of(
-      "description", "successful operation",
-      "content", Map.of(
-        "application/json",
-        Map.of("schema",
-          Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName())))
-    );
-  }
+    if (!supportsBody) {
+      // 3. 提取变量
+      List<VariableDefinition> variableDefinitions = document.getDefinitions().stream()
+        .filter(def -> def instanceof OperationDefinition)
+        .flatMap(def -> ((OperationDefinition) def).getVariableDefinitions().stream())
+        .collect(Collectors.toList());
 
-  private Map<String, Object> buildCreateResponse200(ApiInfo api) {
-    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
-    String datasourceName = (String) meta.get("datasource");
-    String modelName = (String) meta.get("model");
-    Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
-    return Map.of(
-      "description", "successful operation",
-      "content", Map.of(
-        "application/json",
-        Map.of("schema",
-          Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName())))
-    );
-  }
+      // 4. 输出变量信息
+      for (VariableDefinition variableDefinition : variableDefinitions) {
+        String variableName = variableDefinition.getName();
+        String variableType = variableDefinition.getType().toString();
+        if (pathNames.contains(variableName)) {
+          continue;
+        }
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("name", variableDefinition.getName());
+        parameter.put("in", "query");
+        parameter.put("description", "");
+        parameter.put("required", variableDefinition.getType() instanceof NonNullType);
+        if (variableDefinition.getType() instanceof NonNullType nonNullType) {
+          String typeName = ((TypeName) nonNullType.getType()).getName();
+          Map type = TYPE_MAPPING.getOrDefault(typeName, Map.of("type", "string"));
+          parameter.putAll(type);
+        } else {
+          String typeName = ((TypeName) variableDefinition.getType()).getName();
+          Map type = TYPE_MAPPING.getOrDefault(typeName, Map.of("type", "string"));
+          parameter.putAll(type);
+        }
+        parameters.add(parameter);
+      }
+    }
 
-  private Map<String, Object> buildUpdateResponse200(ApiInfo api) {
-    Map<String,Object> meta = (Map<String, Object>) api.getMeta();
-    String datasourceName = (String) meta.get("datasource");
-    String modelName = (String) meta.get("model");
-    Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
-    return Map.of(
-      "description", "successful operation",
-      "content", Map.of(
-        "application/json",
-        Map.of("schema",
-          Map.of("$ref", "#/components/schemas/" + datasourceName + "." + entity.getName())))
-    );
-  }
-
-  private Map<String, Object> buildDeleteResponse204(ApiInfo api) {
-    return Map.of("description", "success no content");
+    return parameters;
   }
 
 }

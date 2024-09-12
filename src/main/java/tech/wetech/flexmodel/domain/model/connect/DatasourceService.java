@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author cjbi
@@ -23,6 +24,10 @@ public class DatasourceService {
   }
 
   public Datasource createDatasource(Datasource datasource) {
+    Optional<Datasource> optional = findOne(datasource.getName());
+    if(optional.isPresent()) {
+      throw new ConnectException("The data source name is duplicated");
+    }
     datasource.setType("user");
     datasource = datasourceRepository.save(datasource);
     sessionDatasource.add(datasource);
@@ -38,6 +43,12 @@ public class DatasourceService {
 
   public List<Datasource> findAll() {
     return datasourceRepository.find(f -> f.equalTo("enabled", true));
+  }
+
+  public Optional<Datasource> findOne(String datasourceName) {
+    return datasourceRepository.find(f -> f.equalTo("name", datasourceName))
+      .stream()
+      .findFirst();
   }
 
   public void deleteDatasource(String datasourceName) {
