@@ -308,6 +308,7 @@ public class DocumentApplicationService {
                 Map.of("$ref", "#/components/schemas/" + sanitizeName + "Request")))));
       }
 
+      // 接口是否鉴权
       boolean isAuth = (boolean) meta.get("auth");
       if (isAuth) {
         content.put("security", List.of(Map.of("bearerAuth", List.of())));

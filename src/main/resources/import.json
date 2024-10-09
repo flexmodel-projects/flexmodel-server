@@ -740,6 +740,16 @@
             "password": "",
             "username": ""
           }
+        },
+        {
+          "name": "mysql_test",
+          "type": "user",
+          "config": {
+            "url": "${MYSQL_URL}",
+            "dbKind": "mysql",
+            "password": "${MYSQL_PASSWORD}",
+            "username": "${MYSQL_USERNAME}"
+          }
         }
       ]
     },

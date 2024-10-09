@@ -1,4 +1,4 @@
 flexmodel:
   datasource:
     db-kind: sqlite
-    url: jdbc:sqlite:file::memory:?cache=shared
+    url: jdbc:sqlite:file:sqlite.db
