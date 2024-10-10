@@ -28,6 +28,8 @@ public class ApiInfoTreeDTO extends ApiInfo {
     this.setPath(apiInfo.getPath());
     this.setMeta(apiInfo.getMeta());
     this.setCreatedAt(apiInfo.getCreatedAt());
+    this.setEnabled(apiInfo.getEnabled());
+    this.setUpdatedAt(apiInfo.getUpdatedAt());
   }
 
 }

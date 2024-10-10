@@ -30,6 +30,11 @@ public class ApiInfoService {
     return apiInfoRepository.save(apiInfo);
   }
 
+  public ApiInfo updateIgnoreNull(ApiInfo apiInfo) {
+    apiInfoRepository.updateIgnoreNull(apiInfo.getId(), apiInfo);
+    return apiInfo;
+  }
+
   public void delete(String id) {
     apiInfoRepository.delete(id);
     apiInfoRepository.deleteByParentId(id);

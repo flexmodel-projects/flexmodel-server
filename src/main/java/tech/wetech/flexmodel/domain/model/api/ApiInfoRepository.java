@@ -17,4 +17,6 @@ public interface ApiInfoRepository {
 
   void delete(String id);
 
+  void updateIgnoreNull(String id, ApiInfo apiInfo);
+
 }

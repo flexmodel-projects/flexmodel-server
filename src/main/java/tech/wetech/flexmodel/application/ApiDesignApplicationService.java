@@ -49,6 +49,10 @@ public class ApiDesignApplicationService {
     return apiInfoService.update(apiInfo);
   }
 
+  public ApiInfo updateApiInfoIgnoreNull(ApiInfo apiInfo) {
+    return apiInfoService.updateIgnoreNull(apiInfo);
+  }
+
   public void deleteApiInfo(String id) {
     apiInfoService.delete(id);
   }

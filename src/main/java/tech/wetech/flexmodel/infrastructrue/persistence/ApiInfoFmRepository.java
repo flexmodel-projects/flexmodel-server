@@ -36,4 +36,10 @@ public class ApiInfoFmRepository implements ApiInfoRepository {
   public void delete(String id) {
     apiInfoDAO.deleteById(id);
   }
+
+  @Override
+  public void updateIgnoreNull(String id, ApiInfo apiInfo) {
+    apiInfoDAO.updateIgnoreNullById(apiInfo, id);
+  }
+
 }

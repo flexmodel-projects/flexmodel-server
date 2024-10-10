@@ -126,7 +126,7 @@
           "generator": {
             "type": "FixedValueGenerator",
             "value": "FOLDER",
-            "generationTime": "ALWAYS"
+            "generationTime": "INSERT"
           },
           "modelName": "ApiInfo",
           "validators": [
@@ -196,6 +196,26 @@
           "nullable": true,
           "modelName": "ApiInfo",
           "validators": []
+        },
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "unique": false,
+          "comment": "",
+          "nullable": false,
+          "generator": {
+            "type": "FixedValueGenerator",
+            "value": true,
+            "generationTime": "INSERT"
+          },
+          "modelName": "ApiInfo",
+          "validators": [
+            {
+              "type": "NotNullValidator",
+              "message": "must not be null"
+            }
+          ],
+          "defaultValue": true
         }
       ],
       "indexes": []
@@ -637,7 +657,7 @@
           "updatedAt": "2024-07-13T23:21:10",
           "id": "01J2PAY1M8T1R8HM979P4ASM9A",
           "method": "GET",
-          "type": "REST_API"
+          "type": "API"
         },
         {
           "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
@@ -661,7 +681,7 @@
           "updatedAt": "2024-07-13T23:21:10",
           "id": "01J2PAY1X3ZN529SQTKB8TG1Q5",
           "method": "GET",
-          "type": "REST_API"
+          "type": "API"
         },
         {
           "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
@@ -682,7 +702,7 @@
           "updatedAt": "2024-07-13T23:21:11",
           "id": "01J2PAY2F3VK71GXV6BWXYEA5P",
           "method": "POST",
-          "type": "REST_API"
+          "type": "API"
         },
         {
           "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
@@ -703,7 +723,7 @@
           "updatedAt": "2024-07-13T23:21:11",
           "id": "01J2PAY2RJ79JYB2GJP5K0AW5F",
           "method": "PUT",
-          "type": "REST_API"
+          "type": "API"
         },
         {
           "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
@@ -724,7 +744,7 @@
           "updatedAt": "2024-07-13T23:21:12",
           "id": "01J2PAY3W18T1BQJ5H5D8STGYT",
           "method": "DELETE",
-          "type": "REST_API"
+          "type": "API"
         }
       ]
     },

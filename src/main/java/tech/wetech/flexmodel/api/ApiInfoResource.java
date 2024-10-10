@@ -38,6 +38,13 @@ public class ApiInfoResource {
     return apiDesignApplicationService.updateApiInfo(apiInfo);
   }
 
+  @PATCH
+  @Path("/{id}")
+  public ApiInfo updateIgnoreNull(@PathParam("id") String id, @Valid ApiInfo apiInfo) {
+    apiInfo.setId(id);
+    return apiDesignApplicationService.updateApiInfoIgnoreNull(apiInfo);
+  }
+
   @DELETE
   @Path("/{id}")
   public void delete(@PathParam("id") String id) {

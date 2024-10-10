@@ -5,6 +5,7 @@ import graphql.parser.Parser;
 import graphql.schema.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.RelationField;
 import tech.wetech.flexmodel.TypedField;
@@ -20,13 +21,14 @@ import java.util.stream.Collectors;
 
 import static tech.wetech.flexmodel.RelationField.Cardinality.ONE_TO_ONE;
 import static tech.wetech.flexmodel.codegen.StringUtils.*;
+import static tech.wetech.flexmodel.domain.model.api.ApiType.API;
 import static tech.wetech.flexmodel.domain.model.api.ApiType.FOLDER;
-import static tech.wetech.flexmodel.domain.model.api.ApiType.REST_API;
 
 /**
  * @author cjbi
  */
 @ApplicationScoped
+@Slf4j
 @SuppressWarnings("all")
 public class DocumentApplicationService {
 
@@ -91,106 +93,113 @@ public class DocumentApplicationService {
     Map<String, Object> definitions = new HashMap<>();
     GraphQLSchema graphQLSchema = graphQLProvider.getGraphQL().getGraphQLSchema();
     for (ApiInfo api : apis) {
-      if (ApiType.valueOf(api.getType()) != REST_API) {
-        continue;
-      }
-      String sanitizeName = getSanitizeName(api);
-      Map<String, Object> meta = (Map<String, Object>) api.getMeta();
-
-      Map<String, Object> execution = (Map<String, Object>) meta.get("execution");
-      String operationName = (String) execution.get("operationName");
-      String query = (String) execution.get("query");
-      Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
-      Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
-
-      Parser parser = new Parser();
-      Document document = parser.parse(query);
-
-      // 3. 提取变量
-      List<VariableDefinition> variableDefinitions = document.getDefinitions().stream()
-        .filter(def -> def instanceof OperationDefinition)
-        .flatMap(def -> ((OperationDefinition) def).getVariableDefinitions().stream())
-        .collect(Collectors.toList());
-
-      Map<String, Object> requestType = new HashMap<>();
-      Map<String, Object> properties = new HashMap<>();
-      requestType.put("type", "object");
-      requestType.put("properties", properties);
-      for (VariableDefinition variableDefinition : variableDefinitions) {
-        String variableName = variableDefinition.getName();
-        String variableType = variableDefinition.getType().toString();
-        Map<String, Object> propertyMap = new HashMap<>();
-        properties.put(variableName, TYPE_MAPPING.getOrDefault(variableType, Map.of("type", "string")));
-      }
-      definitions.put(sanitizeName + "Request", requestType);
-
-      // 3. 提取返回参数
-      List<Field> returnFields = document.getDefinitions().stream()
-        .filter(def -> def instanceof OperationDefinition)
-        .flatMap(def -> ((OperationDefinition) def).getSelectionSet().getSelections().stream())
-        .filter(selection -> selection instanceof Field)
-        .map(selection -> (Field) selection)
-        .collect(Collectors.toList());
-
-      // 4. 输出返回参数信息
-      for (Field field : returnFields) {
-        GraphQLFieldDefinition fieldDefinition = getGraphQLFieldDefinition(graphQLSchema, field);
-        if (fieldDefinition == null) {
+      try {
+        if (ApiType.valueOf(api.getType()) != API) {
           continue;
         }
-        GraphQLType originType = fieldDefinition.getType();
-        boolean isList = false;
-        if (originType instanceof GraphQLNonNull graphQLNonNull) {
-          originType = graphQLNonNull.getOriginalWrappedType();
+        String sanitizeName = getSanitizeName(api);
+        Map<String, Object> meta = (Map<String, Object>) api.getMeta();
+        if (meta == null || meta.isEmpty()) {
+          continue;
         }
-        if (originType instanceof GraphQLList graphQLList) {
-          isList = true;
-          originType = graphQLList.getOriginalWrappedType();
-        }
-        if (originType instanceof GraphQLNonNull graphQLNonNull) {
-          originType = graphQLNonNull.getOriginalWrappedType();
-        }
+        Map<String, Object> execution = (Map<String, Object>) meta.get("execution");
+        String operationName = (String) execution.get("operationName");
+        String query = (String) execution.get("query");
+        Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
+        Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
 
-        Map<String, Object> responseType = new HashMap<>();
-        Map<String, Object> wrapperProperties = new HashMap<>();
-        Map<String, Object> typeProperties = new HashMap<>();
+        Parser parser = new Parser();
+        Document document = parser.parse(query);
 
-        // 如果有子字段，可以进一步提取
-        SelectionSet selectionSet = field.getSelectionSet();
-        if (selectionSet != null) {
-          List<Field> subFields = selectionSet.getSelections().stream()
-            .filter(selection -> selection instanceof Field)
-            .map(selection -> (Field) selection)
-            .collect(Collectors.toList());
-          for (Field subField : subFields) {
-            if (originType instanceof GraphQLObjectType) {
-              GraphQLObjectType objectType = (GraphQLObjectType) originType;
-              GraphQLFieldDefinition subFieldDefinition = objectType.getFieldDefinition(subField.getName());
-              if (subFieldDefinition != null) {
-                GraphQLOutputType definitionType = subFieldDefinition.getType();
-                if (definitionType instanceof GraphQLScalarType graphQLScalarType) {
-                  typeProperties.put(subField.getName(), TYPE_MAPPING.get(graphQLScalarType.getName()));
-                } else {
-                  throw new RuntimeException();
+        // 3. 提取变量
+        List<VariableDefinition> variableDefinitions = document.getDefinitions().stream()
+          .filter(def -> def instanceof OperationDefinition)
+          .flatMap(def -> ((OperationDefinition) def).getVariableDefinitions().stream())
+          .collect(Collectors.toList());
+
+        Map<String, Object> requestType = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
+        requestType.put("type", "object");
+        requestType.put("properties", properties);
+        for (VariableDefinition variableDefinition : variableDefinitions) {
+          String variableName = variableDefinition.getName();
+          String variableType = variableDefinition.getType().toString();
+          Map<String, Object> propertyMap = new HashMap<>();
+          properties.put(variableName, TYPE_MAPPING.getOrDefault(variableType, Map.of("type", "string")));
+        }
+        definitions.put(sanitizeName + "Request", requestType);
+
+        // 3. 提取返回参数
+        List<Field> returnFields = document.getDefinitions().stream()
+          .filter(def -> def instanceof OperationDefinition)
+          .flatMap(def -> ((OperationDefinition) def).getSelectionSet().getSelections().stream())
+          .filter(selection -> selection instanceof Field)
+          .map(selection -> (Field) selection)
+          .collect(Collectors.toList());
+
+        // 4. 输出返回参数信息
+        for (Field field : returnFields) {
+          GraphQLFieldDefinition fieldDefinition = getGraphQLFieldDefinition(graphQLSchema, field);
+          if (fieldDefinition == null) {
+            continue;
+          }
+          GraphQLType originType = fieldDefinition.getType();
+          boolean isList = false;
+          if (originType instanceof GraphQLNonNull graphQLNonNull) {
+            originType = graphQLNonNull.getOriginalWrappedType();
+          }
+          if (originType instanceof GraphQLList graphQLList) {
+            isList = true;
+            originType = graphQLList.getOriginalWrappedType();
+          }
+          if (originType instanceof GraphQLNonNull graphQLNonNull) {
+            originType = graphQLNonNull.getOriginalWrappedType();
+          }
+
+          Map<String, Object> responseType = new HashMap<>();
+          Map<String, Object> wrapperProperties = new HashMap<>();
+          Map<String, Object> typeProperties = new HashMap<>();
+
+          // 如果有子字段，可以进一步提取
+          SelectionSet selectionSet = field.getSelectionSet();
+          if (selectionSet != null) {
+            List<Field> subFields = selectionSet.getSelections().stream()
+              .filter(selection -> selection instanceof Field)
+              .map(selection -> (Field) selection)
+              .collect(Collectors.toList());
+            for (Field subField : subFields) {
+              if (originType instanceof GraphQLObjectType) {
+                GraphQLObjectType objectType = (GraphQLObjectType) originType;
+                GraphQLFieldDefinition subFieldDefinition = objectType.getFieldDefinition(subField.getName());
+                if (subFieldDefinition != null) {
+                  GraphQLOutputType definitionType = subFieldDefinition.getType();
+                  if (definitionType instanceof GraphQLScalarType graphQLScalarType) {
+                    typeProperties.put(subField.getName(), TYPE_MAPPING.get(graphQLScalarType.getName()));
+                  } else {
+                    throw new RuntimeException();
+                  }
                 }
               }
             }
           }
-        }
 
-        Map<String, Object> returnDataTypeMap = new HashMap<>();
-        if (isList) {
-          returnDataTypeMap.put("type", "array");
-          returnDataTypeMap.put("items", Map.of("type", "object", "properties", typeProperties));
-        } else {
-          returnDataTypeMap.put("type", "object");
-          returnDataTypeMap.put("properties", typeProperties);
+          Map<String, Object> returnDataTypeMap = new HashMap<>();
+          if (isList) {
+            returnDataTypeMap.put("type", "array");
+            returnDataTypeMap.put("items", Map.of("type", "object", "properties", typeProperties));
+          } else {
+            returnDataTypeMap.put("type", "object");
+            returnDataTypeMap.put("properties", typeProperties);
+          }
+          wrapperProperties.put("data", returnDataTypeMap);
+          responseType.put("type", "object");
+          responseType.put("properties", wrapperProperties);
+          definitions.put(sanitizeName + "Response", responseType);
         }
-        wrapperProperties.put("data", returnDataTypeMap);
-        responseType.put("type", "object");
-        responseType.put("properties", wrapperProperties);
-        definitions.put(sanitizeName + "Response", responseType);
+      } catch (Exception e) {
+        log.error("Build api doc error: {}", e.getMessage(), e);
       }
+
     }
     return definitions;
   }
@@ -260,67 +269,74 @@ public class DocumentApplicationService {
   public Map<String, Object> buildPaths(List<ApiInfo> apis) {
     Map<String, Object> paths = new HashMap<>();
     for (ApiInfo api : apis) {
-      if (ApiType.valueOf(api.getType()) != REST_API) {
-        continue;
+      try {
+        if (ApiType.valueOf(api.getType()) != API) {
+          continue;
+        }
+        String sanitizeName = getSanitizeName(api);
+        Map<String, Object> path = new HashMap<>();
+        Map<String, Object> content = new HashMap<>();
+        content.put("tags", List.of(
+          apis.stream()
+            .filter(a -> a.getId().equals(api.getParentId()))
+            .map(ApiInfo::getName)
+            .findFirst()
+            .orElseThrow()
+        ));
+        Map<String, Object> meta = (Map<String, Object>) api.getMeta();
+        if (meta == null || meta.isEmpty()) {
+          continue;
+        }
+        String restAPIType = (String) meta.get("type");
+        content.put("summary", api.getName());
+        content.put("operationId", api.getId());
+
+        Map<String, Object> responses = new HashMap<>();
+        responses.put("400", Map.of("description", "invalid input"));
+        responses.put("404", Map.of("description", "not found"));
+        content.put("responses", responses);
+
+        Map<String, Object> execution = (Map<String, Object>) meta.get("execution");
+        String operationName = (String) execution.get("operationName");
+        String query = (String) execution.get("query");
+        Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
+        Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
+
+        UriTemplate uriTemplate = new UriTemplate(api.getPath());
+        Map<String, String> pathParamters = uriTemplate.match(new UriTemplate(api.getPath()));
+
+        Parser parser = new Parser();
+        Document document = parser.parse(query);
+
+        boolean supportsBody = !(api.getMethod().equals("GET") || api.getMethod().equals("DELETE"));
+        content.put("parameters", buildParameters(api, document, supportsBody));
+        if (supportsBody) {
+          content.put("requestBody",
+            Map.of(
+              "required", true,
+              "description", "json body",
+              "content",
+              Map.of("application/json",
+                Map.of("schema",
+                  Map.of("$ref", "#/components/schemas/" + sanitizeName + "Request")))));
+        }
+
+        // 接口是否鉴权
+        boolean isAuth = (boolean) meta.get("auth");
+        if (isAuth) {
+          content.put("security", List.of(Map.of("bearerAuth", List.of())));
+        }
+        path.put(api.getMethod().toLowerCase(), content);
+        if (paths.containsKey(api.getPath())) {
+          Map<String, Object> existPath = (Map<String, Object>) paths.get(api.getPath());
+          existPath.put(api.getMethod().toLowerCase(), content);
+        } else {
+          paths.put(api.getPath(), path);
+        }
+      } catch (Exception e) {
+        log.error("Build api doc error: {}", e.getMessage(), e);
       }
-      String sanitizeName = getSanitizeName(api);
-      Map<String, Object> path = new HashMap<>();
-      Map<String, Object> content = new HashMap<>();
-      content.put("tags", List.of(
-        apis.stream()
-          .filter(a -> a.getId().equals(api.getParentId()))
-          .map(ApiInfo::getName)
-          .findFirst()
-          .orElseThrow()
-      ));
-      Map<String, Object> meta = (Map<String, Object>) api.getMeta();
-      String restAPIType = (String) meta.get("type");
-      content.put("summary", api.getName());
-      content.put("operationId", api.getId());
 
-      Map<String, Object> responses = new HashMap<>();
-      responses.put("400", Map.of("description", "invalid input"));
-      responses.put("404", Map.of("description", "not found"));
-      content.put("responses", responses);
-
-      Map<String, Object> execution = (Map<String, Object>) meta.get("execution");
-      String operationName = (String) execution.get("operationName");
-      String query = (String) execution.get("query");
-      Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
-      Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
-
-      UriTemplate uriTemplate = new UriTemplate(api.getPath());
-      Map<String, String> pathParamters = uriTemplate.match(new UriTemplate(api.getPath()));
-
-      Parser parser = new Parser();
-      Document document = parser.parse(query);
-
-      boolean supportsBody = !(api.getMethod().equals("GET") || api.getMethod().equals("DELETE"));
-      content.put("parameters", buildParameters(api, document, supportsBody));
-      if (supportsBody) {
-        content.put("requestBody",
-          Map.of(
-            "required", true,
-            "description", "json body",
-            "content",
-            Map.of("application/json",
-              Map.of("schema",
-                Map.of("$ref", "#/components/schemas/" + sanitizeName + "Request")))));
-      }
-
-      // 接口是否鉴权
-      boolean isAuth = (boolean) meta.get("auth");
-      if (isAuth) {
-        content.put("security", List.of(Map.of("bearerAuth", List.of())));
-      }
-
-      path.put(api.getMethod().toLowerCase(), content);
-      if (paths.containsKey(api.getPath())) {
-        Map<String, Object> existPath = (Map<String, Object>) paths.get(api.getPath());
-        existPath.put(api.getMethod().toLowerCase(), content);
-      } else {
-        paths.put(api.getPath(), path);
-      }
     }
     return paths;
   }
