@@ -693,7 +693,7 @@
             "enable": true,
             "datasource": "system",
             "execution": {
-              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  create_system_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  system_create_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
           },
@@ -714,7 +714,7 @@
             "enable": true,
             "datasource": "system",
             "execution": {
-              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  update_system_Classes_by_id(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  system_update_Classes_by_id(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
           },
@@ -735,7 +735,7 @@
             "enable": true,
             "datasource": "system",
             "execution": {
-              "query": "mutation MyMutation($id: ID!) {\n  delete_system_Classes_by_id(id: $id) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "mutation MyMutation($id: ID!) {\n  system_delete_Classes_by_id(id: $id) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
           },
