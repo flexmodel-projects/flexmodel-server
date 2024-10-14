@@ -11,9 +11,9 @@ import java.util.function.UnaryOperator;
  */
 public interface ApiLogRepository {
 
-  List<ApiLog> find(String filter, Integer current, Integer pageSize);
+  List<ApiLog> find(UnaryOperator<Example.Criteria> filter, Integer current, Integer pageSize);
 
-  List<LogStat> stat(String filter);
+  List<LogStat> stat(UnaryOperator<Example.Criteria> filter);
 
   ApiLog save(ApiLog record);
 

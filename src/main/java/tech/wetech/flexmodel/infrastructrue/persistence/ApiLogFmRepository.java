@@ -24,7 +24,7 @@ public class ApiLogFmRepository implements ApiLogRepository {
   ApiLogDAO apiLogDAO;
 
   @Override
-  public List<ApiLog> find(String filter, Integer current, Integer pageSize) {
+  public List<ApiLog> find(UnaryOperator<Example.Criteria> filter, Integer current, Integer pageSize) {
     return apiLogDAO.find(query -> {
       if (filter != null) {
         query.setFilter(filter);
@@ -39,7 +39,7 @@ public class ApiLogFmRepository implements ApiLogRepository {
 
 
   @Override
-  public List<LogStat> stat(String filter) {
+  public List<LogStat> stat(UnaryOperator<Example.Criteria> filter) {
     return apiLogDAO.find(query ->
       query
         .setProjection(projection -> projection

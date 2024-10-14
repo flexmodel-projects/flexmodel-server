@@ -3,8 +3,10 @@ package tech.wetech.flexmodel.domain.model.api;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
+import tech.wetech.flexmodel.criterion.Example;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * @author cjbi
@@ -19,24 +21,12 @@ public class ApiLogService {
     return apiLogRepository.save(apiLog);
   }
 
-  public List<ApiLog> find(String filter, Integer current, Integer pageSize) {
-    String qFilter = null;
-    if (filter != null && !filter.isEmpty()) {
-      qFilter = String.format("""
-        { "contains": [{ "var": "data" }, "%s"] }
-        """, filter);
-    }
-    return apiLogRepository.find(qFilter, current, pageSize);
+  public List<ApiLog> find(UnaryOperator<Example.Criteria> filter, Integer current, Integer pageSize) {
+    return apiLogRepository.find(filter, current, pageSize);
   }
 
-  public List<LogStat> stat(String filter) {
-    String qFilter = null;
-    if (filter != null && !filter.isEmpty()) {
-      qFilter = String.format("""
-        { "contains": [{ "var": "data" }, "%s"] }
-        """, filter);
-    }
-    return apiLogRepository.stat(qFilter);
+  public List<LogStat> stat(UnaryOperator<Example.Criteria> filter) {
+    return apiLogRepository.stat(filter);
   }
 
 }
