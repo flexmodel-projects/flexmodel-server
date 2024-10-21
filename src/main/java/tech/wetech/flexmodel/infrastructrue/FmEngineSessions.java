@@ -13,13 +13,10 @@ import tech.wetech.flexmodel.SessionFactory;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
-import tech.wetech.flexmodel.event.DomainEvent;
-import tech.wetech.flexmodel.event.schema.AbstractSchemaEvent;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author cjbi
@@ -41,15 +38,6 @@ public class FmEngineSessions {
       sessionDatasource.add(datasource);
     }
     graphQLProvider.init();
-    sessionFactory.subscribeEvent(DomainEvent.class, event -> {
-      if (event instanceof AbstractSchemaEvent) {
-        try {
-          CompletableFuture.runAsync(graphQLProvider::init);
-        } catch (Exception e) {
-          log.error("Subscribe flex model schema event event error: {}", e.getMessage());
-        }
-      }
-    });
   }
 
   @Produces

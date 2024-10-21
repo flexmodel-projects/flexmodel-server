@@ -637,13 +637,8 @@
           "createdAt": "2024-07-13T23:21:10",
           "meta": {
             "auth": false,
-            "type": "list",
-            "model": "Classes",
-            "enable": true,
-            "paging": false,
-            "datasource": "system",
             "execution": {
-              "query": "query MyQuery($order_by: system_Classes_order_by = { id: asc }, $size: Int = 10, $page: Int = 1) {\n  system_Classes_list(order_by: $order_by, size: $size, page: $page) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "query MyQuery($order_by: system_Classes_order_by = { id: asc }, $size: Int = 10, $page: Int = 1) {\n  system_list_Classes(order_by: $order_by, size: $size, page: $page) {\n    classCode\n    className\n    id\n  }\n}",
               "variables": {
                 "order_by": {
                   "id": "desc"
@@ -664,12 +659,8 @@
           "createdAt": "2024-07-13T23:21:10",
           "meta": {
             "auth": false,
-            "type": "view",
-            "model": "Classes",
-            "enable": true,
-            "datasource": "system",
             "execution": {
-              "query": "query MyQuery($id: Int) {\n  system_Classes(where: { id: { _eq: $id } }) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "query MyQuery($id: Int) {\n  system_find_one_Classes(where: { id: { _eq: $id } }) {\n    classCode\n    className\n    id\n  }\n}",
               "variables": {
                 "id": 1
               },
@@ -688,10 +679,6 @@
           "createdAt": "2024-07-13T23:21:11",
           "meta": {
             "auth": false,
-            "type": "create",
-            "model": "Classes",
-            "enable": true,
-            "datasource": "system",
             "execution": {
               "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  system_create_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
@@ -709,10 +696,6 @@
           "createdAt": "2024-07-13T23:21:11",
           "meta": {
             "auth": false,
-            "type": "update",
-            "model": "Classes",
-            "enable": true,
-            "datasource": "system",
             "execution": {
               "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  system_update_Classes_by_id(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
@@ -730,10 +713,6 @@
           "createdAt": "2024-07-13T23:21:12",
           "meta": {
             "auth": false,
-            "type": "delete",
-            "model": "Classes",
-            "enable": true,
-            "datasource": "system",
             "execution": {
               "query": "mutation MyMutation($id: ID!) {\n  system_delete_Classes_by_id(id: $id) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
