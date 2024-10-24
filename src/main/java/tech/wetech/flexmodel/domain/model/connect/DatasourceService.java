@@ -23,9 +23,13 @@ public class DatasourceService {
     return sessionDatasource.validate(datasource);
   }
 
+  public List<String> getPhysicsModelNames(Datasource datasource) {
+    return sessionDatasource.getPhysicsModelNames(datasource);
+  }
+
   public Datasource createDatasource(Datasource datasource) {
     Optional<Datasource> optional = findOne(datasource.getName());
-    if(optional.isPresent()) {
+    if (optional.isPresent()) {
       throw new ConnectException("The data source name is duplicated");
     }
     datasource.setType("user");

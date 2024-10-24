@@ -25,7 +25,10 @@ import tech.wetech.flexmodel.util.SystemVariablesHolder;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
@@ -40,8 +43,36 @@ public class SessionDatasourceImpl implements SessionDatasource {
   @Inject
   SessionFactory sessionFactory;
 
-  public String getContent(String template) {
+  private String getContent(String template) {
     return StringUtils.simpleRenderTemplate(template, SystemVariablesHolder.getSystemVariables());
+  }
+
+  @Override
+  public List<String> getPhysicsModelNames(Datasource datasource) {
+    List<String> list = new ArrayList<>();
+    if (datasource.getConfig() instanceof MongoDB mongoDB) {
+      try (MongoClient mongoClient = MongoClients.create(mongoDB.getUrl())) {
+        mongoClient.getClusterDescription();
+        mongoClient.getDatabase(datasource.getName()).listCollectionNames()
+          .forEach(list::add);
+        return list;
+      }
+    } else {
+      Database config = JsonUtils.getInstance().convertValue(datasource.getConfig(), Database.class);
+      try (var conn = DriverManager.getConnection(
+        getContent(config.getUrl()),
+        getContent(config.getUsername()),
+        getContent(config.getPassword()))) {
+        ResultSet tables = conn.getMetaData().getTables(null, null, "%", new String[]{"TABLE"});
+        while (tables.next()) {
+          String tableName = tables.getString("TABLE_NAME");
+          list.add(tableName);
+        }
+        return list;
+      } catch (SQLException e) {
+        return list;
+      }
+    }
   }
 
   @Override
@@ -107,4 +138,5 @@ public class SessionDatasourceImpl implements SessionDatasource {
   public void delete(String datasourceName) {
     sessionFactory.removeDataSourceProvider(datasourceName);
   }
+
 }

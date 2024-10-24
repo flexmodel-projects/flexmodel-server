@@ -28,14 +28,15 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>com.graphql-java</groupId>
+        <artifactId>graphql-java</artifactId>
+        <version>22.3</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
-    <dependency>
-      <groupId>com.graphql-java</groupId>
-      <artifactId>graphql-java</artifactId>
-      <version>22.3</version>
-    </dependency>
+
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
@@ -49,12 +50,6 @@
       <groupId>tech.wetech.flexmodel</groupId>
       <artifactId>flexmodel-graphql</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>graphql-java</artifactId>
-          <groupId>com.graphql-java</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>tech.wetech.flexmodel</groupId>

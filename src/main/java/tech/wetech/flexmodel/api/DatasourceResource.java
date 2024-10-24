@@ -12,10 +12,7 @@ import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.connect.database.Database;
 import tech.wetech.flexmodel.util.JsonUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author cjbi
@@ -37,10 +34,16 @@ public class DatasourceResource {
     return modelingApplicationService.validateConnection(datasource);
   }
 
-  @GET
-  @Path("/{datasourceName}/refresh")
-  public List<Entity> refresh(@PathParam("datasourceName") String datasourceName) {
-    return modelingApplicationService.refresh(datasourceName);
+  @POST
+  @Path("/{datasourceName}/import")
+  public List<Entity> importModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
+    return modelingApplicationService.importModels(datasourceName, models);
+  }
+
+  @POST
+  @Path("/physics/names")
+  public List<String> getPhysicsModelNames(Datasource datasource) {
+    return modelingApplicationService.getPhysicsModelNames(datasource);
   }
 
   @GET
