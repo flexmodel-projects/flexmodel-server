@@ -24,7 +24,7 @@ public class ApiInfoFmRepository implements ApiInfoRepository {
 
   @Override
   public List<ApiInfo> findAll() {
-    return apiInfoDAO.find(query -> query);
+    return apiInfoDAO.findAll();
   }
 
   @Override

@@ -19,7 +19,7 @@ public class IdentityProviderFmRepository implements IdentityProviderRepository 
 
   @Override
   public List<IdentityProvider> findAll() {
-    return identityProviderDAO.find(query -> query);
+    return identityProviderDAO.findAll();
   }
 
   @Override
