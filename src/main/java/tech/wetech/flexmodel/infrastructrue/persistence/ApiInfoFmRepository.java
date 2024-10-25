@@ -23,6 +23,11 @@ public class ApiInfoFmRepository implements ApiInfoRepository {
   }
 
   @Override
+  public ApiInfo findById(String id) {
+    return apiInfoDAO.findById(id);
+  }
+
+  @Override
   public List<ApiInfo> findAll() {
     return apiInfoDAO.findAll();
   }

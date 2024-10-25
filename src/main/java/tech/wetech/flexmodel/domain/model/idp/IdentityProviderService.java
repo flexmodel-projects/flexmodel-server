@@ -24,7 +24,16 @@ public class IdentityProviderService {
     return identityProviderRepository.findAll();
   }
 
-  public IdentityProvider save(IdentityProvider identityProvider) {
+  public IdentityProvider create(IdentityProvider identityProvider) {
+    return identityProviderRepository.save(identityProvider);
+  }
+
+  public IdentityProvider update(IdentityProvider identityProvider) {
+    IdentityProvider older = identityProviderRepository.find(identityProvider.getName());
+    if (older == null) {
+      return identityProvider;
+    }
+    identityProvider.setCreatedAt(older.getCreatedAt());
     return identityProviderRepository.save(identityProvider);
   }
 

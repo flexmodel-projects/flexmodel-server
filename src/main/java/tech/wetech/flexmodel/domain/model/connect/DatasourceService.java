@@ -39,6 +39,13 @@ public class DatasourceService {
   }
 
   public Datasource updateDatasource(Datasource datasource) {
+    Optional<Datasource> optional = findOne(datasource.getName());
+    if (optional.isEmpty()) {
+      return datasource;
+    }
+    datasource.setEnabled(optional.orElseThrow().getEnabled());
+    datasource.setType(optional.orElseThrow().getType());
+    datasource.setCreatedAt(optional.orElseThrow().getCreatedAt());
     datasource = datasourceRepository.save(datasource);
     sessionDatasource.delete(datasource.getName());
     sessionDatasource.add(datasource);

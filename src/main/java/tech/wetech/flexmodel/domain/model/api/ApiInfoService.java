@@ -27,6 +27,12 @@ public class ApiInfoService {
   }
 
   public ApiInfo update(ApiInfo apiInfo) {
+    ApiInfo older = apiInfoRepository.findById(apiInfo.getId());
+    if (older == null) {
+      return apiInfo;
+    }
+    apiInfo.setCreatedAt(older.getCreatedAt());
+    apiInfo.setEnabled(older.getEnabled());
     return apiInfoRepository.save(apiInfo);
   }
 
