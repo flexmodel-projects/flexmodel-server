@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.api;
 
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.Entity;
@@ -35,9 +36,15 @@ public class DatasourceResource {
   }
 
   @POST
+  @Path("/{datasourceName}/sync")
+  public List<Entity> syncModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
+    return modelingApplicationService.syncModels(datasourceName, models);
+  }
+
+  @POST
   @Path("/{datasourceName}/import")
-  public List<Entity> importModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
-    return modelingApplicationService.importModels(datasourceName, models);
+  public void importModels(@PathParam("datasourceName") String datasourceName, ImportScriptRequest request) {
+    modelingApplicationService.importModels(datasourceName, request.script());
   }
 
   @POST
@@ -81,6 +88,10 @@ public class DatasourceResource {
   @Path("/{datasourceName}")
   public void deleteDatasource(@PathParam("datasourceName") String datasourceName) {
     modelingApplicationService.deleteDatasource(datasourceName);
+  }
+
+  public record ImportScriptRequest(@NotBlank String script) {
+
   }
 
 }

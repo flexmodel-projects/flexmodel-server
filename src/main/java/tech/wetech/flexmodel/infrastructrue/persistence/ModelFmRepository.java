@@ -202,4 +202,9 @@ public class ModelFmRepository implements ModelRepository {
       return (List) session.syncModels(modelNames);
     }
   }
+
+  @Override
+  public void importModels(String datasourceName, String script) {
+    sessionFactory.loadScriptString(datasourceName, script);
+  }
 }

@@ -85,7 +85,11 @@ public class ModelingApplicationService {
     return datasourceService.getPhysicsModelNames(datasource);
   }
 
-  public List<Entity> importModels(String datasourceName, Set<String> models) {
+  public List<Entity> syncModels(String datasourceName, Set<String> models) {
     return modelService.syncModels(datasourceName, models);
+  }
+
+  public void importModels(String datasourceName, String script) {
+    modelService.importModels(datasourceName, script);
   }
 }

@@ -35,4 +35,5 @@ public interface ModelRepository {
 
   List<Entity>  syncModels(String datasourceName, Set<String> modelName);
 
+  void importModels(String datasourceName, String script);
 }

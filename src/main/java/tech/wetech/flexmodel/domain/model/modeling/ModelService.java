@@ -68,4 +68,8 @@ public class ModelService {
   public List<Entity> syncModels(String datasourceName, Set<String> models) {
     return modelRepository.syncModels(datasourceName, models);
   }
+
+  public void importModels(String datasourceName, String script) {
+    modelRepository.importModels(datasourceName, script);
+  }
 }
