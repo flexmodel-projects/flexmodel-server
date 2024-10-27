@@ -43,7 +43,7 @@ public class DatasourceResource {
 
   @POST
   @Path("/{datasourceName}/import")
-  public void importModels(@PathParam("datasourceName") String datasourceName, ImportScriptRequest request) {
+  public void importModels(@PathParam("datasourceName") String datasourceName, @Valid ImportScriptRequest request) {
     modelingApplicationService.importModels(datasourceName, request.script());
   }
 

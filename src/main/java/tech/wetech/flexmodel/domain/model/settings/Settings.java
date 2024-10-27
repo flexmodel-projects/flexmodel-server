@@ -10,7 +10,9 @@ import lombok.Setter;
 @Setter
 public class Settings {
 
+  private String appName = "Flexmodel";
   private Log log = new Log();
+  private Security security = new Security();
 
   @Getter
   @Setter
@@ -22,7 +24,15 @@ public class Settings {
     /**
      * 开启控制台日志
      */
-    private boolean enableConsoleLogging = false;
+    private boolean consoleLoggingEnabled = false;
+  }
+
+  @Getter
+  @Setter
+  public static class Security {
+    private boolean apiRateLimitingEnabled = false;
+    private int maxRequests = 500;
+    private int limitRefreshPeriod = 60;
   }
 
 }
