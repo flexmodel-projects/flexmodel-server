@@ -13,6 +13,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -196,10 +197,14 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @Override
-  @SuppressWarnings("all")
-  public List<Entity> refresh(String datasourceName) {
+  public List<Entity> syncModels(String datasourceName, Set<String> modelNames) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      return (List) session.syncModels();
+      return (List) session.syncModels(modelNames);
     }
+  }
+
+  @Override
+  public void importModels(String datasourceName, String script) {
+    sessionFactory.loadScriptString(datasourceName, script);
   }
 }

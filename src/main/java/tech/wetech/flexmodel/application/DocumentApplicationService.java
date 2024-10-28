@@ -46,12 +46,9 @@ public class DocumentApplicationService {
   static {
     TYPE_MAPPING.put("ID", Map.of("type", "string"));
     TYPE_MAPPING.put("String", Map.of("type", "string"));
-    TYPE_MAPPING.put("Text", Map.of("type", "string"));
     TYPE_MAPPING.put("Int", Map.of("type", "integer", "format", "int32"));
-    TYPE_MAPPING.put("Long", Map.of("type", "integer", "format", "int64"));
     TYPE_MAPPING.put("Float", Map.of("type", "number", "format", "double"));
     TYPE_MAPPING.put("Boolean", Map.of("type", "boolean"));
-//    typeMapping.put("", Map.of("type", "array"));
     TYPE_MAPPING.put("JSON", Map.of("type", "object"));
   }
 
@@ -72,7 +69,7 @@ public class DocumentApplicationService {
     return Map.of(
       "title", "Flexmodel API document",
       "description", """
-        Learn how to interact with Flexmodel programmatically
+        Interact with Flexmodel programmatically
         """
     );
   }

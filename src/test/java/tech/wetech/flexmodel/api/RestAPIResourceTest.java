@@ -28,14 +28,14 @@ public class RestAPIResourceTest {
       .then()
       .statusCode(200)
       .body("size()", greaterThanOrEqualTo(1))
-      .body("data.system_Classes_list[0].classCode", notNullValue());
+      .body("data.system_list_Classes[0].classCode", notNullValue());
     // view
     given()
       .when()
       .get("/api/v1/system/Classes/1")
       .then()
       .statusCode(200)
-      .body("data.system_Classes.classCode", notNullValue());
+      .body("data.system_find_one_Classes.classCode", notNullValue());
   }
 
   @Test

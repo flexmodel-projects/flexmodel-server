@@ -373,6 +373,97 @@
       "indexes": []
     },
     {
+      "name": "Config",
+      "comment": "配置",
+      "type": "entity",
+      "fields": [
+        {
+          "name": "id",
+          "type": "id",
+          "unique": true,
+          "nullable": true,
+          "generator": {
+            "type": "ULIDValueGenerator",
+            "generationTime": "INSERT"
+          },
+          "modelName": "Config",
+          "validators": [],
+          "generatedValue": "ULID"
+        },
+        {
+          "name": "key",
+          "comment": "名称",
+          "type": "string",
+          "length": 255,
+          "unique": false,
+          "nullable": false,
+          "modelName": "Config",
+          "validators": [
+            {
+              "type": "NotNullValidator",
+              "message": "must not be null"
+            }
+          ]
+        },
+        {
+          "name": "value",
+          "type": "text",
+          "length": 255,
+          "unique": false,
+          "nullable": true,
+          "modelName": "Config",
+          "validators": []
+        },
+        {
+          "name": "createdAt",
+          "type": "datetime",
+          "unique": false,
+          "nullable": false,
+          "generator": {
+            "type": "DatetimeNowValueGenerator",
+            "generationTime": "INSERT"
+          },
+          "modelName": "ApiInfo",
+          "validators": [
+            {
+              "type": "NotNullValidator",
+              "message": "must not be null"
+            }
+          ]
+        },
+        {
+          "name": "updatedAt",
+          "type": "datetime",
+          "unique": false,
+          "nullable": false,
+          "generator": {
+            "type": "DatetimeNowValueGenerator",
+            "generationTime": "ALWAYS"
+          },
+          "modelName": "Config",
+          "validators": [
+            {
+              "type": "NotNullValidator",
+              "message": "must not be null"
+            }
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "name": "IDX_key",
+          "modelName": "Config",
+          "fields": [
+            {
+              "fieldName": "key",
+              "direction": "ASC"
+            }
+          ],
+          "unique": true
+        }
+      ]
+    },
+    {
       "type": "entity",
       "name": "Teacher",
       "fields": [
@@ -637,13 +728,8 @@
           "createdAt": "2024-07-13T23:21:10",
           "meta": {
             "auth": false,
-            "type": "list",
-            "model": "Classes",
-            "enable": true,
-            "paging": false,
-            "datasource": "system",
             "execution": {
-              "query": "query MyQuery($order_by: system_Classes_order_by = { id: asc }, $size: Int = 10, $page: Int = 1) {\n  system_Classes_list(order_by: $order_by, size: $size, page: $page) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "query MyQuery($order_by: system_Classes_order_by = { id: asc }, $size: Int = 10, $page: Int = 1) {\n  system_list_Classes(order_by: $order_by, size: $size, page: $page) {\n    classCode\n    className\n    id\n  }\n}",
               "variables": {
                 "order_by": {
                   "id": "desc"
@@ -664,12 +750,8 @@
           "createdAt": "2024-07-13T23:21:10",
           "meta": {
             "auth": false,
-            "type": "view",
-            "model": "Classes",
-            "enable": true,
-            "datasource": "system",
             "execution": {
-              "query": "query MyQuery($id: Int) {\n  system_Classes(where: { id: { _eq: $id } }) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "query MyQuery($id: Int) {\n  system_find_one_Classes(where: { id: { _eq: $id } }) {\n    classCode\n    className\n    id\n  }\n}",
               "variables": {
                 "id": 1
               },
@@ -688,12 +770,8 @@
           "createdAt": "2024-07-13T23:21:11",
           "meta": {
             "auth": false,
-            "type": "create",
-            "model": "Classes",
-            "enable": true,
-            "datasource": "system",
             "execution": {
-              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  create_system_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  system_create_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
           },
@@ -709,12 +787,8 @@
           "createdAt": "2024-07-13T23:21:11",
           "meta": {
             "auth": false,
-            "type": "update",
-            "model": "Classes",
-            "enable": true,
-            "datasource": "system",
             "execution": {
-              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  update_system_Classes_by_id(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  system_update_Classes_by_id(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
           },
@@ -730,12 +804,8 @@
           "createdAt": "2024-07-13T23:21:12",
           "meta": {
             "auth": false,
-            "type": "delete",
-            "model": "Classes",
-            "enable": true,
-            "datasource": "system",
             "execution": {
-              "query": "mutation MyMutation($id: ID!) {\n  delete_system_Classes_by_id(id: $id) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "mutation MyMutation($id: ID!) {\n  system_delete_Classes_by_id(id: $id) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
           },

@@ -11,6 +11,7 @@ import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author cjbi
@@ -76,13 +77,19 @@ public class ModelingApplicationService {
     modelService.dropIndex(datasourceName, modelName, indexName);
   }
 
-  public List<Entity> refresh(String datasourceName) {
-    return modelService.refresh(datasourceName);
-  }
-
   public ValidateResult validateConnection(Datasource datasource) {
     return datasourceService.validate(datasource);
   }
 
+  public List<String> getPhysicsModelNames(Datasource datasource) {
+    return datasourceService.getPhysicsModelNames(datasource);
+  }
 
+  public List<Entity> syncModels(String datasourceName, Set<String> models) {
+    return modelService.syncModels(datasourceName, models);
+  }
+
+  public void importModels(String datasourceName, String script) {
+    modelService.importModels(datasourceName, script);
+  }
 }

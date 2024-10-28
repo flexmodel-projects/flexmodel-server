@@ -8,6 +8,7 @@ import tech.wetech.flexmodel.TypedField;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author cjbi
@@ -64,8 +65,11 @@ public class ModelService {
     modelRepository.dropIndex(datasourceName, modelName, indexName);
   }
 
-  public List<Entity> refresh(String datasourceName) {
-    return modelRepository.refresh(datasourceName);
+  public List<Entity> syncModels(String datasourceName, Set<String> models) {
+    return modelRepository.syncModels(datasourceName, models);
   }
 
+  public void importModels(String datasourceName, String script) {
+    modelRepository.importModels(datasourceName, script);
+  }
 }

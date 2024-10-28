@@ -11,6 +11,8 @@ public interface ApiInfoRepository {
 
   void deleteByParentId(String parentId);
 
+  ApiInfo findById(String id);
+
   List<ApiInfo> findAll();
 
   ApiInfo save(ApiInfo record);

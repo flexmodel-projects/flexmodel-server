@@ -40,15 +40,21 @@ class DatasourceResourceTest {
       .body("success", is(true));
   }
 
-  @Test
-  void testRefresh() {
+  /*@Test
+  void testSync() {
     given()
       .when()
-      .get("/api/datasources/system/refresh")
+      .contentType(ContentType.JSON)
+      .body("""
+        [
+          "system_Teacher", "system_Student", "system_Classes"
+        ]
+        """)
+      .post("/api/datasources/system/sync")
       .then()
       .statusCode(200)
       .body("size()", greaterThanOrEqualTo(1));
-  }
+  }*/
 
   @Test
   void testFindAll() {

@@ -21,11 +21,11 @@ public class IdentityProviderApplicationService {
   }
 
   public IdentityProvider createProvider(IdentityProvider identityProvider) {
-    return identityProviderService.save(identityProvider);
+    return identityProviderService.create(identityProvider);
   }
 
   public IdentityProvider updateProvider(IdentityProvider identityProvider) {
-    return identityProviderService.save(identityProvider);
+    return identityProviderService.update(identityProvider);
   }
 
   public void deleteProvider(String id) {

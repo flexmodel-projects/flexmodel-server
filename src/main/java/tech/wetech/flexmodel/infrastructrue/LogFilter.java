@@ -11,6 +11,7 @@ import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.ApiLogService;
 import tech.wetech.flexmodel.domain.model.api.LogData;
 import tech.wetech.flexmodel.domain.model.api.LogLevel;
+import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.io.IOException;
@@ -28,6 +29,9 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
   @Inject
   ApiLogService apiLogService;
 
+  @Inject
+  SettingsService settingsService;
+
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
     reqBeginTime.set(System.currentTimeMillis());
@@ -43,29 +47,33 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
       execTime = -1L;
     }
     CompletableFuture.runAsync(() -> {
-      ApiLog apiLog = new ApiLog();
-      LogData apiData = new LogData();
-      apiLog.setData(apiData);
-      apiData.setMethod(requestContext.getMethod());
-      apiData.setPath(requestContext.getUriInfo().getPath());
-      apiData.setReferer(requestContext.getHeaders().getFirst("Referer"));
-//      apiData.setRemoteIp(null);
-      apiData.setUserAgent(requestContext.getHeaders().getFirst("User-Agent"));
-      int statusCode = responseContext.getStatus();
-      String reasonPhrase = responseContext.getStatusInfo().getReasonPhrase();
-      apiData.setStatus(statusCode);
-      apiData.setMessage(reasonPhrase);
-      apiLog.setLevel(LogLevel.INFO.toString());
-      if (statusCode >= 400 && statusCode < 500) {
-        apiLog.setLevel(LogLevel.WARN.toString());
-        apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
-      } else if (statusCode >= 500) {
-        apiLog.setLevel(LogLevel.ERROR.toString());
-        apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
-      }
-      apiData.setExecTime(execTime);
-      apiLog.setUri(apiData.getMethod() + " " + apiData.getPath());
-      apiLogService.create(apiLog);
+      saveLog(requestContext, responseContext, execTime);
     });
+  }
+
+  private void saveLog(ContainerRequestContext requestContext, ContainerResponseContext responseContext, long execTime) {
+    ApiLog apiLog = new ApiLog();
+    LogData apiData = new LogData();
+    apiLog.setData(apiData);
+    apiData.setMethod(requestContext.getMethod());
+    apiData.setPath(requestContext.getUriInfo().getPath());
+    apiData.setReferer(requestContext.getHeaders().getFirst("Referer"));
+//      apiData.setRemoteIp(null);
+    apiData.setUserAgent(requestContext.getHeaders().getFirst("User-Agent"));
+    int statusCode = responseContext.getStatus();
+    String reasonPhrase = responseContext.getStatusInfo().getReasonPhrase();
+    apiData.setStatus(statusCode);
+    apiData.setMessage(reasonPhrase);
+    apiLog.setLevel(LogLevel.INFO.toString());
+    if (statusCode >= 400 && statusCode < 500) {
+      apiLog.setLevel(LogLevel.WARN.toString());
+      apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
+    } else if (statusCode >= 500) {
+      apiLog.setLevel(LogLevel.ERROR.toString());
+      apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
+    }
+    apiData.setExecTime(execTime);
+    apiLog.setUri(apiData.getMethod() + " " + apiData.getPath());
+    apiLogService.create(apiLog);
   }
 }

@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.api;
 
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.Entity;
@@ -12,10 +13,7 @@ import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.connect.database.Database;
 import tech.wetech.flexmodel.util.JsonUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author cjbi
@@ -37,10 +35,22 @@ public class DatasourceResource {
     return modelingApplicationService.validateConnection(datasource);
   }
 
-  @GET
-  @Path("/{datasourceName}/refresh")
-  public List<Entity> refresh(@PathParam("datasourceName") String datasourceName) {
-    return modelingApplicationService.refresh(datasourceName);
+  @POST
+  @Path("/{datasourceName}/sync")
+  public List<Entity> syncModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
+    return modelingApplicationService.syncModels(datasourceName, models);
+  }
+
+  @POST
+  @Path("/{datasourceName}/import")
+  public void importModels(@PathParam("datasourceName") String datasourceName, @Valid ImportScriptRequest request) {
+    modelingApplicationService.importModels(datasourceName, request.script());
+  }
+
+  @POST
+  @Path("/physics/names")
+  public List<String> getPhysicsModelNames(Datasource datasource) {
+    return modelingApplicationService.getPhysicsModelNames(datasource);
   }
 
   @GET
@@ -78,6 +88,10 @@ public class DatasourceResource {
   @Path("/{datasourceName}")
   public void deleteDatasource(@PathParam("datasourceName") String datasourceName) {
     modelingApplicationService.deleteDatasource(datasourceName);
+  }
+
+  public record ImportScriptRequest(@NotBlank String script) {
+
   }
 
 }

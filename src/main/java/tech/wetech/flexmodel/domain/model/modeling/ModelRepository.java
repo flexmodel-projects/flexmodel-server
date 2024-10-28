@@ -6,6 +6,7 @@ import tech.wetech.flexmodel.TypedField;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author cjbi
@@ -32,5 +33,7 @@ public interface ModelRepository {
 
   void dropIndex(String datasourceName, String modelName, String indexName);
 
-  List<Entity> refresh(String datasourceName);
+  List<Entity>  syncModels(String datasourceName, Set<String> modelName);
+
+  void importModels(String datasourceName, String script);
 }

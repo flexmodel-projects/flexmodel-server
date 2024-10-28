@@ -21,7 +21,7 @@ public class DatasourceFmRepository implements DatasourceRepository {
 
   @Override
   public List<Datasource> findAll() {
-    return datasourceDAO.find(query -> query);
+    return datasourceDAO.findAll();
   }
 
   @Override
