@@ -11,6 +11,7 @@ import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.ApiLogService;
 import tech.wetech.flexmodel.domain.model.api.LogData;
 import tech.wetech.flexmodel.domain.model.api.LogLevel;
+import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.util.JsonUtils;
 
@@ -47,7 +48,10 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
       execTime = -1L;
     }
     CompletableFuture.runAsync(() -> {
-      saveLog(requestContext, responseContext, execTime);
+      Settings settings = settingsService.getSettings();
+      if (settings.getLog().isConsoleLoggingEnabled()) {
+        saveLog(requestContext, responseContext, execTime);
+      }
     });
   }
 

@@ -2,15 +2,18 @@ package tech.wetech.flexmodel.domain.model.api;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.criterion.Example;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
 /**
  * @author cjbi
  */
+@Slf4j
 @ApplicationScoped
 public class ApiLogService {
 
@@ -29,4 +32,9 @@ public class ApiLogService {
     return apiLogRepository.stat(filter);
   }
 
+  public void purgeOldLogs(int maxDays) {
+    log.info("Purging old logs older than {} days", maxDays);
+    LocalDateTime purgeDate = LocalDateTime.now().minusDays(maxDays);
+    apiLogRepository.delete(f -> f.lessThanOrEqualTo("createDate", purgeDate));
+  }
 }
