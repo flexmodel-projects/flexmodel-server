@@ -6,9 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.domain.model.api.ApiRateLimiterHolder;
 import tech.wetech.flexmodel.domain.model.settings.SettingsChanged;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author cjbi
  */
@@ -20,13 +17,8 @@ public class SettingsEventConsumer {
   public void consume(SettingsChanged event) {
     log.info("Received settings message: {}", event.getMessage());
     // 处理事件
-    List<String> invalidKeys = new ArrayList<>();
-    ApiRateLimiterHolder.getMap().forEach((k, v) -> {
-      if (k.endsWith("@default")) {
-        invalidKeys.add(k);
-      }
-    });
-    invalidKeys.forEach(ApiRateLimiterHolder::removeApiRateLimiter);
+    ApiRateLimiterHolder.removeApiRateLimiter("__DEFAULT");
+
   }
 
 }

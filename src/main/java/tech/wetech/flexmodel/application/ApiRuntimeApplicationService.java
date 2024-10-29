@@ -87,34 +87,7 @@ public class ApiRuntimeApplicationService {
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiInfo.getMethod())) {
         log.debug("Matched request for api: {}", apiInfo);
-        try {
-          Boolean rateLimitingEnabled = (Boolean) meta.getOrDefault("rateLimitingEnabled", false);
-          Settings settings = settingsService.getSettings();
-          if (rateLimitingEnabled || settings.getSecurity().isRateLimitingEnabled()) {
-            int maxRequestCount = settings.getSecurity().getMaxRequestCount();
-            int intervalInSeconds = settings.getSecurity().getIntervalInSeconds();
-            ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter;
-            if (rateLimitingEnabled) {
-              maxRequestCount = (int) meta.get("maxRequestCount");
-              intervalInSeconds = (int) meta.get("intervalInSeconds");
-              apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath(), maxRequestCount, intervalInSeconds);
-            } else {
-              apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath() + "@default", maxRequestCount, intervalInSeconds);
-            }
-            if (!apiRateLimiter.tryAcquire()) {
-              Map<String, Object> result = new HashMap<>();
-              result.put("messasge", "Too many requests.");
-              result.put("code", -1);
-              result.put("success", false);
-              routingContext.response()
-                .putHeader("Content-Type", "application/json")
-                .end(JsonUtils.getInstance().stringify(result));
-              return;
-            }
-          }
-        } catch (Exception e) {
-          log.error("Rate limiting error: {}", e.getMessage(), e);
-        }
+        if (isRateLimiting(routingContext, apiInfo, meta)) return;
         boolean isAuth = (boolean) meta.get("auth");
         if (isAuth) {
           String identityProvider = (String) meta.get("identityProvider");
@@ -157,6 +130,53 @@ public class ApiRuntimeApplicationService {
         break;
       }
     }
+  }
+
+  private boolean isRateLimiting(RoutingContext routingContext, ApiInfo apiInfo, Map<String, Object> meta) {
+    try {
+      Settings settings = settingsService.getSettings();
+      if (settings.getSecurity().isRateLimitingEnabled()) {
+        log.debug("Global Rate limiting enabled.");
+        ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter("__DEFAULT",
+          settings.getSecurity().getMaxRequestCount(),
+          settings.getSecurity().getIntervalInSeconds());
+        if (!apiRateLimiter.tryAcquire()) {
+          Map<String, Object> result = new HashMap<>();
+          result.put("messasge", "Too many requests.");
+          result.put("code", -1);
+          result.put("success", false);
+          routingContext.response()
+            .putHeader("Content-Type", "application/json")
+            .end(JsonUtils.getInstance().stringify(result));
+          return true;
+        }
+      }
+      Boolean rateLimitingEnabled = (Boolean) meta.getOrDefault("rateLimitingEnabled", false);
+      if (rateLimitingEnabled) {
+        log.debug("Rate limiting enabled for api: {}", apiInfo);
+        int maxRequestCount = settings.getSecurity().getMaxRequestCount();
+        int intervalInSeconds = settings.getSecurity().getIntervalInSeconds();
+        maxRequestCount = (int) meta.get("maxRequestCount");
+        intervalInSeconds = (int) meta.get("intervalInSeconds");
+        ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(
+          apiInfo.getMethod() + ":" + apiInfo.getPath(),
+          maxRequestCount,
+          intervalInSeconds);
+        if (!apiRateLimiter.tryAcquire()) {
+          Map<String, Object> result = new HashMap<>();
+          result.put("messasge", "Too many requests.");
+          result.put("code", -1);
+          result.put("success", false);
+          routingContext.response()
+            .putHeader("Content-Type", "application/json")
+            .end(JsonUtils.getInstance().stringify(result));
+          return true;
+        }
+      }
+    } catch (Exception e) {
+      log.error("Rate limiting error: {}", e.getMessage(), e);
+    }
+    return false;
   }
 
   private void sendAuthFail(RoutingContext routingContext) {
