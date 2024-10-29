@@ -58,7 +58,7 @@ jobs:
         run: |
           mvn -B -U -Dmaven.test.skip=true clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true -Dquarkus.container-image.image=cjbi/flexmodel:latest -Dquarkus.container-image.username=${{ secrets.DOCKER_USERNAME }} -Dquarkus.container-image.password=${{ secrets.DOCKER_PASSWORD }}
       - name: Caching Maven Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}

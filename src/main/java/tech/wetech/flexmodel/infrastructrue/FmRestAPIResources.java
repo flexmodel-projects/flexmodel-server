@@ -24,7 +24,7 @@ public class FmRestAPIResources {
     router.route().handler(BodyHandler.create());
     router.route()
       .pathRegex("/api/v1/.*")
-      .handler(apiRuntimeApplicationService::accept);
+      .blockingHandler(apiRuntimeApplicationService::accept);
 
     router.route().pathRegex("/api/datasources.*")
       .handler(handle -> {
