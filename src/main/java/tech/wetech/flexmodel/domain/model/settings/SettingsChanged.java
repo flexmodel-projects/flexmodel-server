@@ -11,5 +11,5 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class SettingsChanged {
-  private Settings settings;
+  private Settings message;
 }
