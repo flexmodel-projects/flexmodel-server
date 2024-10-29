@@ -1,6 +1,6 @@
 package tech.wetech.flexmodel.domain.model.api;
 
-import io.quarkus.cache.CacheInvalidate;
+import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -22,7 +22,7 @@ public class ApiInfoService {
     return apiInfoRepository.findAll();
   }
 
-  @CacheInvalidate(cacheName = "apiInfoList")
+  @CacheInvalidateAll(cacheName = "apiInfoList")
   public ApiInfo create(ApiInfo apiInfo) {
     if (apiInfo.getName() == null || apiInfo.getName().isEmpty()) {
       throw new ApiInfoException("API name must not be null");
@@ -30,7 +30,7 @@ public class ApiInfoService {
     return apiInfoRepository.save(apiInfo);
   }
 
-  @CacheInvalidate(cacheName = "apiInfoList")
+  @CacheInvalidateAll(cacheName = "apiInfoList")
   public ApiInfo update(ApiInfo apiInfo) {
     ApiInfo older = apiInfoRepository.findById(apiInfo.getId());
     if (older == null) {
@@ -38,16 +38,18 @@ public class ApiInfoService {
     }
     apiInfo.setCreatedAt(older.getCreatedAt());
     apiInfo.setEnabled(older.getEnabled());
+    ApiRateLimiterHolder.removeApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath());
     return apiInfoRepository.save(apiInfo);
   }
 
-  @CacheInvalidate(cacheName = "apiInfoList")
+  @CacheInvalidateAll(cacheName = "apiInfoList")
   public ApiInfo updateIgnoreNull(ApiInfo apiInfo) {
     apiInfoRepository.updateIgnoreNull(apiInfo.getId(), apiInfo);
+    ApiRateLimiterHolder.removeApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath());
     return apiInfo;
   }
 
-  @CacheInvalidate(cacheName = "apiInfoList")
+  @CacheInvalidateAll(cacheName = "apiInfoList")
   public void delete(String id) {
     apiInfoRepository.delete(id);
     apiInfoRepository.deleteByParentId(id);

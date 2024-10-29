@@ -1,7 +1,8 @@
 package tech.wetech.flexmodel.domain.model.settings;
 
-import io.quarkus.cache.CacheInvalidate;
+import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheResult;
+import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -14,14 +15,21 @@ public class SettingsService {
   @Inject
   SettingsRepository settingsRepository;
 
+  @Inject
+  EventBus eventBus;
+
   @CacheResult(cacheName = "settings")
   public Settings getSettings() {
     return settingsRepository.getSettings();
   }
 
-  @CacheInvalidate(cacheName = "settings")
+  @CacheInvalidateAll(cacheName = "settings")
   public Settings saveSettings(Settings settings) {
-    return settingsRepository.saveSettings(settings);
+    try {
+      return settingsRepository.saveSettings(settings);
+    } finally {
+      eventBus.publish("settings-changed", new SettingsChanged(settings));
+    }
   }
 
 }

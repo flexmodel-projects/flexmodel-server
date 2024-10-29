@@ -30,9 +30,9 @@ public class Settings {
   @Getter
   @Setter
   public static class Security {
-    private boolean apiRateLimitingEnabled = false;
-    private int maxRequests = 500;
-    private int limitRefreshPeriod = 60;
+    private boolean rateLimitingEnabled = false;
+    private int maxRequestCount = 500;
+    private int intervalInSeconds = 60;
   }
 
 }

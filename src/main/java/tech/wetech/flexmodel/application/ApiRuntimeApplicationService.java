@@ -10,13 +10,12 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
-import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
-import tech.wetech.flexmodel.domain.model.api.ApiLogService;
-import tech.wetech.flexmodel.domain.model.api.LogData;
-import tech.wetech.flexmodel.domain.model.api.LogLevel;
+import tech.wetech.flexmodel.domain.model.api.*;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
+import tech.wetech.flexmodel.domain.model.settings.Settings;
+import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.util.JsonUtils;
 import tech.wetech.flexmodel.util.UriTemplate;
@@ -54,6 +53,8 @@ public class ApiRuntimeApplicationService {
 
   @Inject
   GraphQLProvider graphQLProvider;
+  @Inject
+  SettingsService settingsService;
 
   public ExecutionResult execute(String operationName, String query, Map<String, Object> variables) {
     GraphQL graphQL = graphQLProvider.getGraphQL();
@@ -78,6 +79,30 @@ public class ApiRuntimeApplicationService {
         Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
         String method = routingContext.request().method().name();
         if (pathParameters != null && method.equals(apiInfo.getMethod())) {
+          Boolean rateLimitingEnabled = (Boolean) meta.getOrDefault("rateLimitingEnabled", false);
+          Settings settings = settingsService.getSettings();
+          if (rateLimitingEnabled || settings.getSecurity().isRateLimitingEnabled()) {
+            int maxRequestCount = settings.getSecurity().getMaxRequestCount();
+            int intervalInSeconds = settings.getSecurity().getIntervalInSeconds();
+            ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter;
+            if (rateLimitingEnabled) {
+              maxRequestCount = (int) meta.get("maxRequestCount");
+              intervalInSeconds = (int) meta.get("intervalInSeconds");
+              apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath(), maxRequestCount, intervalInSeconds);
+            } else {
+              apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath() + "@default", maxRequestCount, intervalInSeconds);
+            }
+            if (!apiRateLimiter.tryAcquire()) {
+              Map<String, Object> result = new HashMap<>();
+              result.put("messasge", "Too many requests.");
+              result.put("code", -1);
+              result.put("success", false);
+              routingContext.response()
+                .putHeader("Content-Type", "application/json")
+                .end(JsonUtils.getInstance().stringify(result));
+              return;
+            }
+          }
           log.debug("Matched request for api: {}", apiInfo);
           boolean isAuth = (boolean) meta.get("auth");
           if (isAuth) {
@@ -118,16 +143,6 @@ public class ApiRuntimeApplicationService {
               .putHeader("Content-Type", "application/json")
               .end(JsonUtils.getInstance().stringify(result));
           }
-//          switch (restAPIType) {
-//            case "list" -> doList(routingContext, pathParameters, apiInfo);
-//            case "view" -> doView(routingContext, pathParameters, apiInfo);
-//            case "create" -> doCreate(routingContext, pathParameters, apiInfo);
-//            case "update" -> doUpdate(routingContext, pathParameters, apiInfo);
-//            case "delete" -> doDelete(routingContext, pathParameters, apiInfo);
-//            default -> {
-//              routingContext.response().end("Matched request for path: " + routingContext.normalisedPath());
-//            }
-//          }
           break;
         }
       }
