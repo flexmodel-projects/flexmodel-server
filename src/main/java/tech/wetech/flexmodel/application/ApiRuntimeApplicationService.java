@@ -71,86 +71,88 @@ public class ApiRuntimeApplicationService {
 
   @SuppressWarnings("all")
   public void accept(RoutingContext routingContext) {
-    log(routingContext, () -> {
-      List<ApiInfo> apis = apiInfoService.findList();
-      for (ApiInfo apiInfo : apis) {
-        Map<String, Object> meta = (Map<String, Object>) apiInfo.getMeta();
-        UriTemplate uriTemplate = new UriTemplate("/api/v1" + apiInfo.getPath());
-        Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
-        String method = routingContext.request().method().name();
-        if (pathParameters != null && method.equals(apiInfo.getMethod())) {
-          log.debug("Matched request for api: {}", apiInfo);
-          try {
-            Boolean rateLimitingEnabled = (Boolean) meta.getOrDefault("rateLimitingEnabled", false);
-            Settings settings = settingsService.getSettings();
-            if (rateLimitingEnabled || settings.getSecurity().isRateLimitingEnabled()) {
-              int maxRequestCount = settings.getSecurity().getMaxRequestCount();
-              int intervalInSeconds = settings.getSecurity().getIntervalInSeconds();
-              ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter;
-              if (rateLimitingEnabled) {
-                maxRequestCount = (int) meta.get("maxRequestCount");
-                intervalInSeconds = (int) meta.get("intervalInSeconds");
-                apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath(), maxRequestCount, intervalInSeconds);
-              } else {
-                apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath() + "@default", maxRequestCount, intervalInSeconds);
-              }
-              if (!apiRateLimiter.tryAcquire()) {
-                Map<String, Object> result = new HashMap<>();
-                result.put("messasge", "Too many requests.");
-                result.put("code", -1);
-                result.put("success", false);
-                routingContext.response()
-                  .putHeader("Content-Type", "application/json")
-                  .end(JsonUtils.getInstance().stringify(result));
-                return;
-              }
+    log(routingContext, () -> doRequest(routingContext));
+  }
+
+  private void doRequest(RoutingContext routingContext) {
+    List<ApiInfo> apis = apiInfoService.findList();
+    for (ApiInfo apiInfo : apis) {
+      Map<String, Object> meta = (Map<String, Object>) apiInfo.getMeta();
+      UriTemplate uriTemplate = new UriTemplate("/api/v1" + apiInfo.getPath());
+      Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
+      String method = routingContext.request().method().name();
+      if (pathParameters != null && method.equals(apiInfo.getMethod())) {
+        log.debug("Matched request for api: {}", apiInfo);
+        try {
+          Boolean rateLimitingEnabled = (Boolean) meta.getOrDefault("rateLimitingEnabled", false);
+          Settings settings = settingsService.getSettings();
+          if (rateLimitingEnabled || settings.getSecurity().isRateLimitingEnabled()) {
+            int maxRequestCount = settings.getSecurity().getMaxRequestCount();
+            int intervalInSeconds = settings.getSecurity().getIntervalInSeconds();
+            ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter;
+            if (rateLimitingEnabled) {
+              maxRequestCount = (int) meta.get("maxRequestCount");
+              intervalInSeconds = (int) meta.get("intervalInSeconds");
+              apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath(), maxRequestCount, intervalInSeconds);
+            } else {
+              apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath() + "@default", maxRequestCount, intervalInSeconds);
             }
-          } catch (Exception e) {
-            log.error("Rate limiting error: {}", e.getMessage(), e);
-          }
-          boolean isAuth = (boolean) meta.get("auth");
-          if (isAuth) {
-            String identityProvider = (String) meta.get("identityProvider");
-            String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
-            String token = authorization.replace("Bearer", "").trim();
-            boolean active = identityProviderService.checkToken(identityProvider, token);
-            if (!active) {
-              sendAuthFail(routingContext);
+            if (!apiRateLimiter.tryAcquire()) {
+              Map<String, Object> result = new HashMap<>();
+              result.put("messasge", "Too many requests.");
+              result.put("code", -1);
+              result.put("success", false);
+              routingContext.response()
+                .putHeader("Content-Type", "application/json")
+                .end(JsonUtils.getInstance().stringify(result));
               return;
             }
           }
-          Map execution = (Map) meta.get("execution");
-          String operationName = (String) execution.get("operationName");
-          String query = (String) execution.get("query");
-          String restAPIType = (String) meta.get("type");
-          Map<String, Object> defaultVariables = (Map<String, Object>) execution.get("variables");
-          Map<String, Object> variables = new HashMap<>();
-          if (defaultVariables != null) {
-            variables.putAll(defaultVariables);
-          }
-          if (method.equals("GET")) {
-            ExecutionResult result = execute(operationName, query, defaultVariables);
-            routingContext.response()
-              .putHeader("Content-Type", "application/json")
-              .end(JsonUtils.getInstance().stringify(result));
-          } else {
-            String bodyString = routingContext.body().asString();
-            Map body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
-            // 请求体
-            if (body != null) {
-              variables.putAll(body);
-            }
-            // 路径参数
-            variables.putAll(pathParameters);
-            ExecutionResult result = execute(operationName, query, variables);
-            routingContext.response()
-              .putHeader("Content-Type", "application/json")
-              .end(JsonUtils.getInstance().stringify(result));
-          }
-          break;
+        } catch (Exception e) {
+          log.error("Rate limiting error: {}", e.getMessage(), e);
         }
+        boolean isAuth = (boolean) meta.get("auth");
+        if (isAuth) {
+          String identityProvider = (String) meta.get("identityProvider");
+          String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
+          String token = authorization.replace("Bearer", "").trim();
+          boolean active = identityProviderService.checkToken(identityProvider, token);
+          if (!active) {
+            sendAuthFail(routingContext);
+            return;
+          }
+        }
+        Map execution = (Map) meta.get("execution");
+        String operationName = (String) execution.get("operationName");
+        String query = (String) execution.get("query");
+        String restAPIType = (String) meta.get("type");
+        Map<String, Object> defaultVariables = (Map<String, Object>) execution.get("variables");
+        Map<String, Object> variables = new HashMap<>();
+        if (defaultVariables != null) {
+          variables.putAll(defaultVariables);
+        }
+        if (method.equals("GET")) {
+          ExecutionResult result = execute(operationName, query, defaultVariables);
+          routingContext.response()
+            .putHeader("Content-Type", "application/json")
+            .end(JsonUtils.getInstance().stringify(result));
+        } else {
+          String bodyString = routingContext.body().asString();
+          Map body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
+          // 请求体
+          if (body != null) {
+            variables.putAll(body);
+          }
+          // 路径参数
+          variables.putAll(pathParameters);
+          ExecutionResult result = execute(operationName, query, variables);
+          routingContext.response()
+            .putHeader("Content-Type", "application/json")
+            .end(JsonUtils.getInstance().stringify(result));
+        }
+        break;
       }
-    });
+    }
   }
 
   private void sendAuthFail(RoutingContext routingContext) {
