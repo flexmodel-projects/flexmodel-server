@@ -192,8 +192,7 @@ public class ApiRuntimeApplicationService {
       apiData.setStatus(routingContext.response().getStatusCode());
       apiData.setMessage(routingContext.response().getStatusMessage());
       apiData.setExecTime(System.currentTimeMillis() - beginTime);
-      apiLogService.create(apiLog);
-    }
+      routingContext.addEndHandler(handle-> apiLogService.create(apiLog));}
 
   }
 
