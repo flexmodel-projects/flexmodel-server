@@ -5,6 +5,7 @@ import graphql.ExecutionResult;
 import graphql.GraphQL;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +56,9 @@ public class ApiRuntimeApplicationService {
   GraphQLProvider graphQLProvider;
   @Inject
   SettingsService settingsService;
+
+  @Inject
+  EventBus eventBus;
 
   public ExecutionResult execute(String operationName, String query, Map<String, Object> variables) {
     GraphQL graphQL = graphQLProvider.getGraphQL();
@@ -192,7 +196,8 @@ public class ApiRuntimeApplicationService {
       apiData.setStatus(routingContext.response().getStatusCode());
       apiData.setMessage(routingContext.response().getStatusMessage());
       apiData.setExecTime(System.currentTimeMillis() - beginTime);
-      routingContext.addEndHandler(handle-> apiLogService.create(apiLog));}
+      eventBus.publish("request.logging", apiLog);
+    }
 
   }
 

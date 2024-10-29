@@ -16,10 +16,9 @@ import java.util.List;
 @ApplicationScoped
 public class SettingsEventConsumer {
 
-
   @ConsumeEvent("settings-changed") // 监听特定地址的事件
   public void consume(SettingsChanged event) {
-    log.info("Received message: {}", event.getMessage());
+    log.info("Received settings message: {}", event.getMessage());
     // 处理事件
     List<String> invalidKeys = new ArrayList<>();
     ApiRateLimiterHolder.getMap().forEach((k, v) -> {
