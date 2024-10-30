@@ -42,6 +42,7 @@ public class DocumentApplicationService {
   GraphQLProvider graphQLProvider;
 
   public static final Map<String, Map> TYPE_MAPPING = new HashMap<>();
+  public static final String GRAPHQL_INTERNAL_DIRECTIVE = "internal";
 
   static {
     TYPE_MAPPING.put("ID", Map.of("type", "string"));
@@ -109,10 +110,7 @@ public class DocumentApplicationService {
         Document document = parser.parse(query);
 
         // 3. 提取变量
-        List<VariableDefinition> variableDefinitions = document.getDefinitions().stream()
-          .filter(def -> def instanceof OperationDefinition)
-          .flatMap(def -> ((OperationDefinition) def).getVariableDefinitions().stream())
-          .collect(Collectors.toList());
+        List<VariableDefinition> variableDefinitions = getVariableDefinitions(document);
 
         Map<String, Object> requestType = new HashMap<>();
         Map<String, Object> properties = new HashMap<>();
@@ -199,6 +197,21 @@ public class DocumentApplicationService {
 
     }
     return definitions;
+  }
+
+  /**
+   * 提取变量
+   *
+   * @param document
+   * @return
+   */
+  private List<VariableDefinition> getVariableDefinitions(Document document) {
+    return document.getDefinitions().stream()
+      .filter(def -> def instanceof OperationDefinition)
+      .flatMap(def -> ((OperationDefinition) def).getVariableDefinitions().stream()
+        .filter(f -> f.getDirectives(GRAPHQL_INTERNAL_DIRECTIVE).isEmpty())
+      )
+      .collect(Collectors.toList());
   }
 
   private String addModelDefinition(String datasourceName, String modelName, Map<String, Object> definitions) {
@@ -357,10 +370,7 @@ public class DocumentApplicationService {
 
     if (!supportsBody) {
       // 3. 提取变量
-      List<VariableDefinition> variableDefinitions = document.getDefinitions().stream()
-        .filter(def -> def instanceof OperationDefinition)
-        .flatMap(def -> ((OperationDefinition) def).getVariableDefinitions().stream())
-        .collect(Collectors.toList());
+      List<VariableDefinition> variableDefinitions = getVariableDefinitions(document);
 
       // 4. 输出变量信息
       for (VariableDefinition variableDefinition : variableDefinitions) {
