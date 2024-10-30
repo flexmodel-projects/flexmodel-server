@@ -64,3 +64,18 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Docker Image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          command_timeout: 10m
+          script: |
+            cd /opt/flexmodel-quickstarts/docker-compose
+            docker-compose pull
+            docker-compose up -d
