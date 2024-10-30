@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.Projections;
 import tech.wetech.flexmodel.codegen.dao.ApiLogDAO;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.criterion.Example;
@@ -12,7 +13,8 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 import static tech.wetech.flexmodel.Direction.DESC;
-import static tech.wetech.flexmodel.Projections.*;
+import static tech.wetech.flexmodel.Projections.dateFormat;
+import static tech.wetech.flexmodel.Projections.field;
 
 /**
  * @author cjbi
@@ -44,7 +46,7 @@ public class ApiLogFmRepository implements ApiLogRepository {
       query
         .setProjection(projection -> projection
           .addField("date", dateFormat(field("createdAt"), "yyyy-MM-dd hh:00:00"))
-          .addField("total", count(field("id")))
+          .addField("total", Projections.count(field("id")))
         )
         .setGroupBy(groupBy -> groupBy
           .addField("date")
@@ -60,6 +62,11 @@ public class ApiLogFmRepository implements ApiLogRepository {
   @Override
   public void delete(UnaryOperator<Example.Criteria> unaryOperator) {
     apiLogDAO.delete(unaryOperator);
+  }
+
+  @Override
+  public long count(UnaryOperator<Example.Criteria> filter) {
+    return apiLogDAO.count(query -> query.setFilter(filter));
   }
 
 }

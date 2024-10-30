@@ -28,6 +28,10 @@ public class ApiLogService {
     return apiLogRepository.find(filter, current, pageSize);
   }
 
+  public long count(UnaryOperator<Example.Criteria> filter) {
+    return apiLogRepository.count(filter);
+  }
+
   public List<LogStat> stat(UnaryOperator<Example.Criteria> filter) {
     return apiLogRepository.stat(filter);
   }

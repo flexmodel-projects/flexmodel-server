@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.application.ApiLogApplicationService;
+import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 
@@ -24,11 +25,11 @@ public class ApiLogResource {
   ApiLogApplicationService apiLogApplicationService;
 
   @GET
-  public List<ApiLog> findApiList(@QueryParam("current") @DefaultValue("1") int current,
-                                  @QueryParam("pageSize") @DefaultValue("50") int pageSize,
-                                  @QueryParam("keyword") String keyword,
-                                  @QueryParam("dateRange") String dateRange,
-                                  @QueryParam("level") String levelStr
+  public PageDTO<ApiLog> findApiLogs(@QueryParam("current") @DefaultValue("1") int current,
+                                     @QueryParam("pageSize") @DefaultValue("50") int pageSize,
+                                     @QueryParam("keyword") String keyword,
+                                     @QueryParam("dateRange") String dateRange,
+                                     @QueryParam("level") String levelStr
   ) {
     RequestResult result = parseQuery(dateRange, levelStr);
     return apiLogApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), result.level());

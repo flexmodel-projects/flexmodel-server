@@ -15,7 +15,7 @@ import static io.restassured.RestAssured.given;
 public class ApiLogResourceTest {
 
   @Test
-  void testFindApiList() {
+  void testFindApiLogs() {
     given()
       .when()
       .get("/api/logs")

@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.criterion.Example;
 import tech.wetech.flexmodel.domain.model.api.ApiLogService;
@@ -20,9 +21,10 @@ public class ApiLogApplicationService {
   @Inject
   ApiLogService apiLogService;
 
-  public List<ApiLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Set<String> level) {
-
-    return apiLogService.find(f -> getCriteria(keyword, startDate, endDate, level, f), current, pageSize);
+  public PageDTO<ApiLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Set<String> level) {
+    List<ApiLog> list = apiLogService.find(f -> getCriteria(keyword, startDate, endDate, level, f), current, pageSize);
+    long total = apiLogService.count(f -> getCriteria(keyword, startDate, endDate, level, f));
+    return new PageDTO<>(list, total);
   }
 
   public List<LogStat> stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Set<String> level) {

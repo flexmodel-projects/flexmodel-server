@@ -18,4 +18,7 @@ public interface ApiLogRepository {
   ApiLog save(ApiLog record);
 
   void delete(UnaryOperator<Example.Criteria> unaryOperator);
+
+  long count(UnaryOperator<Example.Criteria> filter);
+
 }

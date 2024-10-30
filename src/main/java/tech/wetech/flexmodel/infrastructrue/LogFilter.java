@@ -49,7 +49,9 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     }
     CompletableFuture.runAsync(() -> {
       Settings settings = settingsService.getSettings();
-      if (settings.getLog().isConsoleLoggingEnabled()) {
+      if (settings.getLog().isConsoleLoggingEnabled() &&
+          !requestContext.getUriInfo().getPath().startsWith("/api/logs")
+      ) {
         saveLog(requestContext, responseContext, execTime);
       }
     });
