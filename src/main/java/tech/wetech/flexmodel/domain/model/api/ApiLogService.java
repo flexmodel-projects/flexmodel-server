@@ -36,6 +36,10 @@ public class ApiLogService {
     return apiLogRepository.stat(filter);
   }
 
+  public List<LogApiRank> ranking(UnaryOperator<Example.Criteria> filter) {
+    return apiLogRepository.ranking(filter);
+  }
+
   public void purgeOldLogs(int maxDays) {
     log.info("Purging old logs older than {} days", maxDays);
     LocalDateTime purgeDate = LocalDateTime.now().minusDays(maxDays);

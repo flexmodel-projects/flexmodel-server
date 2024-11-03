@@ -7,6 +7,7 @@ import tech.wetech.flexmodel.codegen.dao.ApiLogDAO;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.criterion.Example;
 import tech.wetech.flexmodel.domain.model.api.ApiLogRepository;
+import tech.wetech.flexmodel.domain.model.api.LogApiRank;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 
 import java.util.List;
@@ -52,6 +53,22 @@ public class ApiLogFmRepository implements ApiLogRepository {
           .addField("date")
         )
         .setFilter(filter), LogStat.class);
+  }
+
+  @Override
+  public List<LogApiRank> ranking(UnaryOperator<Example.Criteria> filter) {
+    return apiLogDAO.find(query ->
+      query
+        .setProjection(projection -> projection
+          .addField("name", field("uri"))
+          .addField("total", Projections.count(field("id")))
+        )
+        .setGroupBy(groupBy -> groupBy
+          .addField("uri")
+        )
+        .setPage(p -> p.setPageSize(20))
+        .setSort(s -> s.addOrder("total", DESC))
+        .setFilter(filter), LogApiRank.class);
   }
 
   @Override

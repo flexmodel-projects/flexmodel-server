@@ -15,6 +15,8 @@ public interface ApiLogRepository {
 
   List<LogStat> stat(UnaryOperator<Example.Criteria> filter);
 
+  List<LogApiRank> ranking(UnaryOperator<Example.Criteria> filter);
+
   ApiLog save(ApiLog record);
 
   void delete(UnaryOperator<Example.Criteria> unaryOperator);
