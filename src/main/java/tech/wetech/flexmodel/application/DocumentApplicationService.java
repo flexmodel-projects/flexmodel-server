@@ -302,6 +302,7 @@ public class DocumentApplicationService {
         content.put("operationId", api.getId());
 
         Map<String, Object> responses = new HashMap<>();
+        responses.put("200", buildResponse200(api));
         responses.put("400", Map.of("description", "invalid input"));
         responses.put("404", Map.of("description", "not found"));
         content.put("responses", responses);
@@ -398,6 +399,17 @@ public class DocumentApplicationService {
     }
 
     return parameters;
+  }
+
+  private Map<String, Object> buildResponse200(ApiInfo api) {
+    String sanitizeName = getSanitizeName(api);
+    return Map.of(
+      "description", "successful operation",
+      "content", Map.of(
+        "application/json",
+        Map.of("schema",
+          Map.of("$ref", "#/components/schemas/" + sanitizeName + "Response")))
+    );
   }
 
 }
