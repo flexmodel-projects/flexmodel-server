@@ -32,14 +32,17 @@ public class StaticResources {
         ctx.reroute("/webjars/flexmodel-ui/graphiql/" + resource);
       });
     router.route()
+      .path("/rapi-doc/:resource")
+      .handler(ctx -> {
+        String resource = ctx.pathParam("resource");
+        ctx.reroute("/webjars/flexmodel-ui/rapi-doc/" + resource);
+      });
+    router.route()
       .path("/logo.svg")
       .handler(handler -> handler.reroute("/webjars/flexmodel-ui/logo.svg"));
     router.route()
       .path("/favicon.svg")
       .handler(handler -> handler.reroute("/webjars/flexmodel-ui/favicon.svg"));
-    router.route()
-      .path("/rapi-doc.html")
-      .handler(handler -> handler.reroute("/webjars/flexmodel-ui/rapi-doc.html"));
   }
 
 }

@@ -171,7 +171,7 @@ public class DocumentApplicationService {
                   if (definitionType instanceof GraphQLScalarType graphQLScalarType) {
                     typeProperties.put(subField.getName(), TYPE_MAPPING.get(graphQLScalarType.getName()));
                   } else {
-                    throw new RuntimeException();
+                    log.error("Unkown definitionType: {}, sanitizeName={}", definitionType, sanitizeName);
                   }
                 }
               }
@@ -291,7 +291,7 @@ public class DocumentApplicationService {
             .filter(a -> a.getId().equals(api.getParentId()))
             .map(ApiInfo::getName)
             .findFirst()
-            .orElseThrow()
+            .orElse("Unknown")
         ));
         Map<String, Object> meta = (Map<String, Object>) api.getMeta();
         if (meta == null || meta.isEmpty()) {
@@ -312,6 +312,13 @@ public class DocumentApplicationService {
         String query = (String) execution.get("query");
         Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
         Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
+
+        content.put("description",
+          String.format("""
+            ```graphql
+            %s
+            ```
+            """, query));
 
         UriTemplate uriTemplate = new UriTemplate(api.getPath());
         Map<String, String> pathParamters = uriTemplate.match(new UriTemplate(api.getPath()));
