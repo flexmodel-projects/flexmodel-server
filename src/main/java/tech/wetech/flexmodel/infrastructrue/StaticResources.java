@@ -37,6 +37,9 @@ public class StaticResources {
     router.route()
       .path("/favicon.svg")
       .handler(handler -> handler.reroute("/webjars/flexmodel-ui/favicon.svg"));
+    router.route()
+      .path("/rapi-doc.html")
+      .handler(handler -> handler.reroute("/webjars/flexmodel-ui/rapi-doc.html"));
   }
 
 }
