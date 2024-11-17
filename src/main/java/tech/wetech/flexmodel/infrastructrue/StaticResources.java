@@ -39,10 +39,10 @@ public class StaticResources {
       });
     router.route()
       .path("/logo.svg")
-      .handler(handler -> handler.reroute("/webjars/flexmodel-ui/logo.svg"));
+      .handler(handler -> handler.reroute("/webjars/flexmodel-ui/logo.png"));
     router.route()
       .path("/favicon.svg")
-      .handler(handler -> handler.reroute("/webjars/flexmodel-ui/favicon.svg"));
+      .handler(handler -> handler.reroute("/webjars/flexmodel-ui/favicon.ico"));
   }
 
 }
