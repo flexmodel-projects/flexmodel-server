@@ -3,6 +3,9 @@ package tech.wetech.flexmodel.domain.model.settings;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author cjbi
  */
@@ -13,6 +16,7 @@ public class Settings {
   private String appName = "Flexmodel";
   private Log log = new Log();
   private Security security = new Security();
+  private Proxy proxy = new Proxy();
 
   @Getter
   @Setter
@@ -33,6 +37,23 @@ public class Settings {
     private boolean rateLimitingEnabled = false;
     private int maxRequestCount = 500;
     private int intervalInSeconds = 60;
+    private boolean graphqlEndpointEnabled = false;
+    private String graphqlEndpointPath = "/graphql";
+    private String graphqlEndpointIdentityProvider;
+  }
+
+  @Getter
+  @Setter
+  public static class Proxy {
+    private boolean routesEnabled = false;
+    private List<Route> routes = new ArrayList<>();
+  }
+
+  @Getter
+  @Setter
+  public static class Route {
+    private String path;
+    private String to;
   }
 
 }

@@ -313,12 +313,12 @@ public class DocumentApplicationService {
         Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
         Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
 
-        content.put("description",
-          String.format("""
-            ```graphql
-            %s
-            ```
-            """, query));
+//        content.put("description",
+//          String.format("""
+//            ```graphql
+//            %s
+//            ```
+//            """, query));
 
         UriTemplate uriTemplate = new UriTemplate(api.getPath());
         Map<String, String> pathParamters = uriTemplate.match(new UriTemplate(api.getPath()));
