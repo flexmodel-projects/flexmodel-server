@@ -38,10 +38,10 @@ public class StaticResources {
         ctx.reroute("/webjars/flexmodel-ui/rapi-doc/" + resource);
       });
     router.route()
-      .path("/logo.svg")
+      .path("/logo.png")
       .handler(handler -> handler.reroute("/webjars/flexmodel-ui/logo.png"));
     router.route()
-      .path("/favicon.svg")
+      .path("/favicon.ico")
       .handler(handler -> handler.reroute("/webjars/flexmodel-ui/favicon.ico"));
   }
 
