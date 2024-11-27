@@ -6,6 +6,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.application.ApiDesignApplicationService;
 import tech.wetech.flexmodel.application.dto.ApiInfoTreeDTO;
+import tech.wetech.flexmodel.application.dto.GenerateAPIsDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 
 import java.util.List;
@@ -49,6 +50,12 @@ public class ApiInfoResource {
   @Path("/{id}")
   public void delete(@PathParam("id") String id) {
     apiDesignApplicationService.deleteApiInfo(id);
+  }
+
+  @POST
+  @Path("/generate")
+  public void generateAPIs(@Valid GenerateAPIsDTO dto) {
+    apiDesignApplicationService.generateAPIs(dto);
   }
 
 }
