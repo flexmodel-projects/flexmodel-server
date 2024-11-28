@@ -13,6 +13,8 @@ import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
 import tech.wetech.flexmodel.domain.model.api.ApiType;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
+import tech.wetech.flexmodel.domain.model.settings.Settings;
+import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.util.UriTemplate;
 
@@ -40,6 +42,9 @@ public class DocumentApplicationService {
 
   @Inject
   GraphQLProvider graphQLProvider;
+
+  @Inject
+  SettingsService settingsService;
 
   public static final Map<String, Map> TYPE_MAPPING = new HashMap<>();
   public static final String GRAPHQL_INTERNAL_DIRECTIVE = "internal";
@@ -356,6 +361,28 @@ public class DocumentApplicationService {
       }
 
     }
+    // if graphql endpoint is enabled
+    Settings settings = settingsService.getSettings();
+    if (settings.getSecurity().isGraphqlEndpointEnabled()) {
+      Map<String, Object> graphqlPath = new HashMap<>();
+      Map<String, Object> typeProperties = new HashMap<>();
+      typeProperties.put("query", Map.of("type", "string"));
+      typeProperties.put("operationName", Map.of("type", "string"));
+      typeProperties.put("variables", Map.of("type", "object"));
+      graphqlPath.put("post", Map.of(
+        "summary", "GraphQL Endpoint",
+        "operationId", "GraphQL Endpoint",
+        "responses", Map.of("200", Map.of("description", "GraphQL response")),
+        "requestBody", Map.of(
+          "required", true,
+          "content",
+          Map.of("application/json",
+            Map.of("schema", Map.of("type", "object", "properties", typeProperties))))
+      ));
+      paths.put(settings.getSecurity().getGraphqlEndpointPath(), graphqlPath);
+    }
+
+
     return paths;
   }
 

@@ -80,12 +80,15 @@ public class ApiRuntimeApplicationService {
 
   private void doRequest(RoutingContext routingContext) {
     List<ApiInfo> apis = apiInfoService.findList();
+    boolean isMatching = false;
     for (ApiInfo apiInfo : apis) {
       Map<String, Object> meta = (Map<String, Object>) apiInfo.getMeta();
       UriTemplate uriTemplate = new UriTemplate("/api/v1" + apiInfo.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiInfo.getMethod())) {
+        // 匹配成功
+        isMatching = true;
         log.debug("Matched request for api: {}", apiInfo);
         if (isRateLimiting(routingContext, apiInfo, meta)) return;
         boolean isAuth = (boolean) meta.get("auth");
@@ -129,6 +132,41 @@ public class ApiRuntimeApplicationService {
         }
         break;
       }
+    }
+
+    Settings settings = settingsService.getSettings();
+    if (settings.getSecurity().isGraphqlEndpointEnabled()) {
+      UriTemplate uriTemplate = new UriTemplate("/api/v1" + settings.getSecurity().getGraphqlEndpointPath());
+      Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
+      String method = routingContext.request().method().name();
+      if (pathParameters != null && method.equals("POST")) {
+        isMatching = true;
+        // 匹配成功
+        log.debug("Matched request for api: {}", settings.getSecurity().getGraphqlEndpointPath());
+        if (isRateLimiting(routingContext, null, null)) return;
+        String identityProvider = settings.getSecurity().getGraphqlEndpointIdentityProvider();
+        // 鉴权
+        if (identityProvider != null) {
+          String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
+          String token = authorization.replace("Bearer", "").trim();
+          boolean active = identityProviderService.checkToken(identityProvider, token);
+          if (!active) {
+            sendAuthFail(routingContext);
+            return;
+          }
+        }
+        String bodyString = routingContext.body().asString();
+        Map body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
+        ExecutionResult result = execute((String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
+        routingContext.response()
+          .putHeader("Content-Type", "application/json")
+          .end(JsonUtils.getInstance().stringify(result));
+      }
+    }
+
+    // 未找到地址
+    if (!isMatching) {
+      sendNotFoundError(routingContext);
     }
   }
 
@@ -186,6 +224,17 @@ public class ApiRuntimeApplicationService {
     result.put("success", false);
     routingContext.response()
       .setStatusCode(HttpResponseStatus.UNAUTHORIZED.code())
+      .putHeader("Content-Type", "application/json")
+      .end(JsonUtils.getInstance().stringify(result));
+  }
+
+  private void sendNotFoundError(RoutingContext routingContext) {
+    Map<String, Object> result = new HashMap<>();
+    result.put("messasge", "not found");
+    result.put("code", -1);
+    result.put("success", false);
+    routingContext.response()
+      .setStatusCode(HttpResponseStatus.NOT_FOUND.code())
       .putHeader("Content-Type", "application/json")
       .end(JsonUtils.getInstance().stringify(result));
   }
