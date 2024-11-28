@@ -291,13 +291,14 @@ public class DocumentApplicationService {
         String sanitizeName = getSanitizeName(api);
         Map<String, Object> path = new HashMap<>();
         Map<String, Object> content = new HashMap<>();
-        content.put("tags", List.of(
-          apis.stream()
-            .filter(a -> a.getId().equals(api.getParentId()))
-            .map(ApiInfo::getName)
-            .findFirst()
-            .orElse("Unknown")
-        ));
+        String tag = apis.stream()
+          .filter(a -> a.getId().equals(api.getParentId()))
+          .map(ApiInfo::getName)
+          .findFirst()
+          .orElse(null);
+        if (tag != null) {
+          content.put("tags", List.of(tag));
+        }
         Map<String, Object> meta = (Map<String, Object>) api.getMeta();
         if (meta == null || meta.isEmpty()) {
           continue;
