@@ -4,6 +4,8 @@ import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,8 +21,14 @@ import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.util.JsonUtils;
+import tech.wetech.flexmodel.util.PatternMatchUtils;
 import tech.wetech.flexmodel.util.UriTemplate;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -79,8 +87,11 @@ public class ApiRuntimeApplicationService {
   }
 
   private void doRequest(RoutingContext routingContext) {
-    List<ApiInfo> apis = apiInfoService.findList();
     boolean isMatching = false;
+
+    List<ApiInfo> apis = apiInfoService.findList();
+    Settings settings = settingsService.getSettings();
+    // 从apiInfo处理请求
     for (ApiInfo apiInfo : apis) {
       Map<String, Object> meta = (Map<String, Object>) apiInfo.getMeta();
       UriTemplate uriTemplate = new UriTemplate("/api/v1" + apiInfo.getPath());
@@ -134,33 +145,51 @@ public class ApiRuntimeApplicationService {
       }
     }
 
-    Settings settings = settingsService.getSettings();
-    if (settings.getSecurity().isGraphqlEndpointEnabled()) {
-      UriTemplate uriTemplate = new UriTemplate("/api/v1" + settings.getSecurity().getGraphqlEndpointPath());
-      Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
-      String method = routingContext.request().method().name();
-      if (pathParameters != null && method.equals("POST")) {
-        isMatching = true;
-        // 匹配成功
-        log.debug("Matched request for api: {}", settings.getSecurity().getGraphqlEndpointPath());
-        if (isRateLimiting(routingContext, null, null)) return;
-        String identityProvider = settings.getSecurity().getGraphqlEndpointIdentityProvider();
-        // 鉴权
-        if (identityProvider != null) {
-          String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
-          String token = authorization.replace("Bearer", "").trim();
-          boolean active = identityProviderService.checkToken(identityProvider, token);
-          if (!active) {
-            sendAuthFail(routingContext);
-            return;
+    // 从设置中的GraphQL端点处理请求
+    if (!isMatching) {
+      if (settings.getSecurity().isGraphqlEndpointEnabled()) {
+        UriTemplate uriTemplate = new UriTemplate("/api/v1" + settings.getSecurity().getGraphqlEndpointPath());
+        Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
+        String method = routingContext.request().method().name();
+        if (pathParameters != null && method.equals("POST")) {
+          isMatching = true;
+          // 匹配成功
+          log.debug("Matched request for api: {}", settings.getSecurity().getGraphqlEndpointPath());
+          if (isRateLimiting(routingContext, null, null)) return;
+          String identityProvider = settings.getSecurity().getGraphqlEndpointIdentityProvider();
+          // 鉴权
+          if (identityProvider != null) {
+            String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
+            String token = authorization.replace("Bearer", "").trim();
+            boolean active = identityProviderService.checkToken(identityProvider, token);
+            if (!active) {
+              sendAuthFail(routingContext);
+              return;
+            }
           }
+          String bodyString = routingContext.body().asString();
+          Map body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
+          ExecutionResult result = execute((String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
+          routingContext.response()
+            .putHeader("Content-Type", "application/json")
+            .end(JsonUtils.getInstance().stringify(result));
         }
-        String bodyString = routingContext.body().asString();
-        Map body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
-        ExecutionResult result = execute((String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
-        routingContext.response()
-          .putHeader("Content-Type", "application/json")
-          .end(JsonUtils.getInstance().stringify(result));
+      }
+    }
+
+    // 从设置中的Proxy处理请求
+    if (!isMatching) {
+      String path = routingContext.request().path();
+      for (Settings.Route route : settings.getProxy().getRoutes()) {
+        if (PatternMatchUtils.simpleMatch("/api/v1" + route.getPath(), path)) {
+          isMatching = true;
+          if (isRateLimiting(routingContext, null, null)) return;
+          String targetUri = route.getTo() + path;
+          log.debug("Matched request for proxy: {}", targetUri);
+          // 转发请求
+          forwardRequest(targetUri, routingContext.request());
+          break;
+        }
       }
     }
 
@@ -168,6 +197,54 @@ public class ApiRuntimeApplicationService {
     if (!isMatching) {
       sendNotFoundError(routingContext);
     }
+  }
+
+
+  private void forwardRequest(String targetUri, HttpServerRequest request) {
+    // 解析请求 URL 和目标地址
+
+    // 使用 JDK HttpClient 构建请求
+    HttpClient client = HttpClient.newHttpClient();
+
+// 构建 HttpRequest 请求
+    HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+      .uri(URI.create(targetUri))
+      .method(request.method().toString(), HttpRequest.BodyPublishers.noBody());
+
+
+    // 转发请求的 headers
+    for (Map.Entry<String, String> header : request.headers().entries()) {
+      requestBuilder.header(header.getKey(), header.getValue());
+    }
+
+    // 转发请求的 HTTP 方法和 body
+    request.bodyHandler(body -> {
+      if (body.length() > 0) {
+        // 对于有请求体的请求（如 POST, PUT）
+        requestBuilder.method(request.method().toString(), HttpRequest.BodyPublishers.ofString(body.toString()));
+      }
+
+      // 创建 HttpRequest
+      HttpRequest httpRequest = requestBuilder.build();
+
+      // 发送请求并获取响应
+      client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+        .thenApply(response -> {
+          // 处理目标服务器的响应并转发回客户端
+          HttpServerResponse responseToClient = request.response();
+          responseToClient.setStatusCode(response.statusCode());
+          HttpHeaders headers = response.headers();
+          // 设置 headers
+          headers.map().forEach((k, v) -> responseToClient.putHeader(k, v));
+          // 设置body
+          responseToClient.end(response.body());
+          return null;
+        })
+        .exceptionally(e -> {
+          request.response().setStatusCode(500).end("Error forwarding request: " + e.getMessage());
+          return null;
+        });
+    });
   }
 
   private boolean isRateLimiting(RoutingContext routingContext, ApiInfo apiInfo, Map<String, Object> meta) {

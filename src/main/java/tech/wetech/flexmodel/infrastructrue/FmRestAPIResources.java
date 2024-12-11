@@ -21,8 +21,8 @@ public class FmRestAPIResources {
 
   void installRoute(@Observes StartupEvent startupEvent, Router router, GraphQLProvider graphQLProvider) {
     // 处理所有以"/api/v1"开头的请求
-    router.route().handler(BodyHandler.create());
     router.route()
+      .handler(BodyHandler.create())
       .pathRegex("/api/v1/.*")
       .blockingHandler(apiRuntimeApplicationService::accept);
 
