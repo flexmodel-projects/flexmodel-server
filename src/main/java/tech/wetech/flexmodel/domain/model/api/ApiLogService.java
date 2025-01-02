@@ -21,6 +21,7 @@ public class ApiLogService {
   ApiLogRepository apiLogRepository;
 
   public ApiLog create(ApiLog apiLog) {
+    apiLog.setCreatedAt(LocalDateTime.now());
     return apiLogRepository.save(apiLog);
   }
 

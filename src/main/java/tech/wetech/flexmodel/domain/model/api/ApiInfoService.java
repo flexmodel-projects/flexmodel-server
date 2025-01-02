@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -27,6 +28,8 @@ public class ApiInfoService {
     if (apiInfo.getName() == null || apiInfo.getName().isEmpty()) {
       throw new ApiInfoException("API name must not be null");
     }
+    apiInfo.setCreatedAt(LocalDateTime.now());
+    apiInfo.setUpdatedAt(LocalDateTime.now());
     return apiInfoRepository.save(apiInfo);
   }
 
@@ -38,12 +41,14 @@ public class ApiInfoService {
     }
     apiInfo.setCreatedAt(older.getCreatedAt());
     apiInfo.setEnabled(older.getEnabled());
+    apiInfo.setUpdatedAt(LocalDateTime.now());
     ApiRateLimiterHolder.removeApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath());
     return apiInfoRepository.save(apiInfo);
   }
 
   @CacheInvalidateAll(cacheName = "apiInfoList")
   public ApiInfo updateIgnoreNull(ApiInfo apiInfo) {
+    apiInfo.setUpdatedAt(LocalDateTime.now());
     apiInfoRepository.updateIgnoreNull(apiInfo.getId(), apiInfo);
     ApiRateLimiterHolder.removeApiRateLimiter(apiInfo.getMethod() + ":" + apiInfo.getPath());
     return apiInfo;

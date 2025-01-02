@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,7 @@ public class DatasourceService {
       throw new ConnectException("The data source name is duplicated");
     }
     datasource.setType("user");
+    datasource.setCreatedAt(LocalDateTime.now());
     datasource = datasourceRepository.save(datasource);
     sessionDatasource.add(datasource);
     return datasource;
@@ -46,6 +48,7 @@ public class DatasourceService {
     datasource.setEnabled(optional.orElseThrow().getEnabled());
     datasource.setType(optional.orElseThrow().getType());
     datasource.setCreatedAt(optional.orElseThrow().getCreatedAt());
+    datasource.setUpdatedAt(LocalDateTime.now());
     datasource = datasourceRepository.save(datasource);
     sessionDatasource.delete(datasource.getName());
     sessionDatasource.add(datasource);
