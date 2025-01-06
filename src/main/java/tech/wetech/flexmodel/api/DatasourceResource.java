@@ -5,10 +5,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.FlexmodelConfig;
+import tech.wetech.flexmodel.Model;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
+import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.connect.database.Database;
 import tech.wetech.flexmodel.util.JsonUtils;
@@ -37,7 +38,7 @@ public class DatasourceResource {
 
   @POST
   @Path("/{datasourceName}/sync")
-  public List<Entity> syncModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
+  public List<Model> syncModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
     return modelingApplicationService.syncModels(datasourceName, models);
   }
 
@@ -51,6 +52,12 @@ public class DatasourceResource {
   @Path("/physics/names")
   public List<String> getPhysicsModelNames(Datasource datasource) {
     return modelingApplicationService.getPhysicsModelNames(datasource);
+  }
+
+  @POST
+  @Path("/{datasourceName}/native-query")
+  public NativeQueryResult executeNativeQuery(@PathParam("datasourceName") String datasourceName, ExecuteNativeQueryRequest request) {
+    return modelingApplicationService.executeNativeQuery(datasourceName, request.statement(), request.parameters());
   }
 
   @GET
@@ -92,6 +99,9 @@ public class DatasourceResource {
 
   public record ImportScriptRequest(@NotBlank String script) {
 
+  }
+
+  public record ExecuteNativeQueryRequest(String statement, Map<String, Object> parameters) {
   }
 
 }

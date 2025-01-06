@@ -27,7 +27,7 @@ public class SettingsFmRepository implements SettingsRepository {
     Map<String, Object> settingsMap = JsonUtils.getInstance().convertValue(settings, Map.class);
     settingsMap.forEach((key, value) -> {
       if (value != null) {
-        Config config = configDAO.find(query -> query.setFilter(f -> f.equalTo("key", key)))
+        Config config = configDAO.find(query -> query.withFilter(f -> f.equalTo("key", key)))
           .stream().findFirst()
           .orElseGet(Config::new);
         config.setKey(key);

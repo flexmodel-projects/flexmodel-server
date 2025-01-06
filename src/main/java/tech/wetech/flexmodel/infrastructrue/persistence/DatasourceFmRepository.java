@@ -26,7 +26,7 @@ public class DatasourceFmRepository implements DatasourceRepository {
 
   @Override
   public List<Datasource> find(UnaryOperator<Example.Criteria> filter) {
-    return datasourceDAO.find(query -> query.setFilter(filter));
+    return datasourceDAO.find(query -> query.withFilter(filter));
   }
 
   @Override

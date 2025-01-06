@@ -229,7 +229,7 @@ public class DocumentApplicationService {
     typeMapping.put("boolean", Map.of("type", "boolean"));
 //    typeMapping.put("", Map.of("type", "array"));
     typeMapping.put("json", Map.of("type", "object"));
-    Entity entity = modelService.findModel(datasourceName, modelName).orElseThrow();
+    Entity entity = (Entity) modelService.findModel(datasourceName, modelName).orElseThrow();
     if (entity == null) {
       return null;
     }

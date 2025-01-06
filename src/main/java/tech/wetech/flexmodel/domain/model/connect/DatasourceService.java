@@ -6,6 +6,7 @@ import tech.wetech.flexmodel.codegen.entity.Datasource;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -68,5 +69,9 @@ public class DatasourceService {
   public void deleteDatasource(String datasourceName) {
     datasourceRepository.delete(datasourceName);
     sessionDatasource.delete(datasourceName);
+  }
+
+  public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
+    return sessionDatasource.executeNativeQuery(datasourceName, statement, parameters);
   }
 }

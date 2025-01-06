@@ -30,9 +30,9 @@ public class ApiLogFmRepository implements ApiLogRepository {
   public List<ApiLog> find(UnaryOperator<Example.Criteria> filter, Integer current, Integer pageSize) {
     return apiLogDAO.find(query -> {
       if (filter != null) {
-        query.setFilter(filter);
+        query.withFilter(filter);
       }
-      query.setSort(sort -> sort.addOrder("id", DESC));
+      query.withSort(sort -> sort.addOrder("id", DESC));
       if (current != null && pageSize != null) {
         query.setPage(current, pageSize);
       }
@@ -45,30 +45,30 @@ public class ApiLogFmRepository implements ApiLogRepository {
   public List<LogStat> stat(UnaryOperator<Example.Criteria> filter) {
     return apiLogDAO.find(query ->
       query
-        .setProjection(projection -> projection
+        .withProjection(projection -> projection
           .addField("date", dateFormat(field("createdAt"), "yyyy-MM-dd hh:00:00"))
           .addField("total", Projections.count(field("id")))
         )
-        .setGroupBy(groupBy -> groupBy
+        .withGroupBy(groupBy -> groupBy
           .addField("date")
         )
-        .setFilter(filter), LogStat.class);
+        .withFilter(filter), LogStat.class);
   }
 
   @Override
   public List<LogApiRank> ranking(UnaryOperator<Example.Criteria> filter) {
     return apiLogDAO.find(query ->
       query
-        .setProjection(projection -> projection
+        .withProjection(projection -> projection
           .addField("name", field("uri"))
           .addField("total", Projections.count(field("id")))
         )
-        .setGroupBy(groupBy -> groupBy
+        .withGroupBy(groupBy -> groupBy
           .addField("uri")
         )
-        .setPage(p -> p.setPageSize(20))
-        .setSort(s -> s.addOrder("total", DESC))
-        .setFilter(filter), LogApiRank.class);
+        .withPage(p -> p.setPageSize(20))
+        .withSort(s -> s.addOrder("total", DESC))
+        .withFilter(filter), LogApiRank.class);
   }
 
   @Override
@@ -83,7 +83,7 @@ public class ApiLogFmRepository implements ApiLogRepository {
 
   @Override
   public long count(UnaryOperator<Example.Criteria> filter) {
-    return apiLogDAO.count(query -> query.setFilter(filter));
+    return apiLogDAO.count(query -> query.withFilter(filter));
   }
 
 }

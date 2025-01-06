@@ -2,15 +2,17 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.Index;
+import tech.wetech.flexmodel.Model;
 import tech.wetech.flexmodel.TypedField;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
+import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,12 +43,12 @@ public class ModelingApplicationService {
     datasourceService.deleteDatasource(datasourceName);
   }
 
-  public List<Entity> findModels(String datasourceName) {
+  public List<Model> findModels(String datasourceName) {
     return modelService.findModels(datasourceName);
   }
 
-  public Entity createModel(String datasourceName, Entity entity) {
-    return modelService.createModel(datasourceName, entity);
+  public Model createModel(String datasourceName, Model model) {
+    return modelService.createModel(datasourceName, model);
   }
 
   public void dropModel(String datasourceName, String modelName) {
@@ -85,11 +87,15 @@ public class ModelingApplicationService {
     return datasourceService.getPhysicsModelNames(datasource);
   }
 
-  public List<Entity> syncModels(String datasourceName, Set<String> models) {
+  public List<Model> syncModels(String datasourceName, Set<String> models) {
     return modelService.syncModels(datasourceName, models);
   }
 
   public void importModels(String datasourceName, String script) {
     modelService.importModels(datasourceName, script);
+  }
+
+  public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
+    return datasourceService.executeNativeQuery(datasourceName, statement, parameters);
   }
 }

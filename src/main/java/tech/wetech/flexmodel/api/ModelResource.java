@@ -5,6 +5,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.Index;
+import tech.wetech.flexmodel.Model;
 import tech.wetech.flexmodel.TypedField;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 
@@ -25,12 +26,13 @@ public class ModelResource {
   ModelingApplicationService modelingApplicationService;
 
   @GET
-  public List<Entity> findModels() {
+  public List<Model> findModels() {
     return modelingApplicationService.findModels(datasourceName);
   }
 
+
   @POST
-  public Entity createModel(Entity entity) {
+  public Model createModel(Entity entity) {
     return modelingApplicationService.createModel(datasourceName, entity);
   }
 

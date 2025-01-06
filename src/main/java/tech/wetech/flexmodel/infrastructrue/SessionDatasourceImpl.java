@@ -11,8 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import tech.wetech.flexmodel.DataSourceProvider;
+import tech.wetech.flexmodel.Session;
 import tech.wetech.flexmodel.SessionFactory;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
+import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.connect.database.Database;
@@ -29,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
@@ -137,6 +140,18 @@ public class SessionDatasourceImpl implements SessionDatasource {
   @Override
   public void delete(String datasourceName) {
     sessionFactory.removeDataSourceProvider(datasourceName);
+  }
+
+  @Override
+  @SuppressWarnings("all")
+  public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      long beginTime = System.currentTimeMillis();
+      List list = session.findByNativeQuery(statement, parameters, Map.class);
+      long endTime = System.currentTimeMillis() - beginTime;
+      return new NativeQueryResult(endTime, list);
+    }
+
   }
 
 }

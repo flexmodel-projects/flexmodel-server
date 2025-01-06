@@ -76,7 +76,7 @@ public class ModelFmRepository implements ModelRepository {
     Class<Model> resultType = getEntityType();
     return withSession(session -> session.find(entityName, query -> {
       if (filter != null) {
-        query.setFilter(filter);
+        query.withFilter(filter);
       }
       if (sort != null) {
         query.setSort(sort);
@@ -123,7 +123,7 @@ public class ModelFmRepository implements ModelRepository {
 
   @Override
   @SuppressWarnings("all")
-  public List<Entity> findAll(String datasourceName) {
+  public List<Model> findAll(String datasourceName) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return (List) session.getAllModels();
     }
@@ -131,24 +131,30 @@ public class ModelFmRepository implements ModelRepository {
 
   @Override
   @SuppressWarnings("all")
-  public List<Entity> findModels(String datasourceName) {
+  public List<Model> findModels(String datasourceName) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return (List) session.getAllModels();
     }
   }
 
   @Override
-  public Optional<Entity> findModel(String datasourceName, String modelName) {
+  public Optional<Model> findModel(String datasourceName, String modelName) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return Optional.ofNullable((Entity) session.getModel(modelName));
     }
   }
 
   @Override
-  public Entity createModel(String datasourceName, Entity entity) {
+  public Model createModel(String datasourceName, Model model) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.createEntity(entity);
+      if (model instanceof Entity entity) {
+        return session.createEntity(entity);
+      }
+      if (model instanceof NativeQueryModel nativeQueryModel) {
+        return session.createNativeQueryModel(nativeQueryModel);
+      }
     }
+    throw new RuntimeException("Unsupported model type");
   }
 
   @Override
@@ -197,9 +203,9 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @Override
-  public List<Entity> syncModels(String datasourceName, Set<String> modelNames) {
+  public List<Model> syncModels(String datasourceName, Set<String> modelNames) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      return (List) session.syncModels(modelNames);
+      return session.syncModels(modelNames);
     }
   }
 

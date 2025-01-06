@@ -34,7 +34,7 @@ public class DataFmRepository implements DataRepository {
           query.setFilter(filter);
         }
         if (pageSize != null) {
-          query.setPage(page -> {
+          query.withPage(page -> {
             page.setPageSize(pageSize);
             if (current != null) {
               page.setPageNumber(current);
