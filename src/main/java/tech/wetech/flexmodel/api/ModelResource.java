@@ -3,7 +3,6 @@ package tech.wetech.flexmodel.api;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.Index;
 import tech.wetech.flexmodel.Model;
 import tech.wetech.flexmodel.TypedField;
@@ -32,8 +31,14 @@ public class ModelResource {
 
 
   @POST
-  public Model createModel(Entity entity) {
-    return modelingApplicationService.createModel(datasourceName, entity);
+  public Model createModel(Model model) {
+    return modelingApplicationService.createModel(datasourceName, model);
+  }
+
+  @PUT
+  @Path("/{modelName}")
+  public Model modifyModel(@PathParam("modelName") String modelName, Model model) {
+    return modelingApplicationService.modifyModel(datasourceName, modelName, model);
   }
 
   @DELETE

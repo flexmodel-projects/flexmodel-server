@@ -2,9 +2,7 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.Index;
-import tech.wetech.flexmodel.Model;
-import tech.wetech.flexmodel.TypedField;
+import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
@@ -97,5 +95,17 @@ public class ModelingApplicationService {
 
   public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
     return datasourceService.executeNativeQuery(datasourceName, statement, parameters);
+  }
+
+  public Model modifyModel(String datasourceName, String modelName, Model model) {
+    if (model instanceof Entity) {
+      throw new RuntimeException("Unsupported model type");
+    }
+    if (model instanceof NativeQueryModel nativeQueryModel) {
+      nativeQueryModel.setName(modelName);
+    }
+    modelService.dropModel(datasourceName, modelName);
+    modelService.createModel(datasourceName, model);
+    return model;
   }
 }
