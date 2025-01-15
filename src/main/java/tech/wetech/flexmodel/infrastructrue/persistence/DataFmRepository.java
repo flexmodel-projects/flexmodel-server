@@ -27,7 +27,7 @@ public class DataFmRepository implements DataRepository {
                                                Integer pageSize,
                                                String filter,
                                                String sort,
-                                               boolean deep) {
+                                               boolean nestedQueryEnabled) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return session.find(modelName, query -> {
         if (!StringUtils.isBlank(filter)) {
@@ -42,7 +42,7 @@ public class DataFmRepository implements DataRepository {
             return page;
           });
         }
-        query.setDeep(deep);
+        query.setNestedQueryEnabled(nestedQueryEnabled);
         return query;
       });
     }

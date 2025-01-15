@@ -21,8 +21,8 @@ public class DataService {
                                                Integer pageSize,
                                                String filter,
                                                String sort,
-                                               boolean deep) {
-    return dataRepository.findRecords(datasourceName, modelName, current, pageSize, filter, sort, deep);
+                                               boolean nestedQueryEnabled) {
+    return dataRepository.findRecords(datasourceName, modelName, current, pageSize, filter, sort, nestedQueryEnabled);
   }
 
   public long countRecords(String datasourceName, String modelName, String filter) {
