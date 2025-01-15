@@ -82,7 +82,7 @@ public class ModelFmRepository implements ModelRepository {
         query.setSort(sort);
       }
       if (current != null && pageSize != null) {
-        query.setPage(current, pageSize);
+        query.withPage(current, pageSize);
       }
       return query;
     }, resultType));

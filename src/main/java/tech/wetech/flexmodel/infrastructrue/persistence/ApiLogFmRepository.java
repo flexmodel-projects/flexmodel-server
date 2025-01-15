@@ -34,7 +34,7 @@ public class ApiLogFmRepository implements ApiLogRepository {
       }
       query.withSort(sort -> sort.addOrder("id", DESC));
       if (current != null && pageSize != null) {
-        query.setPage(current, pageSize);
+        query.withPage(current, pageSize);
       }
       return query;
     });
