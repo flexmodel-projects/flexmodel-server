@@ -23,8 +23,12 @@ public class SystemResource {
   SettingsApplicationService settingsApplicationService;
 
   @GET
-  @Path("/config")
-  public Map<String, Object> getConfig() {
+  @Path("/profile")
+  public Map<String, Object> getProfile() {
+    return Map.of("config", getConfig());
+  }
+
+  private Map<String, Object> getConfig() {
     Map<String, Object> all = new HashMap<>();
     Map<String, String> env = System.getenv();
     Properties properties = System.getProperties();
