@@ -14,11 +14,11 @@ public interface DataRepository {
                                         Integer pageSize,
                                         String filter,
                                         String sort,
-                                        boolean deep);
+                                        boolean nestedQueryEnabled);
 
   long countRecords(String datasourceName, String modelName, String filter);
 
-  Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id, boolean deep);
+  Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id, boolean nestedQueryEnabled);
 
   Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data);
 

@@ -11,6 +11,7 @@ import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.domain.model.api.*;
@@ -62,11 +63,15 @@ public class ApiRuntimeApplicationService {
 
   @Inject
   GraphQLProvider graphQLProvider;
+
   @Inject
   SettingsService settingsService;
 
   @Inject
   EventBus eventBus;
+
+  @Inject
+  FlexmodelConfig config;
 
   public ExecutionResult execute(String operationName, String query, Map<String, Object> variables) {
     GraphQL graphQL = graphQLProvider.getGraphQL();
@@ -94,7 +99,7 @@ public class ApiRuntimeApplicationService {
     // 从apiInfo处理请求
     for (ApiInfo apiInfo : apis) {
       Map<String, Object> meta = (Map<String, Object>) apiInfo.getMeta();
-      UriTemplate uriTemplate = new UriTemplate("/api/v1" + apiInfo.getPath());
+      UriTemplate uriTemplate = new UriTemplate(config.contextPath() + apiInfo.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiInfo.getMethod())) {
@@ -148,7 +153,7 @@ public class ApiRuntimeApplicationService {
     // 从设置中的GraphQL端点处理请求
     if (!isMatching) {
       if (settings.getSecurity().isGraphqlEndpointEnabled()) {
-        UriTemplate uriTemplate = new UriTemplate("/api/v1" + settings.getSecurity().getGraphqlEndpointPath());
+        UriTemplate uriTemplate = new UriTemplate(config.contextPath() + settings.getSecurity().getGraphqlEndpointPath());
         Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
         String method = routingContext.request().method().name();
         if (pathParameters != null && method.equals("POST")) {
@@ -181,7 +186,7 @@ public class ApiRuntimeApplicationService {
     if (!isMatching) {
       String path = routingContext.request().path();
       for (Settings.Route route : settings.getProxy().getRoutes()) {
-        if (PatternMatchUtils.simpleMatch("/api/v1" + route.getPath(), path)) {
+        if (PatternMatchUtils.simpleMatch(config.contextPath() + route.getPath(), path)) {
           isMatching = true;
           if (isRateLimiting(routingContext, null, null)) return;
           String targetUri = route.getTo() + path;

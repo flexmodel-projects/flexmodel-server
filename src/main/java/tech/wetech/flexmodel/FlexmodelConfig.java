@@ -1,6 +1,7 @@
 package tech.wetech.flexmodel;
 
 import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 
 import java.util.Optional;
@@ -12,6 +13,10 @@ import java.util.Optional;
 public interface FlexmodelConfig {
 
   DatasourceConfig datasource();
+
+  @WithDefault("/api/v1")
+  @WithName("context-path")
+  String contextPath();
 
   interface DatasourceConfig {
 
