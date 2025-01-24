@@ -23,14 +23,14 @@ public class DataApplicationService {
                                                         int pageSize,
                                                         String filter,
                                                         String sort,
-                                                        boolean deep) {
-    List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName, current, pageSize, filter, sort, deep);
+                                                        boolean nestedQuery) {
+    List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName, current, pageSize, filter, sort, nestedQuery);
     long total = dataService.countRecords(datasourceName, modelName, filter);
     return new PageDTO<>(list, total);
   }
 
-  public Map<String, Object> findOneRecord(String datasourceName, String modelName, String id, boolean deep) {
-    return dataService.findOneRecord(datasourceName, modelName, id, deep);
+  public Map<String, Object> findOneRecord(String datasourceName, String modelName, String id, boolean nestedQuery) {
+    return dataService.findOneRecord(datasourceName, modelName, id, nestedQuery);
   }
 
   public Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data) {

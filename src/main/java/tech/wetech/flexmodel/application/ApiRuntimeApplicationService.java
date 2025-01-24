@@ -200,7 +200,7 @@ public class ApiRuntimeApplicationService {
 
     // 未找到地址
     if (!isMatching) {
-      sendNotFoundError(routingContext);
+      routingContext.next();
     }
   }
 

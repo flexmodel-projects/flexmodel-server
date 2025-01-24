@@ -10,10 +10,12 @@ import tech.wetech.flexmodel.application.ModelingApplicationService;
 
 import java.util.List;
 
+import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+
 /**
  * @author cjbi
  */
-@Path("/api/datasources/{datasourceName}/models")
+@Path(BASE_PATH +"/datasources/{datasourceName}/models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ModelResource {

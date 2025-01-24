@@ -8,10 +8,12 @@ import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
 
 import java.util.List;
 
+import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+
 /**
  * @author cjbi
  */
-@Path("/api/identity-providers")
+@Path(BASE_PATH +"/identity-providers")
 public class IdentityProviderResource {
 
   @Inject

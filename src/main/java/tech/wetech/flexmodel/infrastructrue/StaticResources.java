@@ -11,7 +11,7 @@ public class StaticResources {
 
   void installRoute(@Observes StartupEvent startupEvent, Router router) {
     router.route()
-      .path("/ui/*")
+      .path("/fm-ui/*")
       .handler(handler -> handler.reroute("/webjars/flexmodel-ui/"));
     router.route()
       .path("/assets/:resource")

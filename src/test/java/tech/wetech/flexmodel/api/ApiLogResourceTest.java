@@ -18,7 +18,7 @@ public class ApiLogResourceTest {
   void testFindApiLogs() {
     given()
       .when()
-      .get("/api/logs")
+      .get(Resources.BASE_PATH + "/logs")
       .then()
       .statusCode(200);
   }
@@ -27,7 +27,7 @@ public class ApiLogResourceTest {
   void testStat() {
     given()
       .when()
-      .get("/api/logs/stat")
+      .get(Resources.BASE_PATH +"/logs/stat")
       .then()
       .statusCode(200);
   }

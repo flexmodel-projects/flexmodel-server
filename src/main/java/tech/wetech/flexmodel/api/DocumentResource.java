@@ -10,10 +10,12 @@ import tech.wetech.flexmodel.application.DocumentApplicationService;
 
 import java.util.Map;
 
+import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+
 /**
  * @author cjbi
  */
-@Path("/api/docs")
+@Path(BASE_PATH +"/docs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DocumentResource {

@@ -16,10 +16,12 @@ import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.util.*;
 
+import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+
 /**
  * @author cjbi
  */
-@Path("/api/datasources")
+@Path(BASE_PATH + "/datasources")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DatasourceResource {

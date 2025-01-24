@@ -7,6 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.Entity;
+import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.RelationField;
 import tech.wetech.flexmodel.TypedField;
 import tech.wetech.flexmodel.codegen.entity.ApiInfo;
@@ -21,7 +22,6 @@ import tech.wetech.flexmodel.util.UriTemplate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static tech.wetech.flexmodel.RelationField.Cardinality.ONE_TO_ONE;
 import static tech.wetech.flexmodel.codegen.StringUtils.*;
 import static tech.wetech.flexmodel.domain.model.api.ApiType.API;
 import static tech.wetech.flexmodel.domain.model.api.ApiType.FOLDER;
@@ -46,6 +46,9 @@ public class DocumentApplicationService {
   @Inject
   SettingsService settingsService;
 
+  @Inject
+  FlexmodelConfig config;
+
   public static final Map<String, Map> TYPE_MAPPING = new HashMap<>();
   public static final String GRAPHQL_INTERNAL_DIRECTIVE = "internal";
 
@@ -64,7 +67,7 @@ public class DocumentApplicationService {
     openAPI.put("openapi", "3.0.3");
     openAPI.put("info", buildInfo());
     openAPI.put("components", buildComponents(apis));
-    openAPI.put("servers", List.of(Map.of("url", "/api/v1")));
+    openAPI.put("servers", List.of(Map.of("url", config.contextPath())));
     openAPI.put("schemas", List.of("https", "http"));
     openAPI.put("tags", buildTags(apis));
     openAPI.put("paths", buildPaths(apis));
@@ -245,8 +248,8 @@ public class DocumentApplicationService {
     for (TypedField<?, ?> field : entity.getFields()) {
       if (field instanceof RelationField relationField) {
         Map<String, Object> refProp = new HashMap<>();
-        refProp.put("type", relationField.getCardinality() == ONE_TO_ONE ? "object" : "array");
-        refProp.put("items", Map.of("$ref", addModelDefinition(datasourceName, relationField.getTargetEntity(), definitions)));
+        refProp.put("type", relationField.isMultiple() ? "array" : "object");
+        refProp.put("items", Map.of("$ref", addModelDefinition(datasourceName, relationField.getFrom(), definitions)));
         properties.put(field.getName(), refProp);
         continue;
       }

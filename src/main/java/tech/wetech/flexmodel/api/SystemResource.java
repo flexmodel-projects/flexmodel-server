@@ -10,13 +10,14 @@ import tech.wetech.flexmodel.application.SettingsApplicationService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
+
+import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
 
 /**
  * @author cjbi
  */
 @Slf4j
-@Path("/api/system")
+@Path(BASE_PATH + "/system")
 public class SystemResource {
 
   @Inject
@@ -36,27 +37,27 @@ public class SystemResource {
     Iterable<String> propertyNames = ConfigProvider.getConfig().getPropertyNames();
     for (String propertyName : propertyNames) {
       try {
-
-        boolean hasKey = false;
-        Set<String> envKeys = env.keySet();
-        Set<Object> propKeys = properties.keySet();
-        for (String key : envKeys) {
-          if (propertyName.equalsIgnoreCase(key)) {
-            hasKey = true;
-            break;
-          }
-        }
-        if (!hasKey) {
-          for (Object key : propKeys) {
-            if (propertyName.equalsIgnoreCase(key.toString())) {
-              hasKey = true;
-              break;
-            }
-          }
-        }
-        if (!hasKey) {
-          appConfig.put(propertyName, ConfigProvider.getConfig().getValue(propertyName, String.class));
-        }
+//        Set<String> envKeys = env.keySet();
+//        Set<Object> propKeys = properties.keySet();
+//        boolean hasKey = false;
+//        for (String key : envKeys) {
+//          if (propertyName.equalsIgnoreCase(key)) {
+//            hasKey = true;
+//            break;
+//          }
+//        }
+//        if (!hasKey) {
+//          for (Object key : propKeys) {
+//            if (propertyName.equalsIgnoreCase(key.toString())) {
+//              hasKey = true;
+//              break;
+//            }
+//          }
+//        }
+//        if (!hasKey) {
+//          appConfig.put(propertyName, ConfigProvider.getConfig().getValue(propertyName, String.class));
+//        }
+        appConfig.put(propertyName, ConfigProvider.getConfig().getValue(propertyName, String.class));
       } catch (Exception e) {
         log.error("get config error, key={}, message={}", propertyName, e.getMessage(), e);
       }

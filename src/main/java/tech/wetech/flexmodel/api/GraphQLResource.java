@@ -8,10 +8,12 @@ import tech.wetech.flexmodel.application.GraphQLApplicationService;
 
 import java.util.Map;
 
+import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+
 /**
  * @author cjbi
  */
-@Path("/api/graphql")
+@Path(BASE_PATH +"/graphql")
 public class GraphQLResource {
 
   @Inject

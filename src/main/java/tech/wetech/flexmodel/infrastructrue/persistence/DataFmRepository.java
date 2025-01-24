@@ -61,9 +61,9 @@ public class DataFmRepository implements DataRepository {
   }
 
   @Override
-  public Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id, boolean deep) {
+  public Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id, boolean nestedQuery) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.findById(modelName, id, deep);
+      return session.findById(modelName, id, nestedQuery);
     }
   }
 

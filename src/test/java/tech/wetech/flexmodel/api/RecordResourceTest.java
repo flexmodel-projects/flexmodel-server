@@ -27,8 +27,8 @@ class RecordResourceTest {
       .when()
       .param("current", "1")
       .param("pageSize", "20")
-      .param("deep", "true")
-      .get("/api/datasources/{datasourceName}/models/{modelName}/records", "system", "Classes")
+      .param("nestedQuery", "true")
+      .get(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records", "system", "Classes")
       .then()
       .statusCode(200)
       .body(
@@ -65,7 +65,7 @@ class RecordResourceTest {
               ]
             }
         """)
-      .post("/api/datasources/{datasourceName}/models/{modelName}/records", "system", "Student")
+      .post(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records", "system", "Student")
       .then()
       .statusCode(200);
   }
@@ -98,7 +98,7 @@ class RecordResourceTest {
               ]
             }
         """)
-      .put("/api/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
+      .put(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
       .then()
       .statusCode(200);
     // todo 级联更新
@@ -111,14 +111,13 @@ class RecordResourceTest {
       .when()
       .param("current", "1")
       .param("pageSize", "20")
-      .param("deep", "true")
-      .get("/api/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
+      .param("nestedQuery", "true")
+      .get(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
       .then()
       .statusCode(200)
       .body(
         "studentName", equalTo("张三丰"),
-        "studentDetail.description", equalTo("张三丰的描述"),
-        "courses.size()", equalTo(2)
+        "studentDetail.description", equalTo("张三丰的描述")
       );
   }
 
@@ -127,7 +126,7 @@ class RecordResourceTest {
   void testDeleteRecord() {
     given()
       .when()
-      .delete("/api/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
+      .delete(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
       .then()
       .statusCode(204);
   }

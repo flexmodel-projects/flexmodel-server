@@ -7,10 +7,12 @@ import tech.wetech.flexmodel.application.dto.PageDTO;
 
 import java.util.Map;
 
+import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+
 /**
  * @author cjbi
  */
-@Path("/api/datasources/{datasourceName}/models/{modelName}/records")
+@Path(BASE_PATH +"/datasources/{datasourceName}/models/{modelName}/records")
 public class RecordResource {
 
   @PathParam("datasourceName")
@@ -27,16 +29,16 @@ public class RecordResource {
     @QueryParam("current") @DefaultValue("1") int current,
     @QueryParam("pageSize") @DefaultValue("15") int pageSize,
     @QueryParam("filter") String filter,
-    @QueryParam("deep") @DefaultValue("false") boolean deep,
+    @QueryParam("nestedQuery") @DefaultValue("false") boolean nestedQuery,
     @QueryParam("sort") String sort
   ) {
-    return dataApplicationService.findPagingRecords(datasourceName, modelName, current, pageSize, filter, sort, deep);
+    return dataApplicationService.findPagingRecords(datasourceName, modelName, current, pageSize, filter, sort, nestedQuery);
   }
 
   @GET
   @Path("/{id}")
-  public Map<String, Object> findOneRecord(@PathParam("id") String id, @QueryParam("deep") @DefaultValue("false") boolean deep) {
-    return dataApplicationService.findOneRecord(datasourceName, modelName, id, deep);
+  public Map<String, Object> findOneRecord(@PathParam("id") String id, @QueryParam("nestedQuery") @DefaultValue("false") boolean nestedQuery) {
+    return dataApplicationService.findOneRecord(datasourceName, modelName, id, nestedQuery);
   }
 
   @POST

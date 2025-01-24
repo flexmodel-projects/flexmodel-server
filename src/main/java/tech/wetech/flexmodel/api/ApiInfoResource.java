@@ -11,10 +11,12 @@ import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 
 import java.util.List;
 
+import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+
 /**
  * @author cjbi
  */
-@Path("/api/apis")
+@Path(BASE_PATH + "/apis")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ApiInfoResource {

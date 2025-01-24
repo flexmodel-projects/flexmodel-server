@@ -10,10 +10,12 @@ import tech.wetech.flexmodel.application.dto.OverviewDTO;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+
 /**
  * @author cjbi
  */
-@Path("/api/overview")
+@Path(BASE_PATH + "/overview")
 public class OverviewResource {
 
   @Inject
