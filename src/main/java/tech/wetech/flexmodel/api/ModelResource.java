@@ -4,7 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.Index;
-import tech.wetech.flexmodel.Model;
+import tech.wetech.flexmodel.TypeWrapper;
 import tech.wetech.flexmodel.TypedField;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 
@@ -27,19 +27,18 @@ public class ModelResource {
   ModelingApplicationService modelingApplicationService;
 
   @GET
-  public List<Model> findModels() {
+  public List<TypeWrapper> findModels() {
     return modelingApplicationService.findModels(datasourceName);
   }
 
-
   @POST
-  public Model createModel(Model model) {
+  public TypeWrapper createModel(TypeWrapper model) {
     return modelingApplicationService.createModel(datasourceName, model);
   }
 
   @PUT
   @Path("/{modelName}")
-  public Model modifyModel(@PathParam("modelName") String modelName, Model model) {
+  public TypeWrapper modifyModel(@PathParam("modelName") String modelName, TypeWrapper model) {
     return modelingApplicationService.modifyModel(datasourceName, modelName, model);
   }
 

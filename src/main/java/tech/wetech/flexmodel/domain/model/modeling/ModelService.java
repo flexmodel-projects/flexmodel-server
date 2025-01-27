@@ -3,7 +3,7 @@ package tech.wetech.flexmodel.domain.model.modeling;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Index;
-import tech.wetech.flexmodel.Model;
+import tech.wetech.flexmodel.TypeWrapper;
 import tech.wetech.flexmodel.TypedField;
 
 import java.util.List;
@@ -19,19 +19,19 @@ public class ModelService {
   @Inject
   ModelRepository modelRepository;
 
-  public List<Model> findAll(String datasourceName) {
+  public List<TypeWrapper> findAll(String datasourceName) {
     return modelRepository.findAll(datasourceName);
   }
 
-  public List<Model> findModels(String datasourceName) {
+  public List<TypeWrapper> findModels(String datasourceName) {
     return modelRepository.findModels(datasourceName);
   }
 
-  public Optional<Model> findModel(String datasourceName, String modelName) {
+  public Optional<TypeWrapper> findModel(String datasourceName, String modelName) {
     return modelRepository.findModel(datasourceName, modelName);
   }
 
-  public Model createModel(String datasourceName, Model model) {
+  public TypeWrapper createModel(String datasourceName, TypeWrapper model) {
     return modelRepository.createModel(datasourceName, model);
   }
 
@@ -65,7 +65,7 @@ public class ModelService {
     modelRepository.dropIndex(datasourceName, modelName, indexName);
   }
 
-  public List<Model> syncModels(String datasourceName, Set<String> models) {
+  public List<TypeWrapper> syncModels(String datasourceName, Set<String> models) {
     return modelRepository.syncModels(datasourceName, models);
   }
 

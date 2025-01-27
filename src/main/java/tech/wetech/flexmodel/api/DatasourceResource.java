@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.FlexmodelConfig;
-import tech.wetech.flexmodel.Model;
+import tech.wetech.flexmodel.TypeWrapper;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
@@ -40,7 +40,7 @@ public class DatasourceResource {
 
   @POST
   @Path("/{datasourceName}/sync")
-  public List<Model> syncModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
+  public List<TypeWrapper> syncModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
     return modelingApplicationService.syncModels(datasourceName, models);
   }
 

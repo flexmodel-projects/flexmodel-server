@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
@@ -41,11 +42,11 @@ public class ModelingApplicationService {
     datasourceService.deleteDatasource(datasourceName);
   }
 
-  public List<Model> findModels(String datasourceName) {
+  public List<TypeWrapper> findModels(String datasourceName) {
     return modelService.findModels(datasourceName);
   }
 
-  public Model createModel(String datasourceName, Model model) {
+  public TypeWrapper createModel(String datasourceName, TypeWrapper model) {
     return modelService.createModel(datasourceName, model);
   }
 
@@ -85,7 +86,7 @@ public class ModelingApplicationService {
     return datasourceService.getPhysicsModelNames(datasource);
   }
 
-  public List<Model> syncModels(String datasourceName, Set<String> models) {
+  public List<TypeWrapper> syncModels(String datasourceName, Set<String> models) {
     return modelService.syncModels(datasourceName, models);
   }
 
@@ -97,12 +98,15 @@ public class ModelingApplicationService {
     return datasourceService.executeNativeQuery(datasourceName, statement, parameters);
   }
 
-  public Model modifyModel(String datasourceName, String modelName, Model model) {
+  public TypeWrapper modifyModel(String datasourceName, String modelName, TypeWrapper model) {
     if (model instanceof Entity) {
       throw new RuntimeException("Unsupported model type");
     }
     if (model instanceof NativeQueryModel nativeQueryModel) {
       nativeQueryModel.setName(modelName);
+    }
+    if (model instanceof Enum anEnum) {
+      anEnum.setName(modelName);
     }
     modelService.dropModel(datasourceName, modelName);
     modelService.createModel(datasourceName, model);
