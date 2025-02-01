@@ -8,9 +8,9 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
+import tech.wetech.flexmodel.codegen.enumeration.LogLevel;
 import tech.wetech.flexmodel.domain.model.api.ApiLogService;
 import tech.wetech.flexmodel.domain.model.api.LogData;
-import tech.wetech.flexmodel.domain.model.api.LogLevel;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.util.JsonUtils;
@@ -70,12 +70,12 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     String reasonPhrase = responseContext.getStatusInfo().getReasonPhrase();
     apiData.setStatus(statusCode);
     apiData.setMessage(reasonPhrase);
-    apiLog.setLevel(LogLevel.INFO.toString());
+    apiLog.setLevel(LogLevel.INFO);
     if (statusCode >= 400 && statusCode < 500) {
-      apiLog.setLevel(LogLevel.WARN.toString());
+      apiLog.setLevel(LogLevel.WARN);
       apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
     } else if (statusCode >= 500) {
-      apiLog.setLevel(LogLevel.ERROR.toString());
+      apiLog.setLevel(LogLevel.ERROR);
       apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
     }
     apiData.setExecTime(execTime);

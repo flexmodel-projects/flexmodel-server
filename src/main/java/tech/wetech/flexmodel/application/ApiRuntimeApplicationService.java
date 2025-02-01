@@ -14,7 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
-import tech.wetech.flexmodel.domain.model.api.*;
+import tech.wetech.flexmodel.codegen.enumeration.LogLevel;
+import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
+import tech.wetech.flexmodel.domain.model.api.ApiLogService;
+import tech.wetech.flexmodel.domain.model.api.ApiRateLimiterHolder;
+import tech.wetech.flexmodel.domain.model.api.LogData;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
@@ -323,7 +327,7 @@ public class ApiRuntimeApplicationService {
 
   public void log(RoutingContext routingContext, Runnable runnable) {
     ApiLog apiLog = new ApiLog();
-    apiLog.setLevel(LogLevel.INFO.name());
+    apiLog.setLevel(LogLevel.INFO);
     LogData apiData = new LogData();
     apiLog.setData(apiData);
     long beginTime = System.currentTimeMillis();
@@ -337,7 +341,7 @@ public class ApiRuntimeApplicationService {
     } catch (Exception e) {
       routingContext.response()
         .setStatusCode(500);
-      apiLog.setLevel(LogLevel.ERROR.name());
+      apiLog.setLevel(LogLevel.ERROR);
       apiData.setStatus(500);
       apiData.setErrors(e.getMessage());
       throw e;

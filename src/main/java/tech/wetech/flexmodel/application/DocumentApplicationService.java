@@ -11,8 +11,8 @@ import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.RelationField;
 import tech.wetech.flexmodel.TypedField;
 import tech.wetech.flexmodel.codegen.entity.ApiInfo;
+import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
-import tech.wetech.flexmodel.domain.model.api.ApiType;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
@@ -23,8 +23,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static tech.wetech.flexmodel.codegen.StringUtils.*;
-import static tech.wetech.flexmodel.domain.model.api.ApiType.API;
-import static tech.wetech.flexmodel.domain.model.api.ApiType.FOLDER;
 
 /**
  * @author cjbi
@@ -100,7 +98,7 @@ public class DocumentApplicationService {
     GraphQLSchema graphQLSchema = graphQLProvider.getGraphQL().getGraphQLSchema();
     for (ApiInfo api : apis) {
       try {
-        if (ApiType.valueOf(api.getType()) != API) {
+        if (api.getType() != ApiType.API) {
           continue;
         }
         String sanitizeName = getSanitizeName(api);
@@ -274,7 +272,7 @@ public class DocumentApplicationService {
   public List<Map<String, Object>> buildTags(List<ApiInfo> apis) {
     List<Map<String, Object>> tags = new ArrayList<>();
     for (ApiInfo api : apis) {
-      if (ApiType.valueOf(api.getType()) == FOLDER) {
+      if (api.getType() == ApiType.FOLDER) {
         Map<String, Object> tag = new HashMap<>();
         tag.put("name", api.getName());
         tag.put("description", api.getName());
@@ -288,7 +286,7 @@ public class DocumentApplicationService {
     Map<String, Object> paths = new HashMap<>();
     for (ApiInfo api : apis) {
       try {
-        if (ApiType.valueOf(api.getType()) != API) {
+        if (api.getType() != ApiType.API) {
           continue;
         }
         String sanitizeName = getSanitizeName(api);

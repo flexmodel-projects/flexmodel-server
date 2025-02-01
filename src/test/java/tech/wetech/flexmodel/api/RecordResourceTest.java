@@ -47,7 +47,7 @@ class RecordResourceTest {
             {
               "id": 100000,
               "studentName": "张三丰",
-              "gender": "男",
+              "gender": "MALE",
               "age": 11,
               "classId": 2,
               "studentDetail": {
@@ -80,7 +80,7 @@ class RecordResourceTest {
             {
               "id": 100000,
               "studentName": "张三丰",
-              "gender": "男",
+              "gender": "MALE",
               "age": 11,
               "classId": 2,
               "studentDetail": {

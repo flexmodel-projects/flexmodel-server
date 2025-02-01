@@ -14,8 +14,9 @@
         },
         {
           "name": "type",
-          "type": "string",
-          "length": 255,
+          "type": "enum",
+          "from": "DatasourceType",
+          "multiple": false,
           "unique": false,
           "nullable": true,
           "modelName": "Datasource"
@@ -32,10 +33,6 @@
           "type": "datetime",
           "unique": false,
           "nullable": true,
-          "generator": {
-            "type": "DatetimeNowValueGenerator",
-            "generationTime": "INSERT"
-          },
           "modelName": "Datasource"
         },
         {
@@ -43,10 +40,6 @@
           "type": "datetime",
           "unique": false,
           "nullable": true,
-          "generator": {
-            "type": "DatetimeNowValueGenerator",
-            "generationTime": "ALWAYS"
-          },
           "modelName": "Datasource"
         },
         {
@@ -55,11 +48,6 @@
           "unique": false,
           "comment": "",
           "nullable": false,
-          "generator": {
-            "type": "FixedValueGenerator",
-            "value": true,
-            "generationTime": "INSERT"
-          },
           "modelName": "Datasource",
           "defaultValue": true
         }
@@ -75,10 +63,6 @@
           "type": "id",
           "unique": true,
           "nullable": true,
-          "generator": {
-            "type": "ULIDValueGenerator",
-            "generationTime": "INSERT"
-          },
           "modelName": "ApiInfo",
           "generatedValue": "ULID"
         },
@@ -100,15 +84,11 @@
         },
         {
           "name": "type",
-          "type": "string",
-          "length": 255,
+          "type": "enum",
+          "from": "ApiType",
+          "multiple": false,
           "unique": false,
           "nullable": false,
-          "generator": {
-            "type": "FixedValueGenerator",
-            "value": "FOLDER",
-            "generationTime": "INSERT"
-          },
           "modelName": "ApiInfo",
           "defaultValue": "FOLDER"
         },
@@ -133,10 +113,6 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "generator": {
-            "type": "DatetimeNowValueGenerator",
-            "generationTime": "INSERT"
-          },
           "modelName": "ApiInfo"
         },
         {
@@ -144,10 +120,6 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "generator": {
-            "type": "DatetimeNowValueGenerator",
-            "generationTime": "ALWAYS"
-          },
           "modelName": "ApiInfo"
         },
         {
@@ -163,11 +135,6 @@
           "unique": false,
           "comment": "",
           "nullable": false,
-          "generator": {
-            "type": "FixedValueGenerator",
-            "value": true,
-            "generationTime": "INSERT"
-          },
           "modelName": "ApiInfo",
           "defaultValue": true
         }
@@ -183,17 +150,14 @@
           "type": "id",
           "unique": false,
           "nullable": true,
-          "generator": {
-            "type": "ULIDValueGenerator",
-            "generationTime": "INSERT"
-          },
           "modelName": "ApiLog",
           "generatedValue": "ULID"
         },
         {
           "name": "level",
-          "type": "string",
-          "length": 255,
+          "type": "enum",
+          "from": "LogLevel",
+          "multiple": false,
           "unique": false,
           "nullable": false,
           "modelName": "ApiLog"
@@ -217,10 +181,6 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "generator": {
-            "type": "DatetimeNowValueGenerator",
-            "generationTime": "INSERT"
-          },
           "modelName": "ApiLog"
         }
       ],
@@ -255,10 +215,6 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "generator": {
-            "type": "DatetimeNowValueGenerator",
-            "generationTime": "INSERT"
-          },
           "modelName": "IdentityProvider"
         },
         {
@@ -273,10 +229,6 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "generator": {
-            "type": "DatetimeNowValueGenerator",
-            "generationTime": "ALWAYS"
-          },
           "modelName": "IdentityProvider"
         }
       ],
@@ -292,10 +244,6 @@
           "type": "id",
           "unique": true,
           "nullable": true,
-          "generator": {
-            "type": "ULIDValueGenerator",
-            "generationTime": "INSERT"
-          },
           "modelName": "Config",
           "generatedValue": "ULID"
         },
@@ -321,10 +269,6 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "generator": {
-            "type": "DatetimeNowValueGenerator",
-            "generationTime": "INSERT"
-          },
           "modelName": "ApiInfo"
         },
         {
@@ -332,10 +276,6 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "generator": {
-            "type": "DatetimeNowValueGenerator",
-            "generationTime": "ALWAYS"
-          },
           "modelName": "Config"
         }
       ],
@@ -406,11 +346,21 @@
         },
         {
           "name": "gender",
-          "type": "string",
+          "type": "enum",
+          "from": "UserGender",
+          "multiple": false,
           "modelName": "Student",
           "unique": false,
-          "nullable": true,
-          "length": 255
+          "nullable": true
+        },
+        {
+          "name": "interest",
+          "type": "enum",
+          "from": "user_interest",
+          "multiple": true,
+          "modelName": "Student",
+          "unique": false,
+          "nullable": true
         },
         {
           "name": "age",
@@ -434,6 +384,7 @@
           "nullable": true,
           "multiple": false,
           "from": "StudentDetail",
+          "localField": "id",
           "foreignField": "studentId",
           "cascadeDelete": true
         }
@@ -505,6 +456,7 @@
           "nullable": true,
           "multiple": true,
           "from": "Student",
+          "localField": "id",
           "foreignField": "classId",
           "cascadeDelete": true
         }
@@ -545,6 +497,56 @@
           "unique": false
         }
       ]
+    },
+    {
+      "name": "ApiType",
+      "type": "enum",
+      "elements": [
+        "FOLDER",
+        "API"
+      ],
+      "comment": "接口类型"
+    },
+    {
+      "name": "DatasourceType",
+      "type": "enum",
+      "elements": [
+        "system",
+        "user"
+      ],
+      "comment": "数据源类型"
+    },
+    {
+      "name": "UserGender",
+      "type": "enum",
+      "elements": [
+        "UNKNOWN",
+        "MALE",
+        "FEMALE"
+      ],
+      "comment": "性别"
+    },
+    {
+      "name": "user_interest",
+      "type": "enum",
+      "elements": [
+        "chang",
+        "tiao",
+        "rap",
+        "daLanQiu"
+      ],
+      "comment": "兴趣"
+    },
+    {
+      "name": "LogLevel",
+      "type": "enum",
+      "elements": [
+        "DEBUG",
+        "INFO",
+        "WARN",
+        "ERROR"
+      ],
+      "comment": "日志等级"
     }
   ],
   "data": [
@@ -730,7 +732,13 @@
         {
           "id": 1,
           "studentName": "张三",
-          "gender": "男",
+          "gender": "MALE",
+          "interest": [
+            "chang",
+            "tiao",
+            "rap",
+            "daLanQiu"
+          ],
           "age": 10,
           "classId": 1,
           "studentDetail": {
@@ -754,7 +762,11 @@
         {
           "id": 2,
           "studentName": "李四",
-          "gender": "女",
+          "gender": "FEMALE",
+          "interest": [
+            "chang",
+            "tiao"
+          ],
           "age": 10,
           "classId": 1,
           "studentDetail": {
@@ -774,7 +786,10 @@
         {
           "id": 3,
           "studentName": "王五",
-          "gender": "男",
+          "interest": [
+            "daLanQiu"
+          ],
+          "gender": "MALE",
           "age": 11,
           "classId": 2,
           "studentDetail": {

@@ -9,6 +9,7 @@ import tech.wetech.flexmodel.codegen.GenerationContext;
 import tech.wetech.flexmodel.codegen.GenerationTool;
 import tech.wetech.flexmodel.codegen.ModelClass;
 import tech.wetech.flexmodel.codegen.entity.ApiInfo;
+import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
 
 import java.util.ArrayList;
@@ -105,7 +106,7 @@ public class ApiDesignApplicationService {
     folder.setPath(null);
     folder.setName(dto.getApiFolder());
     folder.setEnabled(false);
-    folder.setType("FOLDER");
+    folder.setType(ApiType.FOLDER);
     return apiInfoService.create(folder);
   }
 

@@ -9,6 +9,7 @@ import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.TypeWrapper;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
+import tech.wetech.flexmodel.codegen.enumeration.DatasourceType;
 import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.connect.database.Database;
@@ -68,7 +69,7 @@ public class DatasourceResource {
     List<Datasource> allList = new ArrayList<>();
     Datasource system = new Datasource();
     system.setName("system");
-    system.setType("system");
+    system.setType(DatasourceType.system);
     Map<String, Object> configMap = new HashMap<>();
     configMap.put("url", config.datasource().url());
     configMap.put("dbKind", config.datasource().dbKind());
