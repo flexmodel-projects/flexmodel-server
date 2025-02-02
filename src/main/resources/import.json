@@ -743,21 +743,7 @@
           "classId": 1,
           "studentDetail": {
             "description": "张三的描述"
-          },
-          "courses": [
-            {
-              "courseNo": "Math",
-              "courseName": "数学"
-            },
-            {
-              "courseNo": "YuWen",
-              "courseName": "语文"
-            },
-            {
-              "courseNo": "Eng",
-              "courseName": "英语"
-            }
-          ]
+          }
         },
         {
           "id": 2,
@@ -771,17 +757,7 @@
           "classId": 1,
           "studentDetail": {
             "description": "李四的描述"
-          },
-          "courses": [
-            {
-              "courseNo": "Math",
-              "courseName": "数学"
-            },
-            {
-              "courseNo": "YuWen",
-              "courseName": "语文"
-            }
-          ]
+          }
         },
         {
           "id": 3,
@@ -794,17 +770,7 @@
           "classId": 2,
           "studentDetail": {
             "description": "王五的描述"
-          },
-          "courses": [
-            {
-              "courseNo": "YuWen",
-              "courseName": "语文"
-            },
-            {
-              "courseNo": "Eng",
-              "courseName": "英语"
-            }
-          ]
+          }
         }
       ]
     },

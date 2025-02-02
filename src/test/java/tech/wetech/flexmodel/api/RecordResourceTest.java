@@ -52,17 +52,7 @@ class RecordResourceTest {
               "classId": 2,
               "studentDetail": {
                 "description": "张三丰的描述"
-              },
-              "courses": [
-                 {
-                   "courseNo":"YuWen",
-                   "courseName":"语文"
-                 },
-                 {
-                   "courseNo":"Eng",
-                   "courseName":"英语"
-                 }
-              ]
+              }
             }
         """)
       .post(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records", "system", "Student")
@@ -85,17 +75,7 @@ class RecordResourceTest {
               "classId": 2,
               "studentDetail": {
                 "description": "张三丰的描述"
-              },
-              "courses": [
-                 {
-                   "courseNo":"YuWen",
-                   "courseName":"语文"
-                 },
-                 {
-                   "courseNo":"Eng",
-                   "courseName":"英语"
-                 }
-              ]
+              }
             }
         """)
       .put(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
