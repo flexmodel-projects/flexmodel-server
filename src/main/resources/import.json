@@ -33,14 +33,16 @@
           "type": "datetime",
           "unique": false,
           "nullable": true,
-          "modelName": "Datasource"
+          "modelName": "Datasource",
+          "generatedValue": "NOW_ON_CREATE"
         },
         {
           "name": "updatedAt",
           "type": "datetime",
           "unique": false,
           "nullable": true,
-          "modelName": "Datasource"
+          "modelName": "Datasource",
+          "generatedValue": "NOW_ON_UPDATE"
         },
         {
           "name": "enabled",
@@ -113,14 +115,16 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiInfo"
+          "modelName": "ApiInfo",
+          "generatedValue": "NOW_ON_CREATE"
         },
         {
           "name": "updatedAt",
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiInfo"
+          "modelName": "ApiInfo",
+          "generatedValue": "NOW_ON_UPDATE"
         },
         {
           "name": "meta",
@@ -181,7 +185,8 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiLog"
+          "modelName": "ApiLog",
+          "generatedValue": "NOW_ON_CREATE"
         }
       ],
       "indexes": [
@@ -215,7 +220,8 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "IdentityProvider"
+          "modelName": "IdentityProvider",
+          "generatedValue": "NOW_ON_CREATE"
         },
         {
           "name": "provider",
@@ -229,7 +235,8 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "IdentityProvider"
+          "modelName": "IdentityProvider",
+          "generatedValue": "NOW_ON_UPDATE"
         }
       ],
       "indexes": []
@@ -269,14 +276,16 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiInfo"
+          "modelName": "ApiInfo",
+          "generatedValue": "NOW_ON_CREATE"
         },
         {
           "name": "updatedAt",
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "Config"
+          "modelName": "Config",
+          "generatedValue": "NOW_ON_UPDATE"
         }
       ],
       "indexes": [

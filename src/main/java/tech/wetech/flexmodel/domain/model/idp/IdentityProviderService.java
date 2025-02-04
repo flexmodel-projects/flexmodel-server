@@ -7,7 +7,6 @@ import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
 import tech.wetech.flexmodel.domain.model.idp.provider.Provider;
 import tech.wetech.flexmodel.util.JsonUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -26,8 +25,6 @@ public class IdentityProviderService {
   }
 
   public IdentityProvider create(IdentityProvider identityProvider) {
-    identityProvider.setCreatedAt(LocalDateTime.now());
-    identityProvider.setUpdatedAt(LocalDateTime.now());
     return identityProviderRepository.save(identityProvider);
   }
 
@@ -37,7 +34,6 @@ public class IdentityProviderService {
       return identityProvider;
     }
     identityProvider.setCreatedAt(older.getCreatedAt());
-    identityProvider.setUpdatedAt(LocalDateTime.now());
     return identityProviderRepository.save(identityProvider);
   }
 

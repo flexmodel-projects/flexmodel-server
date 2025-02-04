@@ -34,7 +34,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -347,7 +346,6 @@ public class ApiRuntimeApplicationService {
       throw e;
     } finally {
       apiLog.setUri(apiData.getMethod() + " " + apiData.getPath());
-      apiLog.setCreatedAt(LocalDateTime.now());
       apiData.setStatus(routingContext.response().getStatusCode());
       apiData.setMessage(routingContext.response().getStatusMessage());
       apiData.setExecTime(System.currentTimeMillis() - beginTime);
