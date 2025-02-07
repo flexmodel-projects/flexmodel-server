@@ -42,7 +42,7 @@
           "unique": false,
           "nullable": true,
           "modelName": "Datasource",
-          "generatedValue": "NOW_ON_UPDATE"
+          "generatedValue": "NOW_ON_CREATE_AND_UPDATE"
         },
         {
           "name": "enabled",
@@ -124,7 +124,7 @@
           "unique": false,
           "nullable": false,
           "modelName": "ApiInfo",
-          "generatedValue": "NOW_ON_UPDATE"
+          "generatedValue": "NOW_ON_CREATE_AND_UPDATE"
         },
         {
           "name": "meta",
@@ -236,7 +236,7 @@
           "unique": false,
           "nullable": false,
           "modelName": "IdentityProvider",
-          "generatedValue": "NOW_ON_UPDATE"
+          "generatedValue": "NOW_ON_CREATE_AND_UPDATE"
         }
       ],
       "indexes": []
@@ -285,7 +285,7 @@
           "unique": false,
           "nullable": false,
           "modelName": "Config",
-          "generatedValue": "NOW_ON_UPDATE"
+          "generatedValue": "NOW_ON_CREATE_AND_UPDATE"
         }
       ],
       "indexes": [
@@ -618,7 +618,7 @@
           "meta": {
             "auth": false,
             "execution": {
-              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  system_create_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \\\"\\\") {\n  system_create_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
           },
@@ -635,7 +635,7 @@
           "meta": {
             "auth": false,
             "execution": {
-              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  system_update_Classes_by_id(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  system_update_Classes_by_id(\n    id: \\\"1\\\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
           },

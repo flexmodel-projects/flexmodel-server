@@ -102,20 +102,20 @@ public class SessionDatasourceImpl implements SessionDatasource {
   @Override
   public void add(Datasource datasource) {
     try {
-      DataSourceProvider dataSourceProvider = buildDataSourceProvider(datasource);
-      sessionFactory.addDataSourceProvider(datasource.getName(), dataSourceProvider);
+      DataSourceProvider dataSourceProvider = buildDataSourceProvider(datasource.getName(), datasource);
+      sessionFactory.addDataSourceProvider(dataSourceProvider);
     } catch (Exception e) {
       log.error("Session dataSource create error: {}", e.getMessage(), e);
     }
   }
 
-  private DataSourceProvider buildDataSourceProvider(Datasource datasource) {
+  private DataSourceProvider buildDataSourceProvider(String id, Datasource datasource) {
     DataSourceProvider dataSourceProvider;
     if (datasource.getConfig() instanceof MongoDB mongoDB) {
-      dataSourceProvider = new MongoDataSourceProvider(buildMongoDatabase(mongoDB));
+      dataSourceProvider = new MongoDataSourceProvider(id, buildMongoDatabase(mongoDB));
     } else {
       Database config = JsonUtils.getInstance().convertValue(datasource.getConfig(), Database.class);
-      dataSourceProvider = new JdbcDataSourceProvider(buildJdbcDataSource(config));
+      dataSourceProvider = new JdbcDataSourceProvider(id,buildJdbcDataSource(config));
     }
     return dataSourceProvider;
   }
