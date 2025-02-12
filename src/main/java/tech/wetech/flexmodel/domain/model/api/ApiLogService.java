@@ -43,6 +43,6 @@ public class ApiLogService {
   public void purgeOldLogs(int maxDays) {
     log.info("Purging old logs older than {} days", maxDays);
     LocalDateTime purgeDate = LocalDateTime.now().minusDays(maxDays);
-    apiLogRepository.delete(f -> f.lessThanOrEqualTo("createDate", purgeDate));
+    apiLogRepository.delete(f -> f.lessThanOrEqualTo("createdAt", purgeDate));
   }
 }
