@@ -2,6 +2,7 @@ package tech.wetech.flexmodel
 
 import tech.wetech.flexmodel.codegen.GenerationContext
 import tech.wetech.flexmodel.codegen.entity.ApiInfo
+import tech.wetech.flexmodel.codegen.enumeration.ApiType
 
 /**
  * @author cjbi
@@ -31,7 +32,7 @@ class PaginationApiDefinitionGenerator extends ApiDefinitionGenerator {
     ApiInfo apiInfo = new ApiInfo()
     apiInfo.setParentId(context.getVariable("apiParentId"))
     apiInfo.setName("Fetch a paginated ${context.getModelClass().getModelName()} records list")
-    apiInfo.setType("API")
+    apiInfo.setType("API" as ApiType)
     apiInfo.setMethod("GET")
     apiInfo.setPath("/${context.getModelClass().getModelName()}/page")
 

@@ -2,6 +2,7 @@ package tech.wetech.flexmodel
 
 import tech.wetech.flexmodel.codegen.GenerationContext
 import tech.wetech.flexmodel.codegen.entity.ApiInfo
+import tech.wetech.flexmodel.codegen.enumeration.ApiType
 
 /**
  * @author cjbi
@@ -28,7 +29,7 @@ class ViewApiDefinitionGenerator extends ApiDefinitionGenerator {
     ApiInfo apiInfo = new ApiInfo()
     apiInfo.setParentId(context.getVariable("apiParentId"))
     apiInfo.setName("Fetch a single ${context.getModelClass().getModelName()} record")
-    apiInfo.setType("API")
+    apiInfo.setType("API" as ApiType)
     apiInfo.setMethod("GET")
     apiInfo.setPath("/${context.getModelClass().getModelName()}/{id}")
 
