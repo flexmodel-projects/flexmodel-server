@@ -386,6 +386,17 @@
           "nullable": true
         },
         {
+          "type": "relation",
+          "name": "studentClass",
+          "comment": "班级",
+          "modelName": "Student",
+          "multiple": false,
+          "from": "Classes",
+          "localField": "classId",
+          "foreignField": "id",
+          "cascadeDelete": false
+        },
+        {
           "name": "studentDetail",
           "type": "relation",
           "modelName": "Student",
@@ -418,6 +429,17 @@
           "modelName": "StudentDetail",
           "unique": false,
           "nullable": true
+        },
+        {
+          "type": "relation",
+          "name": "student",
+          "comment": "学生",
+          "modelName": "StudentDetail",
+          "multiple": false,
+          "from": "Student",
+          "localField": "studentId",
+          "foreignField": "id",
+          "cascadeDelete": false
         },
         {
           "name": "description",
@@ -470,7 +492,19 @@
           "cascadeDelete": true
         }
       ],
-      "indexes": []
+      "indexes": [
+        {
+          "modelName": "Student",
+          "name": "IDX_studentName",
+          "fields": [
+            {
+              "fieldName": "studentName",
+              "direction": "ASC"
+            }
+          ],
+          "unique": false
+        }
+      ]
     },
     {
       "type": "entity",
