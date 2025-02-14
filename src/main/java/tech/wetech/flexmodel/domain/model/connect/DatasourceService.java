@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static tech.wetech.flexmodel.codegen.System.datasource;
+
 /**
  * @author cjbi
  */
@@ -55,11 +57,11 @@ public class DatasourceService {
   }
 
   public List<Datasource> findAll() {
-    return datasourceRepository.find(f -> f.equalTo("enabled", true));
+    return datasourceRepository.find(datasource.enabled.eq(true));
   }
 
   public Optional<Datasource> findOne(String datasourceName) {
-    return datasourceRepository.find(f -> f.equalTo("name", datasourceName))
+    return datasourceRepository.find(datasource.name.eq(datasourceName))
       .stream()
       .findFirst();
   }

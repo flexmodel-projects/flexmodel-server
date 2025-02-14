@@ -5,13 +5,12 @@ import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Projections;
 import tech.wetech.flexmodel.codegen.dao.ApiLogDAO;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
-import tech.wetech.flexmodel.criterion.Example;
 import tech.wetech.flexmodel.domain.model.api.ApiLogRepository;
 import tech.wetech.flexmodel.domain.model.api.LogApiRank;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
+import tech.wetech.flexmodel.dsl.Predicate;
 
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 import static tech.wetech.flexmodel.Direction.DESC;
 import static tech.wetech.flexmodel.Projections.dateFormat;
@@ -27,7 +26,7 @@ public class ApiLogFmRepository implements ApiLogRepository {
   ApiLogDAO apiLogDAO;
 
   @Override
-  public List<ApiLog> find(UnaryOperator<Example.Criteria> filter, Integer current, Integer pageSize) {
+  public List<ApiLog> find(Predicate filter, Integer current, Integer pageSize) {
     return apiLogDAO.find(query -> {
       if (filter != null) {
         query.withFilter(filter);
@@ -42,7 +41,7 @@ public class ApiLogFmRepository implements ApiLogRepository {
 
 
   @Override
-  public List<LogStat> stat(UnaryOperator<Example.Criteria> filter) {
+  public List<LogStat> stat(Predicate filter) {
     return apiLogDAO.find(query ->
       query
         .withProjection(projection -> projection
@@ -56,7 +55,7 @@ public class ApiLogFmRepository implements ApiLogRepository {
   }
 
   @Override
-  public List<LogApiRank> ranking(UnaryOperator<Example.Criteria> filter) {
+  public List<LogApiRank> ranking(Predicate filter) {
     return apiLogDAO.find(query ->
       query
         .withProjection(projection -> projection
@@ -77,12 +76,12 @@ public class ApiLogFmRepository implements ApiLogRepository {
   }
 
   @Override
-  public void delete(UnaryOperator<Example.Criteria> unaryOperator) {
-    apiLogDAO.delete(unaryOperator);
+  public void delete(Predicate unaryOperator) {
+    apiLogDAO.delete(q -> q.withFilter(unaryOperator));
   }
 
   @Override
-  public long count(UnaryOperator<Example.Criteria> filter) {
+  public long count(Predicate filter) {
     return apiLogDAO.count(query -> query.withFilter(filter));
   }
 

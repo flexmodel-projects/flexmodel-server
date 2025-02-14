@@ -8,6 +8,8 @@ import tech.wetech.flexmodel.domain.model.api.ApiInfoRepository;
 
 import java.util.List;
 
+import static tech.wetech.flexmodel.codegen.System.apiInfo;
+
 /**
  * @author cjbi
  */
@@ -19,7 +21,7 @@ public class ApiInfoFmRepository implements ApiInfoRepository {
 
   @Override
   public void deleteByParentId(String parentId) {
-    apiInfoDAO.delete(f -> f.equalTo("parentId", parentId));
+    apiInfoDAO.delete(f -> f.withFilter(apiInfo.parentId.eq(parentId)));
   }
 
   @Override

@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.codegen.System;
 import tech.wetech.flexmodel.codegen.dao.ConfigDAO;
 import tech.wetech.flexmodel.codegen.entity.Config;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
@@ -27,7 +28,7 @@ public class SettingsFmRepository implements SettingsRepository {
     Map<String, Object> settingsMap = JsonUtils.getInstance().convertValue(settings, Map.class);
     settingsMap.forEach((key, value) -> {
       if (value != null) {
-        Config config = configDAO.find(query -> query.withFilter(f -> f.equalTo("key", key)))
+        Config config = configDAO.find(query -> query.withFilter(System.config.key.eq(key)))
           .stream().findFirst()
           .orElseGet(Config::new);
         config.setKey(key);

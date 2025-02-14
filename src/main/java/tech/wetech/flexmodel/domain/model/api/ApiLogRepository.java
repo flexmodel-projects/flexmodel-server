@@ -1,26 +1,25 @@
 package tech.wetech.flexmodel.domain.model.api;
 
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
-import tech.wetech.flexmodel.criterion.Example;
+import tech.wetech.flexmodel.dsl.Predicate;
 
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 /**
  * @author cjbi
  */
 public interface ApiLogRepository {
 
-  List<ApiLog> find(UnaryOperator<Example.Criteria> filter, Integer current, Integer pageSize);
+  List<ApiLog> find(Predicate filter, Integer current, Integer pageSize);
 
-  List<LogStat> stat(UnaryOperator<Example.Criteria> filter);
+  List<LogStat> stat(Predicate filter);
 
-  List<LogApiRank> ranking(UnaryOperator<Example.Criteria> filter);
+  List<LogApiRank> ranking(Predicate filter);
 
   ApiLog save(ApiLog record);
 
-  void delete(UnaryOperator<Example.Criteria> unaryOperator);
+  void delete(Predicate filter);
 
-  long count(UnaryOperator<Example.Criteria> filter);
+  long count(Predicate filter);
 
 }

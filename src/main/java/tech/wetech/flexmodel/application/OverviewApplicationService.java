@@ -7,10 +7,13 @@ import tech.wetech.flexmodel.codegen.entity.ApiInfo;
 import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
 import tech.wetech.flexmodel.domain.model.api.ApiLogService;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
+import tech.wetech.flexmodel.dsl.Predicate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+
+import static tech.wetech.flexmodel.codegen.System.apiLog;
 
 /**
  * @author cjbi
@@ -52,11 +55,10 @@ public class OverviewApplicationService {
     overviewDTO.setQueryCount(queryCount);
     overviewDTO.setMutationCount(mutationCount);
     overviewDTO.setSubscribeCount(subscribeCount);
-    overviewDTO.setDataSourceCount( datasourceService.findAll().size());
-
-    overviewDTO.setApiStatList(apiLogService.stat(f -> f.between("createdAt", startDate, endDate)));
-
-    overviewDTO.setApiRankingList(apiLogService.ranking(f -> f.between("createdAt", startDate, endDate)));
+    overviewDTO.setDataSourceCount(datasourceService.findAll().size());
+    Predicate filter = apiLog.createdAt.between(startDate, endDate);
+    overviewDTO.setApiStatList(apiLogService.stat(filter));
+    overviewDTO.setApiRankingList(apiLogService.ranking(filter));
 
     return overviewDTO;
 

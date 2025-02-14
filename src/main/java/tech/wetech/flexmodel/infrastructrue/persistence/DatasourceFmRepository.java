@@ -4,11 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.dao.DatasourceDAO;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
-import tech.wetech.flexmodel.criterion.Example;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceRepository;
+import tech.wetech.flexmodel.dsl.Predicate;
 
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 /**
  * @author cjbi
@@ -25,7 +24,7 @@ public class DatasourceFmRepository implements DatasourceRepository {
   }
 
   @Override
-  public List<Datasource> find(UnaryOperator<Example.Criteria> filter) {
+  public List<Datasource> find(Predicate filter) {
     return datasourceDAO.find(query -> query.withFilter(filter));
   }
 

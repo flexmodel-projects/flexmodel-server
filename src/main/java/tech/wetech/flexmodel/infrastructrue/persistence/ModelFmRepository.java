@@ -4,8 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.*;
-import tech.wetech.flexmodel.criterion.Example;
 import tech.wetech.flexmodel.domain.model.modeling.ModelRepository;
+import tech.wetech.flexmodel.dsl.Predicate;
 import tech.wetech.flexmodel.infrastructrue.FmEngineSessions;
 import tech.wetech.flexmodel.util.JsonUtils;
 
@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 /**
  * @author cjbi
@@ -72,7 +71,7 @@ public class ModelFmRepository implements ModelRepository {
     return lookupEntityClass(clazz.getSuperclass());
   }
 
-  public List<TypeWrapper> find(UnaryOperator<Example.Criteria> filter, Query.Sort sort, Integer current, Integer pageSize) {
+  public List<TypeWrapper> find(Predicate filter, Query.Sort sort, Integer current, Integer pageSize) {
     String entityName = getEntityName();
     Class<TypeWrapper> resultType = getEntityType();
     return withSession(session -> session.find(entityName, query -> {

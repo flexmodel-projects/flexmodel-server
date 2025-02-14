@@ -1,10 +1,9 @@
 package tech.wetech.flexmodel.domain.model.connect;
 
 import tech.wetech.flexmodel.codegen.entity.Datasource;
-import tech.wetech.flexmodel.criterion.Example;
+import tech.wetech.flexmodel.dsl.Predicate;
 
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 /**
  * @author cjbi
@@ -13,7 +12,7 @@ public interface DatasourceRepository {
 
   List<Datasource> findAll();
 
-  List<Datasource> find(UnaryOperator<Example.Criteria> filter);
+  List<Datasource> find(Predicate filter);
 
   Datasource save(Datasource datasource);
 
