@@ -5,13 +5,17 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tech.wetech.flexmodel.application.ApiLogApplicationService;
 import tech.wetech.flexmodel.application.dto.PageDTO;
+import tech.wetech.flexmodel.codegen.StringUtils;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
+import tech.wetech.flexmodel.codegen.enumeration.LogLevel;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
 
@@ -34,7 +38,7 @@ public class ApiLogResource {
                                      @QueryParam("level") String levelStr
   ) {
     RequestResult result = parseQuery(dateRange, levelStr);
-    return apiLogApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), result.level());
+    return apiLogApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), result.levels());
   }
 
   @GET
@@ -44,13 +48,13 @@ public class ApiLogResource {
                             @QueryParam("dateRange") String dateRange,
                             @QueryParam("level") String levelStr) {
     RequestResult result = parseQuery(dateRange, levelStr);
-    return apiLogApplicationService.stat(keyword, result.startDate(), result.endDate(), result.level());
+    return apiLogApplicationService.stat(keyword, result.startDate(), result.endDate(), result.levels());
   }
 
   private static RequestResult parseQuery(String dateRange, String levelStr) {
     LocalDateTime startDate = null;
     LocalDateTime endDate = null;
-    Set<String> level = null;
+    Set<LogLevel> levels = null;
     if (dateRange != null) {
       try {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -62,13 +66,13 @@ public class ApiLogResource {
         endDate = null;
       }
     }
-    if (levelStr != null) {
-      level = Set.of(levelStr.split(","));
+    if (!StringUtils.isBlank(levelStr)) {
+      levels = Stream.of(levelStr.split(",")).map(LogLevel::valueOf).collect(Collectors.toSet());
     }
-    return new RequestResult(startDate, endDate, level);
+    return new RequestResult(startDate, endDate, levels);
   }
 
-  private record RequestResult(LocalDateTime startDate, LocalDateTime endDate, Set<String> level) {
+  private record RequestResult(LocalDateTime startDate, LocalDateTime endDate, Set<LogLevel> levels) {
   }
 
 }

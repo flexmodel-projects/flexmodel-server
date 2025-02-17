@@ -77,12 +77,12 @@ public class ApiLogFmRepository implements ApiLogRepository {
 
   @Override
   public void delete(Predicate unaryOperator) {
-    apiLogDAO.delete(q -> q.withFilter(unaryOperator));
+    apiLogDAO.delete(unaryOperator);
   }
 
   @Override
   public long count(Predicate filter) {
-    return apiLogDAO.count(query -> query.withFilter(filter));
+    return apiLogDAO.count(filter);
   }
 
 }

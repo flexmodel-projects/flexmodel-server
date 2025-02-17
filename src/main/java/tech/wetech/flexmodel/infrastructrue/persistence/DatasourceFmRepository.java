@@ -25,7 +25,7 @@ public class DatasourceFmRepository implements DatasourceRepository {
 
   @Override
   public List<Datasource> find(Predicate filter) {
-    return datasourceDAO.find(query -> query.withFilter(filter));
+    return datasourceDAO.find(filter);
   }
 
   @Override

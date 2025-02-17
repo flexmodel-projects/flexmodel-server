@@ -21,7 +21,7 @@ public class ApiInfoFmRepository implements ApiInfoRepository {
 
   @Override
   public void deleteByParentId(String parentId) {
-    apiInfoDAO.delete(f -> f.withFilter(apiInfo.parentId.eq(parentId)));
+    apiInfoDAO.delete(apiInfo.parentId.eq(parentId));
   }
 
   @Override

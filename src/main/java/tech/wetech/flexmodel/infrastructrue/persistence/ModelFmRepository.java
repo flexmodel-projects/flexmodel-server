@@ -140,7 +140,7 @@ public class ModelFmRepository implements ModelRepository {
   @Override
   public Optional<TypeWrapper> findModel(String datasourceName, String modelName) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      return Optional.ofNullable((Entity) session.getModel(modelName));
+      return Optional.ofNullable(session.getModel(modelName));
     }
   }
 
