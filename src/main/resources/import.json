@@ -1,7 +1,7 @@
 {
   "schema": [
     {
-      "name": "Datasource",
+      "name": "fs_datasource",
       "type": "entity",
       "fields": [
         {
@@ -9,7 +9,7 @@
           "type": "id",
           "unique": false,
           "nullable": true,
-          "modelName": "Datasource",
+          "modelName": "fs_datasource",
           "generatedValue": "STRING_NOT_GENERATED"
         },
         {
@@ -19,21 +19,21 @@
           "multiple": false,
           "unique": false,
           "nullable": true,
-          "modelName": "Datasource"
+          "modelName": "fs_datasource"
         },
         {
           "name": "config",
           "type": "json",
           "unique": false,
           "nullable": true,
-          "modelName": "Datasource"
+          "modelName": "fs_datasource"
         },
         {
           "name": "createdAt",
           "type": "datetime",
           "unique": false,
           "nullable": true,
-          "modelName": "Datasource",
+          "modelName": "fs_datasource",
           "generatedValue": "NOW_ON_CREATE"
         },
         {
@@ -41,7 +41,7 @@
           "type": "datetime",
           "unique": false,
           "nullable": true,
-          "modelName": "Datasource",
+          "modelName": "fs_datasource",
           "generatedValue": "NOW_ON_CREATE_AND_UPDATE"
         },
         {
@@ -50,14 +50,14 @@
           "unique": false,
           "comment": "",
           "nullable": false,
-          "modelName": "Datasource",
+          "modelName": "fs_datasource",
           "defaultValue": true
         }
       ],
       "indexes": []
     },
     {
-      "name": "ApiInfo",
+      "name": "fs_api_info",
       "type": "entity",
       "fields": [
         {
@@ -65,7 +65,7 @@
           "type": "id",
           "unique": true,
           "nullable": true,
-          "modelName": "ApiInfo",
+          "modelName": "fs_api_info",
           "generatedValue": "ULID"
         },
         {
@@ -74,7 +74,7 @@
           "length": 255,
           "unique": false,
           "nullable": false,
-          "modelName": "ApiInfo"
+          "modelName": "fs_api_info"
         },
         {
           "name": "parentId",
@@ -82,7 +82,7 @@
           "length": 255,
           "unique": false,
           "nullable": true,
-          "modelName": "ApiInfo"
+          "modelName": "fs_api_info"
         },
         {
           "name": "type",
@@ -91,7 +91,7 @@
           "multiple": false,
           "unique": false,
           "nullable": false,
-          "modelName": "ApiInfo",
+          "modelName": "fs_api_info",
           "defaultValue": "FOLDER"
         },
         {
@@ -100,7 +100,7 @@
           "length": 255,
           "unique": false,
           "nullable": true,
-          "modelName": "ApiInfo"
+          "modelName": "fs_api_info"
         },
         {
           "name": "path",
@@ -108,14 +108,14 @@
           "length": 255,
           "unique": false,
           "nullable": true,
-          "modelName": "ApiInfo"
+          "modelName": "fs_api_info"
         },
         {
           "name": "createdAt",
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiInfo",
+          "modelName": "fs_api_info",
           "generatedValue": "NOW_ON_CREATE"
         },
         {
@@ -123,7 +123,7 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiInfo",
+          "modelName": "fs_api_info",
           "generatedValue": "NOW_ON_CREATE_AND_UPDATE"
         },
         {
@@ -131,7 +131,7 @@
           "type": "json",
           "unique": false,
           "nullable": true,
-          "modelName": "ApiInfo"
+          "modelName": "fs_api_info"
         },
         {
           "name": "enabled",
@@ -139,14 +139,14 @@
           "unique": false,
           "comment": "",
           "nullable": false,
-          "modelName": "ApiInfo",
+          "modelName": "fs_api_info",
           "defaultValue": true
         }
       ],
       "indexes": []
     },
     {
-      "name": "ApiLog",
+      "name": "fs_api_log",
       "type": "entity",
       "fields": [
         {
@@ -154,7 +154,7 @@
           "type": "id",
           "unique": false,
           "nullable": true,
-          "modelName": "ApiLog",
+          "modelName": "fs_api_log",
           "generatedValue": "ULID"
         },
         {
@@ -164,35 +164,35 @@
           "multiple": false,
           "unique": false,
           "nullable": false,
-          "modelName": "ApiLog"
+          "modelName": "fs_api_log"
         },
         {
           "name": "uri",
           "type": "text",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiLog"
+          "modelName": "fs_api_log"
         },
         {
           "name": "data",
           "type": "json",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiLog"
+          "modelName": "fs_api_log"
         },
         {
           "name": "createdAt",
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiLog",
+          "modelName": "fs_api_log",
           "generatedValue": "NOW_ON_CREATE"
         }
       ],
       "indexes": [
         {
           "name": "IDX_level",
-          "modelName": "ApiLog",
+          "modelName": "fs_api_log",
           "fields": [
             {
               "fieldName": "level",
@@ -204,7 +204,7 @@
       ]
     },
     {
-      "name": "IdentityProvider",
+      "name": "fs_identity_provider",
       "type": "entity",
       "fields": [
         {
@@ -212,7 +212,7 @@
           "type": "id",
           "unique": false,
           "nullable": true,
-          "modelName": "Datasource",
+          "modelName": "fs_datasource",
           "generatedValue": "STRING_NOT_GENERATED"
         },
         {
@@ -242,7 +242,7 @@
       "indexes": []
     },
     {
-      "name": "Config",
+      "name": "fs_config",
       "comment": "配置",
       "type": "entity",
       "fields": [
@@ -276,7 +276,7 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "ApiInfo",
+          "modelName": "fs_api_info",
           "generatedValue": "NOW_ON_CREATE"
         },
         {
@@ -594,7 +594,7 @@
   ],
   "data": [
     {
-      "modelName": "ApiInfo",
+      "modelName": "fs_api_info",
       "values": [
         {
           "createdAt": "2024-07-13T23:21:09",
@@ -700,7 +700,7 @@
       ]
     },
     {
-      "modelName": "Datasource",
+      "modelName": "fs_datasource",
       "values": [
         {
           "name": "sqlite_test",

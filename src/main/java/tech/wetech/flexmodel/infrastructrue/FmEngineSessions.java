@@ -51,6 +51,7 @@ public class FmEngineSessions {
     dataSource.setPassword(datasourceConfig.password().orElse(null));
     return SessionFactory.builder()
       .setDefaultDataSourceProvider(new JdbcDataSourceProvider(SYSTEM_DS_KEY, dataSource))
+      .setFailsafe(true)
       .build();
   }
 

@@ -157,6 +157,7 @@
             </schema>
             <target>
               <packageName>tech.wetech.flexmodel.codegen</packageName>
+              <replaceString>^fs_</replaceString>
             </target>
           </generator>
         </configuration>
