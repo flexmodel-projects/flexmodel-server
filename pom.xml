@@ -35,6 +35,13 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub MetaCode Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/flexmodel-projects/flexmodel-maven-packages</url>
+    </repository>
+  </distributionManagement>
   <dependencies>
     <dependency>
       <groupId>com.google.guava</groupId>
