@@ -40,6 +40,7 @@ public class RestAPIResourceTest {
 
   @Test
   void testPOST() {
+    RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     given()
       .when()
       .contentType(ContentType.JSON)
@@ -58,6 +59,7 @@ public class RestAPIResourceTest {
 
   @Test
   void testPUT() {
+    RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     given()
       .when()
       .contentType(ContentType.JSON)
@@ -76,6 +78,7 @@ public class RestAPIResourceTest {
 
   @Test
   void testDELETE() {
+    RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     given()
       .when()
       .delete("/api/v1/system/Classes/1")
