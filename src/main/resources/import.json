@@ -220,7 +220,7 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "IdentityProvider",
+          "modelName": "fs_identity_provider",
           "generatedValue": "NOW_ON_CREATE"
         },
         {
@@ -228,14 +228,14 @@
           "type": "json",
           "unique": false,
           "nullable": true,
-          "modelName": "IdentityProvider"
+          "modelName": "fs_identity_provider"
         },
         {
           "name": "updatedAt",
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "IdentityProvider",
+          "modelName": "fs_identity_provider",
           "generatedValue": "NOW_ON_CREATE_AND_UPDATE"
         }
       ],
@@ -251,7 +251,7 @@
           "type": "id",
           "unique": true,
           "nullable": true,
-          "modelName": "Config",
+          "modelName": "fs_config",
           "generatedValue": "ULID"
         },
         {
@@ -261,7 +261,7 @@
           "length": 255,
           "unique": false,
           "nullable": false,
-          "modelName": "Config"
+          "modelName": "fs_config"
         },
         {
           "name": "value",
@@ -269,7 +269,7 @@
           "length": 255,
           "unique": false,
           "nullable": true,
-          "modelName": "Config"
+          "modelName": "fs_config"
         },
         {
           "name": "createdAt",
@@ -284,14 +284,14 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "Config",
+          "modelName": "fs_config",
           "generatedValue": "NOW_ON_CREATE_AND_UPDATE"
         }
       ],
       "indexes": [
         {
           "name": "IDX_key",
-          "modelName": "Config",
+          "modelName": "fs_config",
           "fields": [
             {
               "fieldName": "key",
