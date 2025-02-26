@@ -1,7 +1,6 @@
 package tech.wetech.flexmodel.api;
 
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import tech.wetech.flexmodel.application.IdentityProviderApplicationService;
 import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
@@ -25,7 +24,7 @@ public class IdentityProviderResource {
   }
 
   @POST
-  public IdentityProvider createProvider(@Valid IdentityProvider identityProvider) {
+  public IdentityProvider createProvider(IdentityProvider identityProvider) {
     return identityProviderApplicationService.createProvider(identityProvider);
   }
 

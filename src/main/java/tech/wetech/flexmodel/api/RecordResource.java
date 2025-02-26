@@ -43,8 +43,7 @@ public class RecordResource {
 
   @POST
   public Map<String, Object> createRecord(Map<String, Object> record) {
-    Map<String, Object> result = dataApplicationService.createRecord(datasourceName, modelName, record);
-    return result;
+    return dataApplicationService.createRecord(datasourceName, modelName, record);
   }
 
   @PUT

@@ -1,7 +1,6 @@
 package tech.wetech.flexmodel.api;
 
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -47,7 +46,7 @@ public class DatasourceResource {
 
   @POST
   @Path("/{datasourceName}/import")
-  public void importModels(@PathParam("datasourceName") String datasourceName, @Valid ImportScriptRequest request) {
+  public void importModels(@PathParam("datasourceName") String datasourceName, ImportScriptRequest request) {
     modelingApplicationService.importModels(datasourceName, request.script());
   }
 
@@ -83,13 +82,13 @@ public class DatasourceResource {
   }
 
   @POST
-  public Datasource createDatasource(@Valid Datasource datasource) {
+  public Datasource createDatasource(Datasource datasource) {
     return modelingApplicationService.createDatasource(datasource);
   }
 
   @PUT
   @Path("/{datasourceName}")
-  public Datasource updateDatasource(@PathParam("datasourceName") String datasourceName, @Valid Datasource datasource) {
+  public Datasource updateDatasource(@PathParam("datasourceName") String datasourceName, Datasource datasource) {
     datasource.setName(datasourceName);
     return modelingApplicationService.updateDatasource(datasource);
   }
