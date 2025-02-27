@@ -2,3 +2,7 @@ flexmodel:
   datasource:
     db-kind: sqlite
     url: jdbc:sqlite:file:sqlite.db
+
+quarkus:
+  swagger-ui:
+    always-include: true
