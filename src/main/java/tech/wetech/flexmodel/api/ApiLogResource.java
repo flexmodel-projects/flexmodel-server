@@ -5,7 +5,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import tech.wetech.flexmodel.application.ApiLogApplicationService;
+import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.StringUtils;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
@@ -31,7 +31,7 @@ import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
 public class ApiLogResource {
 
   @Inject
-  ApiLogApplicationService apiLogApplicationService;
+  ApiRuntimeApplicationService apiRuntimeApplicationService;
 
   @Operation(summary = "获取接口日志列表")
   @GET
@@ -42,7 +42,7 @@ public class ApiLogResource {
                                      @QueryParam("level") String levelStr
   ) {
     RequestResult result = parseQuery(dateRange, levelStr);
-    return apiLogApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), result.levels());
+    return apiRuntimeApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), result.levels());
   }
 
   @Operation(summary = "统计接口日志")
@@ -53,7 +53,7 @@ public class ApiLogResource {
                             @QueryParam("dateRange") String dateRange,
                             @QueryParam("level") String levelStr) {
     RequestResult result = parseQuery(dateRange, levelStr);
-    return apiLogApplicationService.stat(keyword, result.startDate(), result.endDate(), result.levels());
+    return apiRuntimeApplicationService.stat(keyword, result.startDate(), result.endDate(), result.levels());
   }
 
   private static RequestResult parseQuery(String dateRange, String levelStr) {

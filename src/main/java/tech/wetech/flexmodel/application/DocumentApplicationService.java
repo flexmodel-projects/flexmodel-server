@@ -10,9 +10,9 @@ import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.RelationField;
 import tech.wetech.flexmodel.TypedField;
-import tech.wetech.flexmodel.codegen.entity.ApiInfo;
+import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
-import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
+import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
@@ -33,7 +33,7 @@ import static tech.wetech.flexmodel.codegen.StringUtils.*;
 public class DocumentApplicationService {
 
   @Inject
-  ApiInfoService apiInfoService;
+  ApiDefinitionService apiDefinitionService;
 
   @Inject
   ModelService modelService;
@@ -60,7 +60,7 @@ public class DocumentApplicationService {
   }
 
   public Map<String, Object> getOpenApi() {
-    List<ApiInfo> apis = apiInfoService.findList();
+    List<ApiDefinition> apis = apiDefinitionService.findList();
     Map<String, Object> openAPI = new HashMap<>();
     openAPI.put("openapi", "3.0.3");
     openAPI.put("info", buildInfo());
@@ -89,14 +89,14 @@ public class DocumentApplicationService {
     return fieldDefinition;
   }
 
-  private String getSanitizeName(ApiInfo apiInfo) {
-    return capitalize(snakeToCamel(sanitize(apiInfo.getMethod().toLowerCase() + "_" + apiInfo.getPath())));
+  private String getSanitizeName(ApiDefinition apiDefinition) {
+    return capitalize(snakeToCamel(sanitize(apiDefinition.getMethod().toLowerCase() + "_" + apiDefinition.getPath())));
   }
 
-  private Map<String, Object> buildSchemas(List<ApiInfo> apis) {
+  private Map<String, Object> buildSchemas(List<ApiDefinition> apis) {
     Map<String, Object> definitions = new HashMap<>();
     GraphQLSchema graphQLSchema = graphQLProvider.getGraphQL().getGraphQLSchema();
-    for (ApiInfo api : apis) {
+    for (ApiDefinition api : apis) {
       try {
         if (api.getType() != ApiType.API) {
           continue;
@@ -256,7 +256,7 @@ public class DocumentApplicationService {
     return "#/components/schemas/" + refModelName;
   }
 
-  public Map<String, Object> buildComponents(List<ApiInfo> apis) {
+  public Map<String, Object> buildComponents(List<ApiDefinition> apis) {
     Map<String, Object> components = new HashMap<>();
     components.put("securitySchemes", Map.of(
       "bearerAuth", Map.of(
@@ -269,9 +269,9 @@ public class DocumentApplicationService {
     return components;
   }
 
-  public List<Map<String, Object>> buildTags(List<ApiInfo> apis) {
+  public List<Map<String, Object>> buildTags(List<ApiDefinition> apis) {
     List<Map<String, Object>> tags = new ArrayList<>();
-    for (ApiInfo api : apis) {
+    for (ApiDefinition api : apis) {
       if (api.getType() == ApiType.FOLDER) {
         Map<String, Object> tag = new HashMap<>();
         tag.put("name", api.getName());
@@ -282,9 +282,9 @@ public class DocumentApplicationService {
     return tags;
   }
 
-  public Map<String, Object> buildPaths(List<ApiInfo> apis) {
+  public Map<String, Object> buildPaths(List<ApiDefinition> apis) {
     Map<String, Object> paths = new HashMap<>();
-    for (ApiInfo api : apis) {
+    for (ApiDefinition api : apis) {
       try {
         if (api.getType() != ApiType.API) {
           continue;
@@ -294,7 +294,7 @@ public class DocumentApplicationService {
         Map<String, Object> content = new HashMap<>();
         String tag = apis.stream()
           .filter(a -> a.getId().equals(api.getParentId()))
-          .map(ApiInfo::getName)
+          .map(ApiDefinition::getName)
           .findFirst()
           .orElse(null);
         if (tag != null) {
@@ -388,11 +388,11 @@ public class DocumentApplicationService {
     return paths;
   }
 
-  private List<Map<String, Object>> buildParameters(ApiInfo apiInfo, Document document, boolean supportsBody) {
+  private List<Map<String, Object>> buildParameters(ApiDefinition apiDefinition, Document document, boolean supportsBody) {
     // 遍历每一个操作定义，提取其中的变量定义
     List<Map<String, Object>> parameters = new ArrayList<>();
 
-    Set<String> pathNames = new UriTemplate(apiInfo.getPath()).match(new UriTemplate(apiInfo.getPath())).keySet();
+    Set<String> pathNames = new UriTemplate(apiDefinition.getPath()).match(new UriTemplate(apiDefinition.getPath())).keySet();
 
     for (String pathName : pathNames) {
       parameters.add(
@@ -437,7 +437,7 @@ public class DocumentApplicationService {
     return parameters;
   }
 
-  private Map<String, Object> buildResponse200(ApiInfo api) {
+  private Map<String, Object> buildResponse200(ApiDefinition api) {
     String sanitizeName = getSanitizeName(api);
     return Map.of(
       "description", "successful operation",

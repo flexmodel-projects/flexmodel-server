@@ -12,19 +12,20 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.FlexmodelConfig;
-import tech.wetech.flexmodel.codegen.entity.ApiInfo;
+import tech.wetech.flexmodel.application.dto.PageDTO;
+import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiLog;
 import tech.wetech.flexmodel.codegen.enumeration.LogLevel;
-import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
-import tech.wetech.flexmodel.domain.model.api.ApiLogService;
-import tech.wetech.flexmodel.domain.model.api.ApiRateLimiterHolder;
-import tech.wetech.flexmodel.domain.model.api.LogData;
+import tech.wetech.flexmodel.domain.model.api.*;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
+import tech.wetech.flexmodel.dsl.Expressions;
+import tech.wetech.flexmodel.dsl.Predicate;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
+import tech.wetech.flexmodel.util.CollectionUtils;
 import tech.wetech.flexmodel.util.JsonUtils;
 import tech.wetech.flexmodel.util.PatternMatchUtils;
 import tech.wetech.flexmodel.util.UriTemplate;
@@ -34,12 +35,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static graphql.ExecutionInput.newExecutionInput;
+import static tech.wetech.flexmodel.codegen.System.apiLog;
 
 /**
  * @author cjbi
@@ -50,7 +50,7 @@ import static graphql.ExecutionInput.newExecutionInput;
 public class ApiRuntimeApplicationService {
 
   @Inject
-  ApiInfoService apiInfoService;
+  ApiDefinitionService apiDefinitionService;
 
   @Inject
   IdentityProviderService identityProviderService;
@@ -76,6 +76,31 @@ public class ApiRuntimeApplicationService {
   @Inject
   FlexmodelConfig config;
 
+  public PageDTO<ApiLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Set<LogLevel> levels) {
+    List<ApiLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, levels), current, pageSize);
+    long total = apiLogService.count(getCondition(keyword, startDate, endDate, levels));
+    return new PageDTO<>(list, total);
+  }
+
+  public List<LogStat> stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Set<LogLevel> levels) {
+    return apiLogService.stat(getCondition(keyword, startDate, endDate, levels));
+  }
+
+  private static Predicate getCondition(String keyword, LocalDateTime startDate, LocalDateTime endDate, Set<LogLevel> levels) {
+    Predicate condition = Expressions.TRUE;
+    if (keyword != null) {
+      condition = condition.and(apiLog.data.contains(keyword));
+    }
+    if (startDate != null && endDate != null) {
+      condition = condition.and(apiLog.createdAt.between(startDate, endDate));
+    }
+    if (!CollectionUtils.isEmpty(levels)) {
+      condition = condition.and(apiLog.level.in(levels));
+    }
+    return condition;
+  }
+
+
   public ExecutionResult execute(String operationName, String query, Map<String, Object> variables) {
     GraphQL graphQL = graphQLProvider.getGraphQL();
     if (variables == null) {
@@ -97,19 +122,19 @@ public class ApiRuntimeApplicationService {
   private void doRequest(RoutingContext routingContext) {
     boolean isMatching = false;
 
-    List<ApiInfo> apis = apiInfoService.findList();
+    List<ApiDefinition> apis = apiDefinitionService.findList();
     Settings settings = settingsService.getSettings();
-    // 从apiInfo处理请求
-    for (ApiInfo apiInfo : apis) {
-      Map<String, Object> meta = (Map<String, Object>) apiInfo.getMeta();
-      UriTemplate uriTemplate = new UriTemplate(config.contextPath() + apiInfo.getPath());
+    // 从apiDefinition处理请求
+    for (ApiDefinition apiDefinition : apis) {
+      Map<String, Object> meta = (Map<String, Object>) apiDefinition.getMeta();
+      UriTemplate uriTemplate = new UriTemplate(config.contextPath() + apiDefinition.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
-      if (pathParameters != null && method.equals(apiInfo.getMethod())) {
+      if (pathParameters != null && method.equals(apiDefinition.getMethod())) {
         // 匹配成功
         isMatching = true;
-        log.debug("Matched request for api: {}", apiInfo);
-        if (isRateLimiting(routingContext, apiInfo, meta)) return;
+        log.debug("Matched request for api: {}", apiDefinition);
+        if (isRateLimiting(routingContext, apiDefinition, meta)) return;
         boolean isAuth = (boolean) meta.get("auth");
         if (isAuth) {
           String identityProvider = (String) meta.get("identityProvider");
@@ -255,7 +280,7 @@ public class ApiRuntimeApplicationService {
     });
   }
 
-  private boolean isRateLimiting(RoutingContext routingContext, ApiInfo apiInfo, Map<String, Object> meta) {
+  private boolean isRateLimiting(RoutingContext routingContext, ApiDefinition apiDefinition, Map<String, Object> meta) {
     try {
       Settings settings = settingsService.getSettings();
       if (settings.getSecurity().isRateLimitingEnabled()) {
@@ -276,13 +301,13 @@ public class ApiRuntimeApplicationService {
       }
       Boolean rateLimitingEnabled = (Boolean) meta.getOrDefault("rateLimitingEnabled", false);
       if (rateLimitingEnabled) {
-        log.debug("Rate limiting enabled for api: {}", apiInfo);
+        log.debug("Rate limiting enabled for api: {}", apiDefinition);
         int maxRequestCount = settings.getSecurity().getMaxRequestCount();
         int intervalInSeconds = settings.getSecurity().getIntervalInSeconds();
         maxRequestCount = (int) meta.get("maxRequestCount");
         intervalInSeconds = (int) meta.get("intervalInSeconds");
         ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(
-          apiInfo.getMethod() + ":" + apiInfo.getPath(),
+          apiDefinition.getMethod() + ":" + apiDefinition.getPath(),
           maxRequestCount,
           intervalInSeconds);
         if (!apiRateLimiter.tryAcquire()) {

@@ -1,7 +1,7 @@
 package tech.wetech.flexmodel
 
 import tech.wetech.flexmodel.codegen.GenerationContext
-import tech.wetech.flexmodel.codegen.entity.ApiInfo
+import tech.wetech.flexmodel.codegen.entity.ApiDefinition
 import tech.wetech.flexmodel.codegen.enumeration.ApiType
 
 /**
@@ -25,13 +25,13 @@ class ListApiDefinitionGenerator extends ApiDefinitionGenerator {
   }
 
   @Override
-  ApiInfo createApiInfo(GenerationContext context) {
-    ApiInfo apiInfo = new ApiInfo()
-    apiInfo.setParentId(context.getVariable("apiParentId"))
-    apiInfo.setName("Fetch ${context.getModelClass().getModelName()} records list")
-    apiInfo.setType("API" as ApiType)
-    apiInfo.setMethod("GET")
-    apiInfo.setPath("/${context.getModelClass().getModelName()}/list")
+  ApiDefinition createApiDefinition(GenerationContext context) {
+    ApiDefinition apiDefinition = new ApiDefinition()
+    apiDefinition.setParentId(context.getVariable("apiParentId"))
+    apiDefinition.setName("Fetch ${context.getModelClass().getModelName()} records list")
+    apiDefinition.setType("API" as ApiType)
+    apiDefinition.setMethod("GET")
+    apiDefinition.setPath("/${context.getModelClass().getModelName()}/list")
 
     Map<String, Object> meta = [
       "auth"     : false,
@@ -40,8 +40,8 @@ class ListApiDefinitionGenerator extends ApiDefinitionGenerator {
         "query"        : generate(context),
       ]
     ]
-    apiInfo.setMeta(meta)
-    apiInfo.setEnabled(true)
-    return apiInfo
+    apiDefinition.setMeta(meta)
+    apiDefinition.setEnabled(true)
+    return apiDefinition
   }
 }

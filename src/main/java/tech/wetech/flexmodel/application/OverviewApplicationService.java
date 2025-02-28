@@ -3,8 +3,8 @@ package tech.wetech.flexmodel.application;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.application.dto.OverviewDTO;
-import tech.wetech.flexmodel.codegen.entity.ApiInfo;
-import tech.wetech.flexmodel.domain.model.api.ApiInfoService;
+import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
+import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.domain.model.api.ApiLogService;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.dsl.Predicate;
@@ -22,7 +22,7 @@ import static tech.wetech.flexmodel.codegen.System.apiLog;
 public class OverviewApplicationService {
 
   @Inject
-  ApiInfoService apiInfoService;
+  ApiDefinitionService apiDefinitionService;
 
   @Inject
   ApiLogService apiLogService;
@@ -35,9 +35,9 @@ public class OverviewApplicationService {
     int mutationCount = 0;
     int subscribeCount = 0;
 
-    List<ApiInfo> list = apiInfoService.findList();
-    for (ApiInfo apiInfo : list) {
-      if (apiInfo.getMeta() instanceof Map<?, ?> metaMap) {
+    List<ApiDefinition> list = apiDefinitionService.findList();
+    for (ApiDefinition apiDefinition : list) {
+      if (apiDefinition.getMeta() instanceof Map<?, ?> metaMap) {
         if (metaMap.get("execution") instanceof Map<?, ?> executionMap) {
           if (executionMap.get("query") instanceof String gql) {
             if (gql.startsWith("query")) {

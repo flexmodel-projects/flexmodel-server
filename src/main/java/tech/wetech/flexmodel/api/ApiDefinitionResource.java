@@ -11,10 +11,10 @@ import org.eclipse.microprofile.openapi.annotations.media.SchemaProperty;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import tech.wetech.flexmodel.application.ApiDesignApplicationService;
-import tech.wetech.flexmodel.application.dto.ApiInfoTreeDTO;
+import tech.wetech.flexmodel.application.ApiDefinitionApplicationService;
+import tech.wetech.flexmodel.application.dto.ApiDefinitionTreeDTO;
 import tech.wetech.flexmodel.application.dto.GenerateAPIsDTO;
-import tech.wetech.flexmodel.codegen.entity.ApiInfo;
+import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 
 import java.util.List;
 
@@ -23,16 +23,16 @@ import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "接口信息", description = "接口信息管理")
+@Tag(name = "接口定义", description = "接口定义管理")
 @Path(BASE_PATH + "/apis")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ApiInfoResource {
+public class ApiDefinitionResource {
 
   @Inject
-  ApiDesignApplicationService apiDesignApplicationService;
+  ApiDefinitionApplicationService apiDesignApplicationService;
 
-  @Operation(summary = "获取接口信息列表")
+  @Operation(summary = "获取接口定义列表")
   @APIResponse(
     name = "200",
     responseCode = "200",
@@ -40,22 +40,22 @@ public class ApiInfoResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = ApiInfoTreeSchema.class
+        implementation = ApiDefinitionTreeSchema.class
       )
     )})
   @GET
-  public List<ApiInfoTreeDTO> findApiList() {
-    return apiDesignApplicationService.findApiInfoTree();
+  public List<ApiDefinitionTreeDTO> findApiList() {
+    return apiDesignApplicationService.findApiDefinitionTree();
   }
 
-  @Operation(summary = "创建接口信息")
+  @Operation(summary = "创建接口定义")
   @POST
   @RequestBody(
     name = "请求参数",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = ApiInfoSchema.class
+        implementation = ApiDefinitionSchema.class
       )
     )}
   )
@@ -66,14 +66,14 @@ public class ApiInfoResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = ApiInfoSchema.class
+        implementation = ApiDefinitionSchema.class
       )
     )})
-  public ApiInfo create(ApiInfo apiInfo) {
-    return apiDesignApplicationService.createApiInfo(apiInfo);
+  public ApiDefinition create(ApiDefinition apiDefinition) {
+    return apiDesignApplicationService.createApiDefinition(apiDefinition);
   }
 
-  @Operation(summary = "更新接口信息")
+  @Operation(summary = "更新接口定义")
   @PUT
   @Path("/{id}")
   @RequestBody(
@@ -81,7 +81,7 @@ public class ApiInfoResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = ApiInfoSchema.class
+        implementation = ApiDefinitionSchema.class
       )
     )}
   )
@@ -92,15 +92,15 @@ public class ApiInfoResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = ApiInfoSchema.class
+        implementation = ApiDefinitionSchema.class
       )
     )})
-  public ApiInfo update(@PathParam("id") String id, ApiInfo apiInfo) {
-    apiInfo.setId(id);
-    return apiDesignApplicationService.updateApiInfo(apiInfo);
+  public ApiDefinition update(@PathParam("id") String id, ApiDefinition apiDefinition) {
+    apiDefinition.setId(id);
+    return apiDesignApplicationService.updateApiDefinition(apiDefinition);
   }
 
-  @Operation(summary = "更新接口信息(局部更新)")
+  @Operation(summary = "更新接口定义(局部更新)")
   @PATCH
   @Path("/{id}")
   @RequestBody(
@@ -108,7 +108,7 @@ public class ApiInfoResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = ApiInfoSchema.class
+        implementation = ApiDefinitionSchema.class
       )
     )}
   )
@@ -119,22 +119,22 @@ public class ApiInfoResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = ApiInfoSchema.class
+        implementation = ApiDefinitionSchema.class
       )
     )})
-  public ApiInfo updateIgnoreNull(@PathParam("id") String id, ApiInfo apiInfo) {
-    apiInfo.setId(id);
-    return apiDesignApplicationService.updateApiInfoIgnoreNull(apiInfo);
+  public ApiDefinition updateIgnoreNull(@PathParam("id") String id, ApiDefinition apiDefinition) {
+    apiDefinition.setId(id);
+    return apiDesignApplicationService.updateApiDefinitionIgnoreNull(apiDefinition);
   }
 
-  @Operation(summary = "删除接口信息")
+  @Operation(summary = "删除接口定义")
   @DELETE
   @Path("/{id}")
   public void delete(@PathParam("id") String id) {
-    apiDesignApplicationService.deleteApiInfo(id);
+    apiDesignApplicationService.deleteApiDefinition(id);
   }
 
-  @Operation(summary = "根据模型生成接口信息")
+  @Operation(summary = "根据模型生成接口定义")
   @POST
   @Path("/generate")
   public void generateAPIs(GenerateAPIsDTO dto) {
@@ -156,7 +156,7 @@ public class ApiInfoResource {
       @SchemaProperty(name = "children", description = "子节点", type = SchemaType.ARRAY)
     }
   )
-  public static class ApiInfoTreeSchema extends ApiInfoTreeDTO {
+  public static class ApiDefinitionTreeSchema extends ApiDefinitionTreeDTO {
 
   }
 
@@ -174,7 +174,7 @@ public class ApiInfoResource {
       @SchemaProperty(name = "method", description = "HTTP请求方法", example = "GET"),
     }
   )
-  public static class ApiInfoSchema extends ApiInfo {
+  public static class ApiDefinitionSchema extends ApiDefinition {
 
   }
 

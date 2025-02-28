@@ -57,7 +57,7 @@
       "indexes": []
     },
     {
-      "name": "fs_api_info",
+      "name": "fs_api_definition",
       "type": "entity",
       "fields": [
         {
@@ -65,7 +65,7 @@
           "type": "id",
           "unique": true,
           "nullable": true,
-          "modelName": "fs_api_info",
+          "modelName": "fs_api_definition",
           "generatedValue": "ULID"
         },
         {
@@ -74,7 +74,7 @@
           "length": 255,
           "unique": false,
           "nullable": false,
-          "modelName": "fs_api_info"
+          "modelName": "fs_api_definition"
         },
         {
           "name": "parentId",
@@ -82,7 +82,7 @@
           "length": 255,
           "unique": false,
           "nullable": true,
-          "modelName": "fs_api_info"
+          "modelName": "fs_api_definition"
         },
         {
           "name": "type",
@@ -91,7 +91,7 @@
           "multiple": false,
           "unique": false,
           "nullable": false,
-          "modelName": "fs_api_info",
+          "modelName": "fs_api_definition",
           "defaultValue": "FOLDER"
         },
         {
@@ -100,7 +100,7 @@
           "length": 255,
           "unique": false,
           "nullable": true,
-          "modelName": "fs_api_info"
+          "modelName": "fs_api_definition"
         },
         {
           "name": "path",
@@ -108,14 +108,14 @@
           "length": 255,
           "unique": false,
           "nullable": true,
-          "modelName": "fs_api_info"
+          "modelName": "fs_api_definition"
         },
         {
           "name": "createdAt",
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "fs_api_info",
+          "modelName": "fs_api_definition",
           "generatedValue": "NOW_ON_CREATE"
         },
         {
@@ -123,7 +123,7 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "fs_api_info",
+          "modelName": "fs_api_definition",
           "generatedValue": "NOW_ON_CREATE_AND_UPDATE"
         },
         {
@@ -131,7 +131,7 @@
           "type": "json",
           "unique": false,
           "nullable": true,
-          "modelName": "fs_api_info"
+          "modelName": "fs_api_definition"
         },
         {
           "name": "enabled",
@@ -139,7 +139,7 @@
           "unique": false,
           "comment": "",
           "nullable": false,
-          "modelName": "fs_api_info",
+          "modelName": "fs_api_definition",
           "defaultValue": true
         }
       ],
@@ -276,7 +276,7 @@
           "type": "datetime",
           "unique": false,
           "nullable": false,
-          "modelName": "fs_api_info",
+          "modelName": "fs_api_definition",
           "generatedValue": "NOW_ON_CREATE"
         },
         {
@@ -594,7 +594,7 @@
   ],
   "data": [
     {
-      "modelName": "fs_api_info",
+      "modelName": "fs_api_definition",
       "values": [
         {
           "createdAt": "2024-07-13T23:21:09",
