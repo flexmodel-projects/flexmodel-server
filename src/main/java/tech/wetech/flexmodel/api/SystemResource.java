@@ -5,6 +5,8 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.SettingsApplicationService;
 
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
 /**
  * @author cjbi
  */
+@Tag(name = "系统", description = "系统信息")
 @Slf4j
 @Path(BASE_PATH + "/system")
 public class SystemResource {
@@ -23,6 +26,7 @@ public class SystemResource {
   @Inject
   SettingsApplicationService settingsApplicationService;
 
+  @Operation(summary = "获取系统配置")
   @GET
   @Path("/profile")
   public Map<String, Object> getProfile() {
