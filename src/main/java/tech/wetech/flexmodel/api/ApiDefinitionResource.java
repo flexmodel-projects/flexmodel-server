@@ -51,7 +51,7 @@ public class ApiDefinitionResource {
   @Operation(summary = "创建接口定义")
   @POST
   @RequestBody(
-    name = "请求参数",
+    name = "请求体",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
@@ -77,7 +77,7 @@ public class ApiDefinitionResource {
   @PUT
   @Path("/{id}")
   @RequestBody(
-    name = "请求参数",
+    name = "请求体",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
@@ -104,7 +104,7 @@ public class ApiDefinitionResource {
   @PATCH
   @Path("/{id}")
   @RequestBody(
-    name = "请求参数",
+    name = "请求体",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
@@ -148,8 +148,8 @@ public class ApiDefinitionResource {
       @SchemaProperty(name = "path", description = "路径"),
       @SchemaProperty(name = "meta", description = "元数据，存放接口定义，例如graphql定义"),
       @SchemaProperty(name = "name", description = "名称"),
-      @SchemaProperty(name = "createdAt", description = "创建时间"),
-      @SchemaProperty(name = "updatedAt", description = "更新时间"),
+      @SchemaProperty(name = "createdAt", description = "创建时间", readOnly = true),
+      @SchemaProperty(name = "updatedAt", description = "更新时间", readOnly = true),
       @SchemaProperty(name = "parentId", description = "上级ID"),
       @SchemaProperty(name = "enabled", description = "是否开启", defaultValue = "true"),
       @SchemaProperty(name = "method", description = "HTTP请求方法", example = "GET"),
@@ -167,8 +167,8 @@ public class ApiDefinitionResource {
       @SchemaProperty(name = "path", description = "路径"),
       @SchemaProperty(name = "meta", description = "元数据，存放接口定义，例如graphql定义"),
       @SchemaProperty(name = "name", description = "名称"),
-      @SchemaProperty(name = "createdAt", description = "创建时间"),
-      @SchemaProperty(name = "updatedAt", description = "更新时间"),
+      @SchemaProperty(name = "createdAt", description = "创建时间", readOnly = true),
+      @SchemaProperty(name = "updatedAt", description = "更新时间", readOnly = true),
       @SchemaProperty(name = "parentId", description = "上级ID"),
       @SchemaProperty(name = "enabled", description = "是否开启", defaultValue = "true"),
       @SchemaProperty(name = "method", description = "HTTP请求方法", example = "GET"),

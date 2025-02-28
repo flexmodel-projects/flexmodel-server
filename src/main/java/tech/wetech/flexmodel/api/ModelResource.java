@@ -11,7 +11,6 @@ import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.media.SchemaProperty;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -83,7 +82,7 @@ public class ModelResource {
   }
 
   @RequestBody(
-    name = "请求参数",
+    name = "请求体",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
@@ -152,7 +151,6 @@ public class ModelResource {
       )
     })
   @Operation(summary = "创建模型")
-  @Parameters(value = {@Parameter(description = "实体", schema = @Schema(implementation = Entity.class))})
   @POST
   public TypeWrapper createModel(
     TypeWrapper model) {
@@ -160,7 +158,7 @@ public class ModelResource {
   }
 
   @RequestBody(
-    name = "请求参数",
+    name = "请求体",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
@@ -246,7 +244,7 @@ public class ModelResource {
   }
 
   @RequestBody(
-    name = "请求参数",
+    name = "请求体",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(implementation = TypedFieldSchema.class)
@@ -272,7 +270,7 @@ public class ModelResource {
   }
 
   @RequestBody(
-    name = "请求参数",
+    name = "请求体",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(implementation = TypedFieldSchema.class)
@@ -309,7 +307,7 @@ public class ModelResource {
   }
 
   @RequestBody(
-    name = "请求参数",
+    name = "请求体",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(implementation = IndexSchema.class),
@@ -341,7 +339,7 @@ public class ModelResource {
   }
 
   @RequestBody(
-    name = "请求参数",
+    name = "请求体",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(implementation = IndexSchema.class),
@@ -445,7 +443,7 @@ public class ModelResource {
       @SchemaProperty(name = "additionalProperties", description = "用户自定义扩展属性"),
     }
   )
-  public class NativeQuerySchema extends NativeQueryModel {
+  public static class NativeQuerySchema extends NativeQueryModel {
 
     public NativeQuerySchema(String name) {
       super(name);
@@ -463,7 +461,7 @@ public class ModelResource {
       @SchemaProperty(name = "additionalProperties", description = "用户自定义扩展属性"),
     }
   )
-  public class EntitySchema extends Entity {
+  public static class EntitySchema extends Entity {
 
     public EntitySchema(String name) {
       super(name);

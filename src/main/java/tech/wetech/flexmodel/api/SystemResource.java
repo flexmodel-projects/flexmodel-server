@@ -6,6 +6,10 @@ import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.media.SchemaProperty;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.SettingsApplicationService;
 
@@ -26,6 +30,22 @@ public class SystemResource {
   @Inject
   SettingsApplicationService settingsApplicationService;
 
+  @APIResponse(
+    name = "200",
+    responseCode = "200",
+    description = "成功",
+    content = {@Content(
+      mediaType = "application/json",
+      schema = @Schema(
+        properties = {
+          @SchemaProperty(name = "env", description = "环境变量"),
+          @SchemaProperty(name = "properties", description = "配置属性"),
+          @SchemaProperty(name = "application", description = "应用程序配置"),
+          @SchemaProperty(name = "settings", description = "系统设置"),
+        }
+      )
+    )
+    })
   @Operation(summary = "获取系统配置")
   @GET
   @Path("/profile")

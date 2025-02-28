@@ -24,13 +24,13 @@ public class SettingsResource {
 
   @Operation(summary = "获取设置")
   @GET
-  public Object getSettings() {
+  public Settings getSettings() {
     return settingsApplicationService.getSettings();
   }
 
   @Operation(summary = "保存设置")
   @PATCH
-  public Object saveSettings(Settings settings) {
+  public Settings saveSettings(Settings settings) {
     return settingsApplicationService.saveSettings(settings);
   }
 

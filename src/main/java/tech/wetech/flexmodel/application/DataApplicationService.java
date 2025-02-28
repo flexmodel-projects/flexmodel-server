@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,4 +46,10 @@ public class DataApplicationService {
     dataService.deleteRecord(datasourceName, modelName, id);
   }
 
+  public Map<String, Object> updateRecordIgnoreNull(String datasourceName, String modelName, String id, Map<String, Object> record) {
+    Map<String, Object> oldData = dataService.findOneRecord(datasourceName, modelName, id, false);
+    Map<String, Object> mergeData = new HashMap<>(oldData);
+    mergeData.putAll(record);
+    return dataService.updateRecord(datasourceName, modelName, id, mergeData);
+  }
 }

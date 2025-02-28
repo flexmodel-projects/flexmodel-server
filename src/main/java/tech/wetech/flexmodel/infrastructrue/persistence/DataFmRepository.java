@@ -3,10 +3,12 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Entity;
+import tech.wetech.flexmodel.Query;
 import tech.wetech.flexmodel.Session;
 import tech.wetech.flexmodel.SessionFactory;
 import tech.wetech.flexmodel.codegen.StringUtils;
 import tech.wetech.flexmodel.domain.model.data.DataRepository;
+import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,14 @@ public class DataFmRepository implements DataRepository {
             }
             return page;
           });
+        }
+        try {
+          if (!StringUtils.isBlank(sort)) {
+            List<Query.Sort.Order> orders = JsonUtils.getInstance().parseToList(sort, Query.Sort.Order.class);
+            query.withSort(s -> s.setOrders(orders));
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
         }
         query.setNestedQueryEnabled(nestedQueryEnabled);
         return query;

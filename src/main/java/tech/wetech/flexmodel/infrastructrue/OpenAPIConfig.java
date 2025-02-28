@@ -15,7 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
  */
 @OpenAPIDefinition(
   info = @Info(
-    title = "Flexmodel2 API",
+    title = "Flexmodel API",
     version = "0.0.1"
   ),
   components = @Components(

@@ -11,6 +11,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import tech.wetech.flexmodel.supports.jackson.FlexmodelCoreModule;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
@@ -67,9 +69,20 @@ public class JsonUtils {
     }
   }
 
+  public <T> List<T> parseToList(String json, Class<T> clz) {
+    return convertValueList(parseToObject(json, List.class), clz);
+  }
+
   public <T> T convertValue(Object fromValue, Class<T> clz) {
     return jsonMapper.convertValue(fromValue, clz);
   }
 
+  public <T> List<T> convertValueList(List<?> fromValues, Class<T> cls) {
+    List<T> list = new ArrayList<>();
+    for (Object fromValue : fromValues) {
+      list.add(convertValue(fromValue, cls));
+    }
+    return list;
+  }
 
 }

@@ -4,6 +4,13 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.media.SchemaProperty;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
 import tech.wetech.flexmodel.application.dto.PageDTO;
@@ -33,6 +40,25 @@ public class ApiLogResource {
   @Inject
   ApiRuntimeApplicationService apiRuntimeApplicationService;
 
+  @Parameter(name = "current", description = "当前页，默认值：1", example = "1", in = ParameterIn.QUERY)
+  @Parameter(name = "pageSize", description = "第几页，默认值：15", example = "15", in = ParameterIn.QUERY)
+  @Parameter(name = "keyword", description = "关键字", in = ParameterIn.QUERY)
+  @Parameter(name = "dateRange", description = "日期范围", example = "2025-01-01 00:00:00,2025-12-31 23:59:59", in = ParameterIn.QUERY)
+  @Parameter(name = "level", description = "日志等级", example = "INFO", in = ParameterIn.QUERY)
+  @APIResponse(
+    name = "200",
+    responseCode = "200",
+    description = "成功",
+    content = {@Content(
+      mediaType = "application/json",
+      schema = @Schema(
+        properties = {
+          @SchemaProperty(name = "total", description = "总数"),
+          @SchemaProperty(name = "list", description = "日志列表", type = SchemaType.ARRAY, implementation = ApiLogSchema.class)
+        }
+      )
+    )
+    })
   @Operation(summary = "获取接口日志列表")
   @GET
   public PageDTO<ApiLog> findApiLogs(@QueryParam("current") @DefaultValue("1") int current,
@@ -45,11 +71,24 @@ public class ApiLogResource {
     return apiRuntimeApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), result.levels());
   }
 
+  @Parameter(name = "keyword", description = "关键字", in = ParameterIn.QUERY)
+  @Parameter(name = "dateRange", description = "日期范围", example = "2022-01-01 00:00:00,2022-01-01 23:59:59", in = ParameterIn.QUERY)
+  @Parameter(name = "level", description = "日志等级，支持传多个通过“,”分隔", example = "INFO", in = ParameterIn.QUERY)
+  @APIResponse(
+    name = "200",
+    responseCode = "200",
+    description = "成功",
+    content = {@Content(
+      mediaType = "application/json",
+      schema = @Schema(
+        type = SchemaType.ARRAY,
+        implementation = ApiLogStatSchema.class
+      )
+    )})
   @Operation(summary = "统计接口日志")
   @GET
   @Path("/stat")
-  public List<LogStat> stat(@QueryParam("pageSize") @DefaultValue("50") int pageSize,
-                            @QueryParam("keyword") String keyword,
+  public List<LogStat> stat(@QueryParam("keyword") String keyword,
                             @QueryParam("dateRange") String dateRange,
                             @QueryParam("level") String levelStr) {
     RequestResult result = parseQuery(dateRange, levelStr);
@@ -79,5 +118,30 @@ public class ApiLogResource {
 
   private record RequestResult(LocalDateTime startDate, LocalDateTime endDate, Set<LogLevel> levels) {
   }
+
+  @Schema(
+    description = "日志统计",
+    properties = {
+      @SchemaProperty(name = "date", description = "日期"),
+      @SchemaProperty(name = "total", description = "总数"),
+    }
+  )
+  public static class ApiLogStatSchema extends LogStat {
+
+  }
+
+  @Schema(
+    description = "接口日志",
+    properties = {
+      @SchemaProperty(name = "id", description = "ID"),
+      @SchemaProperty(name = "uri", description = "请求标识"),
+      @SchemaProperty(name = "level", description = "等级"),
+      @SchemaProperty(name = "createdAt", description = "创建日期", readOnly = true),
+      @SchemaProperty(name = "data", description = "数据"),
+    }
+  )
+  public static class ApiLogSchema extends ApiLog {
+  }
+
 
 }
