@@ -6,8 +6,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.GraphQLApplicationService;
 
@@ -25,11 +23,6 @@ public class GraphQLResource {
   @Inject
   GraphQLApplicationService graphQLApplicationService;
 
-  @Parameters({
-    @Parameter(name = "operationName", description = "操作名称"),
-    @Parameter(name = "query", description = "查询"),
-    @Parameter(name = "variables", description = "参数"),
-  })
   @Operation(summary = "执行GraphQL查询")
   @POST
   public ExecutionResult execute(GraphQLRequest request) {
