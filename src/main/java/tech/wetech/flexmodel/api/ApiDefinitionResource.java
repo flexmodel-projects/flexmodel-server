@@ -36,7 +36,7 @@ public class ApiDefinitionResource {
   @APIResponse(
     name = "200",
     responseCode = "200",
-    description = "成功",
+    description = "OK",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
@@ -62,7 +62,7 @@ public class ApiDefinitionResource {
   @APIResponse(
     name = "200",
     responseCode = "200",
-    description = "成功",
+    description = "OK",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
@@ -88,7 +88,7 @@ public class ApiDefinitionResource {
   @APIResponse(
     name = "200",
     responseCode = "200",
-    description = "成功",
+    description = "OK",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
@@ -115,7 +115,7 @@ public class ApiDefinitionResource {
   @APIResponse(
     name = "200",
     responseCode = "200",
-    description = "成功",
+    description = "OK",
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(

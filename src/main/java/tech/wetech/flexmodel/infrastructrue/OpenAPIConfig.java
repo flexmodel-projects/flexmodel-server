@@ -3,6 +3,7 @@ package tech.wetech.flexmodel.infrastructrue;
 import jakarta.ws.rs.core.Application;
 import org.eclipse.microprofile.openapi.annotations.Components;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
@@ -21,8 +22,9 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
   components = @Components(
     responses = {
       @APIResponse(
-        name = "500",
-        description = "失败",
+        name = "InternalError",
+        responseCode = "500",
+        description = "Internal Error",
         content = {@Content(
           mediaType = "application/json",
           schema = @Schema(
@@ -35,6 +37,26 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
           examples = {
             @ExampleObject(name = "fail", value = """
               { "code": -1, "message": "失败", "success": false }
+              """)
+          }
+        )}),
+      @APIResponse(
+        name = "BadRequest",
+        responseCode = "400",
+        description = "Bad Request",
+        content = {@Content(
+          mediaType = "application/json",
+          schema = @Schema(
+            properties = {
+              @SchemaProperty(name = "code", example = "400"),
+              @SchemaProperty(name = "message", example = "参数验证异常"),
+              @SchemaProperty(name = "success", example = "false"),
+              @SchemaProperty(name = "errors", type = SchemaType.ARRAY)
+            }
+          ),
+          examples = {
+            @ExampleObject(name = "参数验证异常", value = """
+              { "code": 1001, "message": "参数验证异常", "success": false, "errors": [{"username": "不能为空", "password": "不能为空"}] }
               """)
           }
         )})
