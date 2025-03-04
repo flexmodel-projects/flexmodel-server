@@ -22,6 +22,7 @@ import tech.wetech.flexmodel.util.UriTemplate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static tech.wetech.flexmodel.ScalarType.*;
 import static tech.wetech.flexmodel.codegen.StringUtils.*;
 
 /**
@@ -222,14 +223,14 @@ public class DocumentApplicationService {
 
   private String addModelDefinition(String datasourceName, String modelName, Map<String, Object> definitions) {
     Map<String, Object> typeMapping = new HashMap<>();
-    typeMapping.put("string", Map.of("type", "string"));
-    typeMapping.put("text", Map.of("type", "string"));
-    typeMapping.put("int", Map.of("type", "integer", "format", "int32"));
-    typeMapping.put("long", Map.of("type", "integer", "format", "int64"));
-    typeMapping.put("decimal", Map.of("type", "number", "format", "double"));
-    typeMapping.put("boolean", Map.of("type", "boolean"));
+    typeMapping.put(STRING.getType(), Map.of("type", "string"));
+    typeMapping.put(TEXT.getType(), Map.of("type", "string"));
+    typeMapping.put(INT.getType(), Map.of("type", "integer", "format", "int32"));
+    typeMapping.put(BIGINT.getType(), Map.of("type", "integer", "format", "int64"));
+    typeMapping.put(DECIMAL.getType(), Map.of("type", "number", "format", "double"));
+    typeMapping.put(BOOLEAN.getType(), Map.of("type", "boolean"));
 //    typeMapping.put("", Map.of("type", "array"));
-    typeMapping.put("json", Map.of("type", "object"));
+    typeMapping.put(JSON.getType(), Map.of("type", "object"));
     Entity entity = (Entity) modelService.findModel(datasourceName, modelName).orElseThrow();
     if (entity == null) {
       return null;

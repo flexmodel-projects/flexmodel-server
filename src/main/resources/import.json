@@ -2,11 +2,11 @@
   "schema": [
     {
       "name": "fs_datasource",
-      "type": "entity",
+      "type": "ENTITY",
       "fields": [
         {
           "name": "name",
-          "type": "id",
+          "type": "ID",
           "unique": false,
           "nullable": true,
           "modelName": "fs_datasource",
@@ -14,7 +14,7 @@
         },
         {
           "name": "type",
-          "type": "enum",
+          "type": "ENUM",
           "from": "DatasourceType",
           "multiple": false,
           "unique": false,
@@ -23,14 +23,14 @@
         },
         {
           "name": "config",
-          "type": "json",
+          "type": "JSON",
           "unique": false,
           "nullable": true,
           "modelName": "fs_datasource"
         },
         {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "DATETIME",
           "unique": false,
           "nullable": true,
           "modelName": "fs_datasource",
@@ -38,7 +38,7 @@
         },
         {
           "name": "updatedAt",
-          "type": "datetime",
+          "type": "DATETIME",
           "unique": false,
           "nullable": true,
           "modelName": "fs_datasource",
@@ -46,7 +46,7 @@
         },
         {
           "name": "enabled",
-          "type": "boolean",
+          "type": "BOOLEAN",
           "unique": false,
           "comment": "",
           "nullable": false,
@@ -58,11 +58,11 @@
     },
     {
       "name": "fs_api_definition",
-      "type": "entity",
+      "type": "ENTITY",
       "fields": [
         {
           "name": "id",
-          "type": "id",
+          "type": "ID",
           "unique": true,
           "nullable": true,
           "modelName": "fs_api_definition",
@@ -70,7 +70,7 @@
         },
         {
           "name": "name",
-          "type": "string",
+          "type": "STRING",
           "length": 255,
           "unique": false,
           "nullable": false,
@@ -78,7 +78,7 @@
         },
         {
           "name": "parentId",
-          "type": "string",
+          "type": "STRING",
           "length": 255,
           "unique": false,
           "nullable": true,
@@ -86,7 +86,7 @@
         },
         {
           "name": "type",
-          "type": "enum",
+          "type": "ENUM",
           "from": "ApiType",
           "multiple": false,
           "unique": false,
@@ -96,7 +96,7 @@
         },
         {
           "name": "method",
-          "type": "string",
+          "type": "STRING",
           "length": 255,
           "unique": false,
           "nullable": true,
@@ -104,7 +104,7 @@
         },
         {
           "name": "path",
-          "type": "string",
+          "type": "STRING",
           "length": 255,
           "unique": false,
           "nullable": true,
@@ -112,7 +112,7 @@
         },
         {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "DATETIME",
           "unique": false,
           "nullable": false,
           "modelName": "fs_api_definition",
@@ -120,7 +120,7 @@
         },
         {
           "name": "updatedAt",
-          "type": "datetime",
+          "type": "DATETIME",
           "unique": false,
           "nullable": false,
           "modelName": "fs_api_definition",
@@ -128,14 +128,14 @@
         },
         {
           "name": "meta",
-          "type": "json",
+          "type": "JSON",
           "unique": false,
           "nullable": true,
           "modelName": "fs_api_definition"
         },
         {
           "name": "enabled",
-          "type": "boolean",
+          "type": "BOOLEAN",
           "unique": false,
           "comment": "",
           "nullable": false,
@@ -147,11 +147,11 @@
     },
     {
       "name": "fs_api_log",
-      "type": "entity",
+      "type": "ENTITY",
       "fields": [
         {
           "name": "id",
-          "type": "id",
+          "type": "ID",
           "unique": false,
           "nullable": true,
           "modelName": "fs_api_log",
@@ -159,7 +159,7 @@
         },
         {
           "name": "level",
-          "type": "enum",
+          "type": "ENUM",
           "from": "LogLevel",
           "multiple": false,
           "unique": false,
@@ -168,21 +168,21 @@
         },
         {
           "name": "uri",
-          "type": "text",
+          "type": "TEXT",
           "unique": false,
           "nullable": false,
           "modelName": "fs_api_log"
         },
         {
           "name": "data",
-          "type": "json",
+          "type": "JSON",
           "unique": false,
           "nullable": false,
           "modelName": "fs_api_log"
         },
         {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "DATETIME",
           "unique": false,
           "nullable": false,
           "modelName": "fs_api_log",
@@ -205,11 +205,11 @@
     },
     {
       "name": "fs_identity_provider",
-      "type": "entity",
+      "type": "ENTITY",
       "fields": [
         {
           "name": "name",
-          "type": "id",
+          "type": "ID",
           "unique": false,
           "nullable": true,
           "modelName": "fs_datasource",
@@ -217,7 +217,7 @@
         },
         {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "DATETIME",
           "unique": false,
           "nullable": false,
           "modelName": "fs_identity_provider",
@@ -225,14 +225,14 @@
         },
         {
           "name": "provider",
-          "type": "json",
+          "type": "JSON",
           "unique": false,
           "nullable": true,
           "modelName": "fs_identity_provider"
         },
         {
           "name": "updatedAt",
-          "type": "datetime",
+          "type": "DATETIME",
           "unique": false,
           "nullable": false,
           "modelName": "fs_identity_provider",
@@ -244,11 +244,11 @@
     {
       "name": "fs_config",
       "comment": "配置",
-      "type": "entity",
+      "type": "ENTITY",
       "fields": [
         {
           "name": "id",
-          "type": "id",
+          "type": "ID",
           "unique": true,
           "nullable": true,
           "modelName": "fs_config",
@@ -257,7 +257,7 @@
         {
           "name": "key",
           "comment": "名称",
-          "type": "string",
+          "type": "STRING",
           "length": 255,
           "unique": false,
           "nullable": false,
@@ -265,7 +265,7 @@
         },
         {
           "name": "value",
-          "type": "text",
+          "type": "TEXT",
           "length": 255,
           "unique": false,
           "nullable": true,
@@ -273,7 +273,7 @@
         },
         {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "DATETIME",
           "unique": false,
           "nullable": false,
           "modelName": "fs_api_definition",
@@ -281,7 +281,7 @@
         },
         {
           "name": "updatedAt",
-          "type": "datetime",
+          "type": "DATETIME",
           "unique": false,
           "nullable": false,
           "modelName": "fs_config",
@@ -303,12 +303,12 @@
       ]
     },
     {
-      "type": "entity",
+      "type": "ENTITY",
       "name": "Teacher",
       "fields": [
         {
           "name": "id",
-          "type": "id",
+          "type": "ID",
           "modelName": "Teacher",
           "unique": false,
           "nullable": true,
@@ -316,7 +316,7 @@
         },
         {
           "name": "teacherName",
-          "type": "string",
+          "type": "STRING",
           "modelName": "Teacher",
           "unique": false,
           "nullable": true,
@@ -324,7 +324,7 @@
         },
         {
           "name": "subject",
-          "type": "string",
+          "type": "STRING",
           "modelName": "Teacher",
           "unique": false,
           "nullable": true,
@@ -334,12 +334,12 @@
       "indexes": []
     },
     {
-      "type": "entity",
+      "type": "ENTITY",
       "name": "Student",
       "fields": [
         {
           "name": "id",
-          "type": "id",
+          "type": "ID",
           "modelName": "Student",
           "unique": false,
           "nullable": true,
@@ -347,7 +347,7 @@
         },
         {
           "name": "studentName",
-          "type": "string",
+          "type": "STRING",
           "modelName": "Student",
           "unique": false,
           "nullable": true,
@@ -355,7 +355,7 @@
         },
         {
           "name": "gender",
-          "type": "enum",
+          "type": "ENUM",
           "from": "UserGender",
           "multiple": false,
           "modelName": "Student",
@@ -364,7 +364,7 @@
         },
         {
           "name": "interest",
-          "type": "enum",
+          "type": "ENUM",
           "from": "user_interest",
           "multiple": true,
           "modelName": "Student",
@@ -373,20 +373,20 @@
         },
         {
           "name": "age",
-          "type": "int",
+          "type": "INT",
           "modelName": "Student",
           "unique": false,
           "nullable": true
         },
         {
           "name": "classId",
-          "type": "bigint",
+          "type": "BIGINT",
           "modelName": "Student",
           "unique": false,
           "nullable": true
         },
         {
-          "type": "relation",
+          "type": "RELATION",
           "name": "studentClass",
           "comment": "班级",
           "modelName": "Student",
@@ -398,7 +398,7 @@
         },
         {
           "name": "studentDetail",
-          "type": "relation",
+          "type": "RELATION",
           "modelName": "Student",
           "unique": false,
           "nullable": true,
@@ -412,12 +412,12 @@
       "indexes": []
     },
     {
-      "type": "entity",
+      "type": "ENTITY",
       "name": "StudentDetail",
       "fields": [
         {
           "name": "id",
-          "type": "id",
+          "type": "ID",
           "modelName": "StudentDetail",
           "unique": false,
           "nullable": true,
@@ -425,13 +425,13 @@
         },
         {
           "name": "studentId",
-          "type": "bigint",
+          "type": "BIGINT",
           "modelName": "StudentDetail",
           "unique": false,
           "nullable": true
         },
         {
-          "type": "relation",
+          "type": "RELATION",
           "name": "student",
           "comment": "学生",
           "modelName": "StudentDetail",
@@ -443,7 +443,7 @@
         },
         {
           "name": "description",
-          "type": "text",
+          "type": "TEXT",
           "modelName": "StudentDetail",
           "unique": false,
           "nullable": true
@@ -452,12 +452,12 @@
       "indexes": []
     },
     {
-      "type": "entity",
+      "type": "ENTITY",
       "name": "Classes",
       "fields": [
         {
           "name": "id",
-          "type": "id",
+          "type": "ID",
           "modelName": "Classes",
           "unique": false,
           "nullable": true,
@@ -465,7 +465,7 @@
         },
         {
           "name": "classCode",
-          "type": "string",
+          "type": "STRING",
           "modelName": "Classes",
           "unique": false,
           "nullable": true,
@@ -473,14 +473,14 @@
         },
         {
           "name": "className",
-          "type": "string",
+          "type": "STRING",
           "modelName": "Classes",
           "unique": false,
           "nullable": true,
           "length": 255
         },
         {
-          "type": "relation",
+          "type": "RELATION",
           "name": "students",
           "modelName": "Classes",
           "unique": false,
@@ -507,12 +507,12 @@
       ]
     },
     {
-      "type": "entity",
+      "type": "ENTITY",
       "name": "Course",
       "fields": [
         {
           "name": "courseNo",
-          "type": "id",
+          "type": "ID",
           "modelName": "Course",
           "unique": false,
           "nullable": true,
@@ -520,7 +520,7 @@
         },
         {
           "name": "courseName",
-          "type": "string",
+          "type": "STRING",
           "modelName": "Course",
           "unique": false,
           "nullable": true,
@@ -543,7 +543,7 @@
     },
     {
       "name": "ApiType",
-      "type": "enum",
+      "type": "ENUM",
       "elements": [
         "FOLDER",
         "API"
@@ -552,16 +552,16 @@
     },
     {
       "name": "DatasourceType",
-      "type": "enum",
+      "type": "ENUM",
       "elements": [
-        "system",
-        "user"
+        "SYSTEM",
+        "USER"
       ],
       "comment": "数据源类型"
     },
     {
       "name": "UserGender",
-      "type": "enum",
+      "type": "ENUM",
       "elements": [
         "UNKNOWN",
         "MALE",
@@ -571,7 +571,7 @@
     },
     {
       "name": "user_interest",
-      "type": "enum",
+      "type": "ENUM",
       "elements": [
         "chang",
         "tiao",
@@ -582,7 +582,7 @@
     },
     {
       "name": "LogLevel",
-      "type": "enum",
+      "type": "ENUM",
       "elements": [
         "DEBUG",
         "INFO",
@@ -590,6 +590,11 @@
         "ERROR"
       ],
       "comment": "日志等级"
+    },
+    {
+      "name": "select_log_count",
+      "statement": "select count(*) as total from fs_api_log",
+      "type": "NATIVE_QUERY"
     }
   ],
   "data": [
@@ -704,7 +709,7 @@
       "values": [
         {
           "name": "sqlite_test",
-          "type": "user",
+          "type": "USER",
           "config": {
             "url": "jdbc:sqlite:file::memory:?cache=shared",
             "dbKind": "sqlite",
@@ -714,7 +719,7 @@
         },
         {
           "name": "mysql_test",
-          "type": "user",
+          "type": "USER",
           "config": {
             "url": "${MYSQL_URL}",
             "dbKind": "mysql",

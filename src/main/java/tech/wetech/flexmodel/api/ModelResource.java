@@ -56,13 +56,13 @@ public class ModelResource {
           @ExampleObject(
             name = "实体",
             value = """
-              [{ "type": "entity", "name": "Student", "fields": [ { "name": "id", "type": "id", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "string", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "enum", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "enum", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "int", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "bigint", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "relation", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }]
+              [{ "type": "ENTITY", "name": "Student", "fields": [ { "name": "id", "type": "ID", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "STRING", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "ENUM", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "ENUM", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "INT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "BIGINT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "RELATION", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }]
               """
           ),
           @ExampleObject(
             name = "枚举",
             value = """
-              [{ "name": "UserGender", "type": "enum", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }]
+              [{ "name": "UserGender", "type": "ENUM", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }]
               """
           ),
           @ExampleObject(
@@ -94,13 +94,13 @@ public class ModelResource {
         @ExampleObject(
           name = "实体",
           value = """
-            { "type": "entity", "name": "Student", "fields": [ { "name": "id", "type": "id", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "string", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "enum", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "enum", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "int", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "bigint", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "relation", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }
+            { "type": "ENTITY", "name": "Student", "fields": [ { "name": "id", "type": "ID", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "STRING", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "ENUM", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "ENUM", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "INT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "BIGINT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "RELATION", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }
             """
         ),
         @ExampleObject(
           name = "枚举",
           value = """
-            { "name": "UserGender", "type": "enum", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }
+            { "name": "UserGender", "type": "ENUM", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }
             """
         ),
         @ExampleObject(
@@ -130,13 +130,13 @@ public class ModelResource {
           @ExampleObject(
             name = "实体",
             value = """
-              { "type": "entity", "name": "Student", "fields": [ { "name": "id", "type": "id", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "string", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "enum", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "enum", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "int", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "bigint", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "relation", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }
+              { "type": "ENTITY", "name": "Student", "fields": [ { "name": "id", "type": "ID", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "STRING", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "ENUM", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "ENUM", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "INT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "BIGINT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "RELATION", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }
               """
           ),
           @ExampleObject(
             name = "枚举",
             value = """
-              { "name": "UserGender", "type": "enum", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }
+              { "name": "UserGender", "type": "ENUM", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }
               """
           ),
           @ExampleObject(
@@ -170,13 +170,13 @@ public class ModelResource {
         @ExampleObject(
           name = "实体",
           value = """
-            { "type": "entity", "name": "Student", "fields": [ { "name": "id", "type": "id", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "string", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "enum", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "enum", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "int", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "bigint", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "relation", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }
+            { "type": "ENTITY", "name": "Student", "fields": [ { "name": "id", "type": "ID", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "STRING", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "ENUM", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "ENUM", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "INT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "BIGINT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "RELATION", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }
             """
         ),
         @ExampleObject(
           name = "枚举",
           value = """
-            { "name": "UserGender", "type": "enum", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }
+            { "name": "UserGender", "type": "ENUM", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }
             """
         ),
         @ExampleObject(
@@ -206,13 +206,13 @@ public class ModelResource {
           @ExampleObject(
             name = "实体",
             value = """
-              { "type": "entity", "name": "Student", "fields": [ { "name": "id", "type": "id", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "string", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "enum", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "enum", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "int", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "bigint", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "relation", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }
+              { "type": "ENTITY", "name": "Student", "fields": [ { "name": "id", "type": "ID", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "STRING", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "ENUM", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "ENUM", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "INT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "BIGINT", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "RELATION", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }
               """
           ),
           @ExampleObject(
             name = "枚举",
             value = """
-              { "name": "UserGender", "type": "enum", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }
+              { "name": "UserGender", "type": "ENUM", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }
               """
           ),
           @ExampleObject(

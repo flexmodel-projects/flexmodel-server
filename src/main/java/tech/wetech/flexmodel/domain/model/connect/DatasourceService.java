@@ -36,7 +36,7 @@ public class DatasourceService {
     if (optional.isPresent()) {
       throw new ConnectException("The data source name is duplicated");
     }
-    datasource.setType(DatasourceType.user);
+    datasource.setType(DatasourceType.USER);
     datasource = datasourceRepository.save(datasource);
     sessionDatasource.add(datasource);
     return datasource;

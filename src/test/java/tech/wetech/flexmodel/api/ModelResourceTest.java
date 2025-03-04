@@ -30,12 +30,12 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "type": "entity",
+          "type": "ENTITY",
           "name": "testCreateModelStudent",
           "fields": [
             {
               "name": "id",
-              "type": "id",
+              "type": "ID",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -44,7 +44,7 @@ class ModelResourceTest {
             },
             {
               "name": "studentName",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -53,7 +53,7 @@ class ModelResourceTest {
             },
             {
               "name": "gender",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -62,7 +62,7 @@ class ModelResourceTest {
             },
             {
               "name": "age",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -70,7 +70,7 @@ class ModelResourceTest {
             },
             {
               "name": "classId",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -91,12 +91,12 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "type": "entity",
+          "type": "ENTITY",
           "name": "testDropModelStudent",
           "fields": [
             {
               "name": "id",
-              "type": "id",
+              "type": "ID",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -105,7 +105,7 @@ class ModelResourceTest {
             },
             {
               "name": "studentName",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -114,7 +114,7 @@ class ModelResourceTest {
             },
             {
               "name": "gender",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -123,7 +123,7 @@ class ModelResourceTest {
             },
             {
               "name": "age",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -131,7 +131,7 @@ class ModelResourceTest {
             },
             {
               "name": "classId",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -158,12 +158,12 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "type": "entity",
+          "type": "ENTITY",
           "name": "testCreateFieldStudent",
           "fields": [
             {
               "name": "id",
-              "type": "id",
+              "type": "ID",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -172,7 +172,7 @@ class ModelResourceTest {
             },
             {
               "name": "studentName",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -181,7 +181,7 @@ class ModelResourceTest {
             },
             {
               "name": "gender",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -190,7 +190,7 @@ class ModelResourceTest {
             },
             {
               "name": "age",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -198,7 +198,7 @@ class ModelResourceTest {
             },
             {
               "name": "classId",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -216,7 +216,7 @@ class ModelResourceTest {
       .body("""
         {
           "name": "studentFirstName",
-          "type": "string",
+          "type": "STRING",
           "unique": false,
           "nullable": true,
           "validators": [],
@@ -235,12 +235,12 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "type": "entity",
+          "type": "ENTITY",
           "name": "testModifyFieldStudent",
           "fields": [
             {
               "name": "id",
-              "type": "id",
+              "type": "ID",
               "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
@@ -249,7 +249,7 @@ class ModelResourceTest {
             },
             {
               "name": "studentName",
-              "type": "string",
+              "type": "STRING",
               "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
@@ -258,7 +258,7 @@ class ModelResourceTest {
             },
             {
               "name": "gender",
-              "type": "string",
+              "type": "STRING",
               "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
@@ -267,7 +267,7 @@ class ModelResourceTest {
             },
             {
               "name": "age",
-              "type": "int",
+              "type": "INT",
               "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
@@ -275,7 +275,7 @@ class ModelResourceTest {
             },
             {
               "name": "classId",
-              "type": "int",
+              "type": "INT",
               "modelName": "testModifyFieldStudent",
               "unique": false,
               "nullable": true,
@@ -293,7 +293,7 @@ class ModelResourceTest {
       .body("""
         {
           "name": "studentName",
-          "type": "string",
+          "type": "STRING",
           "unique": true,
           "nullable": false,
           "validators": [],
@@ -315,12 +315,12 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "type": "entity",
+          "type": "ENTITY",
           "name": "testDropFieldStudent",
           "fields": [
             {
               "name": "id",
-              "type": "id",
+              "type": "ID",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -329,7 +329,7 @@ class ModelResourceTest {
             },
             {
               "name": "studentName",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -338,7 +338,7 @@ class ModelResourceTest {
             },
             {
               "name": "gender",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -347,7 +347,7 @@ class ModelResourceTest {
             },
             {
               "name": "age",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -355,7 +355,7 @@ class ModelResourceTest {
             },
             {
               "name": "classId",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -385,12 +385,12 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "type": "entity",
+          "type": "ENTITY",
           "name": "testCreateIndexStudent",
           "fields": [
             {
               "name": "id",
-              "type": "id",
+              "type": "ID",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -399,7 +399,7 @@ class ModelResourceTest {
             },
             {
               "name": "studentName",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -408,7 +408,7 @@ class ModelResourceTest {
             },
             {
               "name": "gender",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -417,7 +417,7 @@ class ModelResourceTest {
             },
             {
               "name": "age",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -425,7 +425,7 @@ class ModelResourceTest {
             },
             {
               "name": "classId",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -470,12 +470,12 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "type": "entity",
+          "type": "ENTITY",
           "name": "testModifyIndexStudent",
           "fields": [
             {
               "name": "id",
-              "type": "id",
+              "type": "ID",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -484,7 +484,7 @@ class ModelResourceTest {
             },
             {
               "name": "studentName",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -493,7 +493,7 @@ class ModelResourceTest {
             },
             {
               "name": "gender",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -502,7 +502,7 @@ class ModelResourceTest {
             },
             {
               "name": "age",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -510,7 +510,7 @@ class ModelResourceTest {
             },
             {
               "name": "classId",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -567,12 +567,12 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "type": "entity",
+          "type": "ENTITY",
           "name": "testDropIndexStudent",
           "fields": [
             {
               "name": "id",
-              "type": "id",
+              "type": "ID",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -581,7 +581,7 @@ class ModelResourceTest {
             },
             {
               "name": "studentName",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -590,7 +590,7 @@ class ModelResourceTest {
             },
             {
               "name": "gender",
-              "type": "string",
+              "type": "STRING",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -599,7 +599,7 @@ class ModelResourceTest {
             },
             {
               "name": "age",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,
@@ -607,7 +607,7 @@ class ModelResourceTest {
             },
             {
               "name": "classId",
-              "type": "int",
+              "type": "INT",
               "modelName": "Student",
               "unique": false,
               "nullable": true,

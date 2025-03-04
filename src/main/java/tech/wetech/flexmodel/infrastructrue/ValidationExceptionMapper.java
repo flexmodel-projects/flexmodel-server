@@ -42,6 +42,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
       .map(m -> m.getKey() + " " + m.getValue())
       .collect(Collectors.joining(", "))
     );
+
     body.put("errors", fieldErrors);
     body.put("success", false);
     return body;

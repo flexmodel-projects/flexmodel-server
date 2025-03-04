@@ -25,7 +25,7 @@ class DatasourceResourceTest {
       .body("""
           {
              "name": "mysql_test",
-             "type": "user",
+             "type": "USER",
              "config": {
                "url": "${MYSQL_URL}",
                "dbKind": "mysql",
@@ -75,7 +75,7 @@ class DatasourceResourceTest {
       .body("""
           {
              "name": "mysql_test2",
-             "type": "user",
+             "type": "USER",
              "config": {
                "url": "${MYSQL_URL}",
                "dbKind": "mysql",
@@ -97,7 +97,7 @@ class DatasourceResourceTest {
       .body("""
           {
             "name": "sqlite_test",
-            "type": "user",
+            "type": "USER",
             "config": {
               "url": "jdbc:sqlite:file::memory:?cache=shared",
               "dbKind": "sqlite",
@@ -119,7 +119,7 @@ class DatasourceResourceTest {
       .body("""
           {
              "name": "mysql_test3",
-             "type": "user",
+             "type": "USER",
              "config": {
                "url": "${MYSQL_URL}",
                "dbKind": "mysql",
