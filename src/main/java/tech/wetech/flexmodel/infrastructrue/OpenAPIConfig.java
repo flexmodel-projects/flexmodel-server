@@ -56,7 +56,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
           ),
           examples = {
             @ExampleObject(name = "参数验证异常", value = """
-              { "code": 1001, "message": "参数验证异常", "success": false, "errors": [{"username": "不能为空", "password": "不能为空"}] }
+              { "code": 1001, "message": "参数验证异常", "success": false, "errors": [{"field": "name", "message": "不能为空"}] }
               """)
           }
         )})
