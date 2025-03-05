@@ -13,11 +13,13 @@ import tech.wetech.flexmodel.domain.model.settings.SettingsChanged;
 @ApplicationScoped
 public class SettingsEventConsumer {
 
+  public static final String GLOBAL_RATE_LIMIT_KEY = "__DEFAULT";
+
   @ConsumeEvent("settings-changed") // 监听特定地址的事件
   public void consume(SettingsChanged event) {
     log.info("Received settings message: {}", event.getMessage());
     // 处理事件
-    ApiRateLimiterHolder.removeApiRateLimiter("__DEFAULT");
+    ApiRateLimiterHolder.removeApiRateLimiter(GLOBAL_RATE_LIMIT_KEY);
 
   }
 

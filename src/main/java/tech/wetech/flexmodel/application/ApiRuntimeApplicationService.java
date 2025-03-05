@@ -25,6 +25,7 @@ import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.dsl.Expressions;
 import tech.wetech.flexmodel.dsl.Predicate;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
+import tech.wetech.flexmodel.infrastructrue.SettingsEventConsumer;
 import tech.wetech.flexmodel.util.CollectionUtils;
 import tech.wetech.flexmodel.util.JsonUtils;
 import tech.wetech.flexmodel.util.PatternMatchUtils;
@@ -285,7 +286,7 @@ public class ApiRuntimeApplicationService {
       Settings settings = settingsService.getSettings();
       if (settings.getSecurity().isRateLimitingEnabled()) {
         log.debug("Global Rate limiting enabled.");
-        ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter("__DEFAULT",
+        ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(SettingsEventConsumer.GLOBAL_RATE_LIMIT_KEY,
           settings.getSecurity().getMaxRequestCount(),
           settings.getSecurity().getIntervalInSeconds());
         if (!apiRateLimiter.tryAcquire()) {
