@@ -26,13 +26,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 
 /**
  * @author cjbi
  */
 @Tag(name = "接口日志", description = "接口日志管理")
-@Path(BASE_PATH + "/logs")
+@Path(ROOT_PATH + "/logs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ApiLogResource {

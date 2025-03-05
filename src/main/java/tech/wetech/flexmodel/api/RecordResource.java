@@ -18,13 +18,13 @@ import tech.wetech.flexmodel.application.dto.PageDTO;
 
 import java.util.Map;
 
-import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 
 /**
  * @author cjbi
  */
 @Tag(name = "记录", description = "模型数据记录管理")
-@Path(BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records")
+@Path(ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records")
 public class RecordResource {
 
   @Parameter(name = "datasourceName", description = "数据源名称", in = ParameterIn.PATH)

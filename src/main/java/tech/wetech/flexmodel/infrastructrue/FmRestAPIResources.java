@@ -11,6 +11,8 @@ import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
 
+import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
+
 /**
  * @author cjbi
  */
@@ -30,7 +32,7 @@ public class FmRestAPIResources {
       .pathRegex(config.contextPath() + "/.*")
       .blockingHandler(apiRuntimeApplicationService::accept);
 
-    router.route().pathRegex("/api/datasources.*")
+    router.route().pathRegex(ROOT_PATH + "/datasources.*")
       .handler(handle -> {
 
         handle.addEndHandler(v -> {

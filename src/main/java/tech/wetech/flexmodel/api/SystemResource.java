@@ -17,14 +17,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 
 /**
  * @author cjbi
  */
 @Tag(name = "系统", description = "系统信息")
 @Slf4j
-@Path(BASE_PATH + "/system")
+@Path(ROOT_PATH + "/system")
 public class SystemResource {
 
   @Inject

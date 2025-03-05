@@ -27,13 +27,13 @@ import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.util.*;
 
-import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 
 /**
  * @author cjbi
  */
 @Tag(name = "数据源", description = "数据源管理")
-@Path(BASE_PATH + "/datasources")
+@Path(ROOT_PATH + "/datasources")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DatasourceResource {
@@ -167,17 +167,19 @@ public class DatasourceResource {
   public List<Datasource> findAll() {
     List<Datasource> datasourceList = modelingApplicationService.findDatasourceList();
     List<Datasource> allList = new ArrayList<>();
-    Datasource system = new Datasource();
-    system.setName("system");
-    system.setType(DatasourceType.SYSTEM);
-    Map<String, Object> configMap = new HashMap<>();
-    configMap.put("url", config.datasource().url());
-    configMap.put("dbKind", config.datasource().dbKind());
-    configMap.put("username", config.datasource().username());
-    configMap.put("password", config.datasource().password());
 
-    system.setConfig(JsonUtils.getInstance().convertValue(configMap, Database.class));
-    allList.add(system);
+    Map<String, Object> configMap = new HashMap<>();
+    config.datasources().forEach((k, v) -> {
+      Datasource system = new Datasource();
+      system.setName(k);
+      system.setType(DatasourceType.SYSTEM);
+      configMap.put("url", v.url());
+      configMap.put("dbKind", v.dbKind());
+      configMap.put("username", v.username());
+      configMap.put("password", v.password());
+      system.setConfig(JsonUtils.getInstance().convertValue(configMap, Database.class));
+      allList.add(system);
+    });
     allList.addAll(datasourceList);
     return allList;
   }

@@ -43,16 +43,27 @@ public class FmEngineSessions {
   @Produces
   @Singleton
   public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig) {
-    FlexmodelConfig.DatasourceConfig datasourceConfig = flexmodelConfig.datasource();
-    HikariDataSource dataSource = new HikariDataSource();
-    dataSource.setMaxLifetime(30000); // 30s
-    dataSource.setJdbcUrl(datasourceConfig.url());
-    dataSource.setUsername(datasourceConfig.username().orElse(null));
-    dataSource.setPassword(datasourceConfig.password().orElse(null));
-    return SessionFactory.builder()
-      .setDefaultDataSourceProvider(new JdbcDataSourceProvider(SYSTEM_DS_KEY, dataSource))
-      .setFailsafe(true)
-      .build();
+    FlexmodelConfig.DatasourceConfig datasourceConfig = flexmodelConfig.datasources().get(SYSTEM_DS_KEY);
+    HikariDataSource defaultDs = new HikariDataSource();
+    defaultDs.setMaxLifetime(30000); // 30s
+    defaultDs.setJdbcUrl(datasourceConfig.url());
+    defaultDs.setUsername(datasourceConfig.username().orElse(null));
+    defaultDs.setPassword(datasourceConfig.password().orElse(null));
+    SessionFactory.Builder builder = SessionFactory.builder()
+      .setDefaultDataSourceProvider(new JdbcDataSourceProvider(SYSTEM_DS_KEY, defaultDs))
+      .setFailsafe(true);
+    flexmodelConfig.datasources().forEach((key, value) -> {
+      if (key.equals(SYSTEM_DS_KEY)) {
+        return;
+      }
+      HikariDataSource ds = new HikariDataSource();
+      ds.setMaxLifetime(30000); // 30s
+      ds.setJdbcUrl(value.url());
+      ds.setUsername(value.username().orElse(null));
+      ds.setPassword(value.password().orElse(null));
+      builder.addDataSourceProvider(new JdbcDataSourceProvider(key, ds));
+    });
+    return builder.build();
   }
 
   @Produces

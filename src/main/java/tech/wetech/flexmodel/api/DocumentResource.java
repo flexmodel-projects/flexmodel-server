@@ -12,13 +12,13 @@ import tech.wetech.flexmodel.application.DocumentApplicationService;
 
 import java.util.Map;
 
-import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 
 /**
  * @author cjbi
  */
 @Tag(name = "接口文档", description = "接口文档管理")
-@Path(BASE_PATH + "/docs")
+@Path(ROOT_PATH + "/docs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DocumentResource {

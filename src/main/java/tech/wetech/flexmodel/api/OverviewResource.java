@@ -18,13 +18,13 @@ import tech.wetech.flexmodel.application.dto.OverviewDTO;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 
 /**
  * @author cjbi
  */
 @Tag(name = "概述", description = "首页概览")
-@Path(BASE_PATH + "/overview")
+@Path(ROOT_PATH + "/overview")
 public class OverviewResource {
 
   @Inject

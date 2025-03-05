@@ -6,10 +6,12 @@ package tech.wetech.flexmodel.infrastructrue;
 
 import io.quarkus.smallrye.openapi.OpenApiFilter;
 import io.smallrye.openapi.api.models.responses.APIResponseImpl;
+import jakarta.annotation.Priority;
 import org.eclipse.microprofile.openapi.OASFilter;
 import org.eclipse.microprofile.openapi.models.Operation;
 
 @OpenApiFilter(OpenApiFilter.RunStage.BUILD)
+@Priority(1)
 public class GlobalOpenAPIFilter implements OASFilter {
     @Override
     public Operation filterOperation(Operation operation) {

@@ -34,7 +34,7 @@ class DatasourceResourceTest {
              }
            }
         """)
-      .post(Resources.BASE_PATH + "/datasources/validate")
+      .post(Resources.ROOT_PATH + "/datasources/validate")
       .then()
       .statusCode(200)
       .body("success", is(true));
@@ -60,7 +60,7 @@ class DatasourceResourceTest {
   void testFindAll() {
     given()
       .when()
-      .get(Resources.BASE_PATH + "/datasources")
+      .get(Resources.ROOT_PATH + "/datasources")
       .then()
       .statusCode(200)
       .body("size()", greaterThanOrEqualTo(1));
@@ -84,7 +84,7 @@ class DatasourceResourceTest {
              }
           }
         """)
-      .post(Resources.BASE_PATH + "/datasources")
+      .post(Resources.ROOT_PATH + "/datasources")
       .then()
       .statusCode(200);
   }
@@ -106,7 +106,7 @@ class DatasourceResourceTest {
             }
           }
         """)
-      .put(Resources.BASE_PATH + "/datasources/{datasourceName}", "sqlite_test")
+      .put(Resources.ROOT_PATH + "/datasources/{datasourceName}", "sqlite_test")
       .then()
       .statusCode(200);
   }
@@ -128,13 +128,13 @@ class DatasourceResourceTest {
              }
            }
         """)
-      .post(Resources.BASE_PATH + "/datasources")
+      .post(Resources.ROOT_PATH + "/datasources")
       .then()
       .statusCode(200);
     given()
       .when()
       .contentType(ContentType.JSON)
-      .delete(Resources.BASE_PATH + "/datasources/{datasourceName}", "mysql_test3")
+      .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}", "mysql_test3")
       .then()
       .statusCode(204);
   }

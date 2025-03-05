@@ -28,7 +28,7 @@ class RecordResourceTest {
       .param("current", "1")
       .param("pageSize", "20")
       .param("nestedQuery", "true")
-      .get(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records", "system", "Classes")
+      .get(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records", "system", "Classes")
       .then()
       .statusCode(200)
       .body(
@@ -55,7 +55,7 @@ class RecordResourceTest {
               }
             }
         """)
-      .post(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records", "system", "Student")
+      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records", "system", "Student")
       .then()
       .statusCode(200);
   }
@@ -78,7 +78,7 @@ class RecordResourceTest {
               }
             }
         """)
-      .put(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
+      .put(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
       .then()
       .statusCode(200);
     // todo 级联更新
@@ -92,7 +92,7 @@ class RecordResourceTest {
       .param("current", "1")
       .param("pageSize", "20")
       .param("nestedQuery", "true")
-      .get(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
+      .get(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
       .then()
       .statusCode(200)
       .body(
@@ -106,7 +106,7 @@ class RecordResourceTest {
   void testDeleteRecord() {
     given()
       .when()
-      .delete(Resources.BASE_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
+      .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
       .then()
       .statusCode(204);
   }

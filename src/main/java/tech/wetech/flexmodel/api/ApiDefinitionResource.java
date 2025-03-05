@@ -18,13 +18,13 @@ import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 
 import java.util.List;
 
-import static tech.wetech.flexmodel.api.Resources.BASE_PATH;
+import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 
 /**
  * @author cjbi
  */
 @Tag(name = "接口定义", description = "接口定义管理")
-@Path(BASE_PATH + "/apis")
+@Path(ROOT_PATH + "/apis")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ApiDefinitionResource {

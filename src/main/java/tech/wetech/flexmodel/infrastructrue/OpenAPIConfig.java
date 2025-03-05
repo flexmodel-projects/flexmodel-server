@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.infrastructrue;
 
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.core.Application;
 import org.eclipse.microprofile.openapi.annotations.Components;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
@@ -63,5 +64,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
     }
   )
 )
+@Priority(1)
 public class OpenAPIConfig extends Application {
 }
