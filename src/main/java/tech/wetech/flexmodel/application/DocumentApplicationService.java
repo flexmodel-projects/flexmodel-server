@@ -227,7 +227,7 @@ public class DocumentApplicationService {
     typeMapping.put(TEXT.getType(), Map.of("type", "string"));
     typeMapping.put(INT.getType(), Map.of("type", "integer", "format", "int32"));
     typeMapping.put(LONG.getType(), Map.of("type", "integer", "format", "int64"));
-    typeMapping.put(DECIMAL.getType(), Map.of("type", "number", "format", "double"));
+    typeMapping.put(FLOAT.getType(), Map.of("type", "number", "format", "double"));
     typeMapping.put(BOOLEAN.getType(), Map.of("type", "boolean"));
 //    typeMapping.put("", Map.of("type", "array"));
     typeMapping.put(JSON.getType(), Map.of("type", "object"));

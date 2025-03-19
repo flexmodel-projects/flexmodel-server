@@ -15,12 +15,13 @@ abstract class ApiDefinitionGenerator extends AbstractGenerator {
     (ID.type)      : "ID",
     (STRING.type)  : "String",
     (TEXT.type)    : "String",
-    (DECIMAL.type) : "Float",
+    (FLOAT.type) : "Float",
     (INT.type)     : "Int",
     (LONG.type)  : "Int",
     (BOOLEAN.type) : "Boolean",
     (DATETIME.type): "String",
     (DATE.type)    : "String",
+    (TIME.type)    : "String",
     (JSON.type)    : "JSON",
   ]
 
