@@ -83,7 +83,7 @@ public class SystemResource {
 //        }
         appConfig.put(propertyName, ConfigProvider.getConfig().getValue(propertyName, String.class));
       } catch (Exception e) {
-        log.error("get config error, key={}, message={}", propertyName, e.getMessage(), e);
+        log.warn("get config error, key={}, message={}", propertyName, e.getMessage());
       }
     }
     all.put("env", env);
