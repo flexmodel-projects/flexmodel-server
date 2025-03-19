@@ -17,7 +17,7 @@ abstract class ApiDefinitionGenerator extends AbstractGenerator {
     (TEXT.type)    : "String",
     (DECIMAL.type) : "Float",
     (INT.type)     : "Int",
-    (BIGINT.type)  : "Int",
+    (LONG.type)  : "Int",
     (BOOLEAN.type) : "Boolean",
     (DATETIME.type): "String",
     (DATE.type)    : "String",

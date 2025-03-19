@@ -15,7 +15,7 @@ class CreateApiDefinitionGenerator extends ApiDefinitionGenerator {
     def modelName = context.getModelClass().getModelName()
     out.println "mutation MyCreateMutation("
     context.getModelClass().getBasicFields().each {
-      out.print "\$${it.fieldName}: ${typeMapping[((TypedField) it.originalField).type]}"
+      out.print "\$${it.variableName}: ${typeMapping[((TypedField) it.originalField).type]}"
       if (context.modelClass.basicFields.last() != it) {
         out.print(", ")
       }
@@ -24,7 +24,7 @@ class CreateApiDefinitionGenerator extends ApiDefinitionGenerator {
     out.println "  ${schemaName}_create_${modelName}("
     out.print "    data: {"
     context.getModelClass().getBasicFields().each {
-      out.print "${it.fieldName}: \$${it.fieldName}"
+      out.print "${it.variableName}: \$${it.variableName}"
       if (context.modelClass.basicFields.last() != it) {
         out.print(", ")
       }
@@ -32,7 +32,7 @@ class CreateApiDefinitionGenerator extends ApiDefinitionGenerator {
     out.print " }"
     out.println ") {"
     context.getModelClass().getBasicFields().each {
-      out.println "    ${it.fieldName}"
+      out.println "    ${it.variableName}"
     }
     out.println "  }"
     out.println "}"

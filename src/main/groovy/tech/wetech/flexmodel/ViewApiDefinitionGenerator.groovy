@@ -17,7 +17,7 @@ class ViewApiDefinitionGenerator extends ApiDefinitionGenerator {
     out.println "  ${schemaName}_find_one_${modelName}(where: \$where) {"
     context.getModelClass().getAllFields().each {
       if(!it.isRelationField()) {
-        out.println "    ${it.fieldName}"
+        out.println "    ${it.variableName}"
       }
     }
     out.println "  }"

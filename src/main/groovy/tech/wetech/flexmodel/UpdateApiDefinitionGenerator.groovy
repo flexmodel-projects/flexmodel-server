@@ -15,14 +15,14 @@ class UpdateApiDefinitionGenerator extends ApiDefinitionGenerator {
     def modelName = context.getModelClass().getModelName()
     out.println "mutation MyUpdateMutation("
     context.getModelClass().getBasicFields().each {
-      out.print "\$${it.fieldName}: ${typeMapping[((TypedField) it.originalField).type]}, "
+      out.print "\$${it.variableName}: ${typeMapping[((TypedField) it.originalField).type]}, "
     }
     out.println "\$id: ID!) {"
     out.println "  ${schemaName}_update_${modelName}_by_id("
     out.println "    id: \$id"
     out.print "    _set: {"
     context.getModelClass().getBasicFields().each {
-      out.print "${it.fieldName}: \$${it.fieldName}"
+      out.print "${it.variableName}: \$${it.variableName}"
       if (context.modelClass.basicFields.last() != it) {
         out.print(", ")
       }
@@ -31,7 +31,7 @@ class UpdateApiDefinitionGenerator extends ApiDefinitionGenerator {
     out.println "  ) {"
     context.getModelClass().getAllFields().each {
       if (!it.isRelationField()) {
-        out.println "    ${it.fieldName}"
+        out.println "    ${it.variableName}"
       }
     }
     out.println "  }"
