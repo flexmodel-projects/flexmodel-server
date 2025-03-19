@@ -452,7 +452,7 @@ public class ModelResource {
     description = "实体",
     properties = {
       @SchemaProperty(name = "name", description = "名称"),
-      @SchemaProperty(name = "type", description = "类型, entity: 实体；native_query: 本地查询；enum: 枚举"),
+      @SchemaProperty(name = "type", description = "类型, ENTITY: 实体；NATIVE_QUERY: 本地查询；ENUM: 枚举"),
       @SchemaProperty(name = "fields", description = "字段列表"),
       @SchemaProperty(name = "indexes", description = "索引列表"),
       @SchemaProperty(name = "comment", description = "注释"),

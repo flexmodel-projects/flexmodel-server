@@ -28,7 +28,7 @@ public class Settings {
     /**
      * 开启控制台日志
      */
-    private boolean consoleLoggingEnabled = false;
+    private boolean consoleLoggingEnabled = true;
   }
 
   @Getter
