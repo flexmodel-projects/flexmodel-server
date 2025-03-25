@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Map;
+
 /**
  * @author cjbi
  */
@@ -15,11 +17,11 @@ import lombok.ToString;
 public class LogData {
   private String method;
   private String path;
+  private String url;
   private String errors;
-  private String referer;
   private String remoteIp;
   private int status;
   private String message;
-  private String userAgent;
   private double execTime;
+  private Map<String, Object> request;
 }

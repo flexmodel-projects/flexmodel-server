@@ -1,0 +1,58 @@
+openapi: 3.1.0
+info:
+  title: Flexmodel API
+  version: "0.0.1"
+paths: {}  # 此处为空，可根据实际 API 补充路径配置
+components:
+  responses:
+    InternalError:
+      description: Internal Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: -1
+              message:
+                type: string
+                example: "失败"
+              success:
+                type: boolean
+                example: false
+          examples:
+            fail:
+              value:
+                code: -1
+                message: "失败"
+                success: false
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "参数验证异常"
+              success:
+                type: boolean
+                example: false
+              errors:
+                type: array
+                items:
+                  type: object
+          examples:
+            参数验证异常:
+              value:
+                code: 1001
+                message: "参数验证异常"
+                success: false
+                errors:
+                  - field: "name"
+                    message: "不能为空"

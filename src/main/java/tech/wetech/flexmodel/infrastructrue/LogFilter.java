@@ -15,7 +15,10 @@ import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.util.JsonUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -25,8 +28,6 @@ import java.util.concurrent.CompletableFuture;
 @Provider
 public class LogFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
-  private final ThreadLocal<Long> reqBeginTime = new ThreadLocal<>();
-
   @Inject
   ApiLogService apiLogService;
 
@@ -35,12 +36,23 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
 
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
-    reqBeginTime.set(System.currentTimeMillis());
+    requestContext.setProperty("startTime", System.currentTimeMillis());
+    try {
+      byte[] bytes = requestContext.getEntityStream().readAllBytes();
+      if (bytes.length > 0) {
+        String body = new String(bytes);
+        requestContext.setProperty("requestBody", body);
+      }
+      requestContext.setEntityStream(new ByteArrayInputStream(bytes));
+      //This is your POST Body as String
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-    Long beginTime = reqBeginTime.get();
+    Long beginTime = (Long) requestContext.getProperty("startTime");
     long execTime;
     if (beginTime != null) {
       execTime = System.currentTimeMillis() - beginTime;
@@ -63,14 +75,18 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     apiLog.setData(apiData);
     apiData.setMethod(requestContext.getMethod());
     apiData.setPath(requestContext.getUriInfo().getPath());
-    apiData.setReferer(requestContext.getHeaders().getFirst("Referer"));
+    apiData.setUrl(requestContext.getUriInfo().getRequestUri().toString());
 //      apiData.setRemoteIp(null);
-    apiData.setUserAgent(requestContext.getHeaders().getFirst("User-Agent"));
     int statusCode = responseContext.getStatus();
     String reasonPhrase = responseContext.getStatusInfo().getReasonPhrase();
     apiData.setStatus(statusCode);
     apiData.setMessage(reasonPhrase);
     apiLog.setLevel(LogLevel.INFO);
+    Map<String, Object> request = new HashMap<>();
+    apiData.setRequest(request);
+    request.put("headers", requestContext.getHeaders());
+    request.put("body", requestContext.getProperty("requestBody"));
+
     if (statusCode >= 400 && statusCode < 500) {
       apiLog.setLevel(LogLevel.WARN);
       apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));

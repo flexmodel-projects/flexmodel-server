@@ -359,9 +359,12 @@ public class ApiRuntimeApplicationService {
     try {
       apiData.setMethod(routingContext.request().method().name());
       apiData.setPath(routingContext.request().path());
-      apiData.setReferer(routingContext.request().getHeader("Referer"));
+//      apiData.setReferer(routingContext.request().getHeader("Referer"));
+      Map<String,Object> request = new HashMap<>();
+      request.put("headers", routingContext.request().headers());
+      apiData.setRequest(request);
       apiData.setRemoteIp(routingContext.request().remoteAddress().host());
-      apiData.setUserAgent(routingContext.request().getHeader("User-Agent"));
+//      apiData.setUserAgent(routingContext.request().getHeader("User-Agent"));
       runnable.run();
     } catch (Exception e) {
       routingContext.response()
