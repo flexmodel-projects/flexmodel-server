@@ -13,7 +13,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "设置", description = "系统设置")
+@Tag(name = "【Flexmodel】设置", description = "系统设置")
 @Path(ROOT_PATH + "/settings")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

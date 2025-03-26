@@ -17,7 +17,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "接口文档", description = "接口文档管理")
+@Tag(name = "【Flexmodel】接口文档", description = "接口文档管理")
 @Path(ROOT_PATH + "/docs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

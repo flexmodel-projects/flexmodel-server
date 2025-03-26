@@ -22,7 +22,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "系统", description = "系统信息")
+@Tag(name = "【Flexmodel】系统", description = "系统信息")
 @Slf4j
 @Path(ROOT_PATH + "/system")
 public class SystemResource {

@@ -23,7 +23,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "接口定义", description = "接口定义管理")
+@Tag(name = "【Flexmodel】接口定义", description = "接口定义管理")
 @Path(ROOT_PATH + "/apis")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

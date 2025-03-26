@@ -23,7 +23,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "记录", description = "模型数据记录管理")
+@Tag(name = "【Flexmodel】记录", description = "模型数据记录管理")
 @Path(ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records")
 public class RecordResource {
 

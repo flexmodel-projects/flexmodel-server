@@ -24,7 +24,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "模型", description = "模型管理")
+@Tag(name = "【Flexmodel】模型", description = "模型管理")
 @Path(ROOT_PATH + "/datasources/{datasourceName}/models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

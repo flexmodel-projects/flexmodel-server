@@ -22,7 +22,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "身份源", description = "身份源管理")
+@Tag(name = "【Flexmodel】身份源", description = "身份源管理")
 @Path(ROOT_PATH + "/identity-providers")
 public class IdentityProviderResource {
 

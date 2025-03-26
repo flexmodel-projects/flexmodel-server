@@ -23,7 +23,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "概述", description = "首页概览")
+@Tag(name = "【Flexmodel】概述", description = "首页概览")
 @Path(ROOT_PATH + "/overview")
 public class OverviewResource {
 

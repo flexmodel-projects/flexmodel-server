@@ -32,7 +32,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "数据源", description = "数据源管理")
+@Tag(name = "【Flexmodel】数据源", description = "数据源管理")
 @Path(ROOT_PATH + "/datasources")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

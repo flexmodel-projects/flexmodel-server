@@ -31,7 +31,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "接口日志", description = "接口日志管理")
+@Tag(name = "【Flexmodel】接口日志", description = "接口日志管理")
 @Path(ROOT_PATH + "/logs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

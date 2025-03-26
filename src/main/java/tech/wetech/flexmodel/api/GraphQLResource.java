@@ -16,7 +16,7 @@ import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 /**
  * @author cjbi
  */
-@Tag(name = "GraphQL", description = "GraphQL接口信息")
+@Tag(name = "【Flexmodel】GraphQL", description = "GraphQL接口信息")
 @Path(ROOT_PATH + "/graphql")
 public class GraphQLResource {
 
