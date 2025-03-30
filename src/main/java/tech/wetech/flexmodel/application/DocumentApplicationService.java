@@ -224,7 +224,6 @@ public class DocumentApplicationService {
   private String addModelDefinition(String datasourceName, String modelName, Map<String, Object> definitions) {
     Map<String, Object> typeMapping = new HashMap<>();
     typeMapping.put(STRING.getType(), Map.of("type", "string"));
-    typeMapping.put(TEXT.getType(), Map.of("type", "string"));
     typeMapping.put(INT.getType(), Map.of("type", "integer", "format", "int32"));
     typeMapping.put(LONG.getType(), Map.of("type", "integer", "format", "int64"));
     typeMapping.put(FLOAT.getType(), Map.of("type", "number", "format", "double"));

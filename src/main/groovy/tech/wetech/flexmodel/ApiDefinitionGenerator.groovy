@@ -14,7 +14,6 @@ abstract class ApiDefinitionGenerator extends AbstractGenerator {
   protected def typeMapping = [
     (ID.type)      : "ID",
     (STRING.type)  : "String",
-    (TEXT.type)    : "String",
     (FLOAT.type)   : "Float",
     (INT.type)     : "Int",
     (LONG.type)    : "Int",

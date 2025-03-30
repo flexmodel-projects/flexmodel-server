@@ -168,7 +168,8 @@
         },
         {
           "name": "uri",
-          "type": "Text",
+          "type": "String",
+          "length": "2000",
           "unique": false,
           "nullable": false,
           "modelName": "fs_api_log"
@@ -265,8 +266,7 @@
         },
         {
           "name": "value",
-          "type": "Text",
-          "length": 255,
+          "type": "String",
           "unique": false,
           "nullable": true,
           "modelName": "fs_config"
@@ -443,7 +443,8 @@
         },
         {
           "name": "description",
-          "type": "Text",
+          "type": "String",
+          "largeObjects": true,
           "modelName": "StudentDetail",
           "unique": false,
           "nullable": true
