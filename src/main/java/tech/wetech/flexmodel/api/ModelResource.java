@@ -75,7 +75,7 @@ public class ModelResource {
       )
     })
   @GET
-  public List<TypeWrapper> findModels() {
+  public List<SchemaObject> findModels() {
     return modelingApplicationService.findModels(datasourceName);
   }
 
@@ -150,8 +150,8 @@ public class ModelResource {
     })
   @Operation(summary = "创建模型")
   @POST
-  public TypeWrapper createModel(
-    TypeWrapper model) {
+  public SchemaObject createModel(
+    SchemaObject model) {
     return modelingApplicationService.createModel(datasourceName, model);
   }
 
@@ -228,7 +228,7 @@ public class ModelResource {
   @Operation(summary = "更新模型")
   @PUT
   @Path("/{modelName}")
-  public TypeWrapper modifyModel(@PathParam("modelName") String modelName, TypeWrapper model) {
+  public SchemaObject modifyModel(@PathParam("modelName") String modelName, SchemaObject model) {
     return modelingApplicationService.modifyModel(datasourceName, modelName, model);
   }
 

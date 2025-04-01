@@ -16,7 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.FlexmodelConfig;
-import tech.wetech.flexmodel.TypeWrapper;
+import tech.wetech.flexmodel.SchemaObject;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.codegen.enumeration.DatasourceType;
@@ -100,7 +100,7 @@ public class DatasourceResource {
   @Operation(summary = "从数据源同步物理表到建模")
   @POST
   @Path("/{datasourceName}/sync")
-  public List<TypeWrapper> syncModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
+  public List<SchemaObject> syncModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
     return modelingApplicationService.syncModels(datasourceName, models);
   }
 
@@ -109,7 +109,7 @@ public class DatasourceResource {
   @POST
   @Path("/{datasourceName}/import")
   public void importModels(@PathParam("datasourceName") String datasourceName, ImportScriptRequest request) {
-    modelingApplicationService.importModels(datasourceName, request.script());
+    modelingApplicationService.importModels(datasourceName, request.script(), request.type().name());
   }
 
   @RequestBody(
@@ -247,8 +247,15 @@ public class DatasourceResource {
     modelingApplicationService.deleteDatasource(datasourceName);
   }
 
-  public record ImportScriptRequest(@NotBlank @Schema(description = "JSON脚本") String script) {
+  public record ImportScriptRequest(@NotBlank @Schema(description = "脚本") String script,
+                                    @Schema(description = "脚本类型") ImportScriptType type) {
+  }
 
+  public enum ImportScriptType {
+    @Schema(description = "JSON")
+    JSON,
+    @Schema(description = "SDL")
+    SDL
   }
 
   public record ExecuteNativeQueryRequest(@Schema(description = "语句") String statement,

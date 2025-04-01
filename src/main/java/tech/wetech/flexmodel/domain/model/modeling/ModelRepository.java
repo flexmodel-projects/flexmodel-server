@@ -1,7 +1,7 @@
 package tech.wetech.flexmodel.domain.model.modeling;
 
 import tech.wetech.flexmodel.Index;
-import tech.wetech.flexmodel.TypeWrapper;
+import tech.wetech.flexmodel.SchemaObject;
 import tech.wetech.flexmodel.TypedField;
 
 import java.util.List;
@@ -13,13 +13,13 @@ import java.util.Set;
  */
 public interface ModelRepository {
 
-  List<TypeWrapper> findAll(String datasourceName);
+  List<SchemaObject> findAll(String datasourceName);
 
-  List<TypeWrapper> findModels(String datasourceName);
+  List<SchemaObject> findModels(String datasourceName);
 
-  Optional<TypeWrapper> findModel(String datasourceName, String modelName);
+  Optional<SchemaObject> findModel(String datasourceName, String modelName);
 
-  TypeWrapper createModel(String datasourceName, TypeWrapper model);
+  SchemaObject createModel(String datasourceName, SchemaObject model);
 
   void dropModel(String datasourceName, String modelName);
 
@@ -33,7 +33,7 @@ public interface ModelRepository {
 
   void dropIndex(String datasourceName, String modelName, String indexName);
 
-  List<TypeWrapper>  syncModels(String datasourceName, Set<String> modelName);
+  List<SchemaObject>  syncModels(String datasourceName, Set<String> modelName);
 
-  void importModels(String datasourceName, String script);
+  void importModels(String datasourceName, String script, String type);
 }

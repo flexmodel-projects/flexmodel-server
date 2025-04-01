@@ -42,11 +42,11 @@ public class ModelingApplicationService {
     datasourceService.deleteDatasource(datasourceName);
   }
 
-  public List<TypeWrapper> findModels(String datasourceName) {
+  public List<SchemaObject> findModels(String datasourceName) {
     return modelService.findModels(datasourceName);
   }
 
-  public TypeWrapper createModel(String datasourceName, TypeWrapper model) {
+  public SchemaObject createModel(String datasourceName, SchemaObject model) {
     return modelService.createModel(datasourceName, model);
   }
 
@@ -86,19 +86,19 @@ public class ModelingApplicationService {
     return datasourceService.getPhysicsModelNames(datasource);
   }
 
-  public List<TypeWrapper> syncModels(String datasourceName, Set<String> models) {
+  public List<SchemaObject> syncModels(String datasourceName, Set<String> models) {
     return modelService.syncModels(datasourceName, models);
   }
 
-  public void importModels(String datasourceName, String script) {
-    modelService.importModels(datasourceName, script);
+  public void importModels(String datasourceName, String script, String type) {
+    modelService.importModels(datasourceName, script, type);
   }
 
   public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
     return datasourceService.executeNativeQuery(datasourceName, statement, parameters);
   }
 
-  public TypeWrapper modifyModel(String datasourceName, String modelName, TypeWrapper model) {
+  public SchemaObject modifyModel(String datasourceName, String modelName, SchemaObject model) {
     if (model instanceof Entity) {
       throw new RuntimeException("Unsupported model type");
     }

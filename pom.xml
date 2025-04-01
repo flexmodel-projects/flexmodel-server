@@ -164,7 +164,7 @@
           <generator>
             <schema>
               <name>system</name>
-              <import-script>src/main/resources/import.json</import-script>
+              <import-script>src/main/resources/import.sdl,src/main/resources/import.json</import-script>
             </schema>
             <target>
               <packageName>tech.wetech.flexmodel.codegen</packageName>

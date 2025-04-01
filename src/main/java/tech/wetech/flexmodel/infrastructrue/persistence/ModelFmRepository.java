@@ -7,6 +7,7 @@ import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.domain.model.modeling.ModelRepository;
 import tech.wetech.flexmodel.dsl.Predicate;
 import tech.wetech.flexmodel.infrastructrue.FmEngineSessions;
+import tech.wetech.flexmodel.parser.impl.ParseException;
 import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.lang.reflect.ParameterizedType;
@@ -28,7 +29,7 @@ public class ModelFmRepository implements ModelRepository {
 
   private String entityName;
 
-  private Class<TypeWrapper> entityType;
+  private Class<SchemaObject> entityType;
 
   protected <R> R withSession(Function<Session, R> fn) {
     return withSession(FmEngineSessions.SYSTEM_DS_KEY, fn);
@@ -41,7 +42,7 @@ public class ModelFmRepository implements ModelRepository {
   }
 
 
-  public List<TypeWrapper> findAll() {
+  public List<SchemaObject> findAll() {
     return withSession(session -> session.find(getEntityName(), query -> query, getEntityType()));
   }
 
@@ -52,7 +53,7 @@ public class ModelFmRepository implements ModelRepository {
     return entityName;
   }
 
-  public Class<TypeWrapper> getEntityType() {
+  public Class<SchemaObject> getEntityType() {
     if (entityType == null) {
       entityType = lookupEntityClass(this.getClass());
     }
@@ -60,20 +61,20 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @SuppressWarnings("unchecked")
-  public Class<TypeWrapper> lookupEntityClass(Class<?> clazz) {
+  public Class<SchemaObject> lookupEntityClass(Class<?> clazz) {
     if (clazz == null) {
       throw new RuntimeException(this.getClass().getSimpleName() + " entity not found");
     }
     Type genericSuperclass = clazz.getGenericSuperclass();
     if (genericSuperclass instanceof ParameterizedType type && type.getActualTypeArguments().length > 0) {
-      return (Class<TypeWrapper>) type.getActualTypeArguments()[0];
+      return (Class<SchemaObject>) type.getActualTypeArguments()[0];
     }
     return lookupEntityClass(clazz.getSuperclass());
   }
 
-  public List<TypeWrapper> find(Predicate filter, Query.Sort sort, Integer current, Integer pageSize) {
+  public List<SchemaObject> find(Predicate filter, Query.Sort sort, Integer current, Integer pageSize) {
     String entityName = getEntityName();
-    Class<TypeWrapper> resultType = getEntityType();
+    Class<SchemaObject> resultType = getEntityType();
     return withSession(session -> session.find(entityName, query -> {
       if (filter != null) {
         query.withFilter(filter);
@@ -89,7 +90,7 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @SuppressWarnings("all")
-  public TypeWrapper save(Model record) {
+  public SchemaObject save(Model record) {
     return withSession(session -> {
       Entity entity = (Entity) session.getModel(getEntityName());
       Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
@@ -117,13 +118,13 @@ public class ModelFmRepository implements ModelRepository {
     });
   }
 
-  public Optional<TypeWrapper> findById(String id) {
+  public Optional<SchemaObject> findById(String id) {
     return withSession(session -> Optional.ofNullable(session.findById(getEntityName(), id, getEntityType())));
   }
 
   @Override
   @SuppressWarnings("all")
-  public List<TypeWrapper> findAll(String datasourceName) {
+  public List<SchemaObject> findAll(String datasourceName) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return (List) session.getAllModels();
     }
@@ -131,21 +132,21 @@ public class ModelFmRepository implements ModelRepository {
 
   @Override
   @SuppressWarnings("all")
-  public List<TypeWrapper> findModels(String datasourceName) {
+  public List<SchemaObject> findModels(String datasourceName) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return (List) session.getAllModels();
     }
   }
 
   @Override
-  public Optional<TypeWrapper> findModel(String datasourceName, String modelName) {
+  public Optional<SchemaObject> findModel(String datasourceName, String modelName) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return Optional.ofNullable(session.getModel(modelName));
     }
   }
 
   @Override
-  public TypeWrapper createModel(String datasourceName, TypeWrapper model) {
+  public SchemaObject createModel(String datasourceName, SchemaObject model) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       if (model instanceof Entity entity) {
         return session.createEntity(entity);
@@ -153,7 +154,7 @@ public class ModelFmRepository implements ModelRepository {
       if (model instanceof NativeQueryModel nativeQueryModel) {
         return session.createNativeQueryModel(nativeQueryModel);
       }
-      if(model instanceof Enum anEnum) {
+      if (model instanceof Enum anEnum) {
         return session.createEnum(anEnum);
       }
     }
@@ -206,14 +207,24 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @Override
-  public List<TypeWrapper> syncModels(String datasourceName, Set<String> modelNames) {
+  public List<SchemaObject> syncModels(String datasourceName, Set<String> modelNames) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       return session.syncModels(modelNames);
     }
   }
 
   @Override
-  public void importModels(String datasourceName, String script) {
-    sessionFactory.loadScriptString(datasourceName, script);
+  public void importModels(String datasourceName, String script, String type) {
+    if (type.equals("JSON")) {
+      sessionFactory.loadJSONString(datasourceName, script);
+    } else if (type.equals("SDL")) {
+      try {
+        sessionFactory.loadSDLString(datasourceName, script);
+      } catch (ParseException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      throw new RuntimeException("Unsupported type");
+    }
   }
 }

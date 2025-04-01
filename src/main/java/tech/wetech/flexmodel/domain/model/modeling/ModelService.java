@@ -3,7 +3,7 @@ package tech.wetech.flexmodel.domain.model.modeling;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Index;
-import tech.wetech.flexmodel.TypeWrapper;
+import tech.wetech.flexmodel.SchemaObject;
 import tech.wetech.flexmodel.TypedField;
 
 import java.util.List;
@@ -19,19 +19,19 @@ public class ModelService {
   @Inject
   ModelRepository modelRepository;
 
-  public List<TypeWrapper> findAll(String datasourceName) {
+  public List<SchemaObject> findAll(String datasourceName) {
     return modelRepository.findAll(datasourceName);
   }
 
-  public List<TypeWrapper> findModels(String datasourceName) {
+  public List<SchemaObject> findModels(String datasourceName) {
     return modelRepository.findModels(datasourceName);
   }
 
-  public Optional<TypeWrapper> findModel(String datasourceName, String modelName) {
+  public Optional<SchemaObject> findModel(String datasourceName, String modelName) {
     return modelRepository.findModel(datasourceName, modelName);
   }
 
-  public TypeWrapper createModel(String datasourceName, TypeWrapper model) {
+  public SchemaObject createModel(String datasourceName, SchemaObject model) {
     return modelRepository.createModel(datasourceName, model);
   }
 
@@ -65,11 +65,11 @@ public class ModelService {
     modelRepository.dropIndex(datasourceName, modelName, indexName);
   }
 
-  public List<TypeWrapper> syncModels(String datasourceName, Set<String> models) {
+  public List<SchemaObject> syncModels(String datasourceName, Set<String> models) {
     return modelRepository.syncModels(datasourceName, models);
   }
 
-  public void importModels(String datasourceName, String script) {
-    modelRepository.importModels(datasourceName, script);
+  public void importModels(String datasourceName, String script, String type) {
+    modelRepository.importModels(datasourceName, script, type);
   }
 }

@@ -1,0 +1,102 @@
+model fs_datasource {
+  name : ID @generatedValue("STRING_NOT_GENERATED"),
+  type? : DatasourceType,
+  config? : JSON,
+  createdAt? : DateTime,
+  updatedAt? : DateTime,
+  enabled : Boolean @comment("数据源") @default("true"),
+}
+model fs_api_definition {
+  id : ID @unique @generatedValue("ULID"),
+  name : String @length("255"),
+  parentId? : String @length("255"),
+  type : ApiType,
+  method? : String @length("255"),
+  path? : String @length("255"),
+  createdAt : DateTime,
+  updatedAt : DateTime,
+  meta? : JSON,
+  enabled : Boolean @comment("") @default("true"),
+}
+model fs_api_log {
+  id : ID @generatedValue("ULID"),
+  level : LogLevel,
+  uri : String @length("2000"),
+  data : JSON,
+  createdAt : DateTime,
+  @index(unique: "false", fields: [level]),
+}
+model fs_identity_provider {
+  name : ID @generatedValue("STRING_NOT_GENERATED"),
+  createdAt : DateTime,
+  provider? : JSON,
+  updatedAt : DateTime,
+}
+model fs_config {
+  id : ID @unique @generatedValue("ULID"),
+  key : String @comment("名称") @length("255"),
+  value? : String @length("255"),
+  createdAt : DateTime,
+  updatedAt : DateTime,
+  @comment("配置"),
+  @index(unique: "true", fields: [key]),
+}
+model Teacher {
+  id : ID @generatedValue("BIGINT_NOT_GENERATED"),
+  teacherName? : String @length("255"),
+  subject? : String @length("255"),
+}
+model Student {
+  id : ID @generatedValue("BIGINT_NOT_GENERATED"),
+  studentName? : String @length("255"),
+  gender? : UserGender,
+  interest? : user_interest[],
+  age? : Int,
+  classId? : Long,
+  studentClass? : Classes @comment("班级") @relation(localField: "classId", foreignField: "id", cascadeDelete: "false"),
+  studentDetail? : StudentDetail @relation(localField: "id", foreignField: "studentId", cascadeDelete: "true"),
+  @index(unique: "false", fields: [studentName]),
+  @index(unique: "false", fields: [classId]),
+}
+model StudentDetail {
+  id : ID @generatedValue("AUTO_INCREMENT"),
+  studentId? : Long,
+  student? : Student @comment("学生") @relation(localField: "studentId", foreignField: "id", cascadeDelete: "false"),
+  description? : String @length("255"),
+}
+model Classes {
+  id : ID @generatedValue("BIGINT_NOT_GENERATED"),
+  classCode? : String @length("255"),
+  className? : String @length("255"),
+  students? : Student[] @relation(localField: "id", foreignField: "classId", cascadeDelete: "true"),
+}
+model Course {
+  courseNo : ID @generatedValue("STRING_NOT_GENERATED"),
+  courseName? : String @length("255"),
+  @index(unique: "false", fields: [courseNo]),
+}
+enum ApiType {
+  FOLDER,
+  API
+}
+enum DatasourceType {
+  SYSTEM,
+  USER
+}
+enum UserGender {
+  UNKNOWN,
+  MALE,
+  FEMALE
+}
+enum user_interest {
+  chang,
+  tiao,
+  rap,
+  daLanQiu
+}
+enum LogLevel {
+  DEBUG,
+  INFO,
+  WARN,
+  ERROR
+}
