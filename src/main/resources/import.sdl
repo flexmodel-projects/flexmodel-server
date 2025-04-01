@@ -2,9 +2,9 @@ model fs_datasource {
   name : ID @generatedValue("STRING_NOT_GENERATED"),
   type? : DatasourceType,
   config? : JSON,
-  createdAt? : DateTime,
-  updatedAt? : DateTime,
-  enabled : Boolean @comment("数据源") @default("true"),
+  createdAt? : DateTime @generatedValue("NOW_ON_CREATE"),
+  updatedAt? : DateTime @generatedValue("NOW_ON_CREATE_AND_UPDATE"),
+  enabled : Boolean @comment("") @default("true"),
 }
 model fs_api_definition {
   id : ID @unique @generatedValue("ULID"),
@@ -13,8 +13,8 @@ model fs_api_definition {
   type : ApiType,
   method? : String @length("255"),
   path? : String @length("255"),
-  createdAt : DateTime,
-  updatedAt : DateTime,
+  createdAt : DateTime @generatedValue("NOW_ON_CREATE"),
+  updatedAt : DateTime @generatedValue("NOW_ON_CREATE_AND_UPDATE"),
   meta? : JSON,
   enabled : Boolean @comment("") @default("true"),
 }
@@ -23,21 +23,21 @@ model fs_api_log {
   level : LogLevel,
   uri : String @length("2000"),
   data : JSON,
-  createdAt : DateTime,
+  createdAt : DateTime @generatedValue("NOW_ON_CREATE"),
   @index(unique: "false", fields: [level]),
 }
 model fs_identity_provider {
   name : ID @generatedValue("STRING_NOT_GENERATED"),
-  createdAt : DateTime,
+  createdAt : DateTime @generatedValue("NOW_ON_CREATE"),
   provider? : JSON,
-  updatedAt : DateTime,
+  updatedAt : DateTime @generatedValue("NOW_ON_CREATE_AND_UPDATE"),
 }
 model fs_config {
   id : ID @unique @generatedValue("ULID"),
   key : String @comment("名称") @length("255"),
   value? : String @length("255"),
-  createdAt : DateTime,
-  updatedAt : DateTime,
+  createdAt : DateTime @generatedValue("NOW_ON_CREATE"),
+  updatedAt : DateTime @generatedValue("NOW_ON_CREATE_AND_UPDATE"),
   @comment("配置"),
   @index(unique: "true", fields: [key]),
 }
