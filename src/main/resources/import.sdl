@@ -39,7 +39,7 @@ model fs_config {
   createdAt : DateTime @generatedValue("NOW_ON_CREATE"),
   updatedAt : DateTime @generatedValue("NOW_ON_CREATE_AND_UPDATE"),
   @comment("配置"),
-  @index(unique: "true", fields: [key]),
+  @index(name:"IDX_CONFIG_KEY", unique: "true", fields: [key]),
 }
 model Teacher {
   id : ID @generatedValue("BIGINT_NOT_GENERATED"),
@@ -55,8 +55,8 @@ model Student {
   classId? : Long,
   studentClass? : Classes @comment("班级") @relation(localField: "classId", foreignField: "id", cascadeDelete: "false"),
   studentDetail? : StudentDetail @relation(localField: "id", foreignField: "studentId", cascadeDelete: "true"),
-  @index(unique: "false", fields: [studentName]),
-  @index(unique: "false", fields: [classId]),
+  @index(name: "IDX_STUDENT_NAME",unique: "false", fields: [studentName]),
+  @index(name:"IDX_CLASS_ID", unique: "false", fields: [classId]),
 }
 model StudentDetail {
   id : ID @generatedValue("AUTO_INCREMENT"),
@@ -73,7 +73,7 @@ model Classes {
 model Course {
   courseNo : ID @generatedValue("STRING_NOT_GENERATED"),
   courseName? : String @length("255"),
-  @index(unique: "false", fields: [courseNo]),
+  @index(name:"IDX_COURSE_NO", unique: "false", fields: [courseNo]),
 }
 enum ApiType {
   FOLDER,
