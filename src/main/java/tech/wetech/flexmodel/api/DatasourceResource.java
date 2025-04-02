@@ -109,7 +109,11 @@ public class DatasourceResource {
   @POST
   @Path("/{datasourceName}/import")
   public void importModels(@PathParam("datasourceName") String datasourceName, ImportScriptRequest request) {
-    modelingApplicationService.importModels(datasourceName, request.script(), request.type().name());
+    ImportScriptType type = request.type();
+    if (type == null) {
+      type = ImportScriptType.JSON;
+    }
+    modelingApplicationService.importModels(datasourceName, request.script(), type.name());
   }
 
   @RequestBody(

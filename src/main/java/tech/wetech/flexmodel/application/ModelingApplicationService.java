@@ -112,4 +112,8 @@ public class ModelingApplicationService {
     modelService.createModel(datasourceName, model);
     return model;
   }
+
+  public SchemaObject findModel(String datasourceName, String modelName) {
+    return modelService.findModel(datasourceName, modelName).orElseThrow(() -> new RuntimeException("Model not found"));
+  }
 }

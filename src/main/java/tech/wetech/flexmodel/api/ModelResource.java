@@ -79,6 +79,49 @@ public class ModelResource {
     return modelingApplicationService.findModels(datasourceName);
   }
 
+  @Operation(summary = "获取单个模型")
+  @APIResponse(
+    name = "200",
+    responseCode = "200",
+    description = "OK",
+    content = {
+      @Content(
+        mediaType = "application/json",
+        schema = @Schema(
+          anyOf = {
+            EnumSchema.class,
+            NativeQuerySchema.class,
+            EntitySchema.class
+          }
+        ),
+        examples = {
+          @ExampleObject(
+            name = "实体",
+            value = """
+              { "type": "ENTITY", "name": "Student", "fields": [ { "name": "id", "type": "ID", "modelName": "Student", "unique": false, "nullable": true, "generatedValue": "BIGINT_NOT_GENERATED" }, { "name": "studentName", "type": "String", "modelName": "Student", "unique": false, "nullable": true, "length": 255 }, { "name": "gender", "type": "Enum", "from": "UserGender", "multiple": false, "modelName": "Student", "unique": false, "nullable": true }, { "name": "interest", "type": "Enum", "from": "user_interest", "multiple": true, "modelName": "Student", "unique": false, "nullable": true }, { "name": "age", "type": "Int", "modelName": "Student", "unique": false, "nullable": true }, { "name": "classId", "type": "Long", "modelName": "Student", "unique": false, "nullable": true }, { "name": "studentDetail", "type": "Relation", "modelName": "Student", "unique": false, "nullable": true, "multiple": false, "from": "StudentDetail", "localField": "id", "foreignField": "studentId", "cascadeDelete": true } ], "indexes": [ { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false } ] }
+              """
+          ),
+          @ExampleObject(
+            name = "枚举",
+            value = """
+              { "name": "UserGender", "type": "ENUM", "elements": [ "UNKNOWN", "MALE", "FEMALE" ], "comment": "性别" }
+              """
+          ),
+          @ExampleObject(
+            name = "本地查询",
+            value = """
+              { "name": "分组查询", "type": "native_query", "statement": "select count(id) as total, gender, max(age) as ageSum from Student group by gender" }
+              """
+          ),
+        }
+      )
+    })
+  @GET
+  @Path("/{modelName}")
+  public SchemaObject findModel(@PathParam("modelName") String modelName) {
+    return modelingApplicationService.findModel(datasourceName, modelName);
+  }
+
   @RequestBody(
     name = "请求体",
     content = {@Content(
