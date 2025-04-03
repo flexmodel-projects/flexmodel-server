@@ -1,53 +1,53 @@
 model fs_datasource {
-  name : ID @generatedValue("STRING_NOT_GENERATED"),
+  name : ID,
   type? : DatasourceType,
   config? : JSON,
-  createdAt? : DateTime @generatedValue("NOW_ON_CREATE"),
-  updatedAt? : DateTime @generatedValue("NOW_ON_CREATE_AND_UPDATE"),
-  enabled : Boolean @comment("") @default("true"),
+  createdAt? : DateTime @default(now()),
+  updatedAt? : DateTime @default(now()),
+  enabled : Boolean @comment("数据源") @default("true"),
 }
 model fs_api_definition {
-  id : ID @unique @generatedValue("ULID"),
+  id : ID @unique @default(ulid()),
   name : String @length("255"),
   parentId? : String @length("255"),
   type : ApiType,
   method? : String @length("255"),
   path? : String @length("255"),
-  createdAt : DateTime @generatedValue("NOW_ON_CREATE"),
-  updatedAt : DateTime @generatedValue("NOW_ON_CREATE_AND_UPDATE"),
+  createdAt : DateTime @default(now()),
+  updatedAt : DateTime @default(now()),
   meta? : JSON,
   enabled : Boolean @comment("") @default("true"),
 }
 model fs_api_log {
-  id : ID @generatedValue("ULID"),
+  id : ID @default(ulid()),
   level : LogLevel,
   uri : String @length("2000"),
   data : JSON,
-  createdAt : DateTime @generatedValue("NOW_ON_CREATE"),
+  createdAt : DateTime @default(now()),
   @index(unique: "false", fields: [level]),
 }
 model fs_identity_provider {
-  name : ID @generatedValue("STRING_NOT_GENERATED"),
-  createdAt : DateTime @generatedValue("NOW_ON_CREATE"),
+  name : ID,
+  createdAt : DateTime @default(now()),
   provider? : JSON,
-  updatedAt : DateTime @generatedValue("NOW_ON_CREATE_AND_UPDATE"),
+  updatedAt : DateTime @default(now()),
 }
 model fs_config {
-  id : ID @unique @generatedValue("ULID"),
+  id : ID @unique @default(ulid()),
   key : String @comment("名称") @length("255"),
   value? : String @length("255"),
-  createdAt : DateTime @generatedValue("NOW_ON_CREATE"),
-  updatedAt : DateTime @generatedValue("NOW_ON_CREATE_AND_UPDATE"),
+  createdAt : DateTime @default(now()),
+  updatedAt : DateTime @default(now()),
   @comment("配置"),
   @index(name:"IDX_CONFIG_KEY", unique: "true", fields: [key]),
 }
 model Teacher {
-  id : ID @generatedValue("BIGINT_NOT_GENERATED"),
+  id : ID @default(autoIncrement()),
   teacherName? : String @length("255"),
   subject? : String @length("255"),
 }
 model Student {
-  id : ID @generatedValue("BIGINT_NOT_GENERATED"),
+  id : ID @default(autoIncrement()),
   studentName? : String @length("255"),
   gender? : UserGender,
   interest? : user_interest[],
@@ -59,19 +59,19 @@ model Student {
   @index(name:"IDX_CLASS_ID", unique: "false", fields: [classId]),
 }
 model StudentDetail {
-  id : ID @generatedValue("AUTO_INCREMENT"),
+  id : ID @default(autoIncrement()),
   studentId? : Long,
   student? : Student @comment("学生") @relation(localField: "studentId", foreignField: "id", cascadeDelete: "false"),
   description? : String @length("255"),
 }
 model Classes {
-  id : ID @generatedValue("BIGINT_NOT_GENERATED"),
+  id : ID @default(autoIncrement()),
   classCode? : String @length("255"),
   className? : String @length("255"),
   students? : Student[] @relation(localField: "id", foreignField: "classId", cascadeDelete: "true"),
 }
 model Course {
-  courseNo : ID @generatedValue("STRING_NOT_GENERATED"),
+  courseNo : ID @default(uuid()),
   courseName? : String @length("255"),
   @index(name:"IDX_COURSE_NO", unique: "false", fields: [courseNo]),
 }
