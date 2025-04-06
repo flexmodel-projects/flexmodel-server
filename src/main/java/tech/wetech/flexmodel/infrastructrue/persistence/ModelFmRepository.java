@@ -217,9 +217,9 @@ public class ModelFmRepository implements ModelRepository {
   public void importModels(String datasourceName, String script, String type) {
     if (type.equals("JSON")) {
       sessionFactory.loadJSONString(datasourceName, script);
-    } else if (type.equals("SDL")) {
+    } else if (type.equals("IDL")) {
       try {
-        sessionFactory.loadSDLString(datasourceName, script);
+        sessionFactory.loadIDLString(datasourceName, script);
       } catch (ParseException e) {
         throw new RuntimeException(e);
       }
