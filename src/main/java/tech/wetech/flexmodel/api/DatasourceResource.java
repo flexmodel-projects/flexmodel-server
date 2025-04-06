@@ -258,8 +258,8 @@ public class DatasourceResource {
   public enum ImportScriptType {
     @Schema(description = "JSON")
     JSON,
-    @Schema(description = "SDL")
-    SDL
+    @Schema(description = "IDL")
+    IDL
   }
 
   public record ExecuteNativeQueryRequest(@Schema(description = "语句") String statement,
