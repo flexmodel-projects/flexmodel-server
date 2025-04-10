@@ -1,9 +1,0 @@
-quarkus:
-  log:
-    category:
-      "io.quarkus.arc":
-        level: DEBUG
-      "tech.wetech.flexmodel":
-        level: DEBUG
-      "com.zaxxer.hikari":
-        level: INFO
