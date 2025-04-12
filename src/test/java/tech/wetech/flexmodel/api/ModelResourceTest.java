@@ -35,12 +35,12 @@ class ModelResourceTest {
           "fields": [
             {
               "name": "id",
-              "type": "ID",
+              "type": "Long",
+              "identity": true,
               "modelName": "Student",
               "unique": false,
               "nullable": true,
-              "validators": [],
-              "generatedValue": "BIGINT_NOT_GENERATED"
+              "validators": []
             },
             {
               "name": "studentName",
@@ -96,12 +96,12 @@ class ModelResourceTest {
           "fields": [
             {
               "name": "id",
-              "type": "ID",
+              "type": "Long",
+              "identity": true,
               "modelName": "Student",
               "unique": false,
               "nullable": true,
-              "validators": [],
-              "generatedValue": "BIGINT_NOT_GENERATED"
+              "validators": []
             },
             {
               "name": "studentName",
@@ -163,12 +163,12 @@ class ModelResourceTest {
           "fields": [
             {
               "name": "id",
-              "type": "ID",
+              "type": "Long",
+              "identity": true,
               "modelName": "Student",
               "unique": false,
               "nullable": true,
-              "validators": [],
-              "generatedValue": "BIGINT_NOT_GENERATED"
+              "validators": []
             },
             {
               "name": "studentName",
@@ -240,12 +240,11 @@ class ModelResourceTest {
           "fields": [
             {
               "name": "id",
-              "type": "ID",
+              "type": "Long",
+              "identity": true,
               "modelName": "testModifyFieldStudent",
               "unique": false,
-              "nullable": true,
-              "validators": [],
-              "generatedValue": "BIGINT_NOT_GENERATED"
+              "nullable": true
             },
             {
               "name": "studentName",
@@ -320,12 +319,12 @@ class ModelResourceTest {
           "fields": [
             {
               "name": "id",
-              "type": "ID",
+              "type": "Long",
+              "identity": true,
               "modelName": "Student",
               "unique": false,
               "nullable": true,
-              "validators": [],
-              "generatedValue": "BIGINT_NOT_GENERATED"
+              "validators": []
             },
             {
               "name": "studentName",
@@ -390,12 +389,11 @@ class ModelResourceTest {
           "fields": [
             {
               "name": "id",
-              "type": "ID",
+              "type": "Long",
+              "identity": true,
               "modelName": "Student",
               "unique": false,
-              "nullable": true,
-              "validators": [],
-              "generatedValue": "BIGINT_NOT_GENERATED"
+              "nullable": true
             },
             {
               "name": "studentName",
@@ -475,12 +473,11 @@ class ModelResourceTest {
           "fields": [
             {
               "name": "id",
-              "type": "ID",
+              "type": "Long",
+              "identity": true,
               "modelName": "Student",
               "unique": false,
-              "nullable": true,
-              "validators": [],
-              "generatedValue": "BIGINT_NOT_GENERATED"
+              "nullable": true
             },
             {
               "name": "studentName",
@@ -572,12 +569,11 @@ class ModelResourceTest {
           "fields": [
             {
               "name": "id",
-              "type": "ID",
+              "type": "Long",
+              "identity": true,
               "modelName": "Student",
               "unique": false,
-              "nullable": true,
-              "validators": [],
-              "generatedValue": "BIGINT_NOT_GENERATED"
+              "nullable": true
             },
             {
               "name": "studentName",

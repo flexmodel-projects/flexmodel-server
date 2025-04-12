@@ -71,15 +71,15 @@ public class GeneratorResource {
             context.putVariable("rootPackage", "com.example");
 
 
-            zipOut.putNextEntry(new ZipEntry(dir + "/entity/" + modelClass.getShortClassName() + ".java"));
+            zipOut.putNextEntry(new ZipEntry(dir + "entity/" + modelClass.getShortClassName() + ".java"));
             zipOut.write(new PojoGenerator().generate(context).getBytes());
             zipOut.closeEntry();
 
-            zipOut.putNextEntry(new ZipEntry(dir + "/dsl/" + modelClass.getShortClassName() + "DSL.java"));
+            zipOut.putNextEntry(new ZipEntry(dir + "dsl/" + modelClass.getShortClassName() + "DSL.java"));
             zipOut.write(new DSLGenerator().generate(context).getBytes());
             zipOut.closeEntry();
 
-            zipOut.putNextEntry(new ZipEntry(dir + "/dao/" + modelClass.getShortClassName() + "DAO.java"));
+            zipOut.putNextEntry(new ZipEntry(dir + "dao/" + modelClass.getShortClassName() + "DAO.java"));
             zipOut.write(new DaoGenerator().generate(context).getBytes());
             zipOut.closeEntry();
           } else if (model instanceof tech.wetech.flexmodel.Enum anEnum) {
@@ -88,7 +88,7 @@ public class GeneratorResource {
             context.setEnumClass(enumClass);
             context.putVariable("rootPackage", "com.example");
 
-            zipOut.putNextEntry(new ZipEntry(dir + "/enumeration/" + enumClass.getShortClassName() + ".java"));
+            zipOut.putNextEntry(new ZipEntry(dir + "enumeration/" + enumClass.getShortClassName() + ".java"));
             zipOut.write(new EnumGenerator().generate(context).getBytes());
             zipOut.closeEntry();
 

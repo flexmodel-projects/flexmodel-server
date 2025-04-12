@@ -12,7 +12,6 @@ import static tech.wetech.flexmodel.ScalarType.*
 abstract class ApiDefinitionGenerator extends AbstractGenerator {
 
   protected def typeMapping = [
-    (ID.type)      : "ID",
     (STRING.type)  : "String",
     (FLOAT.type)   : "Float",
     (INT.type)     : "Int",

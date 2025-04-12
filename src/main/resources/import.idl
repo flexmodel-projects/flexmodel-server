@@ -1,5 +1,5 @@
 model fs_datasource {
-  name : ID,
+  name : String @id,
   type? : DatasourceType,
   config? : JSON,
   createdAt? : DateTime @default(now()),
@@ -7,7 +7,7 @@ model fs_datasource {
   enabled : Boolean @comment("数据源") @default("true"),
 }
 model fs_api_definition {
-  id : ID @unique @default(ulid()),
+  id : String @id @unique @default(ulid()),
   name : String @length("255"),
   parentId? : String @length("255"),
   type : ApiType,
@@ -19,7 +19,7 @@ model fs_api_definition {
   enabled : Boolean @comment("") @default("true"),
 }
 model fs_api_log {
-  id : ID @default(ulid()),
+  id : String @id @default(ulid()),
   level : LogLevel,
   uri : String @length("2000"),
   data : JSON,
@@ -27,13 +27,13 @@ model fs_api_log {
   @index(unique: "false", fields: [level]),
 }
 model fs_identity_provider {
-  name : ID,
+  name : String @id,
   createdAt : DateTime @default(now()),
   provider? : JSON,
   updatedAt : DateTime @default(now()),
 }
 model fs_config {
-  id : ID @unique @default(ulid()),
+  id : String @id @unique @default(ulid()),
   key : String @comment("名称") @length("255"),
   value? : String @length("255"),
   createdAt : DateTime @default(now()),
@@ -42,12 +42,12 @@ model fs_config {
   @index(name:"IDX_CONFIG_KEY", unique: "true", fields: [key]),
 }
 model Teacher {
-  id : ID @default(autoIncrement()),
+  id : Long @id @default(autoIncrement()),
   teacherName? : String @length("255"),
   subject? : String @length("255"),
 }
 model Student {
-  id : ID @default(autoIncrement()),
+  id : Long @id @default(autoIncrement()),
   studentName? : String @length("255"),
   gender? : UserGender,
   interest? : user_interest[],
@@ -59,19 +59,19 @@ model Student {
   @index(name:"IDX_CLASS_ID", unique: "false", fields: [classId]),
 }
 model StudentDetail {
-  id : ID @default(autoIncrement()),
+  id : Long @id @default(autoIncrement()),
   studentId? : Long,
   student? : Student @comment("学生") @relation(localField: "studentId", foreignField: "id", cascadeDelete: "false"),
   description? : String @length("255"),
 }
 model Classes {
-  id : ID @default(autoIncrement()),
+  id : Long @id @default(autoIncrement()),
   classCode? : String @length("255"),
   className? : String @length("255"),
   students? : Student[] @relation(localField: "id", foreignField: "classId", cascadeDelete: "true"),
 }
 model Course {
-  courseNo : ID @default(uuid()),
+  courseNo : String @id @default(uuid()),
   courseName? : String @length("255"),
   @index(name:"IDX_COURSE_NO", unique: "false", fields: [courseNo]),
 }
