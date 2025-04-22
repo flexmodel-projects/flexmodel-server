@@ -6,7 +6,6 @@ import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.application.dto.ApiDefinitionTreeDTO;
 import tech.wetech.flexmodel.application.dto.GenerateAPIsDTO;
 import tech.wetech.flexmodel.codegen.GenerationContext;
-import tech.wetech.flexmodel.codegen.GenerationTool;
 import tech.wetech.flexmodel.codegen.ModelClass;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
@@ -87,7 +86,7 @@ public class ApiDefinitionApplicationService {
       for (String type : generateAPIs) {
         ApiDefinitionGenerator apiDefinitionGenerator = templateMap.get(type);
         if (apiDefinitionGenerator != null) {
-          ModelClass modelClass = GenerationTool.buildModelClass(null, dto.getDatasourceName(), entity);
+          ModelClass modelClass = ModelClass.buildModelClass(null, dto.getDatasourceName(), entity);
           GenerationContext generationContext = new GenerationContext();
           generationContext.setModelClass(modelClass);
           generationContext.putVariable("idFieldOfPath", dto.getIdFieldOfPath());

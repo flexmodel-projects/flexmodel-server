@@ -10,8 +10,7 @@ import tech.wetech.flexmodel.codegen.enumeration.ApiType
 class DeleteApiDefinitionGenerator extends ApiDefinitionGenerator {
 
   @Override
-  def generate(PrintWriter out, GenerationContext context) {
-    def idFieldOfPath = context.getVariable("idFieldOfPath")
+  void write(PrintWriter out, GenerationContext context) {
     def schemaName = context.getModelClass().getSchemaName()
     def modelName = context.getModelClass().getModelName()
     out.println "mutation MyDeleteMutation( \$id: ID!) {"

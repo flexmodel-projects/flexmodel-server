@@ -10,7 +10,7 @@ import tech.wetech.flexmodel.codegen.enumeration.ApiType
 class PaginationApiDefinitionGenerator extends ApiDefinitionGenerator {
 
   @Override
-  def generate(PrintWriter out, GenerationContext context) {
+  void write(PrintWriter out, GenerationContext context) {
     def schemaName = context.getModelClass().getSchemaName()
     def modelName = context.getModelClass().getModelName()
     out.println "query MyPaginationQuery( \$where: ${schemaName}_${modelName}_bool_exp, \$page: Int = 1, \$size: Int = 10) {"

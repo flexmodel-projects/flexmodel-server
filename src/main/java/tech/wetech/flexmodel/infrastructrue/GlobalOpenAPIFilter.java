@@ -5,8 +5,8 @@ package tech.wetech.flexmodel.infrastructrue;
  */
 
 import io.quarkus.smallrye.openapi.OpenApiFilter;
-import io.smallrye.openapi.api.models.responses.APIResponseImpl;
 import jakarta.annotation.Priority;
+import org.eclipse.microprofile.openapi.OASFactory;
 import org.eclipse.microprofile.openapi.OASFilter;
 import org.eclipse.microprofile.openapi.models.Operation;
 
@@ -17,8 +17,8 @@ public class GlobalOpenAPIFilter implements OASFilter {
     public Operation filterOperation(Operation operation) {
         // 引用预定义的500响应
         operation.getResponses()
-            .addAPIResponse("500", new APIResponseImpl().ref("#/components/responses/InternalError"))
-            .addAPIResponse("400", new APIResponseImpl().ref("#/components/responses/BadRequest"));
+            .addAPIResponse("500", OASFactory.createAPIResponse().ref("#/components/responses/InternalError"))
+            .addAPIResponse("400", OASFactory.createAPIResponse().ref("#/components/responses/BadRequest"));
         return operation;
     }
 }
