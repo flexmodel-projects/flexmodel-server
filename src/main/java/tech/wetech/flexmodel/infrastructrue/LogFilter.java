@@ -75,7 +75,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     int statusCode = responseContext.getStatus();
     apiLog.setStatusCode(statusCode);
     if (statusCode >= 500) {
-      apiLog.setIsError(true);
+      apiLog.setIsSuccess(false);
     }
     apiLog.setResponseTime((int) execTime);
     apiLogService.create(apiLog);

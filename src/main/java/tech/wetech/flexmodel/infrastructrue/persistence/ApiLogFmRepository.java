@@ -59,11 +59,11 @@ public class ApiLogFmRepository implements ApiRequestLogRepository {
     return apiRequestLogDAO.find(query ->
       query
         .withProjection(projection -> projection
-          .addField("name", field("endpoint"))
+          .addField("name", field("path"))
           .addField("total", Projections.count(field("id")))
         )
         .withGroupBy(groupBy -> groupBy
-          .addField("endpoint")
+          .addField("path")
         )
         .withPage(p -> p.setPageSize(20))
         .withSort(s -> s.addOrder("total", DESC))

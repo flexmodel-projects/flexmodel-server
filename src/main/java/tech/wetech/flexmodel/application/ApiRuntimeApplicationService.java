@@ -81,17 +81,17 @@ public class ApiRuntimeApplicationService {
   @Inject
   FlexmodelConfig config;
 
-  public PageDTO<ApiRequestLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isError) {
-    List<ApiRequestLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, isError), current, pageSize);
-    long total = apiLogService.count(getCondition(keyword, startDate, endDate, isError));
+  public PageDTO<ApiRequestLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
+    List<ApiRequestLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, isSuccess), current, pageSize);
+    long total = apiLogService.count(getCondition(keyword, startDate, endDate, isSuccess));
     return new PageDTO<>(list, total);
   }
 
-  public List<LogStat> stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isError) {
-    return apiLogService.stat(getCondition(keyword, startDate, endDate, isError));
+  public List<LogStat> stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
+    return apiLogService.stat(getCondition(keyword, startDate, endDate, isSuccess));
   }
 
-  private static Predicate getCondition(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isError) {
+  private static Predicate getCondition(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
     Predicate condition = Expressions.TRUE;
     if (keyword != null) {
       condition = condition.and(apiRequestLog.requestBody.contains(keyword));
@@ -99,8 +99,8 @@ public class ApiRuntimeApplicationService {
     if (startDate != null && endDate != null) {
       condition = condition.and(apiRequestLog.createdAt.between(startDate, endDate));
     }
-    if (isError != null) {
-      condition = condition.and(apiRequestLog.isError.eq(isError));
+    if (isSuccess != null) {
+      condition = condition.and(apiRequestLog.isSuccess.eq(isSuccess));
     }
     return condition;
   }
@@ -365,7 +365,7 @@ public class ApiRuntimeApplicationService {
       apiLog.setClientIp(routingContext.request().remoteAddress().host());
       runnable.run();
     } catch (Exception e) {
-      apiLog.setIsError(true);
+      apiLog.setIsSuccess(false);
       apiLog.setErrorMessage(JsonUtils.getInstance().stringify(e));
       throw e;
     } finally {

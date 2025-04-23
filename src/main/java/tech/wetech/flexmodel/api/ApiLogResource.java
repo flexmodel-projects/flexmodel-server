@@ -60,10 +60,10 @@ public class ApiLogResource {
                                             @QueryParam("pageSize") @DefaultValue("50") int pageSize,
                                             @QueryParam("keyword") String keyword,
                                             @QueryParam("dateRange") String dateRange,
-                                            @QueryParam("isError") Boolean isError
+                                            @QueryParam("isSuccess") Boolean isSuccess
   ) {
-    RequestResult result = parseQuery(dateRange, isError);
-    return apiRuntimeApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), isError);
+    RequestResult result = parseQuery(dateRange, isSuccess);
+    return apiRuntimeApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), isSuccess);
   }
 
   @Parameter(name = "keyword", description = "关键字", in = ParameterIn.QUERY)
@@ -85,12 +85,12 @@ public class ApiLogResource {
   @Path("/stat")
   public List<LogStat> stat(@QueryParam("keyword") String keyword,
                             @QueryParam("dateRange") String dateRange,
-                            @QueryParam("isError") Boolean isError) {
-    RequestResult result = parseQuery(dateRange, isError);
-    return apiRuntimeApplicationService.stat(keyword, result.startDate(), result.endDate(), isError);
+                            @QueryParam("isSuccess") Boolean isSuccess) {
+    RequestResult result = parseQuery(dateRange, isSuccess);
+    return apiRuntimeApplicationService.stat(keyword, result.startDate(), result.endDate(), isSuccess);
   }
 
-  private static RequestResult parseQuery(String dateRange, Boolean isError) {
+  private static RequestResult parseQuery(String dateRange, Boolean isSuccess) {
     LocalDateTime startDate = null;
     LocalDateTime endDate = null;
     if (dateRange != null) {
@@ -104,10 +104,10 @@ public class ApiLogResource {
         endDate = null;
       }
     }
-    return new RequestResult(startDate, endDate, isError);
+    return new RequestResult(startDate, endDate, isSuccess);
   }
 
-  private record RequestResult(LocalDateTime startDate, LocalDateTime endDate, Boolean isError) {
+  private record RequestResult(LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
   }
 
   @Schema(

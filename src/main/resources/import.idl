@@ -37,7 +37,7 @@ model fs_api_request_log {
   response_time : Int,
   client_ip: String @length("45") @comment("IP地址"),
   created_at : DateTime @default(now()),
-  is_error: Boolean @comment("是否异常"),
+  is_success: Boolean @comment("是否成功") @default("true"),
   error_message : JSON @comment("异常信息"),
   @index(fields: [created_at]),
   @index(fields: [is_error]),
