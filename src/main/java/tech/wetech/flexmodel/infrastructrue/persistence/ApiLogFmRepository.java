@@ -3,9 +3,9 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.Projections;
-import tech.wetech.flexmodel.codegen.dao.ApiLogDAO;
-import tech.wetech.flexmodel.codegen.entity.ApiLog;
-import tech.wetech.flexmodel.domain.model.api.ApiLogRepository;
+import tech.wetech.flexmodel.codegen.dao.ApiRequestLogDAO;
+import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
+import tech.wetech.flexmodel.domain.model.api.ApiRequestLogRepository;
 import tech.wetech.flexmodel.domain.model.api.LogApiRank;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 import tech.wetech.flexmodel.dsl.Predicate;
@@ -20,14 +20,14 @@ import static tech.wetech.flexmodel.Projections.field;
  * @author cjbi
  */
 @ApplicationScoped
-public class ApiLogFmRepository implements ApiLogRepository {
+public class ApiLogFmRepository implements ApiRequestLogRepository {
 
   @Inject
-  ApiLogDAO apiLogDAO;
+  ApiRequestLogDAO apiRequestLogDAO;
 
   @Override
-  public List<ApiLog> find(Predicate filter, Integer current, Integer pageSize) {
-    return apiLogDAO.find(query -> {
+  public List<ApiRequestLog> find(Predicate filter, Integer current, Integer pageSize) {
+    return apiRequestLogDAO.find(query -> {
       if (filter != null) {
         query.withFilter(filter);
       }
@@ -42,10 +42,10 @@ public class ApiLogFmRepository implements ApiLogRepository {
 
   @Override
   public List<LogStat> stat(Predicate filter) {
-    return apiLogDAO.find(query ->
+    return apiRequestLogDAO.find(query ->
       query
         .withProjection(projection -> projection
-          .addField("date", dateFormat(field("createdAt"), "yyyy-MM-dd hh:00:00"))
+          .addField("date", dateFormat(field("created_at"), "yyyy-MM-dd hh:00:00"))
           .addField("total", Projections.count(field("id")))
         )
         .withGroupBy(groupBy -> groupBy
@@ -56,14 +56,14 @@ public class ApiLogFmRepository implements ApiLogRepository {
 
   @Override
   public List<LogApiRank> ranking(Predicate filter) {
-    return apiLogDAO.find(query ->
+    return apiRequestLogDAO.find(query ->
       query
         .withProjection(projection -> projection
-          .addField("name", field("uri"))
+          .addField("name", field("endpoint"))
           .addField("total", Projections.count(field("id")))
         )
         .withGroupBy(groupBy -> groupBy
-          .addField("uri")
+          .addField("endpoint")
         )
         .withPage(p -> p.setPageSize(20))
         .withSort(s -> s.addOrder("total", DESC))
@@ -71,18 +71,18 @@ public class ApiLogFmRepository implements ApiLogRepository {
   }
 
   @Override
-  public ApiLog save(ApiLog record) {
-    return apiLogDAO.save(record);
+  public ApiRequestLog save(ApiRequestLog record) {
+    return apiRequestLogDAO.save(record);
   }
 
   @Override
   public void delete(Predicate unaryOperator) {
-    apiLogDAO.delete(unaryOperator);
+    apiRequestLogDAO.delete(unaryOperator);
   }
 
   @Override
   public long count(Predicate filter) {
-    return apiLogDAO.count(filter);
+    return apiRequestLogDAO.count(filter);
   }
 
 }

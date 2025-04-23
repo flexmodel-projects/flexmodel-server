@@ -14,9 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
-import tech.wetech.flexmodel.codegen.entity.ApiLog;
-import tech.wetech.flexmodel.codegen.enumeration.LogLevel;
-import tech.wetech.flexmodel.domain.model.api.*;
+import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
+import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
+import tech.wetech.flexmodel.domain.model.api.ApiLogRequestService;
+import tech.wetech.flexmodel.domain.model.api.ApiRateLimiterHolder;
+import tech.wetech.flexmodel.domain.model.api.LogStat;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
@@ -26,7 +28,6 @@ import tech.wetech.flexmodel.dsl.Expressions;
 import tech.wetech.flexmodel.dsl.Predicate;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.infrastructrue.SettingsEventConsumer;
-import tech.wetech.flexmodel.util.CollectionUtils;
 import tech.wetech.flexmodel.util.JsonUtils;
 import tech.wetech.flexmodel.util.PatternMatchUtils;
 import tech.wetech.flexmodel.util.UriTemplate;
@@ -37,10 +38,13 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static graphql.ExecutionInput.newExecutionInput;
-import static tech.wetech.flexmodel.codegen.System.apiLog;
+import static tech.wetech.flexmodel.codegen.System.apiRequestLog;
 
 /**
  * @author cjbi
@@ -57,7 +61,7 @@ public class ApiRuntimeApplicationService {
   IdentityProviderService identityProviderService;
 
   @Inject
-  ApiLogService apiLogService;
+  ApiLogRequestService apiLogService;
 
   @Inject
   ModelService modelService;
@@ -77,26 +81,26 @@ public class ApiRuntimeApplicationService {
   @Inject
   FlexmodelConfig config;
 
-  public PageDTO<ApiLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Set<LogLevel> levels) {
-    List<ApiLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, levels), current, pageSize);
-    long total = apiLogService.count(getCondition(keyword, startDate, endDate, levels));
+  public PageDTO<ApiRequestLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isError) {
+    List<ApiRequestLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, isError), current, pageSize);
+    long total = apiLogService.count(getCondition(keyword, startDate, endDate, isError));
     return new PageDTO<>(list, total);
   }
 
-  public List<LogStat> stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Set<LogLevel> levels) {
-    return apiLogService.stat(getCondition(keyword, startDate, endDate, levels));
+  public List<LogStat> stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isError) {
+    return apiLogService.stat(getCondition(keyword, startDate, endDate, isError));
   }
 
-  private static Predicate getCondition(String keyword, LocalDateTime startDate, LocalDateTime endDate, Set<LogLevel> levels) {
+  private static Predicate getCondition(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isError) {
     Predicate condition = Expressions.TRUE;
     if (keyword != null) {
-      condition = condition.and(apiLog.data.contains(keyword));
+      condition = condition.and(apiRequestLog.requestBody.contains(keyword));
     }
     if (startDate != null && endDate != null) {
-      condition = condition.and(apiLog.createdAt.between(startDate, endDate));
+      condition = condition.and(apiRequestLog.createdAt.between(startDate, endDate));
     }
-    if (!CollectionUtils.isEmpty(levels)) {
-      condition = condition.and(apiLog.level.in(levels));
+    if (isError != null) {
+      condition = condition.and(apiRequestLog.isError.eq(isError));
     }
     return condition;
   }
@@ -351,33 +355,21 @@ public class ApiRuntimeApplicationService {
   }
 
   public void log(RoutingContext routingContext, Runnable runnable) {
-    ApiLog apiLog = new ApiLog();
-    apiLog.setLevel(LogLevel.INFO);
-    LogData apiData = new LogData();
-    apiLog.setData(apiData);
+    ApiRequestLog apiLog = new ApiRequestLog();
     long beginTime = System.currentTimeMillis();
     try {
-      apiData.setMethod(routingContext.request().method().name());
-      apiData.setPath(routingContext.request().path());
-//      apiData.setReferer(routingContext.request().getHeader("Referer"));
-      Map<String,Object> request = new HashMap<>();
-      request.put("headers", routingContext.request().headers());
-      apiData.setRequest(request);
-      apiData.setRemoteIp(routingContext.request().remoteAddress().host());
-//      apiData.setUserAgent(routingContext.request().getHeader("User-Agent"));
+      apiLog.setHttpMethod(routingContext.request().method().name());
+      apiLog.setEndpoint(routingContext.request().absoluteURI());
+      apiLog.setRequestHeaders(routingContext.request().headers());
+      apiLog.setClientIp(routingContext.request().remoteAddress().host());
       runnable.run();
     } catch (Exception e) {
-      routingContext.response()
-        .setStatusCode(500);
-      apiLog.setLevel(LogLevel.ERROR);
-      apiData.setStatus(500);
-      apiData.setErrors(e.getMessage());
+      apiLog.setIsError(true);
+      apiLog.setErrorMessage(JsonUtils.getInstance().stringify(e));
       throw e;
     } finally {
-      apiLog.setUri(apiData.getMethod() + " " + apiData.getPath());
-      apiData.setStatus(routingContext.response().getStatusCode());
-      apiData.setMessage(routingContext.response().getStatusMessage());
-      apiData.setExecTime(System.currentTimeMillis() - beginTime);
+      apiLog.setStatusCode(routingContext.response().getStatusCode());
+      apiLog.setResponseTime((int) (System.currentTimeMillis() - beginTime));
       eventBus.publish("request.logging", apiLog);
     }
 

@@ -7,18 +7,13 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
-import tech.wetech.flexmodel.codegen.entity.ApiLog;
-import tech.wetech.flexmodel.codegen.enumeration.LogLevel;
-import tech.wetech.flexmodel.domain.model.api.ApiLogService;
-import tech.wetech.flexmodel.domain.model.api.LogData;
+import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
+import tech.wetech.flexmodel.domain.model.api.ApiLogRequestService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
-import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -29,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class LogFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
   @Inject
-  ApiLogService apiLogService;
+  ApiLogRequestService apiLogService;
 
   @Inject
   SettingsService settingsService;
@@ -70,32 +65,18 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
   }
 
   private void saveLog(ContainerRequestContext requestContext, ContainerResponseContext responseContext, long execTime) {
-    ApiLog apiLog = new ApiLog();
-    LogData apiData = new LogData();
-    apiLog.setData(apiData);
-    apiData.setMethod(requestContext.getMethod());
-    apiData.setPath(requestContext.getUriInfo().getPath());
-    apiData.setUrl(requestContext.getUriInfo().getRequestUri().toString());
+    ApiRequestLog apiLog = new ApiRequestLog();
+    apiLog.setHttpMethod(requestContext.getMethod());
+    apiLog.setEndpoint(requestContext.getUriInfo().getRequestUri().toString());
+    apiLog.setRequestHeaders(requestContext.getHeaders());
+    apiLog.setRequestBody(requestContext.getProperty("requestBody"));
 //      apiData.setRemoteIp(null);
     int statusCode = responseContext.getStatus();
-    String reasonPhrase = responseContext.getStatusInfo().getReasonPhrase();
-    apiData.setStatus(statusCode);
-    apiData.setMessage(reasonPhrase);
-    apiLog.setLevel(LogLevel.INFO);
-    Map<String, Object> request = new HashMap<>();
-    apiData.setRequest(request);
-    request.put("headers", requestContext.getHeaders());
-    request.put("body", requestContext.getProperty("requestBody"));
-
-    if (statusCode >= 400 && statusCode < 500) {
-      apiLog.setLevel(LogLevel.WARN);
-      apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
-    } else if (statusCode >= 500) {
-      apiLog.setLevel(LogLevel.ERROR);
-      apiData.setErrors(JsonUtils.getInstance().stringify(responseContext.getEntity()));
+    apiLog.setStatusCode(statusCode);
+    if (statusCode >= 500) {
+      apiLog.setIsError(true);
     }
-    apiData.setExecTime(execTime);
-    apiLog.setUri(apiData.getMethod() + " " + apiData.getPath());
+    apiLog.setResponseTime((int) execTime);
     apiLogService.create(apiLog);
   }
 }

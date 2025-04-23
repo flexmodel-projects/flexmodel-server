@@ -14,17 +14,12 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
 import tech.wetech.flexmodel.application.dto.PageDTO;
-import tech.wetech.flexmodel.codegen.StringUtils;
-import tech.wetech.flexmodel.codegen.entity.ApiLog;
-import tech.wetech.flexmodel.codegen.enumeration.LogLevel;
+import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static tech.wetech.flexmodel.api.Resources.ROOT_PATH;
 
@@ -61,14 +56,14 @@ public class ApiLogResource {
     })
   @Operation(summary = "获取接口日志列表")
   @GET
-  public PageDTO<ApiLog> findApiLogs(@QueryParam("current") @DefaultValue("1") int current,
-                                     @QueryParam("pageSize") @DefaultValue("50") int pageSize,
-                                     @QueryParam("keyword") String keyword,
-                                     @QueryParam("dateRange") String dateRange,
-                                     @QueryParam("level") String levelStr
+  public PageDTO<ApiRequestLog> findApiLogs(@QueryParam("current") @DefaultValue("1") int current,
+                                            @QueryParam("pageSize") @DefaultValue("50") int pageSize,
+                                            @QueryParam("keyword") String keyword,
+                                            @QueryParam("dateRange") String dateRange,
+                                            @QueryParam("isError") Boolean isError
   ) {
-    RequestResult result = parseQuery(dateRange, levelStr);
-    return apiRuntimeApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), result.levels());
+    RequestResult result = parseQuery(dateRange, isError);
+    return apiRuntimeApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), isError);
   }
 
   @Parameter(name = "keyword", description = "关键字", in = ParameterIn.QUERY)
@@ -90,15 +85,14 @@ public class ApiLogResource {
   @Path("/stat")
   public List<LogStat> stat(@QueryParam("keyword") String keyword,
                             @QueryParam("dateRange") String dateRange,
-                            @QueryParam("level") String levelStr) {
-    RequestResult result = parseQuery(dateRange, levelStr);
-    return apiRuntimeApplicationService.stat(keyword, result.startDate(), result.endDate(), result.levels());
+                            @QueryParam("isError") Boolean isError) {
+    RequestResult result = parseQuery(dateRange, isError);
+    return apiRuntimeApplicationService.stat(keyword, result.startDate(), result.endDate(), isError);
   }
 
-  private static RequestResult parseQuery(String dateRange, String levelStr) {
+  private static RequestResult parseQuery(String dateRange, Boolean isError) {
     LocalDateTime startDate = null;
     LocalDateTime endDate = null;
-    Set<LogLevel> levels = null;
     if (dateRange != null) {
       try {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -110,13 +104,10 @@ public class ApiLogResource {
         endDate = null;
       }
     }
-    if (!StringUtils.isBlank(levelStr)) {
-      levels = Stream.of(levelStr.split(",")).map(LogLevel::valueOf).collect(Collectors.toSet());
-    }
-    return new RequestResult(startDate, endDate, levels);
+    return new RequestResult(startDate, endDate, isError);
   }
 
-  private record RequestResult(LocalDateTime startDate, LocalDateTime endDate, Set<LogLevel> levels) {
+  private record RequestResult(LocalDateTime startDate, LocalDateTime endDate, Boolean isError) {
   }
 
   @Schema(
@@ -140,7 +131,7 @@ public class ApiLogResource {
       @SchemaProperty(name = "data", description = "数据"),
     }
   )
-  public static class ApiLogSchema extends ApiLog {
+  public static class ApiLogSchema extends ApiRequestLog {
   }
 
 
