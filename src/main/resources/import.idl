@@ -28,8 +28,9 @@ model fs_api_definition {
 //}
 model fs_api_request_log {
   id : String @id @default(ulid()),
+  url : String @length("2000") @comment("请求地址"),
   http_method: String @length("255") @comment("请求方法"),
-  endpoint : String @length("2000") @comment("请求地址"),
+  path: String @length("1000") @comment("请求路径"),
   request_body : JSON @comment("请求参数"),
   request_headers: JSON @comment("请求头"),
   status_code : Int,

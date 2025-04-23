@@ -359,7 +359,8 @@ public class ApiRuntimeApplicationService {
     long beginTime = System.currentTimeMillis();
     try {
       apiLog.setHttpMethod(routingContext.request().method().name());
-      apiLog.setEndpoint(routingContext.request().absoluteURI());
+      apiLog.setUrl(routingContext.request().uri());
+      apiLog.setPath(routingContext.request().path());
       apiLog.setRequestHeaders(routingContext.request().headers());
       apiLog.setClientIp(routingContext.request().remoteAddress().host());
       runnable.run();
