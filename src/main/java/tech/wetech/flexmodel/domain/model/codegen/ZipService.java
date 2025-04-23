@@ -26,13 +26,11 @@ public class ZipService {
       Files.walk(sourceDir)
         .forEach(path -> {
           Path rel = sourceDir.relativize(path);
-          String entryName = rel.toString().replace(File.separatorChar, '/')
-                             + (Files.isDirectory(path) ? "/" : "");
-          if (entryName.isEmpty()) {
-            return;
-          }
+          String entryName = "simple/" + rel.toString().replace(File.separatorChar, '/')
+                             + (Files.isDirectory(path) ? "/" : "")
+                               .replace("//", "/");
           try {
-            zipOut.putNextEntry(new ZipEntry("simple/" + entryName));
+            zipOut.putNextEntry(new ZipEntry(entryName));
             if (Files.isRegularFile(path)) {
               Files.copy(path, zipOut);
             }
