@@ -74,6 +74,11 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
 //      apiData.setRemoteIp(null);
     int statusCode = responseContext.getStatus();
     apiLog.setStatusCode(statusCode);
+    String ipAddress = requestContext.getHeaderString("X-Forwarded-For");
+    if (ipAddress == null) {
+      ipAddress = requestContext.getUriInfo().getRequestUri().getHost(); // 或者使用其他方式获取 IP 地址
+    }
+    apiLog.setClientIp(ipAddress);
     if (statusCode >= 500) {
       apiLog.setIsSuccess(false);
     }
