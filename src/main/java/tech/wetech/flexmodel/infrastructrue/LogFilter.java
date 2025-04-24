@@ -68,7 +68,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     ApiRequestLog apiLog = new ApiRequestLog();
     apiLog.setHttpMethod(requestContext.getMethod());
     apiLog.setUrl(requestContext.getUriInfo().getRequestUri().toString());
-    apiLog.setPath(requestContext.getUriInfo().getPath());
+    apiLog.setPath(apiLog.getHttpMethod() + " " + requestContext.getUriInfo().getPath());
     apiLog.setRequestHeaders(requestContext.getHeaders());
     apiLog.setRequestBody(requestContext.getProperty("requestBody"));
 //      apiData.setRemoteIp(null);

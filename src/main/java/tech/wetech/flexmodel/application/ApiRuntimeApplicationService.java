@@ -360,7 +360,7 @@ public class ApiRuntimeApplicationService {
     try {
       apiLog.setHttpMethod(routingContext.request().method().name());
       apiLog.setUrl(routingContext.request().uri());
-      apiLog.setPath(routingContext.request().path());
+      apiLog.setPath(apiLog.getHttpMethod() +" "+ routingContext.request().path());
       apiLog.setRequestHeaders(routingContext.request().headers());
       apiLog.setClientIp(routingContext.request().remoteAddress().host());
       runnable.run();
