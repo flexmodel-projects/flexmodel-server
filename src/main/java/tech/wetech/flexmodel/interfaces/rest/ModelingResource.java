@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.interfaces.rest;
 
-import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -29,7 +28,6 @@ import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
 @Path(ROOT_PATH + "/datasources/{datasourceName}/models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Authenticated
 public class ModelingResource {
 
   @Parameter(name = "datasourceName", description = "数据源名称", in = ParameterIn.PATH)

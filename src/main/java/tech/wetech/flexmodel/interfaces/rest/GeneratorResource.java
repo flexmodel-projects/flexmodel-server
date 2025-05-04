@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.interfaces.rest;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -28,6 +29,7 @@ public class GeneratorResource {
 
   @GET
   @Path("/{datasource}_{model}.zip")
+  @PermitAll
   public Response generate(@PathParam("datasource") String ds, @PathParam("model") String model) throws Exception {
     try {
       java.nio.file.Path codeDir = codeGenerationService.generateCode(ds);

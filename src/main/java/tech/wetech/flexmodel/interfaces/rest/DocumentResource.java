@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.interfaces.rest;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -29,6 +30,7 @@ public class DocumentResource {
   @Operation(summary = "获取接口文档")
   @GET
   @Path("/openapi.json")
+  @PermitAll
   public Map<String, Object> getOpenApi() {
     return documentApplicationService.getOpenApi();
   }
