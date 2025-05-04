@@ -93,6 +93,16 @@ model Course {
   courseName? : String @length("255"),
   @index(name:"IDX_COURSE_NO", unique: "false", fields: [courseNo]),
 }
+model fs_user {
+    id : String @id @default(ulid()),
+    username : String @length("255") @comment("用户名"),
+    avatar? : String @length("255") @comment("头像"),
+    password_hash : String @length("255") @comment("密码HASH"),
+    created_at : DateTime @default(now()) @comment("创建时间"),
+    updated_at : DateTime @default(now()) @comment("更新时间"),
+    @index(name:"IDX_USERNAME", unique: "true", fields: [username]),
+    @comment("用户")
+}
 enum ApiType {
   FOLDER,
   API

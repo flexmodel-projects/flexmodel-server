@@ -1,1 +1,1 @@
-tech.wetech.flexmodel.infrastructrue.jackson.FlexmodelServerModule
+tech.wetech.flexmodel.interfaces.rest.json.jackson.FlexmodelServerModule
