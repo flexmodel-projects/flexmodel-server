@@ -21,14 +21,13 @@ public class ZipService {
   /**
    * 将目录下所有文件打包为 ZIP，写入 outputStream。
    */
-  public void zipDirectory(Path sourceDir, OutputStream outputStream) throws IOException {
+  public void zipDirectory(String name, Path sourceDir, OutputStream outputStream) throws IOException {
     try (ZipOutputStream zipOut = new ZipOutputStream(outputStream)) {
       Files.walk(sourceDir)
         .forEach(path -> {
           Path rel = sourceDir.relativize(path);
-          String entryName = "simple/" + rel.toString().replace(File.separatorChar, '/')
-                             + (Files.isDirectory(path) ? "/" : "")
-                               .replace("//", "/");
+          String entryName = (name + "/" + rel.toString().replace(File.separatorChar, '/')
+                             + (Files.isDirectory(path) ? "/" : "")).replace("//", "/");
           try {
             zipOut.putNextEntry(new ZipEntry(entryName));
             if (Files.isRegularFile(path)) {

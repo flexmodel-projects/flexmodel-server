@@ -30,11 +30,11 @@ public class GeneratorResource {
   @GET
   @Path("/{datasource}_{model}.zip")
   @PermitAll
-  public Response generate(@PathParam("datasource") String ds, @PathParam("model") String model) throws Exception {
+  public Response generate(@PathParam("datasource") String datasource, @PathParam("model") String model) throws Exception {
     try {
-      java.nio.file.Path codeDir = codeGenerationService.generateCode(ds);
-      StreamingOutput stream = out -> zipService.zipDirectory(codeDir, out);
-      String fileName = ds + "_" + model + ".zip";
+      java.nio.file.Path codeDir = codeGenerationService.generateCode(datasource);
+      StreamingOutput stream = out -> zipService.zipDirectory(datasource + model, codeDir, out);
+      String fileName = datasource + "_" + model + ".zip";
       return Response.ok(stream)
         .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
         .build();
