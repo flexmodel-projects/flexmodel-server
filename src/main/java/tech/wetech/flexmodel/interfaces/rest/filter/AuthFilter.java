@@ -31,10 +31,10 @@ public class AuthFilter implements ContainerRequestFilter {
       if (permitAll == null) {
         String accessToken = Objects.toString(requestContext.getHeaderString("Authorization"), "").replaceFirst("Bearer ", "");
         if (accessToken.isEmpty()) {
-          throw new AuthException("token not found");
+          throw new AuthException("Token is missing");
         }
         if (!JwtUtil.verify(accessToken)) {
-          throw new AuthException("invalid token");
+          throw new AuthException("Invalid token");
         }
       }
     }

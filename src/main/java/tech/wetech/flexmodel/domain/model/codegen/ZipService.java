@@ -35,7 +35,7 @@ public class ZipService {
             }
             zipOut.closeEntry();
           } catch (IOException e) {
-            log.error("打包文件出错: {}", path, e);
+            log.error("An error occurred in packaging file : {}", path, e);
           }
         });
       zipOut.finish();
