@@ -1,6 +1,7 @@
 package tech.wetech.flexmodel.util;
 
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.code_templates.Example;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -9,9 +10,10 @@ import java.net.URL;
 import java.nio.file.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
+
 @Slf4j
 public class TemplatePathUtil {
-  private static final String TEMPLATE_ROOT = "templates/java_template";
+  private static final String TEMPLATE_ROOT = "templates/java_sample";
   // 缓存挂载的 FileSystem，避免重复打开
   private static final AtomicReference<FileSystem> zipFsRef = new AtomicReference<>();
 
@@ -21,7 +23,7 @@ public class TemplatePathUtil {
    * JAR 模式：挂载 ZIP FileSystem，再获取子目录 Path。
    */
   public static Path getTemplatePath() {
-    URL resUrl = TemplatePathUtil.class
+    URL resUrl = Example.class
       .getClassLoader()
       .getResource(TEMPLATE_ROOT);
     if (resUrl == null) {

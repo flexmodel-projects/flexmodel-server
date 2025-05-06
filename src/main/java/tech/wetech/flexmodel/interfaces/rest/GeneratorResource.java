@@ -33,8 +33,8 @@ public class GeneratorResource {
   public Response generate(@PathParam("datasource") String datasource, @PathParam("model") String model) throws Exception {
     try {
       java.nio.file.Path codeDir = codeGenerationService.generateCode(datasource);
-      StreamingOutput stream = out -> zipService.zipDirectory(datasource + model, codeDir, out);
-      String fileName = datasource + "_" + model + ".zip";
+      StreamingOutput stream = out -> zipService.zipDirectory(datasource, codeDir, out);
+      String fileName = datasource + ".zip";
       return Response.ok(stream)
         .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
         .build();

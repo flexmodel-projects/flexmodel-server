@@ -66,6 +66,11 @@
     </dependency>
     <dependency>
       <groupId>tech.wetech.flexmodel</groupId>
+      <artifactId>flexmodel-code-templates</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>tech.wetech.flexmodel</groupId>
       <artifactId>flexmodel-ui</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
