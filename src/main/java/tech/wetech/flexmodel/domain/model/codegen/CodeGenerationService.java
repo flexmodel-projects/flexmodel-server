@@ -12,7 +12,6 @@ import tech.wetech.flexmodel.codegen.GenerationContext;
 import tech.wetech.flexmodel.codegen.ModelClass;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.util.JsonUtils;
-import tech.wetech.flexmodel.util.TemplatePathUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,17 +33,24 @@ public class CodeGenerationService {
   @Inject
   ModelService modelService;
 
+  @Inject
+  TemplateProvider templateProvider;
+
   GroovyClassLoader loader = new GroovyClassLoader();
+
+  public List<String> getTemplates() {
+    return templateProvider.getTemplateNames();
+  }
 
   /**
    * 根据 datasource 和 modelName，生成代码到临时目录并返回根路径。
    */
-  public Path generateCode(String datasourceName) {
+  public Path generateCode(String datasourceName, String templateName, Map<String, Object> variables) {
     List<File> outputFiles = new ArrayList<>();
     try {
-      GenerationContext ctx = buildContext(datasourceName);
+      GenerationContext ctx = buildContext(datasourceName, variables);
       java.nio.file.Path targetPath = Paths.get(System.getProperty("java.io.tmpdir"), "codegen", "" + System.currentTimeMillis());
-      Path templateDir = TemplatePathUtil.getTemplatePath();
+      Path templateDir = templateProvider.getTemplatePath(templateName);
       outputFiles(loader, ctx, templateDir,
         templateDir.toString(), targetPath.toString(), outputFiles);
       return targetPath;
@@ -102,10 +108,11 @@ public class CodeGenerationService {
     }
   }
 
-  private GenerationContext buildContext(String datasource) {
+  private GenerationContext buildContext(String datasource, Map<String, Object> variables) {
     GenerationContext ctx = new GenerationContext();
     ctx.setSchemaName(datasource);
     ctx.setPackageName("com.example");  // 可再配置化
+    ctx.setVariables(variables);
     // 加载所有模型
     List<SchemaObject> models = modelService.findModels(datasource);
     models.forEach(m -> {

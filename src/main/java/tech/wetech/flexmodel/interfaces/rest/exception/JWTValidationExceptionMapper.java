@@ -18,7 +18,6 @@ public class JWTValidationExceptionMapper implements ExceptionMapper<JWTVerifica
 
   @Override
   public Response toResponse(JWTVerificationException e) {
-    log.error("Handle exception, message={}", e.getMessage(), e);
     return getDefaultResponse(e);
   }
 
