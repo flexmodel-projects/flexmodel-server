@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @ToString
 public class UserinfoResponse {
-  private String accessToken;
+  private String token;
   private UserResponse user;
   private Settings settings;
   private List<String> permissions = List.of("*");

@@ -115,7 +115,7 @@ public class AuthResource {
       }
     }
     UserinfoResponse userinfo = new UserinfoResponse();
-    userinfo.setAccessToken(accessToken);
+    userinfo.setToken(accessToken);
     userinfo.setUser(new UserinfoResponse.UserResponse(user.getId(), user.getUsername(), user.getAvatar()));
     userinfo.setSettings(settingsApplicationService.getSettings());
     return userinfo;
