@@ -88,7 +88,7 @@ public class ApiRuntimeApplicationService {
   }
 
   public List<LogStat> stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
-    return apiLogService.stat(getCondition(keyword, startDate, endDate, isSuccess));
+    return apiLogService.stat(getCondition(keyword, startDate, endDate, isSuccess),"yyyy-MM-dd HH:00:00");
   }
 
   private static Predicate getCondition(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {

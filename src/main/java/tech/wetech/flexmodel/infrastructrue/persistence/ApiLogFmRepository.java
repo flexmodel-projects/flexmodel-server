@@ -41,11 +41,11 @@ public class ApiLogFmRepository implements ApiRequestLogRepository {
 
 
   @Override
-  public List<LogStat> stat(Predicate filter) {
+  public List<LogStat> stat(Predicate filter,String fmt) {
     return apiRequestLogDAO.find(query ->
       query
         .withProjection(projection -> projection
-          .addField("date", dateFormat(field("created_at"), "yyyy-MM-dd hh:00:00"))
+          .addField("date", dateFormat(field("created_at"), fmt))
           .addField("total", Projections.count(field("id")))
         )
         .withGroupBy(groupBy -> groupBy

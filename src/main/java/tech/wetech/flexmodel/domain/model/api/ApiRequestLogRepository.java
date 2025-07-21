@@ -12,7 +12,7 @@ public interface ApiRequestLogRepository {
 
   List<ApiRequestLog> find(Predicate filter, Integer current, Integer pageSize);
 
-  List<LogStat> stat(Predicate filter);
+  List<LogStat> stat(Predicate filter,String fmt);
 
   List<LogApiRank> ranking(Predicate filter);
 

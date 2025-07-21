@@ -3,6 +3,7 @@ package tech.wetech.flexmodel.domain.model.modeling;
 import tech.wetech.flexmodel.Index;
 import tech.wetech.flexmodel.SchemaObject;
 import tech.wetech.flexmodel.TypedField;
+import tech.wetech.flexmodel.parser.impl.ParseException;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,4 +37,6 @@ public interface ModelRepository {
   List<SchemaObject>  syncModels(String datasourceName, Set<String> modelName);
 
   void importModels(String datasourceName, String script, String type);
+
+  List<SchemaObject> executeIdl(String datasourceName, String idl) throws ParseException;
 }

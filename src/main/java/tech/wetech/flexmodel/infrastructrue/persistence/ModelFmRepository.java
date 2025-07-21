@@ -2,20 +2,20 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.*;
+import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.domain.model.modeling.ModelRepository;
 import tech.wetech.flexmodel.dsl.Predicate;
 import tech.wetech.flexmodel.infrastructrue.FmEngineSessions;
+import tech.wetech.flexmodel.parser.ASTNodeConverter;
+import tech.wetech.flexmodel.parser.impl.ModelParser;
 import tech.wetech.flexmodel.parser.impl.ParseException;
 import tech.wetech.flexmodel.util.JsonUtils;
 
+import java.io.StringReader;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -226,5 +226,26 @@ public class ModelFmRepository implements ModelRepository {
     } else {
       throw new RuntimeException("Unsupported type");
     }
+  }
+
+  @Override
+  public List<SchemaObject> executeIdl(String datasourceName, String idlString) throws ParseException {
+    ModelParser parser = new ModelParser(new StringReader(idlString));
+    List<ModelParser.ASTNode> ast = parser.CompilationUnit();
+    List<SchemaObject> schema = new ArrayList<>();
+    for (ModelParser.ASTNode obj : ast) {
+      schema.add(ASTNodeConverter.toSchemaObject(obj));
+    }
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      for (SchemaObject object : schema) {
+        if (object instanceof Entity entity) {
+          session.createEntity(entity);
+        }
+        if (object instanceof Enum anEnum) {
+          session.createEnum(anEnum);
+        }
+      }
+    }
+    return schema;
   }
 }

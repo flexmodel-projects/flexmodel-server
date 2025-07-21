@@ -14,8 +14,8 @@ public class UserService {
   UserRepository userRepository;
 
   public User login(String username, String password) {
-    User user = userRepository.findByUsername("admin");
-    if (user == null || !validateUser("admin","admin123456", user)) {
+    User user = userRepository.findByUsername(username);
+    if (user == null || !validateUser(username, password, user)) {
       throw new AuthException("Wrong username or password");
     }
     return user;

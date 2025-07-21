@@ -33,8 +33,8 @@ public class ApiLogRequestService {
     return apiLogRepository.count(filter);
   }
 
-  public List<LogStat> stat(Predicate filter) {
-    return apiLogRepository.stat(filter);
+  public List<LogStat> stat(Predicate filter, String fmt) {
+    return apiLogRepository.stat(filter, fmt);
   }
 
   public List<LogApiRank> ranking(Predicate filter) {

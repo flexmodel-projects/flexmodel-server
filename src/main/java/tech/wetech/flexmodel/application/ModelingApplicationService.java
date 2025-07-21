@@ -2,13 +2,14 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.*;
+import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
+import tech.wetech.flexmodel.parser.impl.ParseException;
 
 import java.util.List;
 import java.util.Map;
@@ -115,5 +116,9 @@ public class ModelingApplicationService {
 
   public SchemaObject findModel(String datasourceName, String modelName) {
     return modelService.findModel(datasourceName, modelName).orElseThrow(() -> new RuntimeException("Model not found"));
+  }
+
+  public List<SchemaObject> executeIdl(String datasourceName, String idl) throws ParseException {
+    return modelService.executeIdl(datasourceName, idl);
   }
 }

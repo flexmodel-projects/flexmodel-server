@@ -13,8 +13,8 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.*;
+import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 
 import java.util.List;
@@ -196,6 +196,16 @@ public class ModelingResource {
   public SchemaObject createModel(
     SchemaObject model) {
     return modelingApplicationService.createModel(datasourceName, model);
+  }
+
+  @POST
+  @Path("/idl/execute")
+  public List<SchemaObject> executeIdl(IdlRequest request) {
+    try {
+      return modelingApplicationService.executeIdl(datasourceName, request.idl());
+    } catch (Exception e) {
+      throw new RuntimeException("IDL格式有误: " + e.getMessage());
+    }
   }
 
   @RequestBody(
@@ -422,6 +432,10 @@ public class ModelingResource {
     modelingApplicationService.dropIndex(datasourceName, modelName, indexName);
   }
 
+
+  public record IdlRequest(String idl) {
+
+  }
 
   @Schema(
     description = "索引，更多信息见Schema定义文档",
