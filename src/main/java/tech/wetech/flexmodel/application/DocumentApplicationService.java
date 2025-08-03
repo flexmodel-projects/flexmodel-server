@@ -6,10 +6,7 @@ import graphql.schema.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import tech.wetech.flexmodel.Entity;
 import tech.wetech.flexmodel.FlexmodelConfig;
-import tech.wetech.flexmodel.RelationField;
-import tech.wetech.flexmodel.TypedField;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
@@ -17,12 +14,15 @@ import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
+import tech.wetech.flexmodel.model.EntityDefinition;
+import tech.wetech.flexmodel.model.field.RelationField;
+import tech.wetech.flexmodel.model.field.ScalarType;
+import tech.wetech.flexmodel.model.field.TypedField;
 import tech.wetech.flexmodel.util.UriTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static tech.wetech.flexmodel.ScalarType.*;
 import static tech.wetech.flexmodel.codegen.StringUtils.*;
 
 /**
@@ -223,14 +223,14 @@ public class DocumentApplicationService {
 
   private String addModelDefinition(String datasourceName, String modelName, Map<String, Object> definitions) {
     Map<String, Object> typeMapping = new HashMap<>();
-    typeMapping.put(STRING.getType(), Map.of("type", "string"));
-    typeMapping.put(INT.getType(), Map.of("type", "integer", "format", "int32"));
-    typeMapping.put(LONG.getType(), Map.of("type", "integer", "format", "int64"));
-    typeMapping.put(FLOAT.getType(), Map.of("type", "number", "format", "double"));
-    typeMapping.put(BOOLEAN.getType(), Map.of("type", "boolean"));
+    typeMapping.put(ScalarType.STRING.getType(), Map.of("type", "string"));
+    typeMapping.put(ScalarType.INT.getType(), Map.of("type", "integer", "format", "int32"));
+    typeMapping.put(ScalarType.LONG.getType(), Map.of("type", "integer", "format", "int64"));
+    typeMapping.put(ScalarType.FLOAT.getType(), Map.of("type", "number", "format", "double"));
+    typeMapping.put(ScalarType.BOOLEAN.getType(), Map.of("type", "boolean"));
 //    typeMapping.put("", Map.of("type", "array"));
-    typeMapping.put(JSON.getType(), Map.of("type", "object"));
-    Entity entity = (Entity) modelService.findModel(datasourceName, modelName).orElseThrow();
+    typeMapping.put(ScalarType.JSON.getType(), Map.of("type", "object"));
+    EntityDefinition entity = (EntityDefinition) modelService.findModel(datasourceName, modelName).orElseThrow();
     if (entity == null) {
       return null;
     }

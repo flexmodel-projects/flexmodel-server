@@ -19,6 +19,4 @@ public interface ApiDefinitionRepository {
 
   void delete(String id);
 
-  void updateIgnoreNull(String id, ApiDefinition apiDefinition);
-
 }

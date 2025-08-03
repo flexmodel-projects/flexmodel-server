@@ -4,7 +4,7 @@ import tech.wetech.flexmodel.codegen.AbstractGenerator
 import tech.wetech.flexmodel.codegen.GenerationContext
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition
 
-import static tech.wetech.flexmodel.ScalarType.*
+import static tech.wetech.flexmodel.model.field.ScalarType.*
 
 /**
  * @author cjbi

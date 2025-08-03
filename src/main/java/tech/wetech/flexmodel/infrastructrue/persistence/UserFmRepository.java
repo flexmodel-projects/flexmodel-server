@@ -2,11 +2,11 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import tech.wetech.flexmodel.codegen.dao.UserDAO;
 import tech.wetech.flexmodel.codegen.entity.User;
 import tech.wetech.flexmodel.domain.model.auth.UserRepository;
+import tech.wetech.flexmodel.session.Session;
 
-import static tech.wetech.flexmodel.codegen.System.user;
+import static tech.wetech.flexmodel.query.expr.Expressions.field;
 
 /**
  * @author cjbi
@@ -15,15 +15,23 @@ import static tech.wetech.flexmodel.codegen.System.user;
 public class UserFmRepository implements UserRepository {
 
   @Inject
-  UserDAO userDAO;
+  Session session;
 
   @Override
   public User findByUsername(String username) {
-    return userDAO.find(user.username.eq(username)).stream().findFirst().orElse(null);
+    return session.dsl()
+      .select()
+      .from(User.class)
+      .where(field(User::getUsername).eq(username))
+      .executeOne();
   }
 
   @Override
   public User findById(String userId) {
-    return userDAO.findById(userId);
+    return session.dsl()
+      .select()
+      .from(User.class)
+      .where(field(User::getId).eq(userId))
+      .executeOne();
   }
 }

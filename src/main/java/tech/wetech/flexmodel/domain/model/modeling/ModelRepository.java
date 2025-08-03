@@ -1,8 +1,8 @@
 package tech.wetech.flexmodel.domain.model.modeling;
 
-import tech.wetech.flexmodel.Index;
-import tech.wetech.flexmodel.SchemaObject;
-import tech.wetech.flexmodel.TypedField;
+import tech.wetech.flexmodel.model.IndexDefinition;
+import tech.wetech.flexmodel.model.SchemaObject;
+import tech.wetech.flexmodel.model.field.TypedField;
 import tech.wetech.flexmodel.parser.impl.ParseException;
 
 import java.util.List;
@@ -16,8 +16,6 @@ public interface ModelRepository {
 
   List<SchemaObject> findAll(String datasourceName);
 
-  List<SchemaObject> findModels(String datasourceName);
-
   Optional<SchemaObject> findModel(String datasourceName, String modelName);
 
   SchemaObject createModel(String datasourceName, SchemaObject model);
@@ -30,11 +28,11 @@ public interface ModelRepository {
 
   void dropField(String datasourceName, String modelName, String fieldName);
 
-  Index createIndex(String datasourceName, Index index);
+  IndexDefinition createIndex(String datasourceName, IndexDefinition index);
 
   void dropIndex(String datasourceName, String modelName, String indexName);
 
-  List<SchemaObject>  syncModels(String datasourceName, Set<String> modelName);
+  List<SchemaObject> syncModels(String datasourceName, Set<String> modelName);
 
   void importModels(String datasourceName, String script, String type);
 

@@ -3,6 +3,7 @@ package tech.wetech.flexmodel
 import tech.wetech.flexmodel.codegen.GenerationContext
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition
 import tech.wetech.flexmodel.codegen.enumeration.ApiType
+import tech.wetech.flexmodel.model.field.TypedField
 
 /**
  * @author cjbi

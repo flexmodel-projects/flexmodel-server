@@ -1,19 +1,19 @@
-package tech.wetech.flexmodel.infrastructrue;
+package tech.wetech.flexmodel.infrastructrue.session;
 
 import com.zaxxer.hikari.HikariDataSource;
-import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
-import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.FlexmodelConfig;
-import tech.wetech.flexmodel.SessionFactory;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
+import tech.wetech.flexmodel.session.SessionFactory;
+import tech.wetech.flexmodel.session.SessionManager;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 
 import java.util.List;
@@ -21,10 +21,9 @@ import java.util.List;
 /**
  * @author cjbi
  */
-@Dependent
-@Startup
+@ApplicationScoped
 @Slf4j
-public class FmEngineSessions {
+public class SessionConfig {
 
   public static final String SYSTEM_DS_KEY = "system";
 
@@ -33,15 +32,17 @@ public class FmEngineSessions {
                                 SessionFactory sessionFactory,
                                 DatasourceService datasourceService,
                                 GraphQLProvider graphQLProvider) {
+    long beginTime = System.currentTimeMillis();
     List<Datasource> datasourceList = datasourceService.findAll();
     for (Datasource datasource : datasourceList) {
       sessionDatasource.add(datasource);
     }
     graphQLProvider.init();
+    log.info("========== Engine init successful in {} ms!", System.currentTimeMillis() - beginTime);
   }
 
   @Produces
-  @Singleton
+  @ApplicationScoped
   public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig) {
     FlexmodelConfig.DatasourceConfig datasourceConfig = flexmodelConfig.datasources().get(SYSTEM_DS_KEY);
     HikariDataSource defaultDs = new HikariDataSource();
@@ -64,6 +65,16 @@ public class FmEngineSessions {
       builder.addDataSourceProvider(new JdbcDataSourceProvider(key, ds));
     });
     return builder.build();
+  }
+
+  /**
+   * 配置通用的SessionManager（可选）
+   * 如果不使用QuarkusSessionManager，可以使用这个
+   */
+  @Produces
+  @ApplicationScoped
+  public SessionManager sessionManager(SessionFactory sessionFactory) {
+    return new SessionManager(sessionFactory);
   }
 
   @Produces

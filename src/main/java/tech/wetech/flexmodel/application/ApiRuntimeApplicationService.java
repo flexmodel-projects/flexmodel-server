@@ -24,10 +24,10 @@ import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
-import tech.wetech.flexmodel.dsl.Expressions;
-import tech.wetech.flexmodel.dsl.Predicate;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.infrastructrue.SettingsEventConsumer;
+import tech.wetech.flexmodel.query.expr.Expressions;
+import tech.wetech.flexmodel.query.expr.Predicate;
 import tech.wetech.flexmodel.util.JsonUtils;
 import tech.wetech.flexmodel.util.PatternMatchUtils;
 import tech.wetech.flexmodel.util.UriTemplate;
@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static graphql.ExecutionInput.newExecutionInput;
-import static tech.wetech.flexmodel.codegen.System.apiRequestLog;
+import static tech.wetech.flexmodel.query.expr.Expressions.field;
 
 /**
  * @author cjbi
@@ -94,13 +94,13 @@ public class ApiRuntimeApplicationService {
   private static Predicate getCondition(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
     Predicate condition = Expressions.TRUE;
     if (keyword != null) {
-      condition = condition.and(apiRequestLog.requestBody.contains(keyword));
+      condition = condition.and(field(ApiRequestLog::getRequestBody).contains(keyword));
     }
     if (startDate != null && endDate != null) {
-      condition = condition.and(apiRequestLog.createdAt.between(startDate, endDate));
+      condition = condition.and(field(ApiRequestLog::getCreatedAt).between(startDate, endDate));
     }
     if (isSuccess != null) {
-      condition = condition.and(apiRequestLog.isSuccess.eq(isSuccess));
+      condition = condition.and(field(ApiRequestLog::getIsSuccess).eq(isSuccess));
     }
     return condition;
   }
@@ -154,7 +154,6 @@ public class ApiRuntimeApplicationService {
         Map execution = (Map) meta.get("execution");
         String operationName = (String) execution.get("operationName");
         String query = (String) execution.get("query");
-        String restAPIType = (String) meta.get("type");
         Map<String, Object> defaultVariables = (Map<String, Object>) execution.get("variables");
         Map<String, Object> variables = new HashMap<>();
         if (defaultVariables != null) {

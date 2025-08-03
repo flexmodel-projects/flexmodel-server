@@ -2,13 +2,13 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.codegen.dao.ApiDefinitionDAO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionRepository;
+import tech.wetech.flexmodel.session.Session;
 
 import java.util.List;
 
-import static tech.wetech.flexmodel.codegen.System.apiDefinition;
+import static tech.wetech.flexmodel.query.expr.Expressions.field;
 
 /**
  * @author cjbi
@@ -17,36 +17,44 @@ import static tech.wetech.flexmodel.codegen.System.apiDefinition;
 public class ApiDefinitionFmRepository implements ApiDefinitionRepository {
 
   @Inject
-  ApiDefinitionDAO apiDefinitionDAO;
+  Session session;
 
   @Override
   public void deleteByParentId(String parentId) {
-    apiDefinitionDAO.delete(apiDefinition.parentId.eq(parentId));
+    session.dsl()
+      .deleteFrom(ApiDefinition.class)
+      .where(field(ApiDefinition::getParentId).eq(parentId))
+      .execute();
   }
 
   @Override
   public ApiDefinition findById(String id) {
-    return apiDefinitionDAO.findById(id);
+    return session.dsl()
+      .select()
+      .from(ApiDefinition.class)
+      .where(field(ApiDefinition::getId).eq(id))
+      .executeOne();
   }
 
   @Override
   public List<ApiDefinition> findAll() {
-    return apiDefinitionDAO.findAll();
+    return session.dsl()
+      .select()
+      .from(ApiDefinition.class)
+      .execute();
   }
 
   @Override
   public ApiDefinition save(ApiDefinition record) {
-    return apiDefinitionDAO.save(record);
+    session.dsl().mergeInto(ApiDefinition.class).values(record);
+    return record;
   }
 
   @Override
   public void delete(String id) {
-    apiDefinitionDAO.deleteById(id);
-  }
-
-  @Override
-  public void updateIgnoreNull(String id, ApiDefinition apiDefinition) {
-    apiDefinitionDAO.updateIgnoreNullById(apiDefinition, id);
+    session.dsl().deleteFrom(ApiDefinition.class)
+      .where(field(ApiDefinition::getId).eq(id))
+      .execute();
   }
 
 }

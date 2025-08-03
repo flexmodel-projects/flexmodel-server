@@ -2,12 +2,14 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.codegen.dao.DatasourceDAO;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceRepository;
-import tech.wetech.flexmodel.dsl.Predicate;
+import tech.wetech.flexmodel.query.expr.Predicate;
+import tech.wetech.flexmodel.session.Session;
 
 import java.util.List;
+
+import static tech.wetech.flexmodel.query.expr.Expressions.field;
 
 /**
  * @author cjbi
@@ -16,25 +18,40 @@ import java.util.List;
 public class DatasourceFmRepository implements DatasourceRepository {
 
   @Inject
-  DatasourceDAO datasourceDAO;
+  Session session;
 
   @Override
   public List<Datasource> findAll() {
-    return datasourceDAO.findAll();
+    return session.dsl()
+      .select()
+      .from(Datasource.class)
+      .execute();
   }
 
   @Override
   public List<Datasource> find(Predicate filter) {
-    return datasourceDAO.find(filter);
+    return session.dsl()
+      .select()
+      .from(Datasource.class)
+      .where(filter)
+      .execute();
   }
 
   @Override
   public Datasource save(Datasource record) {
-    return datasourceDAO.save(record);
+
+    session.dsl()
+      .mergeInto(Datasource.class)
+      .values(record)
+      .execute();
+
+    return record;
   }
 
   @Override
   public void delete(String id) {
-    datasourceDAO.deleteById(id);
+    session.dsl().deleteFrom(Datasource.class)
+      .where(field(Datasource::getName).eq(id))
+      .execute();
   }
 }

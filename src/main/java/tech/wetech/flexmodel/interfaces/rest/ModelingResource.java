@@ -13,9 +13,9 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import tech.wetech.flexmodel.*;
-import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
+import tech.wetech.flexmodel.model.*;
+import tech.wetech.flexmodel.model.field.TypedField;
 
 import java.util.List;
 
@@ -384,7 +384,7 @@ public class ModelingResource {
   @Operation(summary = "创建索引")
   @POST
   @Path("/{modelName}/indexes")
-  public Index createIndex(@PathParam("modelName") String modelName, Index index) {
+  public IndexDefinition createIndex(@PathParam("modelName") String modelName, IndexDefinition index) {
     index.setModelName(modelName);
     return modelingApplicationService.createIndex(datasourceName, index);
   }
@@ -417,7 +417,7 @@ public class ModelingResource {
   @Operation(summary = "更新索引")
   @PUT
   @Path("/{modelName}/indexes/{indexName}")
-  public Index modifyIndex(@PathParam("modelName") String modelName, @PathParam("indexName") String indexName, Index index) {
+  public IndexDefinition modifyIndex(@PathParam("modelName") String modelName, @PathParam("indexName") String indexName, IndexDefinition index) {
     index.setModelName(modelName);
     index.setName(indexName);
     return modelingApplicationService.modifyIndex(datasourceName, index);
@@ -445,7 +445,7 @@ public class ModelingResource {
       @SchemaProperty(name = "unique", description = "是否唯一"),
     }
   )
-  public static class IndexSchema extends Index {
+  public static class IndexSchema extends IndexDefinition {
 
     public IndexSchema(String name) {
       super(name);
@@ -481,7 +481,7 @@ public class ModelingResource {
       @SchemaProperty(name = "additionalProperties", description = "用户自定义扩展属性"),
     }
   )
-  public static class EnumSchema extends Enum {
+  public static class EnumSchema extends EnumDefinition {
 
     public EnumSchema(String name) {
       super(name);
@@ -498,7 +498,7 @@ public class ModelingResource {
       @SchemaProperty(name = "additionalProperties", description = "用户自定义扩展属性"),
     }
   )
-  public static class NativeQuerySchema extends NativeQueryModel {
+  public static class NativeQuerySchema extends NativeQueryDefinition {
 
     public NativeQuerySchema(String name) {
       super(name);
@@ -516,7 +516,7 @@ public class ModelingResource {
       @SchemaProperty(name = "additionalProperties", description = "用户自定义扩展属性"),
     }
   )
-  public static class EntitySchema extends Entity {
+  public static class EntitySchema extends EntityDefinition {
 
     public EntitySchema(String name) {
       super(name);

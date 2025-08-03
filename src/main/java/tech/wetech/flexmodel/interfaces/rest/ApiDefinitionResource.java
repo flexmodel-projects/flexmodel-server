@@ -122,9 +122,14 @@ public class ApiDefinitionResource {
         implementation = ApiDefinitionSchema.class
       )
     )})
-  public ApiDefinition updateIgnoreNull(@PathParam("id") String id, ApiDefinition apiDefinition) {
-    apiDefinition.setId(id);
-    return apiDesignApplicationService.updateApiDefinitionIgnoreNull(apiDefinition);
+  public ApiDefinition updateIgnoreNull(@PathParam("id") String id, ApiDefinition request) {
+    request.setId(id);
+    ApiDefinition record = apiDesignApplicationService.findApiDefinition(id);
+    if(request.getName()!=null) {
+      record.setName(request.getName());
+    }
+    apiDesignApplicationService.updateApiDefinition(record);
+    return record;
   }
 
   @Operation(summary = "删除接口定义")

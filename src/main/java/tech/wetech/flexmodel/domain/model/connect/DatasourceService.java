@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static tech.wetech.flexmodel.codegen.System.datasource;
+import static tech.wetech.flexmodel.query.expr.Expressions.field;
 
 /**
  * @author cjbi
@@ -57,11 +57,11 @@ public class DatasourceService {
   }
 
   public List<Datasource> findAll() {
-    return datasourceRepository.find(datasource.enabled.eq(true));
+    return datasourceRepository.find(field(Datasource::getEnabled).eq(true));
   }
 
   public Optional<Datasource> findOne(String datasourceName) {
-    return datasourceRepository.find(datasource.name.eq(datasourceName))
+    return datasourceRepository.find(field(Datasource::getName).eq(datasourceName))
       .stream()
       .findFirst();
   }

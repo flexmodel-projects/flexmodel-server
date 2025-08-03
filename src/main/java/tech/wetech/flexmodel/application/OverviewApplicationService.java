@@ -4,11 +4,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.application.dto.OverviewDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
+import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.domain.model.api.ApiLogRequestService;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
-import tech.wetech.flexmodel.dsl.Predicate;
+import tech.wetech.flexmodel.query.expr.Predicate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static tech.wetech.flexmodel.codegen.System.apiRequestLog;
+import static tech.wetech.flexmodel.query.expr.Expressions.field;
 
 /**
  * @author cjbi
@@ -61,7 +62,7 @@ public class OverviewApplicationService {
     overviewDTO.setMutationCount(mutationCount);
     overviewDTO.setSubscribeCount(subscribeCount);
     overviewDTO.setDataSourceCount(datasourceService.findAll().size());
-    overviewDTO.setApiRankingList(apiLogService.ranking(apiRequestLog.createdAt.between(startDate, endDate)));
+    overviewDTO.setApiRankingList(apiLogService.ranking(field(ApiRequestLog::getCreatedAt).between(startDate, endDate)));
 
     String fmt;
     List<String> dateList = new ArrayList<>();
@@ -102,8 +103,8 @@ public class OverviewApplicationService {
         currentTime = currentTime.plusYears(1);
       }
     }
-    Predicate successFilter = apiRequestLog.createdAt.between(startDate, endDate).and(apiRequestLog.isSuccess.eq(true));
-    Predicate failFilter = apiRequestLog.createdAt.between(startDate, endDate).and(apiRequestLog.isSuccess.eq(false));
+    Predicate successFilter = field(ApiRequestLog::getCreatedAt).between(startDate, endDate).and(field(ApiRequestLog::getIsSuccess).eq(true));
+    Predicate failFilter = field(ApiRequestLog::getCreatedAt).between(startDate, endDate).and(field(ApiRequestLog::getIsSuccess).eq(false));
     Map<String, Long> successMap = apiLogService.stat(successFilter, fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
     Map<String, Long> failMap = apiLogService.stat(failFilter, fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
     OverviewDTO.ApiStatDTO statDTO = new OverviewDTO.ApiStatDTO();

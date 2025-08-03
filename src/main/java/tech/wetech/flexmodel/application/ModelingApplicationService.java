@@ -2,13 +2,13 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.*;
-import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
+import tech.wetech.flexmodel.model.*;
+import tech.wetech.flexmodel.model.field.TypedField;
 import tech.wetech.flexmodel.parser.impl.ParseException;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class ModelingApplicationService {
   }
 
   public List<SchemaObject> findModels(String datasourceName) {
-    return modelService.findModels(datasourceName);
+    return modelService.findAll(datasourceName);
   }
 
   public SchemaObject createModel(String datasourceName, SchemaObject model) {
@@ -67,11 +67,11 @@ public class ModelingApplicationService {
     modelService.dropField(datasourceName, modelName, fieldName);
   }
 
-  public Index createIndex(String datasourceName, Index index) {
+  public IndexDefinition createIndex(String datasourceName, IndexDefinition index) {
     return modelService.createIndex(datasourceName, index);
   }
 
-  public Index modifyIndex(String datasourceName, Index index) {
+  public IndexDefinition modifyIndex(String datasourceName, IndexDefinition index) {
     return modelService.modifyIndex(datasourceName, index);
   }
 
@@ -100,13 +100,13 @@ public class ModelingApplicationService {
   }
 
   public SchemaObject modifyModel(String datasourceName, String modelName, SchemaObject model) {
-    if (model instanceof Entity) {
+    if (model instanceof EntityDefinition) {
       throw new RuntimeException("Unsupported model type");
     }
-    if (model instanceof NativeQueryModel nativeQueryModel) {
+    if (model instanceof NativeQueryDefinition nativeQueryModel) {
       nativeQueryModel.setName(modelName);
     }
-    if (model instanceof Enum anEnum) {
+    if (model instanceof EnumDefinition anEnum) {
       anEnum.setName(modelName);
     }
     modelService.dropModel(datasourceName, modelName);

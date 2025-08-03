@@ -2,20 +2,26 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.Entity;
-import tech.wetech.flexmodel.Query;
-import tech.wetech.flexmodel.Session;
-import tech.wetech.flexmodel.SessionFactory;
+import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.StringUtils;
 import tech.wetech.flexmodel.domain.model.data.DataRepository;
+import tech.wetech.flexmodel.model.EntityDefinition;
+import tech.wetech.flexmodel.model.field.TypedField;
+import tech.wetech.flexmodel.query.DSLQueryBuilder;
+import tech.wetech.flexmodel.query.Query;
+import tech.wetech.flexmodel.query.expr.Expressions;
+import tech.wetech.flexmodel.session.Session;
+import tech.wetech.flexmodel.session.SessionFactory;
 import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author cjbi
  */
+@Slf4j
 @ApplicationScoped
 public class DataFmRepository implements DataRepository {
 
@@ -28,60 +34,79 @@ public class DataFmRepository implements DataRepository {
                                                Integer current,
                                                Integer pageSize,
                                                String filter,
-                                               String sort,
+                                               String sortString,
                                                boolean nestedQueryEnabled) {
+
+
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.find(modelName, query -> {
-        if (!StringUtils.isBlank(filter)) {
-          query.setFilter(filter);
-        }
-        if (pageSize != null) {
-          query.withPage(page -> {
-            page.setPageSize(pageSize);
-            if (current != null) {
-              page.setPageNumber(current);
-            }
-            return page;
-          });
-        }
+
+      DSLQueryBuilder queryBuilder = session.dsl()
+        .select()
+        .from(modelName);
+
+      if (!StringUtils.isBlank(filter)) {
+        queryBuilder.where(filter);
+      }
+
+      if (pageSize != null && current != null) {
+        queryBuilder.page(current, pageSize);
+      }
+
+      if (!StringUtils.isBlank(sortString)) {
         try {
-          if (!StringUtils.isBlank(sort)) {
-            List<Query.Sort.Order> orders = JsonUtils.getInstance().parseToList(sort, Query.Sort.Order.class);
-            query.withSort(s -> s.setOrders(orders));
-          }
+          List<Query.Sort.Order> orders = JsonUtils.getInstance().parseToList(sortString, Query.Sort.Order.class);
+          Query.Sort sort = new Query.Sort();
+          sort.getOrders().addAll(orders);
+          queryBuilder.orderBy(sort);
         } catch (Exception e) {
-          e.printStackTrace();
+          log.error("Invalid sort string: {}", sortString, e);
         }
-        query.setNestedQueryEnabled(nestedQueryEnabled);
-        return query;
-      });
+      }
+      return queryBuilder.enableNested()
+        .execute();
     }
   }
 
   @Override
   public long countRecords(String datasourceName, String modelName, String filter) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.count(modelName, query -> {
-        if (!StringUtils.isBlank(filter)) {
-          query.setFilter(filter);
-        }
-        return query;
-      });
+
+      DSLQueryBuilder queryBuilder = session.dsl()
+        .select()
+        .from(modelName);
+
+      if (!StringUtils.isBlank(filter)) {
+        queryBuilder.where(filter);
+      }
+
+      return queryBuilder.count();
     }
   }
 
   @Override
   public Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id, boolean nestedQuery) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.findById(modelName, id, nestedQuery);
+
+      DSLQueryBuilder queryBuilder = session.dsl()
+        .select()
+        .from(modelName);
+
+      EntityDefinition entity = (EntityDefinition) session.schema().getModel(modelName);
+      Optional<TypedField<?, ?>> idField = entity.findIdField();
+
+      return queryBuilder.where(Expressions.field(idField.orElseThrow().getName()).eq(id))
+        .enableNested()
+        .executeOne();
     }
   }
 
   @Override
   public Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      Entity entity = (Entity) session.getModel(modelName);
-      session.insert(modelName, data, id -> data.put(entity.findIdField().orElseThrow().getName(), id));
+      session.dsl()
+        .insertInto(modelName)
+        .values(data)
+        .execute();
       return data;
     }
   }
@@ -89,7 +114,15 @@ public class DataFmRepository implements DataRepository {
   @Override
   public Map<String, Object> updateRecord(String datasourceName, String modelName, Object id, Map<String, Object> data) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.updateById(modelName, data, id);
+      EntityDefinition entity = (EntityDefinition) session.schema().getModel(modelName);
+      Optional<TypedField<?, ?>> idField = entity.findIdField();
+
+      session.dsl()
+        .update(modelName)
+        .values(data)
+        .where(Expressions.field(idField.orElseThrow().getName()).eq(id))
+        .execute();
+
       return data;
     }
   }
@@ -97,7 +130,14 @@ public class DataFmRepository implements DataRepository {
   @Override
   public void deleteRecord(String datasourceName, String modelName, Object id) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.deleteById(modelName, id);
+
+      EntityDefinition entity = (EntityDefinition) session.schema().getModel(modelName);
+      Optional<TypedField<?, ?>> idField = entity.findIdField();
+
+      session.dsl()
+        .deleteFrom(modelName)
+        .where(Expressions.field(idField.orElseThrow().getName()).eq(id))
+        .execute();
     }
   }
 

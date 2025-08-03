@@ -2,21 +2,20 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.*;
-import tech.wetech.flexmodel.Enum;
 import tech.wetech.flexmodel.domain.model.modeling.ModelRepository;
-import tech.wetech.flexmodel.dsl.Predicate;
-import tech.wetech.flexmodel.infrastructrue.FmEngineSessions;
+import tech.wetech.flexmodel.model.*;
+import tech.wetech.flexmodel.model.field.TypedField;
 import tech.wetech.flexmodel.parser.ASTNodeConverter;
 import tech.wetech.flexmodel.parser.impl.ModelParser;
 import tech.wetech.flexmodel.parser.impl.ParseException;
-import tech.wetech.flexmodel.util.JsonUtils;
+import tech.wetech.flexmodel.session.Session;
+import tech.wetech.flexmodel.session.SessionFactory;
 
 import java.io.StringReader;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author cjbi
@@ -25,137 +24,33 @@ import java.util.function.Function;
 public class ModelFmRepository implements ModelRepository {
 
   @Inject
-  protected SessionFactory sessionFactory;
-
-  private String entityName;
-
-  private Class<SchemaObject> entityType;
-
-  protected <R> R withSession(Function<Session, R> fn) {
-    return withSession(FmEngineSessions.SYSTEM_DS_KEY, fn);
-  }
-
-  protected <R> R withSession(String identifier, Function<Session, R> fn) {
-    try (Session session = sessionFactory.createSession(identifier)) {
-      return fn.apply(session);
-    }
-  }
-
-
-  public List<SchemaObject> findAll() {
-    return withSession(session -> session.find(getEntityName(), query -> query, getEntityType()));
-  }
-
-  public String getEntityName() {
-    if (entityName == null) {
-      entityName = getEntityType().getSimpleName();
-    }
-    return entityName;
-  }
-
-  public Class<SchemaObject> getEntityType() {
-    if (entityType == null) {
-      entityType = lookupEntityClass(this.getClass());
-    }
-    return entityType;
-  }
-
-  @SuppressWarnings("unchecked")
-  public Class<SchemaObject> lookupEntityClass(Class<?> clazz) {
-    if (clazz == null) {
-      throw new RuntimeException(this.getClass().getSimpleName() + " entity not found");
-    }
-    Type genericSuperclass = clazz.getGenericSuperclass();
-    if (genericSuperclass instanceof ParameterizedType type && type.getActualTypeArguments().length > 0) {
-      return (Class<SchemaObject>) type.getActualTypeArguments()[0];
-    }
-    return lookupEntityClass(clazz.getSuperclass());
-  }
-
-  public List<SchemaObject> find(Predicate filter, Query.Sort sort, Integer current, Integer pageSize) {
-    String entityName = getEntityName();
-    Class<SchemaObject> resultType = getEntityType();
-    return withSession(session -> session.find(entityName, query -> {
-      if (filter != null) {
-        query.withFilter(filter);
-      }
-      if (sort != null) {
-        query.setSort(sort);
-      }
-      if (current != null && pageSize != null) {
-        query.withPage(current, pageSize);
-      }
-      return query;
-    }, resultType));
-  }
-
-  @SuppressWarnings("all")
-  public SchemaObject save(Model record) {
-    return withSession(session -> {
-      Entity entity = (Entity) session.getModel(getEntityName());
-      Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
-      if (isNew(record)) {
-        session.insert(getEntityName(), recordMap, id -> recordMap.put(entity.findIdField().orElseThrow().getName(), id));
-      } else {
-        session.updateById(getEntityName(), recordMap, recordMap.get(entity.findIdField().orElseThrow().getName()));
-      }
-      return JsonUtils.getInstance().convertValue(recordMap, getEntityType());
-    });
-
-  }
-
-  public void delete(String id) {
-    withSession(session -> session.deleteById(getEntityName(), id));
-  }
-
-  @SuppressWarnings("all")
-  private boolean isNew(Model record) {
-    return withSession(session -> {
-      Entity entity = (Entity) session.getModel(getEntityName());
-      Map<String, Object> recordMap = JsonUtils.getInstance().convertValue(record, Map.class);
-      Object id = recordMap.get(entity.findIdField().orElseThrow().getName());
-      return id == null || !session.existsById(getEntityName(), id);
-    });
-  }
-
-  public Optional<SchemaObject> findById(String id) {
-    return withSession(session -> Optional.ofNullable(session.findById(getEntityName(), id, getEntityType())));
-  }
+  SessionFactory sessionFactory;
 
   @Override
   @SuppressWarnings("all")
   public List<SchemaObject> findAll(String datasourceName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      return (List) session.getAllModels();
-    }
+    return sessionFactory.getModels(datasourceName);
   }
 
-  @Override
-  @SuppressWarnings("all")
-  public List<SchemaObject> findModels(String datasourceName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      return (List) session.getAllModels();
-    }
-  }
 
   @Override
   public Optional<SchemaObject> findModel(String datasourceName, String modelName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      return Optional.ofNullable(session.getModel(modelName));
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
+      return Optional.ofNullable(session.schema().getModel(modelName));
     }
   }
 
   @Override
   public SchemaObject createModel(String datasourceName, SchemaObject model) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      if (model instanceof Entity entity) {
-        return session.createEntity(entity);
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
+      if (model instanceof EntityDefinition entity) {
+        return session.schema().createEntity(entity);
       }
-      if (model instanceof NativeQueryModel nativeQueryModel) {
-        return session.createNativeQueryModel(nativeQueryModel);
+      if (model instanceof NativeQueryDefinition nativeQueryModelDefinition) {
+        return session.schema().createNativeQueryModel(nativeQueryModelDefinition);
       }
-      if (model instanceof Enum anEnum) {
-        return session.createEnum(anEnum);
+      if (model instanceof EnumDefinition anEnumDefinition) {
+        return session.schema().createEnum(anEnumDefinition);
       }
     }
     throw new RuntimeException("Unsupported model type");
@@ -163,53 +58,53 @@ public class ModelFmRepository implements ModelRepository {
 
   @Override
   public void dropModel(String datasourceName, String modelName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.dropModel(modelName);
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
+      session.schema().dropModel(modelName);
     }
   }
 
   @Override
   public TypedField<?, ?> createField(String datasourceName, TypedField<?, ?> field) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.createField(field);
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
+      session.schema().createField(field);
       return field;
     }
   }
 
   @Override
   public TypedField<?, ?> modifyField(String datasourceName, TypedField<?, ?> field) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.modifyField(field);
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
+      session.schema().modifyField(field);
       return field;
     }
   }
 
   @Override
   public void dropField(String datasourceName, String modelName, String fieldName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.dropField(modelName, fieldName);
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
+      session.schema().dropField(modelName, fieldName);
     }
   }
 
   @Override
-  public Index createIndex(String datasourceName, Index index) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.createIndex(index);
+  public IndexDefinition createIndex(String datasourceName, IndexDefinition index) {
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
+      session.schema().createIndex(index);
       return index;
     }
   }
 
   @Override
   public void dropIndex(String datasourceName, String modelName, String indexName) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      session.dropIndex(modelName, indexName);
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
+      session.schema().dropIndex(modelName, indexName);
     }
   }
 
   @Override
   public List<SchemaObject> syncModels(String datasourceName, Set<String> modelNames) {
-    try (Session session = sessionFactory.createSession(datasourceName)) {
-      return session.syncModels(modelNames);
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
+      return session.schema().syncModels(modelNames);
     }
   }
 
@@ -218,11 +113,7 @@ public class ModelFmRepository implements ModelRepository {
     if (type.equals("JSON")) {
       sessionFactory.loadJSONString(datasourceName, script);
     } else if (type.equals("IDL")) {
-      try {
-        sessionFactory.loadIDLString(datasourceName, script);
-      } catch (ParseException e) {
-        throw new RuntimeException(e);
-      }
+      sessionFactory.loadIDLString(datasourceName, script);
     } else {
       throw new RuntimeException("Unsupported type");
     }
@@ -236,13 +127,13 @@ public class ModelFmRepository implements ModelRepository {
     for (ModelParser.ASTNode obj : ast) {
       schema.add(ASTNodeConverter.toSchemaObject(obj));
     }
-    try (Session session = sessionFactory.createSession(datasourceName)) {
+    try (Session session = this.sessionFactory.createSession(datasourceName)) {
       for (SchemaObject object : schema) {
-        if (object instanceof Entity entity) {
-          session.createEntity(entity);
+        if (object instanceof EntityDefinition entity) {
+          session.schema().createEntity(entity);
         }
-        if (object instanceof Enum anEnum) {
-          session.createEnum(anEnum);
+        if (object instanceof EnumDefinition anEnumDefinition) {
+          session.schema().createEnum(anEnumDefinition);
         }
       }
     }

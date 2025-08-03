@@ -4,12 +4,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
-import tech.wetech.flexmodel.dsl.Predicate;
+import tech.wetech.flexmodel.query.expr.Predicate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static tech.wetech.flexmodel.codegen.System.apiRequestLog;
+import static tech.wetech.flexmodel.query.expr.Expressions.field;
 
 /**
  * @author cjbi
@@ -44,6 +44,6 @@ public class ApiLogRequestService {
   public void purgeOldLogs(int maxDays) {
     log.info("Purging old logs older than {} days", maxDays);
     LocalDateTime purgeDate = LocalDateTime.now().minusDays(maxDays);
-    apiLogRepository.delete(apiRequestLog.createdAt.lte(purgeDate));
+    apiLogRepository.delete(field(ApiRequestLog::getCreatedAt).lte(purgeDate));
   }
 }

@@ -16,13 +16,13 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.FlexmodelConfig;
-import tech.wetech.flexmodel.SchemaObject;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.codegen.enumeration.DatasourceType;
 import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.connect.database.Database;
+import tech.wetech.flexmodel.model.SchemaObject;
 import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.util.*;

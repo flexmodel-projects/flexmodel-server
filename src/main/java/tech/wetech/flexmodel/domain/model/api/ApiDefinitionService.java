@@ -43,15 +43,12 @@ public class ApiDefinitionService {
   }
 
   @CacheInvalidateAll(cacheName = "apiDefinitionList")
-  public ApiDefinition updateIgnoreNull(ApiDefinition apiDefinition) {
-    apiDefinitionRepository.updateIgnoreNull(apiDefinition.getId(), apiDefinition);
-    ApiRateLimiterHolder.removeApiRateLimiter(apiDefinition.getMethod() + ":" + apiDefinition.getPath());
-    return apiDefinition;
-  }
-
-  @CacheInvalidateAll(cacheName = "apiDefinitionList")
   public void delete(String id) {
     apiDefinitionRepository.delete(id);
     apiDefinitionRepository.deleteByParentId(id);
+  }
+
+  public ApiDefinition findApiDefinition(String id) {
+    return apiDefinitionRepository.findById(id);
   }
 }

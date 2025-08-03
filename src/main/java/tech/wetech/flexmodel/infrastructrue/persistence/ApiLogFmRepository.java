@@ -2,19 +2,20 @@ package tech.wetech.flexmodel.infrastructrue.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.Projections;
-import tech.wetech.flexmodel.codegen.dao.ApiRequestLogDAO;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.domain.model.api.ApiRequestLogRepository;
 import tech.wetech.flexmodel.domain.model.api.LogApiRank;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
-import tech.wetech.flexmodel.dsl.Predicate;
+import tech.wetech.flexmodel.query.Direction;
+import tech.wetech.flexmodel.query.Query;
+import tech.wetech.flexmodel.query.expr.Predicate;
+import tech.wetech.flexmodel.session.Session;
 
 import java.util.List;
 
-import static tech.wetech.flexmodel.Direction.DESC;
-import static tech.wetech.flexmodel.Projections.dateFormat;
-import static tech.wetech.flexmodel.Projections.field;
+import static tech.wetech.flexmodel.query.Query.dateFormat;
+import static tech.wetech.flexmodel.query.Query.field;
+
 
 /**
  * @author cjbi
@@ -23,66 +24,68 @@ import static tech.wetech.flexmodel.Projections.field;
 public class ApiLogFmRepository implements ApiRequestLogRepository {
 
   @Inject
-  ApiRequestLogDAO apiRequestLogDAO;
+  Session session;
 
   @Override
   public List<ApiRequestLog> find(Predicate filter, Integer current, Integer pageSize) {
-    return apiRequestLogDAO.find(query -> {
-      if (filter != null) {
-        query.withFilter(filter);
-      }
-      query.withSort(sort -> sort.addOrder("id", DESC));
-      if (current != null && pageSize != null) {
-        query.withPage(current, pageSize);
-      }
-      return query;
-    });
+    return session.dsl().select()
+      .from(ApiRequestLog.class)
+      .where(filter)
+      .orderBy("id", Direction.DESC)
+      .page(current, pageSize)
+      .execute();
   }
 
 
   @Override
-  public List<LogStat> stat(Predicate filter,String fmt) {
-    return apiRequestLogDAO.find(query ->
-      query
-        .withProjection(projection -> projection
-          .addField("date", dateFormat(field("created_at"), fmt))
-          .addField("total", Projections.count(field("id")))
-        )
-        .withGroupBy(groupBy -> groupBy
-          .addField("date")
-        )
-        .withFilter(filter), LogStat.class);
+  public List<LogStat> stat(Predicate filter, String fmt) {
+    return session.dsl()
+      .select(query -> query
+        .field("date", dateFormat(field("created_at"), fmt))
+        .field("total", Query.count(field("id"))))
+      .from(ApiRequestLog.class)
+      .where(filter)
+      .groupBy("date")
+      .execute(LogStat.class);
   }
 
   @Override
   public List<LogApiRank> ranking(Predicate filter) {
-    return apiRequestLogDAO.find(query ->
-      query
-        .withProjection(projection -> projection
-          .addField("name", field("path"))
-          .addField("total", Projections.count(field("id")))
-        )
-        .withGroupBy(groupBy -> groupBy
-          .addField("path")
-        )
-        .withPage(p -> p.setPageSize(20))
-        .withSort(s -> s.addOrder("total", DESC))
-        .withFilter(filter), LogApiRank.class);
+    return session.dsl()
+      .select(query -> query
+        .field("name", field("path"))
+        .field("total", Query.count(field("id"))))
+      .from(ApiRequestLog.class)
+      .where(filter)
+      .groupBy("path")
+      .orderBy("total", Direction.DESC)
+      .page(1, 20)
+      .execute(LogApiRank.class);
   }
 
   @Override
   public ApiRequestLog save(ApiRequestLog record) {
-    return apiRequestLogDAO.save(record);
+    session.dsl()
+      .mergeInto(ApiRequestLog.class)
+      .values(record)
+      .execute();
+    return record;
   }
 
   @Override
   public void delete(Predicate unaryOperator) {
-    apiRequestLogDAO.delete(unaryOperator);
+    session.dsl()
+      .deleteFrom(ApiRequestLog.class)
+      .where(unaryOperator)
+      .execute();
   }
 
   @Override
   public long count(Predicate filter) {
-    return apiRequestLogDAO.count(filter);
+    return session.dsl().select()
+      .from(ApiRequestLog.class)
+      .where(filter)
+      .count();
   }
 
 }

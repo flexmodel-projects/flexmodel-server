@@ -38,6 +38,10 @@
           "createdAt": "2024-07-13T23:21:10",
           "meta": {
             "auth": false,
+            "identityProvider": "demo",
+            "rateLimitingEnabled": true,
+            "maxRequestCount": 50,
+            "intervalInSeconds": 60,
             "execution": {
               "query": "query MyQuery($id: Int) {\n  system_find_one_Classes(where: { id: { _eq: $id } }) {\n    classCode\n    className\n    id\n  }\n}",
               "variables": {
@@ -128,6 +132,18 @@
             "password": "${MYSQL_PASSWORD}",
             "username": "${MYSQL_USERNAME}"
           }
+        }
+      ]
+    },
+    {
+      "modelName": "fs_identity_provider",
+      "values": [
+        {
+          "name": "demo",
+          "type": "oidc",
+          "issuer": "http://localhost/issuer",
+          "clientId": "test_client_id",
+          "clientSecret": "test_client_secret"
         }
       ]
     },

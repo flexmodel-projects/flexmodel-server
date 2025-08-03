@@ -4,13 +4,13 @@ import groovy.lang.GroovyClassLoader;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import tech.wetech.flexmodel.Entity;
-import tech.wetech.flexmodel.Enum;
-import tech.wetech.flexmodel.SchemaObject;
 import tech.wetech.flexmodel.codegen.EnumClass;
 import tech.wetech.flexmodel.codegen.GenerationContext;
 import tech.wetech.flexmodel.codegen.ModelClass;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
+import tech.wetech.flexmodel.model.EntityDefinition;
+import tech.wetech.flexmodel.model.EnumDefinition;
+import tech.wetech.flexmodel.model.SchemaObject;
 import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.io.File;
@@ -114,14 +114,14 @@ public class CodeGenerationService {
     ctx.setPackageName("com.example");  // 可再配置化
     ctx.setVariables(variables);
     // 加载所有模型
-    List<SchemaObject> models = modelService.findModels(datasource);
+    List<SchemaObject> models = modelService.findAll(datasource);
     models.forEach(m -> {
-      if (m instanceof Entity) {
+      if (m instanceof EntityDefinition) {
         ctx.getModelClassList()
-          .add(ModelClass.buildModelClass("^fs_", ctx.getPackageName(), datasource, (Entity) m));
+          .add(ModelClass.buildModelClass("^fs_", ctx.getPackageName(), datasource, (EntityDefinition) m));
       } else {
         ctx.getEnumClassList()
-          .add(EnumClass.buildEnumClass(ctx.getPackageName(), datasource, (Enum) m));
+          .add(EnumClass.buildEnumClass(ctx.getPackageName(), datasource, (EnumDefinition) m));
       }
     });
     return ctx;

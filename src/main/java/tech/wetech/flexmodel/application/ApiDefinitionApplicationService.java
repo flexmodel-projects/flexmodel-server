@@ -10,6 +10,9 @@ import tech.wetech.flexmodel.codegen.ModelClass;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
+import tech.wetech.flexmodel.model.EntityDefinition;
+import tech.wetech.flexmodel.session.Session;
+import tech.wetech.flexmodel.session.SessionFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,10 +73,6 @@ public class ApiDefinitionApplicationService {
     return apiDefinitionService.update(apiDefinition);
   }
 
-  public ApiDefinition updateApiDefinitionIgnoreNull(ApiDefinition apiDefinition) {
-    return apiDefinitionService.updateIgnoreNull(apiDefinition);
-  }
-
   public void deleteApiDefinition(String id) {
     apiDefinitionService.delete(id);
   }
@@ -81,7 +80,7 @@ public class ApiDefinitionApplicationService {
   public void generateAPIs(GenerateAPIsDTO dto) {
     List<String> generateAPIs = dto.getGenerateAPIs();
     try (Session session = sessionFactory.createSession(dto.getDatasourceName())) {
-      Entity entity = (Entity) session.getModel(dto.getModelName());
+      EntityDefinition entity = (EntityDefinition) session.schema().getModel(dto.getModelName());
       ApiDefinition apiFolder = createApiFolder(dto);
       for (String type : generateAPIs) {
         ApiDefinitionGenerator apiDefinitionGenerator = templateMap.get(type);
@@ -109,4 +108,7 @@ public class ApiDefinitionApplicationService {
     return apiDefinitionService.create(folder);
   }
 
+  public ApiDefinition findApiDefinition(String id) {
+    return apiDefinitionService.findApiDefinition(id);
+  }
 }

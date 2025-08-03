@@ -2,9 +2,9 @@ package tech.wetech.flexmodel.domain.model.modeling;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.Index;
-import tech.wetech.flexmodel.SchemaObject;
-import tech.wetech.flexmodel.TypedField;
+import tech.wetech.flexmodel.model.IndexDefinition;
+import tech.wetech.flexmodel.model.SchemaObject;
+import tech.wetech.flexmodel.model.field.TypedField;
 import tech.wetech.flexmodel.parser.impl.ParseException;
 
 import java.util.List;
@@ -22,10 +22,6 @@ public class ModelService {
 
   public List<SchemaObject> findAll(String datasourceName) {
     return modelRepository.findAll(datasourceName);
-  }
-
-  public List<SchemaObject> findModels(String datasourceName) {
-    return modelRepository.findModels(datasourceName);
   }
 
   public Optional<SchemaObject> findModel(String datasourceName, String modelName) {
@@ -52,11 +48,11 @@ public class ModelService {
     modelRepository.dropField(datasourceName, modelName, fieldName);
   }
 
-  public Index createIndex(String datasourceName, Index index) {
+  public IndexDefinition createIndex(String datasourceName, IndexDefinition index) {
     return modelRepository.createIndex(datasourceName, index);
   }
 
-  public Index modifyIndex(String datasourceName, Index index) {
+  public IndexDefinition modifyIndex(String datasourceName, IndexDefinition index) {
     modelRepository.dropIndex(datasourceName, index.getModelName(), index.getName());
     modelRepository.createIndex(datasourceName, index);
     return index;

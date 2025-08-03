@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import tech.wetech.flexmodel.DataSourceProvider;
-import tech.wetech.flexmodel.Session;
-import tech.wetech.flexmodel.SessionFactory;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
@@ -20,6 +18,8 @@ import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
 import tech.wetech.flexmodel.domain.model.connect.database.Database;
 import tech.wetech.flexmodel.domain.model.connect.database.MongoDB;
 import tech.wetech.flexmodel.mongodb.MongoDataSourceProvider;
+import tech.wetech.flexmodel.session.Session;
+import tech.wetech.flexmodel.session.SessionFactory;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 import tech.wetech.flexmodel.util.JsonUtils;
 import tech.wetech.flexmodel.util.StringUtils;
@@ -115,7 +115,7 @@ public class SessionDatasourceImpl implements SessionDatasource {
       dataSourceProvider = new MongoDataSourceProvider(id, buildMongoDatabase(mongoDB));
     } else {
       Database config = JsonUtils.getInstance().convertValue(datasource.getConfig(), Database.class);
-      dataSourceProvider = new JdbcDataSourceProvider(id,buildJdbcDataSource(config));
+      dataSourceProvider = new JdbcDataSourceProvider(id, buildJdbcDataSource(config));
     }
     return dataSourceProvider;
   }
@@ -147,7 +147,7 @@ public class SessionDatasourceImpl implements SessionDatasource {
   public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       long beginTime = System.currentTimeMillis();
-      List list = session.findByNativeQuery(statement, parameters, Map.class);
+      List list = session.data().findByNativeQueryStatement(statement, parameters, Map.class);
       long endTime = System.currentTimeMillis() - beginTime;
       return new NativeQueryResult(endTime, list);
     }
