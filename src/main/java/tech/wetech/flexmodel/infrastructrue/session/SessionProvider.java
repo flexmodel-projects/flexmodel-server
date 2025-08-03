@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.infrastructrue.session;
 
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
@@ -27,6 +28,11 @@ public class SessionProvider {
   public Session provideSession() {
     log.debug("Providing default session");
     return sessionManager.getSession();
+  }
+
+  @PreDestroy
+  public void destroy() {
+    sessionManager.closeSession();
   }
 
 }
