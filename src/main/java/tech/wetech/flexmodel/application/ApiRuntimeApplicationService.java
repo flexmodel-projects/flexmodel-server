@@ -9,6 +9,7 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.FlexmodelConfig;
@@ -49,9 +50,10 @@ import static tech.wetech.flexmodel.query.expr.Expressions.field;
 /**
  * @author cjbi
  */
-@ApplicationScoped
 @Slf4j
 @SuppressWarnings("all")
+@ApplicationScoped
+@ActivateRequestContext
 public class ApiRuntimeApplicationService {
 
   @Inject

@@ -15,7 +15,7 @@ import tech.wetech.flexmodel.session.SessionManager;
 public class SessionProvider {
 
   @Inject
-  private SessionManager sessionManager;
+  SessionManager sessionManager;
 
   /**
    * 提供默认Session

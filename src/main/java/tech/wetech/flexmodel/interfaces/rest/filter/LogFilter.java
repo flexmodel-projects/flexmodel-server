@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.interfaces.rest.filter;
 
-import jakarta.enterprise.context.control.RequestContextController;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -30,9 +29,6 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
   @Inject
   SettingsService settingsService;
 
-  @Inject
-  RequestContextController requestContextController;
-
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
     requestContext.setProperty("startTime", System.currentTimeMillis());
@@ -58,7 +54,6 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     } else {
       execTime = -1L;
     }
-    requestContextController.activate();
     CompletableFuture.runAsync(() -> {
       Settings settings = settingsService.getSettings();
       if (settings.getLog().isConsoleLoggingEnabled() &&
@@ -67,7 +62,6 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
         saveLog(requestContext, responseContext, execTime);
       }
     });
-    requestContextController.deactivate();
   }
 
   private void saveLog(ContainerRequestContext requestContext, ContainerResponseContext responseContext, long execTime) {
@@ -89,11 +83,6 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
       apiLog.setIsSuccess(false);
     }
     apiLog.setResponseTime((int) execTime);
-    try {
-      apiLogService.create(apiLog);
-    } catch (Exception e) {
-      log.error("Failed to publish request log: {}", e.getMessage(), e);
-    }
-
+    apiLogService.create(apiLog);
   }
 }

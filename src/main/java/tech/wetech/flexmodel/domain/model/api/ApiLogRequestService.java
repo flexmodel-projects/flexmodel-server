@@ -1,6 +1,7 @@
 package tech.wetech.flexmodel.domain.model.api;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
@@ -16,6 +17,7 @@ import static tech.wetech.flexmodel.query.expr.Expressions.field;
  */
 @Slf4j
 @ApplicationScoped
+@ActivateRequestContext
 public class ApiLogRequestService {
 
   @Inject
