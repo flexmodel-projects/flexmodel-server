@@ -74,7 +74,13 @@ public class JsonUtils {
   }
 
   public <T> T convertValue(Object fromValue, Class<T> clz) {
-    return jsonMapper.convertValue(fromValue, clz);
+    try {
+      return jsonMapper.convertValue(fromValue, clz);
+    } catch (Exception e) {
+      System.err.println("Failed to convert value: " + fromValue + " to " + clz.getName());
+      System.err.println("Error: " + e.getMessage());
+      throw e;
+    }
   }
 
   public <T> List<T> convertValueList(List<?> fromValues, Class<T> cls) {

@@ -68,8 +68,7 @@ public class SessionConfig {
   }
 
   /**
-   * 配置通用的SessionManager（可选）
-   * 如果不使用QuarkusSessionManager，可以使用这个
+   * 配置通用的SessionManager
    */
   @Produces
   @ApplicationScoped

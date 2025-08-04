@@ -28,8 +28,7 @@ public class ApiLogFmRepository implements ApiRequestLogRepository {
 
   @Override
   public List<ApiRequestLog> find(Predicate filter, Integer current, Integer pageSize) {
-    return session.dsl().select()
-      .from(ApiRequestLog.class)
+    return session.dsl().selectFrom(ApiRequestLog.class)
       .where(filter)
       .orderBy("id", Direction.DESC)
       .page(current, pageSize)
@@ -82,8 +81,8 @@ public class ApiLogFmRepository implements ApiRequestLogRepository {
 
   @Override
   public long count(Predicate filter) {
-    return session.dsl().select()
-      .from(ApiRequestLog.class)
+    return session.dsl()
+      .selectFrom(ApiRequestLog.class)
       .where(filter)
       .count();
   }

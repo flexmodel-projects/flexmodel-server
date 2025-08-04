@@ -20,8 +20,7 @@ public class UserFmRepository implements UserRepository {
   @Override
   public User findByUsername(String username) {
     return session.dsl()
-      .select()
-      .from(User.class)
+      .selectFrom(User.class)
       .where(field(User::getUsername).eq(username))
       .executeOne();
   }
@@ -29,8 +28,7 @@ public class UserFmRepository implements UserRepository {
   @Override
   public User findById(String userId) {
     return session.dsl()
-      .select()
-      .from(User.class)
+      .selectFrom(User.class)
       .where(field(User::getId).eq(userId))
       .executeOne();
   }

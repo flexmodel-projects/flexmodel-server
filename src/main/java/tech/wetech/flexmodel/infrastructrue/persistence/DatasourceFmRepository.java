@@ -23,16 +23,14 @@ public class DatasourceFmRepository implements DatasourceRepository {
   @Override
   public List<Datasource> findAll() {
     return session.dsl()
-      .select()
-      .from(Datasource.class)
+      .selectFrom(Datasource.class)
       .execute();
   }
 
   @Override
   public List<Datasource> find(Predicate filter) {
     return session.dsl()
-      .select()
-      .from(Datasource.class)
+      .selectFrom(Datasource.class)
       .where(filter)
       .execute();
   }

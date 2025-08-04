@@ -41,8 +41,7 @@ public class DataFmRepository implements DataRepository {
     try (Session session = sessionFactory.createSession(datasourceName)) {
 
       DSLQueryBuilder queryBuilder = session.dsl()
-        .select()
-        .from(modelName);
+        .selectFrom(modelName);
 
       if (!StringUtils.isBlank(filter)) {
         queryBuilder.where(filter);
@@ -72,8 +71,7 @@ public class DataFmRepository implements DataRepository {
     try (Session session = sessionFactory.createSession(datasourceName)) {
 
       DSLQueryBuilder queryBuilder = session.dsl()
-        .select()
-        .from(modelName);
+        .selectFrom(modelName);
 
       if (!StringUtils.isBlank(filter)) {
         queryBuilder.where(filter);
@@ -88,8 +86,7 @@ public class DataFmRepository implements DataRepository {
     try (Session session = sessionFactory.createSession(datasourceName)) {
 
       DSLQueryBuilder queryBuilder = session.dsl()
-        .select()
-        .from(modelName);
+        .selectFrom(modelName);
 
       EntityDefinition entity = (EntityDefinition) session.schema().getModel(modelName);
       Optional<TypedField<?, ?>> idField = entity.findIdField();

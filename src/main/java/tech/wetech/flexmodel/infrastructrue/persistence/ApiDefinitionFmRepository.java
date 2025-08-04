@@ -30,8 +30,7 @@ public class ApiDefinitionFmRepository implements ApiDefinitionRepository {
   @Override
   public ApiDefinition findById(String id) {
     return session.dsl()
-      .select()
-      .from(ApiDefinition.class)
+      .selectFrom(ApiDefinition.class)
       .where(field(ApiDefinition::getId).eq(id))
       .executeOne();
   }
@@ -39,8 +38,7 @@ public class ApiDefinitionFmRepository implements ApiDefinitionRepository {
   @Override
   public List<ApiDefinition> findAll() {
     return session.dsl()
-      .select()
-      .from(ApiDefinition.class)
+      .selectFrom(ApiDefinition.class)
       .execute();
   }
 

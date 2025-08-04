@@ -31,8 +31,7 @@ public class SettingsFmRepository implements SettingsRepository {
       if (value != null) {
 
         Config config = session.dsl()
-          .select()
-          .from(Config.class)
+          .selectFrom(Config.class)
           .where(field(Config::getKey).eq(key))
           .executeOne();
 
@@ -55,8 +54,7 @@ public class SettingsFmRepository implements SettingsRepository {
   public Settings getSettings() {
 
     List<Config> list = session.dsl()
-      .select()
-      .from(Config.class)
+      .selectFrom(Config.class)
       .execute();
 
 

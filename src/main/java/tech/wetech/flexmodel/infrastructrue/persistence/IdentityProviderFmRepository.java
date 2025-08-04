@@ -22,16 +22,15 @@ public class IdentityProviderFmRepository implements IdentityProviderRepository 
 
   @Override
   public List<IdentityProvider> findAll() {
-    return session.dsl().select()
-      .from(IdentityProvider.class)
+    return session.dsl()
+      .selectFrom(IdentityProvider.class)
       .execute();
   }
 
   @Override
   public IdentityProvider find(String name) {
     return session.dsl()
-      .select()
-      .from(IdentityProvider.class)
+      .selectFrom(IdentityProvider.class)
       .where(field(IdentityProvider::getName).eq(name))
       .executeOne();
   }
