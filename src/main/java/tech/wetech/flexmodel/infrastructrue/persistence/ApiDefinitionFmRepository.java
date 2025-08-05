@@ -44,7 +44,7 @@ public class ApiDefinitionFmRepository implements ApiDefinitionRepository {
 
   @Override
   public ApiDefinition save(ApiDefinition record) {
-    session.dsl().mergeInto(ApiDefinition.class).values(record);
+    session.dsl().mergeInto(ApiDefinition.class).values(record).execute();
     return record;
   }
 

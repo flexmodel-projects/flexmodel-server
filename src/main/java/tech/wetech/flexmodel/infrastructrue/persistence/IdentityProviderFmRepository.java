@@ -19,7 +19,6 @@ public class IdentityProviderFmRepository implements IdentityProviderRepository 
   @Inject
   Session session;
 
-
   @Override
   public List<IdentityProvider> findAll() {
     return session.dsl()
