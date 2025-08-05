@@ -52,8 +52,8 @@ import static tech.wetech.flexmodel.query.expr.Expressions.field;
  */
 @Slf4j
 @SuppressWarnings("all")
-@ApplicationScoped
 @ActivateRequestContext
+@ApplicationScoped
 public class ApiRuntimeApplicationService {
 
   @Inject

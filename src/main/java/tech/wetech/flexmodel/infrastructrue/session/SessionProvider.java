@@ -32,7 +32,7 @@ public class SessionProvider {
 
   @PreDestroy
   public void destroy() {
-    sessionManager.closeSession();
+    sessionManager.closeAllSessions();;
   }
 
 }
