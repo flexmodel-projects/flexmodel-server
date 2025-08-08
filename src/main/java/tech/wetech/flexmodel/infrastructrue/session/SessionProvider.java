@@ -27,7 +27,7 @@ public class SessionProvider {
   @RequestScoped
   public Session provideSession() {
     log.debug("Providing default session");
-    return sessionManager.getSession();
+    return sessionManager.getCurrentSession();
   }
 
   @PreDestroy
