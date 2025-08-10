@@ -37,7 +37,6 @@ public class Settings {
     private boolean rateLimitingEnabled = false;
     private int maxRequestCount = 500;
     private int intervalInSeconds = 60;
-    private boolean graphqlEndpointEnabled = false;
     private String graphqlEndpointPath = "/graphql";
     private String graphqlEndpointIdentityProvider;
   }
