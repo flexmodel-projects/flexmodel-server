@@ -127,10 +127,10 @@
           "name": "mysql_test",
           "type": "USER",
           "config": {
-            "url": "${MYSQL_URL}",
+            "url": "${SQLITE_URL}",
             "dbKind": "mysql",
-            "password": "${MYSQL_PASSWORD}",
-            "username": "${MYSQL_USERNAME}"
+            "password": "${SQLITE_PASSWORD}",
+            "username": "${SQLITE_USERNAME}"
           }
         }
       ]

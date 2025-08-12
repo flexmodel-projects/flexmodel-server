@@ -47,7 +47,7 @@ public class ModelFmRepository implements ModelRepository {
         return session.schema().createEntity(entity);
       }
       if (model instanceof NativeQueryDefinition nativeQueryModelDefinition) {
-        return session.schema().createNativeQueryModel(nativeQueryModelDefinition);
+        return session.schema().createNativeQuery(nativeQueryModelDefinition);
       }
       if (model instanceof EnumDefinition anEnumDefinition) {
         return session.schema().createEnum(anEnumDefinition);
@@ -104,7 +104,7 @@ public class ModelFmRepository implements ModelRepository {
   @Override
   public List<SchemaObject> syncModels(String datasourceName, Set<String> modelNames) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
-      return session.schema().syncModels(modelNames);
+      return session.schema().loadModels(modelNames);
     }
   }
 

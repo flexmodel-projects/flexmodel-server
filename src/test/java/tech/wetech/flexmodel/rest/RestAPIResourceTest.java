@@ -5,7 +5,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-import tech.wetech.flexmodel.MySQLTestResource;
+import tech.wetech.flexmodel.SQLiteTestResource;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.notNullValue;
  * @author cjbi
  */
 @QuarkusTest
-@QuarkusTestResource(MySQLTestResource.class)
+@QuarkusTestResource(SQLiteTestResource.class)
 public class RestAPIResourceTest {
 
   @Test

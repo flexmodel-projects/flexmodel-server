@@ -147,7 +147,7 @@ public class SessionDatasourceImpl implements SessionDatasource {
   public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       long beginTime = System.currentTimeMillis();
-      List list = session.data().findByNativeQueryStatement(statement, parameters, Map.class);
+      List list = session.data().findByNativeStatement(statement, parameters, Map.class);
       long endTime = System.currentTimeMillis() - beginTime;
       return new NativeQueryResult(endTime, list);
     }

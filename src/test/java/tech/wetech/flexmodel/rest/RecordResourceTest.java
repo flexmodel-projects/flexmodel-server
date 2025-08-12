@@ -8,7 +8,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import tech.wetech.flexmodel.MySQLTestResource;
+import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.interfaces.rest.Resources;
 
 import static io.restassured.RestAssured.given;
@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
  * @author cjbi
  */
 @QuarkusTest
-@QuarkusTestResource(MySQLTestResource.class)
+@QuarkusTestResource(SQLiteTestResource.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RecordResourceTest {
 

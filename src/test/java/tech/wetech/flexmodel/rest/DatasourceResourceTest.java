@@ -4,7 +4,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-import tech.wetech.flexmodel.MySQLTestResource;
+import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.interfaces.rest.Resources;
 
 import static io.restassured.RestAssured.given;
@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.is;
  * @author cjbi
  */
 @QuarkusTest
-@QuarkusTestResource(MySQLTestResource.class)
+@QuarkusTestResource(SQLiteTestResource.class)
 class DatasourceResourceTest {
 
   @Test
@@ -28,10 +28,10 @@ class DatasourceResourceTest {
              "name": "mysql_test",
              "type": "USER",
              "config": {
-               "url": "${MYSQL_URL}",
+               "url": "${SQLITE_URL}",
                "dbKind": "mysql",
-               "password": "${MYSQL_PASSWORD}",
-               "username": "${MYSQL_USERNAME}"
+               "password": "${SQLITE_PASSWORD}",
+               "username": "${SQLITE_USERNAME}"
              }
            }
         """)

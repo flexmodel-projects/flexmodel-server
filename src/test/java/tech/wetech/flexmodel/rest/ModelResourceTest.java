@@ -443,7 +443,7 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "name": "IDX_gender",
+          "name": "IDX_gender_sdsws",
           "modelName": "testCreateIndexStudent",
           "fields": [
             {
@@ -516,7 +516,7 @@ class ModelResourceTest {
             }
           ],
           "indexes": [{
-          "name": "IDX_gender",
+          "name": "IDX_gender_wedsd",
           "modelName": "testModifyIndexStudent",
           "fields": [
             {
@@ -538,7 +538,7 @@ class ModelResourceTest {
       .contentType(ContentType.JSON)
       .body("""
         {
-          "name": "IDX_gender",
+          "name": "IDX_gender_wedsd",
           "modelName": "testModifyIndexStudent",
           "fields": [
             {
@@ -552,7 +552,7 @@ class ModelResourceTest {
       .put(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/indexes/{indexName}",
         "mysql_test",
         "testModifyIndexStudent",
-        "IDX_gender"
+        "IDX_gender_wedsd"
       )
       .then()
       .statusCode(200);
