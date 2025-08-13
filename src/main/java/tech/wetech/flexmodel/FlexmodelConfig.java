@@ -18,7 +18,7 @@ public interface FlexmodelConfig {
   @WithUnnamedKey("system")
   Map<String, DatasourceConfig> datasources();
 
-  @WithDefault("/api/v1")
+  @WithDefault("/v1")
   @WithName("context-path")
   String contextPath();
 

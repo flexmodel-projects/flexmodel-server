@@ -5,6 +5,6 @@ package tech.wetech.flexmodel.interfaces.rest;
  */
 public class Resources {
 
-  public static final String ROOT_PATH = "/fm-api";
+  public static final String ROOT_PATH = "";
 
 }
