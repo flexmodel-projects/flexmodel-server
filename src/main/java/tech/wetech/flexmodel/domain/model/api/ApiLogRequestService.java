@@ -5,12 +5,12 @@ import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
-import tech.wetech.flexmodel.query.expr.Predicate;
+import tech.wetech.flexmodel.query.Predicate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static tech.wetech.flexmodel.query.expr.Expressions.field;
+import static tech.wetech.flexmodel.query.Expressions.field;
 
 /**
  * @author cjbi

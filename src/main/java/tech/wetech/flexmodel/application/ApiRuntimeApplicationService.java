@@ -28,8 +28,8 @@ import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.infrastructrue.SettingsEventConsumer;
-import tech.wetech.flexmodel.query.expr.Expressions;
-import tech.wetech.flexmodel.query.expr.Predicate;
+import tech.wetech.flexmodel.query.Expressions;
+import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.util.JsonUtils;
 import tech.wetech.flexmodel.util.PatternMatchUtils;
 import tech.wetech.flexmodel.util.UriTemplate;
@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static graphql.ExecutionInput.newExecutionInput;
-import static tech.wetech.flexmodel.query.expr.Expressions.field;
+import static tech.wetech.flexmodel.query.Expressions.field;
 
 /**
  * @author cjbi

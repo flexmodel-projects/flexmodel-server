@@ -4,12 +4,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceRepository;
-import tech.wetech.flexmodel.query.expr.Predicate;
+import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.session.Session;
 
 import java.util.List;
 
-import static tech.wetech.flexmodel.query.expr.Expressions.field;
+import static tech.wetech.flexmodel.query.Expressions.field;
 
 /**
  * @author cjbi

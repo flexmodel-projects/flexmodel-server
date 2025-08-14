@@ -7,8 +7,8 @@ import tech.wetech.flexmodel.domain.model.api.ApiRequestLogRepository;
 import tech.wetech.flexmodel.domain.model.api.LogApiRank;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 import tech.wetech.flexmodel.query.Direction;
+import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.query.Query;
-import tech.wetech.flexmodel.query.expr.Predicate;
 import tech.wetech.flexmodel.session.Session;
 
 import java.util.List;

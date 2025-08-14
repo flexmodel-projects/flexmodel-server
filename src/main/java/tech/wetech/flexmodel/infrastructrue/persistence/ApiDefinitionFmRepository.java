@@ -8,7 +8,7 @@ import tech.wetech.flexmodel.session.Session;
 
 import java.util.List;
 
-import static tech.wetech.flexmodel.query.expr.Expressions.field;
+import static tech.wetech.flexmodel.query.Expressions.field;
 
 /**
  * @author cjbi

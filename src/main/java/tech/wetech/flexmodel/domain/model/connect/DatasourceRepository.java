@@ -1,7 +1,7 @@
 package tech.wetech.flexmodel.domain.model.connect;
 
 import tech.wetech.flexmodel.codegen.entity.Datasource;
-import tech.wetech.flexmodel.query.expr.Predicate;
+import tech.wetech.flexmodel.query.Predicate;
 
 import java.util.List;
 

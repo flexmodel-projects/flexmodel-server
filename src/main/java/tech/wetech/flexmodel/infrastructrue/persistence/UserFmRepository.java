@@ -6,7 +6,7 @@ import tech.wetech.flexmodel.codegen.entity.User;
 import tech.wetech.flexmodel.domain.model.auth.UserRepository;
 import tech.wetech.flexmodel.session.Session;
 
-import static tech.wetech.flexmodel.query.expr.Expressions.field;
+import static tech.wetech.flexmodel.query.Expressions.field;
 
 /**
  * @author cjbi

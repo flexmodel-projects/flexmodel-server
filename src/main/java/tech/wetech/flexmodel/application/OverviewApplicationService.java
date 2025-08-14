@@ -9,7 +9,7 @@ import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.domain.model.api.ApiLogRequestService;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
-import tech.wetech.flexmodel.query.expr.Predicate;
+import tech.wetech.flexmodel.query.Predicate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static tech.wetech.flexmodel.query.expr.Expressions.field;
+import static tech.wetech.flexmodel.query.Expressions.field;
 
 /**
  * @author cjbi

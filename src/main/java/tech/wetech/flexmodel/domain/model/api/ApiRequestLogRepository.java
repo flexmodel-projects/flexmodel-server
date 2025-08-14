@@ -1,7 +1,7 @@
 package tech.wetech.flexmodel.domain.model.api;
 
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
-import tech.wetech.flexmodel.query.expr.Predicate;
+import tech.wetech.flexmodel.query.Predicate;
 
 import java.util.List;
 
