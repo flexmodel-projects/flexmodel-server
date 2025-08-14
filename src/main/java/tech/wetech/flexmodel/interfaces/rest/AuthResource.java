@@ -22,7 +22,7 @@ import java.util.Map;
  * @author cjbi
  */
 @Slf4j
-@Path(Resources.ROOT_PATH + "/auth")
+@Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthResource {
 

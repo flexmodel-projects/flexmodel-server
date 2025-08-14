@@ -20,14 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
-
 /**
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】系统", description = "系统信息")
 @Slf4j
-@Path(ROOT_PATH + "/system")
+@Path("/system")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SystemResource {

@@ -17,13 +17,11 @@ import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
 
 import java.util.List;
 
-import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
-
 /**
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】身份源", description = "身份源管理")
-@Path(ROOT_PATH + "/identity-providers")
+@Path("/identity-providers")
 public class IdentityProviderResource {
 
   @Inject

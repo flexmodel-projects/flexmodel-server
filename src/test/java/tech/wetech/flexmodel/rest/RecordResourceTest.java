@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import tech.wetech.flexmodel.SQLiteTestResource;
-import tech.wetech.flexmodel.interfaces.rest.Resources;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;

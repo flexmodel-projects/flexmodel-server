@@ -17,14 +17,12 @@ import tech.wetech.flexmodel.util.JsonUtils;
 import java.util.List;
 import java.util.Map;
 
-import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
-
 /**
  * @author cjbi
  */
 @Slf4j
 @Tag(name = "【Flexmodel】生成器", description = "生成器管理")
-@Path(ROOT_PATH + "/codegen")
+@Path("/codegen")
 public class GeneratorResource {
 
   @Inject

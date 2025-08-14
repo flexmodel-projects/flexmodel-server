@@ -11,13 +11,11 @@ import tech.wetech.flexmodel.application.GraphQLApplicationService;
 
 import java.util.Map;
 
-import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
-
 /**
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】GraphQL", description = "GraphQL接口信息")
-@Path(ROOT_PATH + "/graphql")
+@Path("/graphql")
 public class GraphQLResource {
 
   @Inject

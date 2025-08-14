@@ -19,13 +19,11 @@ import tech.wetech.flexmodel.model.field.TypedField;
 
 import java.util.List;
 
-import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
-
 /**
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】模型", description = "模型管理")
-@Path(ROOT_PATH + "/datasources/{datasourceName}/models")
+@Path("/datasources/{datasourceName}/models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ModelingResource {

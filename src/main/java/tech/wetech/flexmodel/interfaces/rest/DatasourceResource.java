@@ -27,13 +27,11 @@ import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.util.*;
 
-import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
-
 /**
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】数据源", description = "数据源管理")
-@Path(ROOT_PATH + "/datasources")
+@Path("/datasources")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DatasourceResource {

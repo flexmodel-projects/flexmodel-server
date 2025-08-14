@@ -17,13 +17,11 @@ import tech.wetech.flexmodel.application.dto.OverviewDTO;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
-
 /**
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】概述", description = "首页概览")
-@Path(ROOT_PATH + "/overview")
+@Path("/overview")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class OverviewResource {

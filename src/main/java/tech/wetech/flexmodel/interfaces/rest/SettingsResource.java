@@ -8,13 +8,11 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.SettingsApplicationService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 
-import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
-
 /**
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】设置", description = "系统设置")
-@Path(ROOT_PATH + "/settings")
+@Path("/settings")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SettingsResource {

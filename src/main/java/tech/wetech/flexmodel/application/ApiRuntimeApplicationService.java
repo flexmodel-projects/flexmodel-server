@@ -12,7 +12,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
@@ -84,9 +83,6 @@ public class ApiRuntimeApplicationService {
   @Inject
   FlexmodelConfig config;
 
-  @ConfigProperty(name = "quarkus.http.root-path")
-  String rootPath;
-
   public PageDTO<ApiRequestLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
     List<ApiRequestLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, isSuccess), current, pageSize);
     long total = apiLogService.count(getCondition(keyword, startDate, endDate, isSuccess));
@@ -138,7 +134,7 @@ public class ApiRuntimeApplicationService {
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
       Map<String, Object> meta = (Map<String, Object>) apiDefinition.getMeta();
-      UriTemplate uriTemplate = new UriTemplate(rootPath + config.contextPath() + apiDefinition.getPath());
+      UriTemplate uriTemplate = new UriTemplate( config.contextPath() + apiDefinition.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiDefinition.getMethod())) {

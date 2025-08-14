@@ -19,13 +19,11 @@ import tech.wetech.flexmodel.application.dto.PageDTO;
 
 import java.util.Map;
 
-import static tech.wetech.flexmodel.interfaces.rest.Resources.ROOT_PATH;
-
 /**
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】记录", description = "模型数据记录管理")
-@Path(ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records")
+@Path("/datasources/{datasourceName}/models/{modelName}/records")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RecordResource {

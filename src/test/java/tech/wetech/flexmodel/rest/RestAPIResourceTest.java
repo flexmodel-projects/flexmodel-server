@@ -24,7 +24,7 @@ public class RestAPIResourceTest {
     // list
     given()
       .when()
-      .get("/v1/system/Classes/list")
+      .get("/api/v1/system/Classes/list")
       .then()
       .statusCode(200)
       .body("size()", greaterThanOrEqualTo(1))
@@ -32,7 +32,7 @@ public class RestAPIResourceTest {
     // view
     given()
       .when()
-      .get("/v1/system/Classes/1")
+      .get("/api/v1/system/Classes/1")
       .then()
       .statusCode(200)
       .body("data.system_find_one_Classes.classCode", notNullValue());
@@ -51,7 +51,7 @@ public class RestAPIResourceTest {
             "className": "三年级2班"
           }
         """)
-      .post("/v1/system/Classes")
+      .post("/api/v1/system/Classes")
       .then()
       .statusCode(200)
       .body("data", notNullValue());
@@ -70,7 +70,7 @@ public class RestAPIResourceTest {
             "className": "五年级3班"
           }
         """)
-      .put("/v1/system/Classes/1")
+      .put("/api/v1/system/Classes/1")
       .then()
       .statusCode(200)
       .body("data", notNullValue());
@@ -81,7 +81,7 @@ public class RestAPIResourceTest {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     given()
       .when()
-      .delete("/v1/system/Classes/1")
+      .delete("/api/v1/system/Classes/1")
       .then()
       .statusCode(200)
       .body("data", notNullValue());
