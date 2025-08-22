@@ -191,8 +191,8 @@ public class ApiRuntimeApplicationService {
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals("POST")) {
         isMatching = true;
+        log.debug("Matched graphql enpoint: {}", config.contextPath() + settings.getSecurity().getGraphqlEndpointPath());
         // 匹配成功
-        log.debug("Matched request for api: {}", settings.getSecurity().getGraphqlEndpointPath());
         if (isRateLimiting(routingContext, null, null)) return;
         String identityProvider = settings.getSecurity().getGraphqlEndpointIdentityProvider();
         // 鉴权

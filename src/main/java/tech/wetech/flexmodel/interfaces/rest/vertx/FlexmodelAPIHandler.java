@@ -19,7 +19,7 @@ import tech.wetech.flexmodel.graphql.GraphQLProvider;
  */
 @Slf4j
 @ApplicationScoped
-public class FlexmodelRestAPIHandler {
+public class FlexmodelAPIHandler {
 
   @Inject
   ApiRuntimeApplicationService apiRuntimeApplicationService;

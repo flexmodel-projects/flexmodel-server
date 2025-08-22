@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.notNullValue;
  */
 @QuarkusTest
 @QuarkusTestResource(SQLiteTestResource.class)
-public class RestAPIResourceTest {
+public class FlexmodelAPIResourceTest {
 
   @Test
   void testGET() {
@@ -85,6 +85,24 @@ public class RestAPIResourceTest {
       .then()
       .statusCode(200)
       .body("data", notNullValue());
+  }
+
+  @Test
+  void testGraphQL() {
+
+    RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    given()
+      .when()
+      .contentType(ContentType.JSON)
+      .body("""
+          {
+            "query": "query { system_list_Classes { classCode className } }"
+          }
+        """)
+      .post("/api/v1/graphql")
+      .then()
+      .statusCode(200)
+      .body("data.system_list_Classes", notNullValue());
   }
 
 }
