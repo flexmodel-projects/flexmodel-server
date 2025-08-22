@@ -134,7 +134,7 @@ public class ApiRuntimeApplicationService {
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
       Map<String, Object> meta = (Map<String, Object>) apiDefinition.getMeta();
-      UriTemplate uriTemplate = new UriTemplate( config.contextPath() + apiDefinition.getPath());
+      UriTemplate uriTemplate = new UriTemplate(config.contextPath() + apiDefinition.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiDefinition.getMethod())) {
@@ -206,7 +206,23 @@ public class ApiRuntimeApplicationService {
           }
         }
         String bodyString = routingContext.body().asString();
-        Map body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
+        Map body;
+        try {
+          body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
+          if (body.get("query") == null) {
+            sendBadRequestFail(routingContext,
+              "query is required, e.g. { \"query\": \"query MyQuery { system_aggregate_Classes { _count } }\" }",
+              -1);
+            return;
+          }
+        } catch (Exception e) {
+          log.error("Parse body error: {}", e.getMessage(), e);
+          routingContext.fail(400);
+          sendBadRequestFail(routingContext,
+            "Parse body error:" + e.getMessage(),
+            -1);
+          return;
+        }
         ExecutionResult result = execute((String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
         routingContext.response()
           .putHeader("Content-Type", "application/json")
@@ -349,6 +365,17 @@ public class ApiRuntimeApplicationService {
     result.put("success", false);
     routingContext.response()
       .setStatusCode(HttpResponseStatus.NOT_FOUND.code())
+      .putHeader("Content-Type", "application/json")
+      .end(JsonUtils.getInstance().stringify(result));
+  }
+
+  private void sendBadRequestFail(RoutingContext routingContext, String msg, Integer code) {
+    Map<String, Object> result = new HashMap<>();
+    result.put("messasge", msg);
+    result.put("code", code);
+    result.put("success", false);
+    routingContext.response()
+      .setStatusCode(HttpResponseStatus.BAD_REQUEST.code())
       .putHeader("Content-Type", "application/json")
       .end(JsonUtils.getInstance().stringify(result));
   }
