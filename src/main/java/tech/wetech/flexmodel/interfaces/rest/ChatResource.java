@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.interfaces.rest;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -13,9 +12,9 @@ import jakarta.ws.rs.sse.OutboundSseEvent;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.interfaces.rest.request.ChatRequest;
 import tech.wetech.flexmodel.interfaces.rest.response.ChatChoiceDelta;
 import tech.wetech.flexmodel.interfaces.rest.response.ChatDelta;
-import tech.wetech.flexmodel.interfaces.rest.response.ChatRequest;
 import tech.wetech.flexmodel.interfaces.rest.response.ChatResponseDelta;
 import tech.wetech.flexmodel.util.JsonUtils;
 
@@ -29,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Path("/chat")
 @ApplicationScoped
-@RegisterForReflection
 public class ChatResource {
 
   @Inject

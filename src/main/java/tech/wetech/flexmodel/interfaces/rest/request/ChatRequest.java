@@ -1,10 +1,9 @@
-package tech.wetech.flexmodel.interfaces.rest.response;
+package tech.wetech.flexmodel.interfaces.rest.request;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import tech.wetech.flexmodel.interfaces.rest.response.ChatMessage;
 
 import java.util.List;
 
-@RegisterForReflection
 public record ChatRequest(
   String model,
   List<ChatMessage> messages,
