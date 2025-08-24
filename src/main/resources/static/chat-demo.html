@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI聊天演示</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .chat-container {
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            margin-left: 20%;
+        }
+        .ai-message {
+            background-color: #e9ecef;
+            color: #333;
+            margin-right: 20%;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .mode-switch {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .mode-switch button {
+            margin: 0 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        .mode-switch button.active {
+            background-color: #28a745;
+        }
+        .loading {
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI聊天演示</h1>
+        
+        <div class="mode-switch">
+            <button id="normalMode" class="active" onclick="switchMode('normal')">普通模式</button>
+            <button id="streamMode" onclick="switchMode('stream')">流式模式</button>
+        </div>
+        
+        <div class="chat-container" id="chatContainer">
+            <div class="message ai-message">
+                你好！我是AI助手，请告诉我您需要什么帮助。
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="请输入您的问题..." onkeypress="handleKeyPress(event)">
+            <button id="sendButton" onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'normal';
+        let isStreaming = false;
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('normalMode').classList.toggle('active', mode === 'normal');
+            document.getElementById('streamMode').classList.toggle('active', mode === 'stream');
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function addMessage(content, isUser = false) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            messageDiv.textContent = content;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function addStreamingMessage() {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai-message';
+            messageDiv.id = 'streaming-message';
+            messageDiv.innerHTML = '<span class="loading">AI正在思考...</span>';
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return messageDiv;
+        }
+
+        function updateStreamingMessage(content) {
+            const messageDiv = document.getElementById('streaming-message');
+            if (messageDiv) {
+                messageDiv.innerHTML = content;
+            }
+        }
+
+        function removeStreamingMessage() {
+            const messageDiv = document.getElementById('streaming-message');
+            if (messageDiv) {
+                messageDiv.remove();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const message = input.value.trim();
+            
+            if (!message || isStreaming) return;
+            
+            // 添加用户消息
+            addMessage(message, true);
+            input.value = '';
+            sendButton.disabled = true;
+            isStreaming = true;
+            
+            try {
+                if (currentMode === 'normal') {
+                    await sendNormalMessage(message);
+                } else {
+                    await sendStreamMessage(message);
+                }
+            } catch (error) {
+                console.error('发送消息失败:', error);
+                addMessage('抱歉，发送消息时出现错误。', false);
+            } finally {
+                sendButton.disabled = false;
+                isStreaming = false;
+            }
+        }
+
+        async function sendNormalMessage(message) {
+            const response = await fetch('/api/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [{
+                        role: 'user',
+                        content: message
+                    }],
+                    temperature: 0.7,
+                    maxTokens: 1000,
+                    stream: false
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const aiResponse = data.choices[0].message.content;
+            addMessage(aiResponse, false);
+        }
+
+        async function sendStreamMessage(message) {
+            const streamingDiv = addStreamingMessage();
+            let fullResponse = '';
+
+            const response = await fetch('/api/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [{
+                        role: 'user',
+                        content: message
+                    }],
+                    temperature: 0.7,
+                    maxTokens: 1000,
+                    stream: true
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            try {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data:')) {
+                            const data = line.substring(6);
+                            if (data === '[DONE]') {
+                                removeStreamingMessage();
+                                addMessage(fullResponse, false);
+                                return;
+                            }
+
+                            try {
+                                const parsed = JSON.parse(data);
+                                if (parsed.choices && parsed.choices[0] && parsed.choices[0].delta) {
+                                    const delta = parsed.choices[0].delta;
+                                    if (delta.content) {
+                                        fullResponse += delta.content;
+                                        updateStreamingMessage(fullResponse);
+                                    }
+                                }
+                            } catch (e) {
+                                // 忽略解析错误
+                            }
+                        } else if (line.trim() && !line.startsWith('data:')) {
+                            // 处理没有data:前缀的JSON数据
+                            try {
+                                const parsed = JSON.parse(line.trim());
+                                if (parsed.choices && parsed.choices[0] && parsed.choices[0].delta) {
+                                    const delta = parsed.choices[0].delta;
+                                    if (delta.content) {
+                                        fullResponse += delta.content;
+                                        updateStreamingMessage(fullResponse);
+                                    }
+                                }
+                            } catch (e) {
+                                // 忽略解析错误
+                            }
+                        }
+                    }
+                }
+            } finally {
+                reader.releaseLock();
+            }
+        }
+    </script>
+</body>
+</html>
