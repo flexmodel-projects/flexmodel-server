@@ -26,7 +26,7 @@ import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
-import tech.wetech.flexmodel.infrastructrue.SettingsEventConsumer;
+import tech.wetech.flexmodel.infrastructure.SettingsEventConsumer;
 import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.util.JsonUtils;
