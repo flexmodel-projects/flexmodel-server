@@ -7,9 +7,7 @@ import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -26,9 +24,8 @@ import tech.wetech.flexmodel.util.JsonUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Slf4j
@@ -42,6 +39,25 @@ public class ChatResource {
   @Inject
   StreamingChatModel model;
 
+  // In-memory conversation store
+  private final Map<String, Conversation> conversations = new ConcurrentHashMap<>();
+
+  public static class Conversation {
+    public String id;
+    public String title;
+    public String createdAt;
+    public List<ChatMessage> messages = new ArrayList<>();
+  }
+
+  public static class CreateConversationRequest {
+    public String title;
+  }
+
+  public static class SendMessageRequest {
+    public String content;
+    public String model;
+  }
+
   /**
    * 统一的聊天接口
    * 根据请求中的stream参数决定返回普通响应还是流式响应
@@ -53,6 +69,116 @@ public class ChatResource {
     log.info("收到聊天请求: " + request.messages().get(0).content());
     // 流式响应
     return handleStreamResponse(request, eventSink);
+  }
+
+  // Conversations CRUD
+  @POST
+  @Path("/conversations")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response createConversation(CreateConversationRequest request) {
+    String id = UUID.randomUUID().toString();
+    Conversation conversation = new Conversation();
+    conversation.id = id;
+    conversation.title = request != null && request.title != null && !request.title.isBlank() ? request.title : "New Chat";
+    conversation.createdAt = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    conversations.put(id, conversation);
+    return Response.status(Response.Status.CREATED).entity(conversation).build();
+  }
+
+  @GET
+  @Path("/conversations")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response listConversations() {
+    return Response.ok(conversations.values()).build();
+  }
+
+  @GET
+  @Path("/conversations/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getConversation(@PathParam("id") String id) {
+    Conversation conversation = conversations.get(id);
+    if (conversation == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    return Response.ok(conversation).build();
+  }
+
+  @DELETE
+  @Path("/conversations/{id}")
+  public Response deleteConversation(@PathParam("id") String id) {
+    Conversation removed = conversations.remove(id);
+    if (removed == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    return Response.noContent().build();
+  }
+
+  // Conversation messages
+  @GET
+  @Path("/conversations/{id}/messages")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response listMessages(@PathParam("id") String id) {
+    Conversation conversation = conversations.get(id);
+    if (conversation == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    List<ChatMessage> messages = conversation.messages == null ? Collections.emptyList() : conversation.messages;
+    return Response.ok(messages).build();
+  }
+
+  @POST
+  @Path("/conversations/{id}/messages")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response sendMessage(@PathParam("id") String id, SendMessageRequest request, @Context SseEventSink eventSink) {
+    Conversation conversation = conversations.get(id);
+    if (conversation == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (request == null || request.content == null || request.content.isBlank()) {
+      return Response.status(Response.Status.BAD_REQUEST).entity("content is required").build();
+    }
+
+    // Append user message to conversation
+    ChatMessage userMsg = new ChatMessage("user", request.content);
+    conversation.messages.add(userMsg);
+
+    // Build full message history for model
+    List<dev.langchain4j.data.message.ChatMessage> history = new ArrayList<>();
+    for (ChatMessage m : conversation.messages) {
+      if ("assistant".equals(m.role())) {
+        history.add(new AiMessage(m.content()));
+      } else {
+        history.add(new UserMessage(m.content()));
+      }
+    }
+
+    String requestId = UUID.randomUUID().toString();
+    String modelName = request.model != null ? request.model : "default";
+    StringBuilder assistantContent = new StringBuilder();
+
+    model.chat(history, new StreamingChatResponseHandler() {
+      @Override
+      public void onPartialResponse(String token) {
+        assistantContent.append(token);
+        sendDeltaEvent(0, eventSink, requestId, modelName, token);
+      }
+
+      @Override
+      public void onCompleteResponse(ChatResponse chatResponse) {
+        log.info("完成响应: {}", chatResponse.id());
+        // Append assistant message to conversation on completion
+        conversation.messages.add(new ChatMessage("assistant", assistantContent.toString()));
+        sendDoneEvent(eventSink);
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        log.error("流式聊天出错", throwable);
+        sendErrorEvent(eventSink, throwable.getMessage());
+      }
+    });
+    return Response.ok().build();
   }
 
   /**

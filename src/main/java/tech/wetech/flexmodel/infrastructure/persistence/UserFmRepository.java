@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.infrastructrue.persistence;
+package tech.wetech.flexmodel.infrastructure.persistence;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;

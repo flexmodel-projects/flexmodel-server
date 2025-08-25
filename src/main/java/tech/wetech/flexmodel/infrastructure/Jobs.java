@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.infrastructrue;
+package tech.wetech.flexmodel.infrastructure;
 
 import io.quarkus.scheduler.Scheduled;
 import jakarta.inject.Inject;

@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.infrastructrue.session;
+package tech.wetech.flexmodel.infrastructure.session;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.quarkus.runtime.StartupEvent;

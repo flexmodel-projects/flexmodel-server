@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.infrastructrue;
+package tech.wetech.flexmodel.infrastructure;
 
 import io.quarkus.vertx.ConsumeEvent;
 import jakarta.enterprise.context.ApplicationScoped;

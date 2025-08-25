@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.infrastructrue.session;
+package tech.wetech.flexmodel.infrastructure.session;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.RequestScoped;

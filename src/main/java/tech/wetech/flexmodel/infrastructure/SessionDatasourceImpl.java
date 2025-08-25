@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.infrastructrue;
+package tech.wetech.flexmodel.infrastructure;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;

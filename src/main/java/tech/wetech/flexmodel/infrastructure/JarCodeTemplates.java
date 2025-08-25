@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.infrastructrue;
+package tech.wetech.flexmodel.infrastructure;
 
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
