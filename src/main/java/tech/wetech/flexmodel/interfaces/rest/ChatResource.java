@@ -42,6 +42,68 @@ public class ChatResource {
   // In-memory conversation store
   private final Map<String, Conversation> conversations = new ConcurrentHashMap<>();
 
+  public ChatResource() {
+    // 创建默认对话 - 技术咨询场景
+    Conversation defaultConversation = new Conversation();
+    defaultConversation.id = "default";
+    defaultConversation.title = "Java 微服务架构讨论";
+    defaultConversation.createdAt = LocalDateTime.now().minusHours(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    defaultConversation.messages.add(new ChatMessage("user", "你好，我想了解一下如何设计一个健壮的微服务架构？"));
+    defaultConversation.messages.add(new ChatMessage("assistant", "你好！设计一个健壮的微服务架构需要考虑多个方面。首先，你需要确定服务边界，确保每个服务都有明确的职责。"));
+    defaultConversation.messages.add(new ChatMessage("user", "那在服务间通信方面有什么推荐的做法吗？"));
+    defaultConversation.messages.add(new ChatMessage("assistant", "对于服务间通信，通常有两种方式：同步通信（如 REST API、gRPC）和异步通信（如消息队列）。选择哪种方式取决于你的业务场景和性能要求。"));
+    conversations.put("default", defaultConversation);
+
+    // 创建技术对话 - 数据库优化
+    Conversation dbConversation = new Conversation();
+    dbConversation.id = "conv-001";
+    dbConversation.title = "数据库性能优化";
+    dbConversation.createdAt = LocalDateTime.now().minusDays(1).minusHours(3).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    dbConversation.messages.add(new ChatMessage("user", "我的 MySQL 查询很慢，有什么优化建议吗？"));
+    dbConversation.messages.add(new ChatMessage("assistant", "数据库查询慢可能有多种原因。你可以先检查是否缺少合适的索引，使用 EXPLAIN 分析查询执行计划，避免 SELECT * 等。"));
+    dbConversation.messages.add(new ChatMessage("user", "我已经添加了索引，但还是不够快。"));
+    dbConversation.messages.add(new ChatMessage("assistant", "那可以考虑分库分表、读写分离、查询缓存等方案。另外，检查表结构设计是否合理也很重要。"));
+    conversations.put(dbConversation.id, dbConversation);
+
+    // 创建日常对话
+    Conversation casualConversation = new Conversation();
+    casualConversation.id = "conv-002";
+    casualConversation.title = "周末计划讨论";
+    casualConversation.createdAt = LocalDateTime.now().minusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    casualConversation.messages.add(new ChatMessage("user", "周末有什么推荐的活动吗？"));
+    casualConversation.messages.add(new ChatMessage("assistant", "这取决于你的兴趣！如果你喜欢户外活动，可以考虑徒步或骑行。如果喜欢室内活动，看电影或逛博物馆也不错。"));
+    casualConversation.messages.add(new ChatMessage("user", "我想尝试一些新的餐厅，有什么推荐吗？"));
+    casualConversation.messages.add(new ChatMessage("assistant", "你比较喜欢哪种菜系呢？中餐、西餐还是日韩料理？另外，你更倾向于高档餐厅还是特色小吃？"));
+    casualConversation.messages.add(new ChatMessage("user", "我喜欢日韩料理，特别是性价比高的地方。"));
+    casualConversation.messages.add(new ChatMessage("assistant", "那可以试试附近的日式拉面店或者韩式烤肉店。我推荐几家口碑不错的，你可以在大众点评上查看具体位置和评价。"));
+    conversations.put(casualConversation.id, casualConversation);
+
+    // 创建编程学习对话
+    Conversation learningConversation = new Conversation();
+    learningConversation.id = "conv-003";
+    learningConversation.title = "学习 Java Spring Boot";
+    learningConversation.createdAt = LocalDateTime.now().minusDays(5).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    learningConversation.messages.add(new ChatMessage("user", "我想学习 Spring Boot，应该从哪里开始？"));
+    learningConversation.messages.add(new ChatMessage("assistant", "学习 Spring Boot 建议先掌握 Java 基础和 Spring 框架的基本概念。然后可以从官方文档入手，跟着教程创建简单的项目。"));
+    learningConversation.messages.add(new ChatMessage("user", "有没有推荐的学习资源？"));
+    learningConversation.messages.add(new ChatMessage("assistant", "官方文档是最好的起点：https://spring.io/projects/spring-boot。此外，Baeldung 网站也有很多优质教程，还有 GitHub 上的 spring-boot-examples 项目。"));
+    learningConversation.messages.add(new ChatMessage("user", "学习过程中遇到问题怎么办？"));
+    learningConversation.messages.add(new ChatMessage("assistant", "遇到问题可以查阅官方文档、Stack Overflow 或者技术论坛。也可以加入一些技术交流群，与其他开发者交流经验。"));
+    conversations.put(learningConversation.id, learningConversation);
+
+    // 创建产品讨论对话
+    Conversation productConversation = new Conversation();
+    productConversation.id = "conv-004";
+    productConversation.title = "新产品功能讨论";
+    productConversation.createdAt = LocalDateTime.now().minusDays(7).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    productConversation.messages.add(new ChatMessage("user", "我们计划为产品添加用户反馈功能，有什么建议吗？"));
+    productConversation.messages.add(new ChatMessage("assistant", "用户反馈功能很重要。建议包括：1) 多种反馈渠道（应用内、邮件、社交媒体）；2) 反馈分类和标签；3) 反馈状态跟踪；4) 用户回复机制。"));
+    productConversation.messages.add(new ChatMessage("user", "如何激励用户提供反馈？"));
+    productConversation.messages.add(new ChatMessage("assistant", "可以通过奖励机制激励用户，比如积分、优惠券或者早期访问新功能的权限。同时确保反馈流程简单快捷，减少用户操作成本。"));
+    conversations.put(productConversation.id, productConversation);
+}
+
+
   public static class Conversation {
     public String id;
     public String title;
