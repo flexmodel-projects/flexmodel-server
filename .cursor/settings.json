@@ -1,0 +1,78 @@
+{
+  "project": {
+    "name": "flexmodel-server",
+    "description": "面向下一代应用程序的统一数据访问层，开源、自主可控的API设计平台",
+    "technology": "Java 21, Quarkus 3, Maven, SQLite",
+    "architecture": "DDD分层架构"
+  },
+  "codeStyle": {
+    "language": "java",
+    "indentation": "2 spaces",
+    "lineEnding": "LF",
+    "encoding": "UTF-8",
+    "maxLineLength": 120,
+    "namingConventions": {
+      "class": "PascalCase",
+      "method": "camelCase",
+      "constant": "UPPER_SNAKE_CASE",
+      "package": "lowercase"
+    }
+  },
+  "packages": {
+    "interfaces": "tech.wetech.flexmodel.interfaces",
+    "application": "tech.wetech.flexmodel.application", 
+    "domain": "tech.wetech.flexmodel.domain",
+    "infrastructure": "tech.wetech.flexmodel.infrastructure",
+    "shared": "tech.wetech.flexmodel.shared"
+  },
+  "annotations": {
+    "logging": "@Slf4j",
+    "dependencyInjection": "@ApplicationScoped, @Inject",
+    "restApi": "@Path, @GET, @POST, @PUT, @DELETE",
+    "testing": "@QuarkusTest, @Test",
+    "configuration": "@ConfigMapping"
+  },
+  "templates": {
+    "restResource": "templates/rest-resource.java",
+    "applicationService": "templates/application-service.java", 
+    "domainModel": "templates/domain-model.java",
+    "repository": "templates/repository.java",
+    "test": "templates/test.java",
+    "config": "templates/config.java",
+    "exception": "templates/exception.java",
+    "dto": "templates/dto.java"
+  },
+  "conventions": {
+    "author": "@author cjbi",
+    "comments": "中文注释",
+    "documentation": "中文文档",
+    "exceptionHandling": "继承BusinessException",
+    "validation": "使用Hibernate Validator",
+    "serialization": "使用Jackson"
+  },
+  "testing": {
+    "framework": "JUnit 5 + REST Assured",
+    "naming": "test{MethodName}",
+    "structure": "Given-When-Then",
+    "assertions": "Hamcrest matchers"
+  },
+  "dependencies": {
+    "core": ["Quarkus", "Lombok", "Jackson"],
+    "database": ["SQLite", "HikariCP"],
+    "api": ["OpenAPI", "GraphQL"],
+    "ai": ["LangChain4j"],
+    "testing": ["JUnit 5", "REST Assured"]
+  },
+  "fileStructure": {
+    "java": "src/main/java",
+    "resources": "src/main/resources", 
+    "test": "src/test/java",
+    "testResources": "src/test/resources"
+  },
+  "build": {
+    "tool": "Maven",
+    "javaVersion": "21",
+    "quarkusVersion": "3.20.0",
+    "packaging": "jar"
+  }
+}
