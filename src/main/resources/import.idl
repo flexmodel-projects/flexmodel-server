@@ -90,14 +90,14 @@ model fs_user {
     username : String @length("255") @comment("用户名"),
     password_hash : String @length("255") @comment("密码HASH"),
     created_at : DateTime @default(now()) @comment("创建时间"),
-    @index(name:"IDX_USERNAME", unique: "true", fields: [username]),
+    @index(name : "IDX_USERNAME", unique: "true", fields: [username]),
     @comment("用户")
 }
 model fs_ai_chat_conversation {
   id : String @id @default(ulid()),
   title : String @length("255") @comment("标题"),
   created_at : DateTime @default(now()) @comment("创建时间"),
-  messages? : fs_ai_chat_message[] @relation(localField: "id", foreignField: "conversation_id", cascadeDelete: true),
+  messages? : fs_ai_chat_message[] @relation(localField: "id", foreignField: "conversation_id", cascadeDelete: "true"),
   @comment("AI聊天会话")
 }
 
