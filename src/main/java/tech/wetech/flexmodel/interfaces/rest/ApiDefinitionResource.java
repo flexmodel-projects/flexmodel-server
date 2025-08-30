@@ -23,7 +23,7 @@ import java.util.List;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】接口定义", description = "接口定义管理")
-@Path("/apis")
+@Path("/f/apis")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ApiDefinitionResource {

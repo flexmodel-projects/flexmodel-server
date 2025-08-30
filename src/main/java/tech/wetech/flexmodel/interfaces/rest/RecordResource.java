@@ -23,7 +23,7 @@ import java.util.Map;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】记录", description = "模型数据记录管理")
-@Path("/datasources/{datasourceName}/models/{modelName}/records")
+@Path("/f/datasources/{datasourceName}/models/{modelName}/records")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RecordResource {

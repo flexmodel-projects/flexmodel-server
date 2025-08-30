@@ -17,7 +17,7 @@ import java.util.Map;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】接口文档", description = "接口文档管理")
-@Path("/docs")
+@Path("/f/docs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DocumentResource {

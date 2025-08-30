@@ -17,6 +17,7 @@ public class ApiLogResourceTest {
   @Test
   void testFindApiLogs() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .get(Resources.ROOT_PATH + "/logs")
       .then()
@@ -26,6 +27,7 @@ public class ApiLogResourceTest {
   @Test
   void testStat() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .get(Resources.ROOT_PATH + "/logs/stat")
       .then()

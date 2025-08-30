@@ -21,7 +21,7 @@ import java.util.List;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】身份源", description = "身份源管理")
-@Path("/identity-providers")
+@Path("/f/identity-providers")
 public class IdentityProviderResource {
 
   @Inject

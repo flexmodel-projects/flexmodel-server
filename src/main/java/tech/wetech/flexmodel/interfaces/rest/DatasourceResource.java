@@ -31,7 +31,7 @@ import java.util.*;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】数据源", description = "数据源管理")
-@Path("/datasources")
+@Path("/f/datasources")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DatasourceResource {

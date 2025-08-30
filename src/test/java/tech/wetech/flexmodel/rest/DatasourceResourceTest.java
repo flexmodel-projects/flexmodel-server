@@ -17,9 +17,13 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(SQLiteTestResource.class)
 class DatasourceResourceTest {
 
+  /**
+   * 获取测试用的token
+   */
   @Test
   void testValidateConnection() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -59,6 +63,7 @@ class DatasourceResourceTest {
   @Test
   void testFindAll() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .get(Resources.ROOT_PATH + "/datasources")
       .then()
@@ -70,6 +75,7 @@ class DatasourceResourceTest {
   @Test
   void testCreateDatasource() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -92,6 +98,7 @@ class DatasourceResourceTest {
   @Test
   void testUpdateDatasource() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -114,6 +121,7 @@ class DatasourceResourceTest {
   @Test
   void testDeleteDatasource() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -132,6 +140,7 @@ class DatasourceResourceTest {
       .then()
       .statusCode(200);
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}", "mysql_test3")

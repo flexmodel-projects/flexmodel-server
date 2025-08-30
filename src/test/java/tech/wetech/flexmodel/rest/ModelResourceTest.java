@@ -16,6 +16,7 @@ class ModelResourceTest {
   @Test
   void testFindModels() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .get(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "system")
       .then()
@@ -26,6 +27,7 @@ class ModelResourceTest {
   @Test
   void testCreateModel() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -87,6 +89,7 @@ class ModelResourceTest {
   @Test
   void testDropModel() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -144,6 +147,7 @@ class ModelResourceTest {
       .then()
       .statusCode(200);
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}", "mysql_test", "testDropModel")
@@ -154,6 +158,7 @@ class ModelResourceTest {
   @Test
   void testCreateField() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -211,6 +216,7 @@ class ModelResourceTest {
       .then()
       .statusCode(200);
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -231,6 +237,7 @@ class ModelResourceTest {
   @Test
   void testModifyField() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -287,6 +294,7 @@ class ModelResourceTest {
       .then()
       .statusCode(200);
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -310,6 +318,7 @@ class ModelResourceTest {
   @Test
   void testDropField() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -368,6 +377,7 @@ class ModelResourceTest {
       .then()
       .statusCode(200);
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/fields/{fieldName}",
         "mysql_test",
@@ -380,6 +390,7 @@ class ModelResourceTest {
   @Test
   void testCreateIndex() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -438,6 +449,7 @@ class ModelResourceTest {
       .then()
       .statusCode(200);
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -464,6 +476,7 @@ class ModelResourceTest {
   @Test
   void testModifyIndex() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -533,6 +546,7 @@ class ModelResourceTest {
       .then()
       .statusCode(200);
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -560,6 +574,7 @@ class ModelResourceTest {
   @Test
   void testDropIndex() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -629,6 +644,7 @@ class ModelResourceTest {
       .then()
       .statusCode(200);
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/indexes/{indexName}",

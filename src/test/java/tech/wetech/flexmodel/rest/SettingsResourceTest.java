@@ -5,6 +5,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
+import tech.wetech.flexmodel.interfaces.rest.jwt.JwtUtil;
+
+import java.time.Duration;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -15,6 +18,13 @@ import static org.hamcrest.CoreMatchers.equalTo;
 @QuarkusTest
 @QuarkusTestResource(SQLiteTestResource.class)
 public class SettingsResourceTest {
+
+  /**
+   * 获取测试用的token
+   */
+  private String getTestToken() {
+    return JwtUtil.sign("admin", Duration.ofMinutes(5));
+  }
 
   @Test
   void testGetSettings() {
@@ -39,6 +49,7 @@ public class SettingsResourceTest {
     defaultSettings.setProxy(proxy);
 
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .contentType("application/json")
       .body(defaultSettings)
       .when()
@@ -48,6 +59,7 @@ public class SettingsResourceTest {
 
     // 然后获取设置并验证
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .get(Resources.ROOT_PATH + "/settings")
       .then()
@@ -84,6 +96,7 @@ public class SettingsResourceTest {
     settings.setProxy(proxy);
 
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .contentType("application/json")
       .body(settings)
       .when()
@@ -111,6 +124,7 @@ public class SettingsResourceTest {
     settings.setLog(log);
 
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .contentType("application/json")
       .body(settings)
       .when()
@@ -145,6 +159,7 @@ public class SettingsResourceTest {
     settings.setProxy(proxy);
 
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .contentType("application/json")
       .body(settings)
       .when()
@@ -171,6 +186,7 @@ public class SettingsResourceTest {
     settings.setLog(log);
 
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .contentType("application/json")
       .body(settings)
       .when()
@@ -180,6 +196,7 @@ public class SettingsResourceTest {
 
     // 然后获取设置，验证数据持久化
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .get(Resources.ROOT_PATH + "/settings")
       .then()

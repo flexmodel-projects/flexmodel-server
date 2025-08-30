@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @Slf4j
 @Tag(name = "【Flexmodel】生成器", description = "生成器管理")
-@Path("/codegen")
+@Path("/f/codegen")
 public class GeneratorResource {
 
   @Inject

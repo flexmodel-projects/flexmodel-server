@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】概述", description = "首页概览")
-@Path("/overview")
+@Path("/f/overview")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class OverviewResource {

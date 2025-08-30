@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import tech.wetech.flexmodel.SQLiteTestResource;
+import tech.wetech.flexmodel.interfaces.rest.jwt.JwtUtil;
+
+import java.time.Duration;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -22,9 +25,17 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RecordResourceTest {
 
+  /**
+   * 获取测试用的token
+   */
+  private String getTestToken() {
+    return JwtUtil.sign("admin", Duration.ofMinutes(5));
+  }
+
   @Test
   void testFindPagingRecords() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .param("current", "1")
       .param("pageSize", "20")
@@ -42,6 +53,7 @@ class RecordResourceTest {
   @Order(1)
   void testCreateRecord() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -65,6 +77,7 @@ class RecordResourceTest {
   @Order(2)
   void testUpdateRecord() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -90,6 +103,7 @@ class RecordResourceTest {
   void testFindOneRecord() {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .param("current", "1")
       .param("pageSize", "20")
@@ -107,6 +121,7 @@ class RecordResourceTest {
   @Order(4)
   void testDeleteRecord() {
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "system", "Student", 100000)
       .then()

@@ -17,7 +17,7 @@ public class SecurityUtil {
   }
 
   public static void main(String[] args) throws NoSuchAlgorithmException {
-    System.out.println(SecurityUtil.md5("admin", "123456"));
+    System.out.println(SecurityUtil.md5("admin", "admin123456"));
   }
 
 }

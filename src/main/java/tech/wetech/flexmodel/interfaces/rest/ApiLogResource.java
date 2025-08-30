@@ -25,7 +25,7 @@ import java.util.List;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】接口日志", description = "接口日志管理")
-@Path("/logs")
+@Path("/f/logs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ApiLogResource {

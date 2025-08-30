@@ -23,7 +23,7 @@ import java.util.List;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】模型", description = "模型管理")
-@Path("/datasources/{datasourceName}/models")
+@Path("/f/datasources/{datasourceName}/models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ModelingResource {

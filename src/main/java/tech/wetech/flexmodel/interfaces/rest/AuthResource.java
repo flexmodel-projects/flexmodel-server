@@ -22,7 +22,7 @@ import java.util.Map;
  * @author cjbi
  */
 @Slf4j
-@Path("/auth")
+@Path("/f/auth")
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthResource {
 
@@ -116,8 +116,8 @@ public class AuthResource {
     }
     UserinfoResponse userinfo = new UserinfoResponse();
     userinfo.setToken(accessToken);
-    userinfo.setUser(new UserinfoResponse.UserResponse(user.getId(), user.getUsername(), user.getAvatar()));
-    userinfo.setSettings(settingsApplicationService.getSettings());
+    userinfo.setExpiresIn(300000L);
+    userinfo.setUser(new UserinfoResponse.UserResponse(user.getId(), user.getUsername()));
     return userinfo;
   }
 

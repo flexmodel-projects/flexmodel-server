@@ -12,7 +12,7 @@ import tech.wetech.flexmodel.domain.model.settings.Settings;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】设置", description = "系统设置")
-@Path("/settings")
+@Path("/f/settings")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SettingsResource {

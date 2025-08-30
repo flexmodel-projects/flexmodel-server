@@ -23,6 +23,7 @@ public class FlexmodelAPIResourceTest {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     // list
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .get("/api/v1/system/Classes/list")
       .then()
@@ -31,6 +32,7 @@ public class FlexmodelAPIResourceTest {
       .body("data.system_list_Classes[0].classCode", notNullValue());
     // view
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .get("/api/v1/system/Classes/1")
       .then()
@@ -42,6 +44,7 @@ public class FlexmodelAPIResourceTest {
   void testPOST() {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -61,6 +64,7 @@ public class FlexmodelAPIResourceTest {
   void testPUT() {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -80,6 +84,7 @@ public class FlexmodelAPIResourceTest {
   void testDELETE() {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .delete("/api/v1/system/Classes/1")
       .then()
@@ -92,6 +97,7 @@ public class FlexmodelAPIResourceTest {
 
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
       .body("""

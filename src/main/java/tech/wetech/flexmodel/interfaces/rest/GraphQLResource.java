@@ -15,7 +15,7 @@ import java.util.Map;
  * @author cjbi
  */
 @Tag(name = "【Flexmodel】GraphQL", description = "GraphQL接口信息")
-@Path("/graphql")
+@Path("/f/graphql")
 public class GraphQLResource {
 
   @Inject
