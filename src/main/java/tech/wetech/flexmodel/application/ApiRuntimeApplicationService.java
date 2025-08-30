@@ -134,7 +134,7 @@ public class ApiRuntimeApplicationService {
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
       Map<String, Object> meta = (Map<String, Object>) apiDefinition.getMeta();
-      UriTemplate uriTemplate = new UriTemplate(config.contextPath() + apiDefinition.getPath());
+      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + apiDefinition.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiDefinition.getMethod())) {
@@ -186,12 +186,12 @@ public class ApiRuntimeApplicationService {
 
     // 从设置中的GraphQL端点处理请求
     if (!isMatching) {
-      UriTemplate uriTemplate = new UriTemplate(config.contextPath() + settings.getSecurity().getGraphqlEndpointPath());
+      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + settings.getSecurity().getGraphqlEndpointPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals("POST")) {
         isMatching = true;
-        log.debug("Matched graphql enpoint: {}", config.contextPath() + settings.getSecurity().getGraphqlEndpointPath());
+        log.debug("Matched graphql enpoint: {}", config.apiRootPath() + settings.getSecurity().getGraphqlEndpointPath());
         // 匹配成功
         if (isRateLimiting(routingContext, null, null)) return;
         String identityProvider = settings.getSecurity().getGraphqlEndpointIdentityProvider();
@@ -234,7 +234,7 @@ public class ApiRuntimeApplicationService {
     if (!isMatching) {
       String path = routingContext.request().path();
       for (Settings.Route route : settings.getProxy().getRoutes()) {
-        if (PatternMatchUtils.simpleMatch(config.contextPath() + route.getPath(), path)) {
+        if (PatternMatchUtils.simpleMatch(config.apiRootPath() + route.getPath(), path)) {
           isMatching = true;
           if (isRateLimiting(routingContext, null, null)) return;
           String targetUri = route.getTo() + path;

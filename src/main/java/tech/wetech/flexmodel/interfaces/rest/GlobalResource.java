@@ -15,6 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.media.SchemaProperty;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.SettingsApplicationService;
+import tech.wetech.flexmodel.shared.FlexmodelConfig;
 
 import java.util.Map;
 
@@ -30,6 +31,9 @@ public class GlobalResource {
 
   @Inject
   SettingsApplicationService settingsApplicationService;
+
+  @Inject
+  FlexmodelConfig config;
 
   @APIResponse(
     name = "200",
@@ -52,7 +56,9 @@ public class GlobalResource {
   @Path("/profile")
   @PermitAll
   public Map<String, Object> getProfile() {
-    return Map.of("settings", settingsApplicationService.getSettings());
+    return Map.of("settings", settingsApplicationService.getSettings(),
+    "apiRootPath", config.apiRootPath()
+    );
   }
 
 }

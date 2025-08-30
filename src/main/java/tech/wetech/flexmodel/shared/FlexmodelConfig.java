@@ -19,8 +19,7 @@ public interface FlexmodelConfig {
   Map<String, DatasourceConfig> datasources();
 
   @WithDefault("/api/v1")
-  @WithName("context-path")
-  String contextPath();
+  String apiRootPath();
 
   interface DatasourceConfig {
 

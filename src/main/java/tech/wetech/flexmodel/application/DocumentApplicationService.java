@@ -66,7 +66,7 @@ public class DocumentApplicationService {
     openAPI.put("openapi", "3.0.3");
     openAPI.put("info", buildInfo());
     openAPI.put("components", buildComponents(apis));
-    openAPI.put("servers", List.of(Map.of("url", config.contextPath())));
+    openAPI.put("servers", List.of(Map.of("url", config.apiRootPath())));
     openAPI.put("schemas", List.of("https", "http"));
     openAPI.put("tags", buildTags(apis));
     openAPI.put("paths", buildPaths(apis));

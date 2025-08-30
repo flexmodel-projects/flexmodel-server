@@ -31,7 +31,7 @@ public class FlexmodelAPIHandler {
     // 处理所有以"/api/v1"开头的请求
     router.route()
       .handler(BodyHandler.create())
-      .pathRegex(config.contextPath() + "/.*")
+      .pathRegex(config.apiRootPath() + "/.*")
       .blockingHandler(apiRuntimeApplicationService::accept);
 
     router.route().pathRegex("/datasources.*")
