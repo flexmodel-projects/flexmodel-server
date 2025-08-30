@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel;
+package tech.wetech.flexmodel.shared;
 
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;

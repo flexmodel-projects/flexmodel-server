@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.domain.model.codegen.CodeGenerationService;
 import tech.wetech.flexmodel.domain.model.codegen.ZipService;
-import tech.wetech.flexmodel.util.JsonUtils;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.List;
 import java.util.Map;

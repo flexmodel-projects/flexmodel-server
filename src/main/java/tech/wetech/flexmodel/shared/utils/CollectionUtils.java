@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.util;
+package tech.wetech.flexmodel.shared.utils;
 
 import java.util.Collection;
 import java.util.Map;

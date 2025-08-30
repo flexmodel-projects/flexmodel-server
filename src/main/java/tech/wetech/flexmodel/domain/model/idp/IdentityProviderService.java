@@ -5,7 +5,7 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
 import tech.wetech.flexmodel.domain.model.idp.provider.Provider;
-import tech.wetech.flexmodel.util.JsonUtils;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.List;
 

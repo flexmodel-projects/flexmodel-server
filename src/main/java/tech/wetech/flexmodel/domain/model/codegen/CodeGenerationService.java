@@ -11,7 +11,7 @@ import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.model.EntityDefinition;
 import tech.wetech.flexmodel.model.EnumDefinition;
 import tech.wetech.flexmodel.model.SchemaObject;
-import tech.wetech.flexmodel.util.JsonUtils;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static tech.wetech.flexmodel.util.StringUtils.simpleRenderTemplate;
+import static tech.wetech.flexmodel.shared.utils.StringUtils.simpleRenderTemplate;
 
 @Slf4j
 @ApplicationScoped

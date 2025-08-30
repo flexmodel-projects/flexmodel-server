@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.util;
+package tech.wetech.flexmodel.shared;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 

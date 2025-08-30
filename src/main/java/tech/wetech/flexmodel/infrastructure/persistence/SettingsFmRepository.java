@@ -6,7 +6,7 @@ import tech.wetech.flexmodel.codegen.entity.Config;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsRepository;
 import tech.wetech.flexmodel.session.Session;
-import tech.wetech.flexmodel.util.JsonUtils;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.HashMap;
 import java.util.List;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tech.wetech.flexmodel.util;
+package tech.wetech.flexmodel.shared.utils;
 
 
 import io.vertx.codegen.annotations.Nullable;

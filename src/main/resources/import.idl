@@ -18,14 +18,6 @@ model fs_api_definition {
   meta? : JSON,
   enabled : Boolean @comment("是否开启") @default("true"),
 }
-//model fs_api_log {
-//  id : String @id @default(ulid()),
-//  level : LogLevel,
-//  uri : String @length("2000"),
-//  data : JSON,
-//  createdAt : DateTime @default(now()),
-//  @index(unique: "false", fields: [level]),
-//}
 model fs_api_request_log {
   id : String @id @default(ulid()),
   url : String @length("2000") @comment("请求地址"),
@@ -103,6 +95,25 @@ model fs_user {
     @index(name:"IDX_USERNAME", unique: "true", fields: [username]),
     @comment("用户")
 }
+model fs_ai_chat_conversation {
+  id : String @id @default(ulid()),
+  title : String @length("255") @comment("标题"),
+  created_at : DateTime @default(now()) @comment("创建时间"),
+  messages? : fs_ai_chat_message[] @relation(localField: "id", foreignField: "conversation_id", cascadeDelete: true),
+  @comment("AI聊天会话")
+}
+
+model fs_ai_chat_message {
+  id : String @id @default(ulid()),
+  conversation_id : String @length("255") @comment("会话ID"),
+  conversation? : fs_chat_conversation @comment("会话") @relation(localField: "conversation_id", foreignField: "id", cascadeDelete: false),
+  role: String @length("255") @comment("角色"),
+  content : String @length("4000") @comment("内容"),
+  created_at : DateTime @default(now()) @comment("创建时间"),
+  @index(name:"IDX_CONVERSATION_ID", unique: false, fields: [conversation_id]),
+  @comment("AI聊天消息")
+}
+
 enum ApiType {
   FOLDER,
   API

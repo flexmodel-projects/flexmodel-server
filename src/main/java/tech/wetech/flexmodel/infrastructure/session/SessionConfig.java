@@ -7,13 +7,13 @@ import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
 import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.session.SessionFactory;
 import tech.wetech.flexmodel.session.SessionManager;
+import tech.wetech.flexmodel.shared.FlexmodelConfig;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 
 import java.util.List;

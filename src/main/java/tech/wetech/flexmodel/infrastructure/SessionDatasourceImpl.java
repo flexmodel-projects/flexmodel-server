@@ -20,10 +20,10 @@ import tech.wetech.flexmodel.domain.model.connect.database.MongoDB;
 import tech.wetech.flexmodel.mongodb.MongoDataSourceProvider;
 import tech.wetech.flexmodel.session.Session;
 import tech.wetech.flexmodel.session.SessionFactory;
+import tech.wetech.flexmodel.shared.SystemVariablesHolder;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
+import tech.wetech.flexmodel.shared.utils.StringUtils;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
-import tech.wetech.flexmodel.util.JsonUtils;
-import tech.wetech.flexmodel.util.StringUtils;
-import tech.wetech.flexmodel.util.SystemVariablesHolder;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;

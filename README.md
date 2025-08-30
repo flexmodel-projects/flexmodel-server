@@ -29,7 +29,7 @@
   - 核心领域模型与领域服务，聚合根、实体、值对象、仓储接口等。
 - 基础设施层（Infrastructure）：`tech.wetech.flexmodel.infrastructrue`
   - 外部资源适配与实现，如持久化、会话、消息消费、任务调度等。
-- 公共与工具（Util）：`tech.wetech.flexmodel.util`
+- 公共与工具（shared）：`tech.wetech.flexmodel.shared`
   - 公共工具与通用能力（JSON、字符串、路径匹配等）。
 
 说明：REST 基础路径为 `/api`；OpenAPI/Swagger UI 位于 `/q/swagger-ui`；SSE 流式聊天接口在 `chat` 资源下提供。

@@ -20,7 +20,7 @@ import tech.wetech.flexmodel.interfaces.rest.response.ChatChoiceDelta;
 import tech.wetech.flexmodel.interfaces.rest.response.ChatDelta;
 import tech.wetech.flexmodel.interfaces.rest.response.ChatMessage;
 import tech.wetech.flexmodel.interfaces.rest.response.ChatResponseDelta;
-import tech.wetech.flexmodel.util.JsonUtils;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

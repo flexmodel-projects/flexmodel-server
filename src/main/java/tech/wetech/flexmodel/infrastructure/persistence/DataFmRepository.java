@@ -12,7 +12,7 @@ import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.query.Query;
 import tech.wetech.flexmodel.session.Session;
 import tech.wetech.flexmodel.session.SessionFactory;
-import tech.wetech.flexmodel.util.JsonUtils;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.List;
 import java.util.Map;

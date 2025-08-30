@@ -6,7 +6,6 @@ import graphql.schema.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import tech.wetech.flexmodel.FlexmodelConfig;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
@@ -18,7 +17,8 @@ import tech.wetech.flexmodel.model.EntityDefinition;
 import tech.wetech.flexmodel.model.field.RelationField;
 import tech.wetech.flexmodel.model.field.ScalarType;
 import tech.wetech.flexmodel.model.field.TypedField;
-import tech.wetech.flexmodel.util.UriTemplate;
+import tech.wetech.flexmodel.shared.FlexmodelConfig;
+import tech.wetech.flexmodel.shared.matchers.UriTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;

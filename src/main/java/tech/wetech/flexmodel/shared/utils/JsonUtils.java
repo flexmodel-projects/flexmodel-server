@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.util;
+package tech.wetech.flexmodel.shared.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
