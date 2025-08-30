@@ -29,7 +29,7 @@ public class AiChatService {
     conversation.setId(UUID.randomUUID().toString());
     conversation.setTitle(title);
     conversation.setCreatedAt(LocalDateTime.now());
-    
+
     return conversationRepository.save(conversation);
   }
 
@@ -67,7 +67,7 @@ public class AiChatService {
     message.setRole(role);
     message.setContent(content);
     message.setCreatedAt(LocalDateTime.now());
-    
+
     return messageRepository.save(message);
   }
 
@@ -78,10 +78,7 @@ public class AiChatService {
     return messageRepository.findByConversationId(conversationId);
   }
 
-  /**
-   * 删除消息
-   */
-  public void deleteMessage(String messageId) {
-    messageRepository.delete(messageId);
+  public AiChatMessage saveMessage(AiChatMessage message) {
+    return messageRepository.save(message);
   }
 }

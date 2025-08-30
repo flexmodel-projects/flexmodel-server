@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.AiChatConversation;
 import tech.wetech.flexmodel.domain.model.ai.AiChatConversationRepository;
+import tech.wetech.flexmodel.query.Direction;
 import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.session.Session;
 
@@ -24,6 +25,7 @@ public class AiChatConversationFmRepository implements AiChatConversationReposit
   public List<AiChatConversation> findAll() {
     return session.dsl()
       .selectFrom(AiChatConversation.class)
+      .orderBy("created_at", Direction.DESC)
       .execute();
   }
 
