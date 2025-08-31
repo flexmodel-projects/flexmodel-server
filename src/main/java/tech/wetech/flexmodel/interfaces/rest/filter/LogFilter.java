@@ -11,6 +11,7 @@ import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.domain.model.api.ApiLogRequestService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -56,9 +57,9 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     }
     CompletableFuture.runAsync(() -> {
       Settings settings = settingsService.getSettings();
-      if (settings.getLog().isConsoleLoggingEnabled() &&
-          !requestContext.getUriInfo().getPath().startsWith("/api/logs")
-      ) {
+      boolean isLoggingEnabled = settings.getLog().isConsoleLoggingEnabled();
+      boolean isLogRequest = requestContext.getUriInfo().getPath().startsWith("/api/logs");
+      if (isLoggingEnabled && !isLogRequest) {
         saveLog(requestContext, responseContext, execTime);
       }
     });
@@ -79,8 +80,9 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
       ipAddress = requestContext.getUriInfo().getRequestUri().getHost(); // 或者使用其他方式获取 IP 地址
     }
     apiLog.setClientIp(ipAddress);
-    if (statusCode >= 500) {
+    if (statusCode >= 400) {
       apiLog.setIsSuccess(false);
+      apiLog.setErrorMessage(JsonUtils.getInstance().stringify(responseContext.getEntity()));
     }
     apiLog.setResponseTime((int) execTime);
     apiLogService.create(apiLog);
