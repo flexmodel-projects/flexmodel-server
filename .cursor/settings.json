@@ -1,7 +1,7 @@
 {
   "project": {
     "name": "flexmodel-server",
-    "description": "面向下一代应用程序的统一数据访问层，开源、自主可控的API设计平台",
+    "description": "面向下一代应用程序的统一数据访问层，开源、自主可控的数据处理平台",
     "technology": "Java 21, Quarkus 3, Maven, SQLite",
     "architecture": "DDD分层架构"
   },
@@ -20,7 +20,7 @@
   },
   "packages": {
     "interfaces": "tech.wetech.flexmodel.interfaces",
-    "application": "tech.wetech.flexmodel.application", 
+    "application": "tech.wetech.flexmodel.application",
     "domain": "tech.wetech.flexmodel.domain",
     "infrastructure": "tech.wetech.flexmodel.infrastructure",
     "shared": "tech.wetech.flexmodel.shared"
@@ -34,7 +34,7 @@
   },
   "templates": {
     "restResource": "templates/rest-resource.java",
-    "applicationService": "templates/application-service.java", 
+    "applicationService": "templates/application-service.java",
     "domainModel": "templates/domain-model.java",
     "repository": "templates/repository.java",
     "test": "templates/test.java",
@@ -65,7 +65,7 @@
   },
   "fileStructure": {
     "java": "src/main/java",
-    "resources": "src/main/resources", 
+    "resources": "src/main/resources",
     "test": "src/test/java",
     "testResources": "src/test/resources"
   },
