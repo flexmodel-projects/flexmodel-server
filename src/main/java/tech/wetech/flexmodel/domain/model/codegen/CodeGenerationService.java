@@ -86,14 +86,23 @@ public class CodeGenerationService {
         outputFiles.add(targetDir);
       } else {
         if (path.toString().endsWith(".groovy")) {
-          Class<?> scriptClass = classLoader.parseClass(Files.readString(path));
-          Object groovyObject = scriptClass.getDeclaredConstructor().newInstance();
-          String filePath = simpleRenderTemplate(path.getParent().toString(), JsonUtils.getInstance().convertValue(context, Map.class)).replace("\\", "/");
-          String targetPath = filePath.replace(sourceDirectory.replace("\\", "/"), targetDirectory.replace("\\", "/"))
-            .replace("\\", "/");
-          // 4. 调用 run(Map) 方法
-          List<File> result = (List<File>) scriptClass.getMethod("generate", GenerationContext.class, String.class).invoke(groovyObject, context, targetPath);
-          outputFiles.addAll(result);
+          try {
+            Class<?> scriptClass = classLoader.parseClass(Files.readString(path));
+            Object groovyObject = scriptClass.getDeclaredConstructor().newInstance();
+            String filePath = simpleRenderTemplate(path.getParent().toString(), JsonUtils.getInstance().convertValue(context, Map.class)).replace("\\", "/");
+            String targetPath = filePath.replace(sourceDirectory.replace("\\", "/"), targetDirectory.replace("\\", "/"))
+              .replace("\\", "/");
+            // 4. 调用 run(Map) 方法
+            List<File> result = (List<File>) scriptClass.getMethod("generate", GenerationContext.class, String.class).invoke(groovyObject, context, targetPath);
+            outputFiles.addAll(result);
+          } catch (Exception e) {
+            log.error("Generate file error, file: {}", path, e);
+            String filePath = simpleRenderTemplate(path.toString(), JsonUtils.getInstance().convertValue(context, Map.class)).replace("\\", "/");
+            String targetPath = filePath.replace(sourceDirectory.replace("\\", "/"), targetDirectory.replace("\\", "/"))
+              .replace("\\", "/");
+            Files.copy(path, Paths.get(targetPath), StandardCopyOption.REPLACE_EXISTING);
+            outputFiles.add(new File(targetPath));
+          }
         } else {
           String filePath = simpleRenderTemplate(path.toString(), JsonUtils.getInstance().convertValue(context, Map.class)).replace("\\", "/");
           String targetPath = filePath.replace(sourceDirectory.replace("\\", "/"), targetDirectory.replace("\\", "/"))
