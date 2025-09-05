@@ -29,7 +29,6 @@ public class SessionConfig {
 
   public void installDatasource(@Observes StartupEvent startupEvent,
                                 SessionDatasource sessionDatasource,
-                                SessionFactory sessionFactory,
                                 DatasourceService datasourceService,
                                 GraphQLProvider graphQLProvider) {
     long beginTime = System.currentTimeMillis();

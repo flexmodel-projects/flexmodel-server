@@ -10,7 +10,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import tech.wetech.flexmodel.domain.model.codegen.CodeGenerationService;
+import tech.wetech.flexmodel.codegen.CodeGenerationService;
+import tech.wetech.flexmodel.codegen.TemplateInfo;
 import tech.wetech.flexmodel.domain.model.codegen.ZipService;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
@@ -53,8 +54,8 @@ public class GeneratorResource {
   }
 
   @GET
-  @Path("/templates/names")
-  public List<String> getTemplateNames() {
+  @Path("/templates")
+  public List<TemplateInfo> getTemplates() {
     return codeGenerationService.getTemplates();
   }
 
