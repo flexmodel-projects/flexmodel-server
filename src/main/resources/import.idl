@@ -1,4 +1,4 @@
-model fs_datasource {
+model f_datasource {
   name : String @id,
   type? : DatasourceType,
   config? : JSON,
@@ -6,7 +6,7 @@ model fs_datasource {
   updatedAt? : DateTime @default(now()),
   enabled : Boolean @comment("数据源") @default("true"),
 }
-model fs_api_definition {
+model f_api_definition {
   id : String @id @unique @default(ulid()),
   name : String @length("255"),
   parentId? : String @length("255"),
@@ -18,7 +18,7 @@ model fs_api_definition {
   meta? : JSON,
   enabled : Boolean @comment("是否开启") @default("true"),
 }
-model fs_api_request_log {
+model f_api_request_log {
   id : String @id @default(ulid()),
   url : String @length("2000") @comment("请求地址"),
   http_method: String @length("255") @comment("请求方法"),
@@ -36,13 +36,13 @@ model fs_api_request_log {
   @index(fields: [endpoint, created_at]),
   @index(fields: [status_code, created_at])
 }
-model fs_identity_provider {
+model f_identity_provider {
   name : String @id,
   createdAt : DateTime @default(now()),
   provider? : JSON,
   updatedAt : DateTime @default(now()),
 }
-model fs_config {
+model f_config {
   id : String @id @unique @default(ulid()),
   key : String @comment("名称") @length("255"),
   value? : String @length("255"),
@@ -85,7 +85,7 @@ model Course {
   courseName? : String @length("255"),
   @index(name:"IDX_COURSE_NO", unique: "false", fields: [courseNo]),
 }
-model fs_user {
+model f_user {
     id : String @id @default(ulid()),
     username : String @length("255") @comment("用户名"),
     password_hash : String @length("255") @comment("密码HASH"),
@@ -93,7 +93,7 @@ model fs_user {
     @index(name : "IDX_USERNAME", unique: "true", fields: [username]),
     @comment("用户")
 }
-model fs_ai_chat_conversation {
+model f_ai_chat_conversation {
   id : String @id @default(ulid()),
   title : String @length("255") @comment("标题"),
   created_at : DateTime @default(now()) @comment("创建时间"),
@@ -101,7 +101,7 @@ model fs_ai_chat_conversation {
   @comment("AI聊天会话")
 }
 
-model fs_ai_chat_message {
+model f_ai_chat_message {
   id : String @id @default(ulid()),
   conversation_id : String @length("255") @comment("会话ID"),
 //  conversation? : fs_ai_chat_conversation @comment("会话") @relation(localField: "conversation_id", foreignField: "id", cascadeDelete: false),
