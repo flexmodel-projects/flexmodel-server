@@ -97,14 +97,14 @@ model f_ai_chat_conversation {
   id : String @id @default(ulid()),
   title : String @length("255") @comment("标题"),
   created_at : DateTime @default(now()) @comment("创建时间"),
-  messages? : fs_ai_chat_message[] @relation(localField: "id", foreignField: "conversation_id", cascadeDelete: "true"),
+  messages? : f_ai_chat_message[] @relation(localField: "id", foreignField: "conversation_id", cascadeDelete: "true"),
   @comment("AI聊天会话")
 }
 
 model f_ai_chat_message {
   id : String @id @default(ulid()),
   conversation_id : String @length("255") @comment("会话ID"),
-//  conversation? : fs_ai_chat_conversation @comment("会话") @relation(localField: "conversation_id", foreignField: "id", cascadeDelete: false),
+//  conversation? : f_ai_chat_conversation @comment("会话") @relation(localField: "conversation_id", foreignField: "id", cascadeDelete: false),
   role: String @length("255") @comment("角色"),
   content : String @length("4000") @comment("内容"),
   created_at : DateTime @default(now()) @comment("创建时间"),
