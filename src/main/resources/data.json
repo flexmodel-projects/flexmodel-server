@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "modelName": "fs_api_definition",
+      "modelName": "f_api_definition",
       "values": [
         {
           "createdAt": "2024-07-13T23:21:09",
@@ -111,7 +111,7 @@
       ]
     },
     {
-      "modelName": "fs_datasource",
+      "modelName": "f_datasource",
       "values": [
         {
           "name": "sqlite_test",
@@ -136,7 +136,7 @@
       ]
     },
     {
-      "modelName": "fs_identity_provider",
+      "modelName": "f_identity_provider",
       "values": [
         {
           "name": "demo",
@@ -291,7 +291,7 @@
       ]
     },
     {
-      "modelName": "fs_user",
+      "modelName": "f_user",
       "values": [
         {
           "id": "admin",
