@@ -31,8 +31,8 @@ public class DataFmRepository implements DataRepository {
   @Override
   public List<Map<String, Object>> findRecords(String datasourceName,
                                                String modelName,
-                                               Integer current,
-                                               Integer pageSize,
+                                               Integer page,
+                                               Integer size,
                                                String filter,
                                                String sortString,
                                                boolean nestedQueryEnabled) {
@@ -47,15 +47,15 @@ public class DataFmRepository implements DataRepository {
         queryBuilder.where(filter);
       }
 
-      if (pageSize != null && current != null) {
-        queryBuilder.page(current, pageSize);
+      if (size != null && page != null) {
+        queryBuilder.page(page, size);
       }
 
       if (!StringUtils.isBlank(sortString)) {
         try {
-          List<Query.Sort.Order> orders = JsonUtils.getInstance().parseToList(sortString, Query.Sort.Order.class);
-          Query.Sort sort = new Query.Sort();
-          sort.getOrders().addAll(orders);
+          List<Query.OrderBy.Sort> sorts = JsonUtils.getInstance().parseToList(sortString, Query.OrderBy.Sort.class);
+          Query.OrderBy sort = new Query.OrderBy();
+          sort.getSorts().addAll(sorts);
           queryBuilder.orderBy(sort);
         } catch (Exception e) {
           log.error("Invalid sort string: {}", sortString, e);

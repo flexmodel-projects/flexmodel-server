@@ -17,12 +17,12 @@ public class DataService {
 
   public List<Map<String, Object>> findRecords(String datasourceName,
                                                String modelName,
-                                               Integer current,
-                                               Integer pageSize,
+                                               Integer page,
+                                               Integer size,
                                                String filter,
                                                String sort,
                                                boolean nestedQueryEnabled) {
-    return dataRepository.findRecords(datasourceName, modelName, current, pageSize, filter, sort, nestedQueryEnabled);
+    return dataRepository.findRecords(datasourceName, modelName, page, size, filter, sort, nestedQueryEnabled);
   }
 
   public long countRecords(String datasourceName, String modelName, String filter) {

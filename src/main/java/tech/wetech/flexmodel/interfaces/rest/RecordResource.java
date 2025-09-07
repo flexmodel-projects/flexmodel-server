@@ -64,7 +64,7 @@ public class RecordResource {
     in = ParameterIn.QUERY)
   @Parameter(name = "nestedQuery", description = "是否开启嵌套子查询，开启则查询关联数据，只查询5层，默认值false", example = "false", in = ParameterIn.QUERY)
   @Parameter(name = "sort", description = "排序", example = """
-    "[{\\"field\\":\\"name\\",\\"direction\\":\\"ASC\\"}, {\\"field\\":\\"id\\",\\"direction\\":\\"DESC\\"}]"
+    "[{\\"field\\":\\"name\\",\\"sort\\":\\"ASC\\"}, {\\"field\\":\\"id\\",\\"sort\\":\\"DESC\\"}]"
     """, in = ParameterIn.QUERY)
   @Operation(summary = "获取模型数据记录列表")
   @GET

@@ -10,8 +10,8 @@ public interface DataRepository {
 
   List<Map<String, Object>> findRecords(String datasourceName,
                                         String modelName,
-                                        Integer current,
-                                        Integer pageSize,
+                                        Integer page,
+                                        Integer size,
                                         String filter,
                                         String sort,
                                         boolean nestedQueryEnabled);
