@@ -54,14 +54,14 @@ public class ApiLogResource {
     })
   @Operation(summary = "获取接口日志列表")
   @GET
-  public PageDTO<ApiRequestLog> findApiLogs(@QueryParam("current") @DefaultValue("1") int current,
-                                            @QueryParam("pageSize") @DefaultValue("50") int pageSize,
+  public PageDTO<ApiRequestLog> findApiLogs(@QueryParam("page") @DefaultValue("1") int page,
+                                            @QueryParam("size") @DefaultValue("50") int size,
                                             @QueryParam("keyword") String keyword,
                                             @QueryParam("dateRange") String dateRange,
                                             @QueryParam("isSuccess") Boolean isSuccess
   ) {
     RequestResult result = parseQuery(dateRange, isSuccess);
-    return apiRuntimeApplicationService.findApiLogs(current, pageSize, keyword, result.startDate(), result.endDate(), isSuccess);
+    return apiRuntimeApplicationService.findApiLogs(page, size, keyword, result.startDate(), result.endDate(), isSuccess);
   }
 
   @Parameter(name = "keyword", description = "关键字", in = ParameterIn.QUERY)

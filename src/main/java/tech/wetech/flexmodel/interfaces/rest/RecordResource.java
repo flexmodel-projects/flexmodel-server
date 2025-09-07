@@ -54,8 +54,8 @@ public class RecordResource {
       )
     )
     })
-  @Parameter(name = "current", description = "当前页，默认值：1", example = "1", in = ParameterIn.QUERY)
-  @Parameter(name = "pageSize", description = "第几页，默认值：15", example = "15", in = ParameterIn.QUERY)
+  @Parameter(name = "page", description = "当前页，默认值：1", example = "1", in = ParameterIn.QUERY)
+  @Parameter(name = "size", description = "第几页，默认值：15", example = "15", in = ParameterIn.QUERY)
   @Parameter(
     name = "filter", description = "查询条件，更多信息见查询条件文档",
     example = """
@@ -69,13 +69,13 @@ public class RecordResource {
   @Operation(summary = "获取模型数据记录列表")
   @GET
   public PageDTO<Map<String, Object>> findPagingRecords(
-    @QueryParam("current") @DefaultValue("1") int current,
-    @QueryParam("pageSize") @DefaultValue("15") int pageSize,
+    @QueryParam("page") @DefaultValue("1") int page,
+    @QueryParam("size") @DefaultValue("15") int size,
     @QueryParam("filter") String filter,
     @QueryParam("nestedQuery") @DefaultValue("false") boolean nestedQuery,
     @QueryParam("sort") String sort
   ) {
-    return dataApplicationService.findPagingRecords(datasourceName, modelName, current, pageSize, filter, sort, nestedQuery);
+    return dataApplicationService.findPagingRecords(datasourceName, modelName, page, size, filter, sort, nestedQuery);
   }
 
   @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
