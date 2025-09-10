@@ -127,6 +127,14 @@ public class StringUtils {
     return (str != null && !str.isEmpty() && containsText(str));
   }
 
+  public static boolean isBlank(String str) {
+    return !hasText(str);
+  }
+
+  public static boolean isNotBlank(String str) {
+    return !isBlank(str);
+  }
+
   private static boolean containsText(CharSequence str) {
     int strLen = str.length();
     for (int i = 0; i < strLen; i++) {

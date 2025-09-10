@@ -112,6 +112,145 @@ model f_ai_chat_message {
   @comment("AI聊天消息")
 }
 
+model f_em_flow_definition {
+  id: Long @id @default(autoIncrement()),
+  flow_module_id: String @comment("流程模型id") @unique,
+  flow_name: String @comment("流程名称"),
+  flow_key: String @comment("流程业务标识"),
+  tenant_id: String @comment("业务方标识"),
+  flow_model: String @length(10000) @comment("表单定义"),
+  status: Int @default(0) @comment("状态(1.初始态 2.编辑中 3.已下线)"),
+  create_time: DateTime @default(now()) @comment("流程创建时间"),
+  modify_time: DateTime @default(now()) @comment("流程修改时间"),
+  operator: String @comment("操作人"),
+  remark: String @length(512) @comment("备注"),
+  archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
+  tenant: String @comment("租户"),
+  caller?: String @comment("调用方"),
+
+  @index(name: "IDX_flow_define_module", fields: [flow_module_id])
+  @comment("流程定义表")
+}
+
+model f_em_flow_deployment {
+  id: Long @id @default(autoIncrement()),
+  flow_deploy_id: String @comment("流程模型部署id") @unique,
+  flow_module_id: String @comment("流程模型id"),
+  flow_name: String @comment("流程名称"),
+  flow_key: String @comment("流程业务标识"),
+  tenant_id?: String @comment("业务方标识"),
+  flow_model: String @length(10000) @comment("表单定义"),
+  status: Int @default(0) @comment("状态(1.已部署 3.已下线)"),
+  create_time: DateTime @default(now()) @comment("流程创建时间"),
+  modify_time: DateTime @default(now()) @comment("流程修改时间"),
+  operator: String @comment("操作人"),
+  remark: String @length(512) @comment("备注"),
+  archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
+  tenant?: String @comment("租户"),
+  caller?: String @comment("调用方"),
+
+  @index(name: "IDX_flow_deploy", fields: [flow_deploy_id]),
+  @index(name: "IDX_flow_module", fields: [flow_module_id])
+  @comment("流程部署表")
+}
+
+model f_ei_flow_instance {
+  id: Long @id @default(autoIncrement()),
+  flow_instance_id: String @unique @comment("流程执行实例id"),
+  parent_flow_instance_id?: String @comment("父流程执行实例id"),
+  flow_deploy_id: String @comment("流程模型部署id"),
+  flow_module_id: String @comment("流程模型id"),
+  tenant_id?: String @comment("业务方标识"),
+  status: Int @default(0) @comment("状态(1.执行完成 2.执行中 3.执行终止(强制终止))"),
+  create_time: DateTime @default(now()) @comment("流程创建时间"),
+  modify_time: DateTime @default(now()) @comment("流程修改时间"),
+  archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
+  tenant?: String @comment("租户"),
+  caller?: String @comment("调用方"),
+
+  @index(name: "IDX_flow_instance", fields: [flow_instance_id])
+  @comment("流程执行实例表")
+}
+
+model f_ei_flow_instance_mapping {
+  id: Long @id @default(autoIncrement()),
+  flow_instance_id: String @comment("流程执行实例id"),
+  node_instance_id: String @comment("节点执行实例id"),
+  node_key: String @comment("节点唯一标识"),
+  sub_flow_instance_id: String @comment("子流程执行实例id"),
+  type: Int @default(0) @comment("状态(1.执行 2.回滚)"),
+  create_time: DateTime @default(now()) @comment("流程创建时间"),
+  modify_time: DateTime @default(now()) @comment("流程修改时间"),
+  archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
+  tenant_id?: String @default("didi") @comment("租户"),
+  tenant?: String @default("didi") @comment("租户"),
+  caller?: String @default("optimus-prime") @comment("调用方"),
+
+  @index(name: "IDX_ei_flow_node", fields: [flow_instance_id])
+  @comment("父子流程实例映射表")
+}
+
+model f_ei_node_instance {
+  id: Long @id @default(autoIncrement()),
+  node_instance_id: String @unique @comment("节点执行实例id"),
+  flow_instance_id: String @comment("流程执行实例id"),
+  source_node_instance_id: String @comment("上一个节点执行实例id"),
+  instance_data_id: String @comment("实例数据id"),
+  flow_deploy_id: String @comment("流程模型部署id"),
+  node_key: String @comment("节点唯一标识"),
+  node_type: Int @default(0) @comment("流程类型"),
+  source_node_key: String @comment("上一个流程节点唯一标识"),
+  tenant_id?: String @comment("业务方标识"),
+  status: Int @default(0) @comment("状态(1.处理成功 2.处理中 3.处理失败 4.处理已撤销)"),
+  create_time: DateTime @default(now()) @comment("流程创建时间"),
+  modify_time: DateTime @default(now()) @comment("流程修改时间"),
+  archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
+  tenant?: String @comment("租户"),
+  caller?: String @comment("调用方"),
+
+  @index(name: "IDX_node_instance_id", fields: [node_instance_id]),
+  @index(name: "IDX_fiid_sniid_nk", fields: [flow_instance_id, source_node_instance_id, node_key]),
+  @comment("节点执行实例表")
+}
+
+model f_ei_node_instance_log {
+  id: Long @id @default(autoIncrement()),
+  node_instance_id: String @comment("节点执行实例id"),
+  flow_instance_id: String @comment("流程执行实例id"),
+  instance_data_id: String @comment("实例数据id"),
+  node_key: String @comment("节点唯一标识"),
+  tenant_id?: String @comment("业务方标识"),
+  type: Int @default(0) @comment("操作类型(1.系统执行 2.任务提交 3.任务撤销)"),
+  status: Int @default(0) @comment("状态(1.处理成功 2.处理中 3.处理失败 4.处理已撤销)"),
+  create_time: DateTime @default(now()) @comment("流程创建时间"),
+  archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
+  tenant?: String @comment("租户"),
+  caller?: String @comment("调用方"),
+
+  @comment("节点执行记录表")
+}
+
+model f_ei_instance_data {
+  id: Long @id @default(autoIncrement()),
+  node_instance_id: String @comment("节点执行实例id"),
+  flow_instance_id: String @comment("流程执行实例id"),
+  instance_data_id: String @unique @comment("实例数据id"),
+  flow_deploy_id: String @comment("流程模型部署id"),
+  flow_module_id: String @comment("流程模型id"),
+  node_key: String @comment("节点唯一标识"),
+  tenant_id?: String @comment("业务方标识"),
+  instance_data: String @comment("数据列表json"),
+  type: Int @default(0) @comment("操作类型(1.实例初始化 2.系统执行 3.系统主动获取 4.上游更新 5.任务提交 6.任务撤回)"),
+  create_time: DateTime @default(now()) @comment("流程创建时间"),
+  archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
+  tenant?: String @comment("租户"),
+  caller?: String @comment("调用方"),
+
+  @index(name: "IDX_instance_data_id", fields: [instance_data_id]),
+  @index(name: "IDX_flow_instance", fields: [flow_instance_id]),
+  @comment("实例数据表")
+}
+
 enum ApiType {
   FOLDER,
   API
