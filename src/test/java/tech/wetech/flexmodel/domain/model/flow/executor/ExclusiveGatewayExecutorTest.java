@@ -4,11 +4,10 @@ import com.google.common.collect.Maps;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowModel;
@@ -21,11 +20,10 @@ import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @QuarkusTest
 @QuarkusTestResource(SQLiteTestResource.class)
 public class ExclusiveGatewayExecutorTest {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExclusiveGatewayExecutorTest.class);
 
   @Inject
   ExecutorFactory executorFactory;
@@ -57,7 +55,7 @@ public class ExclusiveGatewayExecutorTest {
       exclusiveGatewayExecutor = (ExclusiveGatewayExecutor) executorFactory
         .getElementExecutor(exclusiveGateway);
     } catch (Exception e) {
-      LOGGER.error("", e);
+      log.error("", e);
     }
   }
 
@@ -66,7 +64,7 @@ public class ExclusiveGatewayExecutorTest {
     try {
       exclusiveGatewayExecutor.doExecute(runtimeContext);
     } catch (Exception e) {
-      LOGGER.error("", e);
+      log.error("", e);
     }
   }
 
@@ -77,7 +75,7 @@ public class ExclusiveGatewayExecutorTest {
       String modelKey = runtimeContext.getCurrentNodeModel().getKey();
       Assertions.assertEquals("userTask2", modelKey);
     } catch (Exception e) {
-      LOGGER.error("", e);
+      log.error("", e);
     }
   }
 }

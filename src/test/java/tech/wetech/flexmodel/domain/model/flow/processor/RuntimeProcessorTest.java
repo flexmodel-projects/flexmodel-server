@@ -3,10 +3,9 @@ package tech.wetech.flexmodel.domain.model.flow.processor;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.ElementInstance;
@@ -27,9 +26,8 @@ import java.util.Objects;
 
 @QuarkusTest
 @QuarkusTestResource(SQLiteTestResource.class)
+@Slf4j
 public class RuntimeProcessorTest {
-
-  protected static final Logger LOGGER = LoggerFactory.getLogger(RuntimeProcessorTest.class);
 
   @Inject
   RuntimeProcessor runtimeProcessor;
@@ -81,7 +79,7 @@ public class RuntimeProcessorTest {
     commitTaskParam.setVariables(variables);
 
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
-    LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
+    log.info("testCommit.||commitTaskResult={}", commitTaskResult);
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
     Assertions.assertEquals("EndEvent_0s4vsxw", commitTaskResult.getActiveTaskInstance().getModelKey());
   }
@@ -99,7 +97,7 @@ public class RuntimeProcessorTest {
     commitTaskParam.setVariables(variables);
 
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
-    LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
+    log.info("testCommit.||commitTaskResult={}", commitTaskResult);
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.COMMIT_SUSPEND.getErrNo());
     Assertions.assertEquals("UserTask_0uld0u9", commitTaskResult.getActiveTaskInstance().getModelKey());
   }
@@ -119,7 +117,7 @@ public class RuntimeProcessorTest {
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
     commitTaskResult = runtimeProcessor.commit(commitTaskParam);
-    LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
+    log.info("testCommit.||commitTaskResult={}", commitTaskResult);
 
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.COMMIT_SUSPEND.getErrNo());
     Assertions.assertEquals("UserTask_0uld0u9", commitTaskResult.getActiveTaskInstance().getModelKey());
@@ -139,7 +137,7 @@ public class RuntimeProcessorTest {
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
     commitTaskResult = runtimeProcessor.commit(commitTaskParam);
-    LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
+    log.info("testCommit.||commitTaskResult={}", commitTaskResult);
 
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.REENTRANT_WARNING.getErrNo());
   }
@@ -185,7 +183,7 @@ public class RuntimeProcessorTest {
     // commit old UserTask
     commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-    LOGGER.info("testRollbackToUserTaskAndCommitOldUserTask.||commitTaskResult={}", commitTaskResult);
+    log.info("testRollbackToUserTaskAndCommitOldUserTask.||commitTaskResult={}", commitTaskResult);
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.COMMIT_FAILED.getErrNo());
     Assertions.assertEquals("BranchUserTask_0scrl8d", commitTaskResult.getActiveTaskInstance().getModelKey());
   }
@@ -213,7 +211,7 @@ public class RuntimeProcessorTest {
     RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
     // Ignore current userTask
-    LOGGER.info("testRollbackFromMiddleUserTask.||rollbackTaskResult={}", rollbackTaskResult);
+    log.info("testRollbackFromMiddleUserTask.||rollbackTaskResult={}", rollbackTaskResult);
     Assertions.assertEquals(rollbackTaskResult.getErrCode(), ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
     Assertions.assertEquals("BranchUserTask_0scrl8d", rollbackTaskResult.getActiveTaskInstance().getModelKey());
   }
@@ -240,7 +238,7 @@ public class RuntimeProcessorTest {
     rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
     RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
-    LOGGER.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
+    log.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
     Assertions.assertEquals(rollbackTaskResult.getErrCode(), ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
     Assertions.assertEquals("BranchUserTask_0scrl8d", rollbackTaskResult.getActiveTaskInstance().getModelKey());
   }
@@ -271,7 +269,7 @@ public class RuntimeProcessorTest {
     rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     rollbackTaskParam.setTaskInstanceId(rollbackTaskResult.getActiveTaskInstance().getNodeInstanceId());
     rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
-    LOGGER.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
+    log.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
     Assertions.assertEquals(rollbackTaskResult.getErrCode(), ErrorEnum.NO_USER_TASK_TO_ROLLBACK.getErrNo());
   }
 
@@ -296,7 +294,7 @@ public class RuntimeProcessorTest {
     rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
     RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
-    LOGGER.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
+    log.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
     Assertions.assertEquals(rollbackTaskResult.getErrCode(), ErrorEnum.ROLLBACK_REJECTRD.getErrNo());
   }
 
@@ -304,7 +302,7 @@ public class RuntimeProcessorTest {
   public void testTerminateProcess() throws Exception {
     StartProcessResult startProcessResult = startProcess();
     TerminateResult terminateResult = runtimeProcessor.terminateProcess(startProcessResult.getFlowInstanceId(), false);
-    LOGGER.info("testTerminateProcess.||terminateResult={}", terminateResult);
+    log.info("testTerminateProcess.||terminateResult={}", terminateResult);
     Assertions.assertEquals(terminateResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
   }
 
@@ -322,7 +320,7 @@ public class RuntimeProcessorTest {
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
     NodeInstanceListResult nodeInstanceListResult = runtimeProcessor.getHistoryUserTaskList(commitTaskResult.getFlowInstanceId(), false);
-    LOGGER.info("testGetHistoryUserTaskList.||nodeInstanceListResult={}", nodeInstanceListResult);
+    log.info("testGetHistoryUserTaskList.||nodeInstanceListResult={}", nodeInstanceListResult);
     StringBuilder sb = new StringBuilder();
     for (NodeInstance elementInstanceResult : nodeInstanceListResult.getNodeInstanceList()) {
       sb.append("[");
@@ -331,7 +329,7 @@ public class RuntimeProcessorTest {
       sb.append(elementInstanceResult.getStatus());
       sb.append("]->");
     }
-    LOGGER.info("testGetHistoryUserTaskList.||snapshot={}", sb.toString());
+    log.info("testGetHistoryUserTaskList.||snapshot={}", sb.toString());
 
     Assertions.assertEquals(2, nodeInstanceListResult.getNodeInstanceList().size());
     Assertions.assertEquals("UserTask_0uld0u9", nodeInstanceListResult.getNodeInstanceList().getFirst().getModelKey());
@@ -351,11 +349,11 @@ public class RuntimeProcessorTest {
 
     // UserTask -> ExclusiveGateway : Failed
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
-    LOGGER.info("testGetFailedHistoryElementList.||commitTaskResult={}", commitTaskResult);
+    log.info("testGetFailedHistoryElementList.||commitTaskResult={}", commitTaskResult);
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.GET_OUTGOING_FAILED.getErrNo());
 
     ElementInstanceListResult elementInstanceListResult = runtimeProcessor.getHistoryElementList(commitTaskResult.getFlowInstanceId(), false);
-    LOGGER.info("testGetHistoryElementList.||elementInstanceListResult={}", elementInstanceListResult);
+    log.info("testGetHistoryElementList.||elementInstanceListResult={}", elementInstanceListResult);
     StringBuilder sb = new StringBuilder();
     for (ElementInstance elementInstanceResult : elementInstanceListResult.getElementInstanceList()) {
       sb.append("[");
@@ -364,7 +362,7 @@ public class RuntimeProcessorTest {
       sb.append(elementInstanceResult.getStatus());
       sb.append("]->");
     }
-    LOGGER.info("testGetHistoryElementList.||snapshot={}", sb.toString());
+    log.info("testGetHistoryElementList.||snapshot={}", sb.toString());
 
     Assertions.assertEquals(5, elementInstanceListResult.getElementInstanceList().size());
     Assertions.assertEquals("ExclusiveGateway_0yq2l0s", elementInstanceListResult.getElementInstanceList().get(4).getModelKey());
@@ -384,7 +382,7 @@ public class RuntimeProcessorTest {
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
     ElementInstanceListResult elementInstanceListResult = runtimeProcessor.getHistoryElementList(commitTaskResult.getFlowInstanceId(), false);
-    LOGGER.info("testGetHistoryElementList.||elementInstanceListResult={}", elementInstanceListResult);
+    log.info("testGetHistoryElementList.||elementInstanceListResult={}", elementInstanceListResult);
     StringBuilder sb = new StringBuilder();
     for (ElementInstance elementInstanceResult : elementInstanceListResult.getElementInstanceList()) {
       sb.append("[");
@@ -393,7 +391,7 @@ public class RuntimeProcessorTest {
       sb.append(elementInstanceResult.getStatus());
       sb.append("]->");
     }
-    LOGGER.info("testGetHistoryElementList.||snapshot={}", sb.toString());
+    log.info("testGetHistoryElementList.||snapshot={}", sb.toString());
 
     Assertions.assertEquals(5, elementInstanceListResult.getElementInstanceList().size());
     Assertions.assertEquals("EndEvent_0s4vsxw", elementInstanceListResult.getElementInstanceList().get(4).getModelKey());
@@ -405,7 +403,7 @@ public class RuntimeProcessorTest {
     StartProcessResult startProcessResult = startProcess();
     String flowInstanceId = startProcessResult.getFlowInstanceId();
     InstanceDataListResult instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId, false);
-    LOGGER.info("testGetInstanceData 1.||instanceDataList={}", instanceDataList);
+    log.info("testGetInstanceData 1.||instanceDataList={}", instanceDataList);
 
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
@@ -429,24 +427,24 @@ public class RuntimeProcessorTest {
     CommitTaskResult commitTaskResult1 = runtimeProcessor.commit(commitTaskParam1);
 
     instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId, false);
-    LOGGER.info("testGetInstanceData 2.||instanceDataList={}", instanceDataList);
+    log.info("testGetInstanceData 2.||instanceDataList={}", instanceDataList);
 
     // UserTask <- UserTask
     RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
     rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     rollbackTaskParam.setTaskInstanceId(commitTaskResult1.getActiveTaskInstance().getNodeInstanceId());
     RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
-    LOGGER.info("rollbackTaskResult 3.||rollbackTaskResult.variables={}", rollbackTaskResult.getVariables());
+    log.info("rollbackTaskResult 3.||rollbackTaskResult.variables={}", rollbackTaskResult.getVariables());
 
     // UserTask <- ExclusiveGateway <- UserTask
     RollbackTaskParam rollbackTaskParam1 = new RollbackTaskParam();
     rollbackTaskParam1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     rollbackTaskParam1.setTaskInstanceId(rollbackTaskResult.getActiveTaskInstance().getNodeInstanceId());
     RollbackTaskResult rollbackTaskResult1 = runtimeProcessor.rollback(rollbackTaskParam1);
-    LOGGER.info("rollbackTaskResult 4.||rollbackTaskResult.variables={}", rollbackTaskResult1.getVariables());
+    log.info("rollbackTaskResult 4.||rollbackTaskResult.variables={}", rollbackTaskResult1.getVariables());
 
     instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId, false);
-    LOGGER.info("testGetInstanceData 5.||instanceDataList={}", instanceDataList);
+    log.info("testGetInstanceData 5.||instanceDataList={}", instanceDataList);
     String initData = JsonUtils.getInstance().stringify(startProcessResult.getVariables());
     String rollbackData = JsonUtils.getInstance().stringify(rollbackTaskResult1.getVariables());
     Assertions.assertEquals(initData, rollbackData);
@@ -457,7 +455,7 @@ public class RuntimeProcessorTest {
     StartProcessResult startProcessResult = startProcess();
     String flowInstanceId = startProcessResult.getFlowInstanceId();
     NodeInstanceResult nodeInstanceResult = runtimeProcessor.getNodeInstance(flowInstanceId, startProcessResult.getActiveTaskInstance().getNodeInstanceId(), false);
-    LOGGER.info("testGetNodeInstance.||nodeInstanceResult={}", nodeInstanceResult);
+    log.info("testGetNodeInstance.||nodeInstanceResult={}", nodeInstanceResult);
 
     Assertions.assertEquals(nodeInstanceResult.getNodeInstance().getNodeInstanceId(), startProcessResult.getActiveTaskInstance().getNodeInstanceId());
   }

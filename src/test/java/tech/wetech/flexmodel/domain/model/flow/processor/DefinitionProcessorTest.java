@@ -3,10 +3,9 @@ package tech.wetech.flexmodel.domain.model.flow.processor;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.CreateFlowParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.DeployFlowParam;
@@ -24,9 +23,9 @@ import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
  */
 @QuarkusTest
 @QuarkusTestResource(SQLiteTestResource.class)
+@Slf4j
 public class DefinitionProcessorTest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefinitionProcessor.class);
   @Inject
   DefinitionProcessor definitionProcessor;
 
@@ -34,7 +33,7 @@ public class DefinitionProcessorTest {
   public void createTest() {
     CreateFlowParam createFlowParam = EntityBuilder.buildCreateFlowParam();
     CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
-    LOGGER.info("createFlow.||createFlowResult={}", createFlowResult);
+    log.info("createFlow.||createFlowResult={}", createFlowResult);
     Assertions.assertEquals(createFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
   }
 
@@ -46,7 +45,7 @@ public class DefinitionProcessorTest {
     CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
     updateFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
     UpdateFlowResult updateFlowResult = definitionProcessor.update(updateFlowParam);
-    LOGGER.info("updateFlow.||result={}", updateFlowParam);
+    log.info("updateFlow.||result={}", updateFlowParam);
     Assertions.assertEquals(updateFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
   }
 
@@ -62,7 +61,7 @@ public class DefinitionProcessorTest {
     Assertions.assertEquals(updateFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
     deployFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
     DeployFlowResult deployFlowResult = definitionProcessor.deploy(deployFlowParam);
-    LOGGER.info("deployFlowTest.||deployFlowResult={}", deployFlowResult);
+    log.info("deployFlowTest.||deployFlowResult={}", deployFlowResult);
     Assertions.assertEquals(deployFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
   }
 

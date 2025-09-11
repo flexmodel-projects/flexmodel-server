@@ -28,6 +28,9 @@ public class FlowModelValidator {
   @Inject
   ElementValidatorFactory elementValidatorFactory;
 
+  public void validate(FlowModel flowModel) throws ProcessException, DefinitionException {
+    this.validate(flowModel, null);
+  }
 
   public void validate(FlowModel flowModel, CommonParam commonParam) throws ProcessException, DefinitionException {
     if (flowModel == null || CollectionUtils.isEmpty(flowModel.getFlowElementList())) {

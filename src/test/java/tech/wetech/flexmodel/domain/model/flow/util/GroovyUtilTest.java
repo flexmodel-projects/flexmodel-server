@@ -1,16 +1,14 @@
 package tech.wetech.flexmodel.domain.model.flow.util;
 
 import com.google.common.collect.Maps;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.GroovyUtil;
 
 import java.util.Map;
 
+@Slf4j
 public class GroovyUtilTest {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(GroovyUtilTest.class);
 
   /**
    * Exception:
@@ -23,16 +21,15 @@ public class GroovyUtilTest {
    * 1/0
    *
    */
-
   @Test
   public void fun1() {
     try {
       String expression = "";
       Map<String, Object> dataMap = Maps.newHashMap();
       Object result = GroovyUtil.execute(expression, dataMap);
-      LOGGER.warn("result:{}:{}", result.getClass().getSimpleName(), result);
+      log.warn("result:{}:{}", result.getClass().getSimpleName(), result);
     } catch (Exception e) {
-      LOGGER.warn("catch exception", e);
+      log.warn("catch exception", e);
     }
   }
 }
