@@ -21,7 +21,7 @@ public class FlowInstanceMappingFmRepository implements FlowInstanceMappingRepos
     return session.dsl().selectFrom(FlowInstanceMapping.class)
       .where(field(FlowInstanceMapping::getFlowInstanceId).eq(flowInstanceId)
         .and(field(FlowInstanceMapping::getNodeInstanceId).eq(nodeInstanceId)))
-      .orderByDesc(FlowInstanceMapping::getId)
+      .orderBy(FlowInstanceMapping::getCreateTime)
       .execute();
   }
 

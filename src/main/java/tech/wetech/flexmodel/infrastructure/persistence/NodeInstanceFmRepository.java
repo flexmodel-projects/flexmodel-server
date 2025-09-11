@@ -100,6 +100,7 @@ public class NodeInstanceFmRepository implements NodeInstanceRepository {
   public List<NodeInstance> selectByFlowInstanceId(String flowInstanceId) {
     return session.dsl().selectFrom(NodeInstance.class)
       .where(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId))
+      .orderBy(NodeInstance::getId)
       .execute();
   }
 

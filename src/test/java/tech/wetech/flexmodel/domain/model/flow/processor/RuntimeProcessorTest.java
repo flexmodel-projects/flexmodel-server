@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.flow.processor;
+package tech.wetech.flexmodel.domain.model.flow.processor;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
+import tech.wetech.flexmodel.domain.model.flow.EntityBuilder;
 import tech.wetech.flexmodel.domain.model.flow.bo.ElementInstance;
 import tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance;
 import tech.wetech.flexmodel.domain.model.flow.common.ErrorEnum;
@@ -17,10 +18,8 @@ import tech.wetech.flexmodel.domain.model.flow.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.param.CommitTaskParam;
 import tech.wetech.flexmodel.domain.model.flow.param.RollbackTaskParam;
 import tech.wetech.flexmodel.domain.model.flow.param.StartProcessParam;
-import tech.wetech.flexmodel.domain.model.flow.processor.RuntimeProcessor;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDeploymentRepository;
 import tech.wetech.flexmodel.domain.model.flow.result.*;
-import tech.wetech.flexmodel.flow.EntityBuilder;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.ArrayList;
@@ -397,7 +396,7 @@ public class RuntimeProcessorTest {
     LOGGER.info("testGetHistoryElementList.||snapshot={}", sb.toString());
 
     Assertions.assertTrue(elementInstanceListResult.getElementInstanceList().size() == 5);
-    Assertions.assertEquals(elementInstanceListResult.getElementInstanceList().get(4).getModelKey(), "EndEvent_0s4vsxw");
+    Assertions.assertEquals("EndEvent_0s4vsxw", elementInstanceListResult.getElementInstanceList().get(4).getModelKey());
   }
 
 
