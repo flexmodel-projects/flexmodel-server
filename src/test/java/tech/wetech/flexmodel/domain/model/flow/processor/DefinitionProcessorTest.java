@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.SQLiteTestResource;
-import tech.wetech.flexmodel.domain.model.flow.EntityBuilder;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.CreateFlowParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.DeployFlowParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.GetFlowModuleParam;
@@ -18,6 +17,7 @@ import tech.wetech.flexmodel.domain.model.flow.dto.result.DeployFlowResult;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.FlowModuleResult;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.UpdateFlowResult;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
+import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
 
 /**
  * @author cjbi
@@ -35,7 +35,7 @@ public class DefinitionProcessorTest {
     CreateFlowParam createFlowParam = EntityBuilder.buildCreateFlowParam();
     CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
     LOGGER.info("createFlow.||createFlowResult={}", createFlowResult);
-    Assertions.assertTrue(createFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+    Assertions.assertEquals(createFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
   }
 
   @Test
@@ -47,7 +47,7 @@ public class DefinitionProcessorTest {
     updateFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
     UpdateFlowResult updateFlowResult = definitionProcessor.update(updateFlowParam);
     LOGGER.info("updateFlow.||result={}", updateFlowParam);
-    Assertions.assertTrue(updateFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+    Assertions.assertEquals(updateFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
   }
 
   @Test
@@ -59,11 +59,11 @@ public class DefinitionProcessorTest {
     CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
     updateFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
     UpdateFlowResult updateFlowResult = definitionProcessor.update(updateFlowParam);
-    Assertions.assertTrue(updateFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+    Assertions.assertEquals(updateFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
     deployFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
     DeployFlowResult deployFlowResult = definitionProcessor.deploy(deployFlowParam);
     LOGGER.info("deployFlowTest.||deployFlowResult={}", deployFlowResult);
-    Assertions.assertTrue(deployFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+    Assertions.assertEquals(deployFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
   }
 
   @Test
@@ -76,18 +76,18 @@ public class DefinitionProcessorTest {
     CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
     updateFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
     UpdateFlowResult updateFlowResult = definitionProcessor.update(updateFlowParam);
-    Assertions.assertTrue(updateFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+    Assertions.assertEquals(updateFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
 
     flowModuleParam.setFlowModuleId(updateFlowParam.getFlowModuleId());
     FlowModuleResult flowModuleResultByFlowModuleId = definitionProcessor.getFlowModule(flowModuleParam);
-    Assertions.assertTrue(flowModuleResultByFlowModuleId.getFlowModuleId().equals(createFlowResult.getFlowModuleId()));
+    Assertions.assertEquals(flowModuleResultByFlowModuleId.getFlowModuleId(), createFlowResult.getFlowModuleId());
 
     deployFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
     DeployFlowResult deployFlowResult = definitionProcessor.deploy(deployFlowParam);
     flowModuleParam.setFlowDeployId(deployFlowResult.getFlowDeployId());
     flowModuleParam.setFlowModuleId(null);
     FlowModuleResult flowModuleResultByDeployId = definitionProcessor.getFlowModule(flowModuleParam);
-    Assertions.assertTrue(flowModuleResultByDeployId.getFlowModel().equals(updateFlowParam.getFlowModel()));
+    Assertions.assertEquals(flowModuleResultByDeployId.getFlowModel(), updateFlowParam.getFlowModel());
   }
 
 }

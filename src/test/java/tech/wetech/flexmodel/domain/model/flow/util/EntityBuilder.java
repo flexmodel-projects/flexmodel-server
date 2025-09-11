@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.domain.model.flow;
+package tech.wetech.flexmodel.domain.model.flow.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
