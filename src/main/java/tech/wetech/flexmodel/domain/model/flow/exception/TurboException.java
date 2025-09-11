@@ -1,6 +1,6 @@
 package tech.wetech.flexmodel.domain.model.flow.exception;
 
-import tech.wetech.flexmodel.domain.model.flow.common.ErrorEnum;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 
 import java.text.MessageFormat;
 

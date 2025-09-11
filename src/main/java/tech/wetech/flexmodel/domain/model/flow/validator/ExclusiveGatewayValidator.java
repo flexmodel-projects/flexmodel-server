@@ -3,10 +3,10 @@ package tech.wetech.flexmodel.domain.model.flow.validator;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.wetech.flexmodel.domain.model.flow.common.ErrorEnum;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.exception.DefinitionException;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.util.FlowModelUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 

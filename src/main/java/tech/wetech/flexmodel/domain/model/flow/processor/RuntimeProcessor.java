@@ -10,30 +10,30 @@ import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.codegen.entity.FlowInstance;
 import tech.wetech.flexmodel.codegen.entity.FlowInstanceMapping;
 import tech.wetech.flexmodel.codegen.entity.NodeInstance;
-import tech.wetech.flexmodel.domain.model.flow.bo.ElementInstance;
-import tech.wetech.flexmodel.domain.model.flow.bo.FlowInfo;
-import tech.wetech.flexmodel.domain.model.flow.bo.FlowInstanceBO;
-import tech.wetech.flexmodel.domain.model.flow.bo.NodeInstanceBO;
-import tech.wetech.flexmodel.domain.model.flow.common.*;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.ElementInstance;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.FlowInfo;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.FlowInstanceBO;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.CommitTaskParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.RollbackTaskParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.result.*;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
 import tech.wetech.flexmodel.domain.model.flow.exception.ReentrantException;
 import tech.wetech.flexmodel.domain.model.flow.exception.TurboException;
 import tech.wetech.flexmodel.domain.model.flow.executor.FlowExecutor;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.model.InstanceData;
-import tech.wetech.flexmodel.domain.model.flow.param.CommitTaskParam;
-import tech.wetech.flexmodel.domain.model.flow.param.RollbackTaskParam;
-import tech.wetech.flexmodel.domain.model.flow.param.StartProcessParam;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDeploymentRepository;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowInstanceMappingRepository;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowInstanceRepository;
 import tech.wetech.flexmodel.domain.model.flow.repository.NodeInstanceRepository;
-import tech.wetech.flexmodel.domain.model.flow.result.*;
 import tech.wetech.flexmodel.domain.model.flow.service.FlowInstanceService;
 import tech.wetech.flexmodel.domain.model.flow.service.InstanceDataService;
 import tech.wetech.flexmodel.domain.model.flow.service.NodeInstanceService;
-import tech.wetech.flexmodel.domain.model.flow.util.FlowModelUtil;
-import tech.wetech.flexmodel.domain.model.flow.util.InstanceDataUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.*;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.InstanceDataUtil;
 import tech.wetech.flexmodel.domain.model.flow.validator.ParamValidator;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
@@ -284,7 +284,7 @@ public class RuntimeProcessor {
       }
       String flowDeployId = historyNodeInstanceList.get(0).getFlowDeployId();
       Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
-      List<tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance> userTaskList = historyListResult.getNodeInstanceList();
+      List<tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance> userTaskList = historyListResult.getNodeInstanceList();
       for (NodeInstance nodeInstancePO : historyNodeInstanceList) {
         if (!isEffectiveNodeInstance(nodeInstancePO.getStatus())) {
           continue;
@@ -305,7 +305,7 @@ public class RuntimeProcessor {
         }
 
         //build effective userTask instance
-        tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance nodeInstance = JsonUtils.getInstance().convertValue(nodeInstancePO, tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance.class);
+        tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance nodeInstance = JsonUtils.getInstance().convertValue(nodeInstancePO, tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance.class);
         FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
         nodeInstance.setModelKey(flowElement.getKey());
         nodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
@@ -437,7 +437,7 @@ public class RuntimeProcessor {
       NodeInstance nodeInstancePO = nodeInstanceService.selectByNodeInstanceId(flowInstanceId, nodeInstanceId, effectiveForSubFlowInstance);
       String flowDeployId = nodeInstancePO.getFlowDeployId();
       Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
-      tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance nodeInstance = JsonUtils.getInstance().convertValue(nodeInstancePO, tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance.class);
+      tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance nodeInstance = JsonUtils.getInstance().convertValue(nodeInstancePO, tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance.class);
       FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
       nodeInstance.setModelKey(flowElement.getKey());
       nodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
@@ -578,8 +578,8 @@ public class RuntimeProcessor {
     return runtimeResult;
   }
 
-  private tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance buildActiveTaskInstance(NodeInstanceBO nodeInstanceBO, RuntimeContext runtimeContext) {
-    tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance activeNodeInstance = JsonUtils.getInstance().convertValue(nodeInstanceBO, tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance.class);
+  private tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance buildActiveTaskInstance(NodeInstanceBO nodeInstanceBO, RuntimeContext runtimeContext) {
+    tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance activeNodeInstance = JsonUtils.getInstance().convertValue(nodeInstanceBO, tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance.class);
     activeNodeInstance.setModelKey(nodeInstanceBO.getNodeKey());
     FlowElement flowElement = runtimeContext.getFlowElementMap().get(nodeInstanceBO.getNodeKey());
     activeNodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));

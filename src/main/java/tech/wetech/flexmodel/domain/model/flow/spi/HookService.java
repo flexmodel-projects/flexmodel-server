@@ -1,6 +1,6 @@
 package tech.wetech.flexmodel.domain.model.flow.spi;
 
-import tech.wetech.flexmodel.domain.model.flow.model.InstanceData;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 
 import java.util.List;
 

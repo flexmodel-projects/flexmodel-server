@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.domain.model.flow.plugin.ExpressionCalculatorPlugin;
 import tech.wetech.flexmodel.domain.model.flow.plugin.IdGeneratorPlugin;
 import tech.wetech.flexmodel.domain.model.flow.plugin.manager.PluginManager;
-import tech.wetech.flexmodel.domain.model.flow.util.ExpressionCalculator;
-import tech.wetech.flexmodel.domain.model.flow.util.IdGenerator;
-import tech.wetech.flexmodel.domain.model.flow.util.StrongUuidGenerator;
-import tech.wetech.flexmodel.domain.model.flow.util.impl.GroovyExpressionCalculator;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.ExpressionCalculator;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.IdGenerator;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.StrongUuidGenerator;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.impl.GroovyExpressionCalculator;
 
 import java.util.List;
 import java.util.Optional;

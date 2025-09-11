@@ -1,8 +1,8 @@
 package tech.wetech.flexmodel.domain.model.flow.plugin.manager;
 
-import tech.wetech.flexmodel.domain.model.flow.common.PluginTypeEnum;
 import tech.wetech.flexmodel.domain.model.flow.plugin.*;
-import tech.wetech.flexmodel.domain.model.flow.util.SPIUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.PluginTypeEnum;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.SPIUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;

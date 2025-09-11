@@ -7,21 +7,21 @@ import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.codegen.entity.FlowInstance;
 import tech.wetech.flexmodel.codegen.entity.FlowInstanceMapping;
 import tech.wetech.flexmodel.codegen.entity.NodeInstance;
-import tech.wetech.flexmodel.domain.model.flow.bo.NodeInstanceBO;
-import tech.wetech.flexmodel.domain.model.flow.common.*;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.CommitTaskParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.RollbackTaskParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.result.CommitTaskResult;
+import tech.wetech.flexmodel.domain.model.flow.dto.result.RollbackTaskResult;
+import tech.wetech.flexmodel.domain.model.flow.dto.result.RuntimeResult;
+import tech.wetech.flexmodel.domain.model.flow.dto.result.StartProcessResult;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
 import tech.wetech.flexmodel.domain.model.flow.exception.SuspendException;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.model.InstanceData;
-import tech.wetech.flexmodel.domain.model.flow.param.CommitTaskParam;
-import tech.wetech.flexmodel.domain.model.flow.param.RollbackTaskParam;
-import tech.wetech.flexmodel.domain.model.flow.param.StartProcessParam;
-import tech.wetech.flexmodel.domain.model.flow.result.CommitTaskResult;
-import tech.wetech.flexmodel.domain.model.flow.result.RollbackTaskResult;
-import tech.wetech.flexmodel.domain.model.flow.result.RuntimeResult;
-import tech.wetech.flexmodel.domain.model.flow.result.StartProcessResult;
-import tech.wetech.flexmodel.domain.model.flow.util.FlowModelUtil;
-import tech.wetech.flexmodel.domain.model.flow.util.InstanceDataUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.*;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.InstanceDataUtil;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
@@ -219,7 +219,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     runtimeResult.setFlowInstanceId(subFlowInstance.getFlowInstanceId());
     runtimeResult.setStatus(subFlowInstance.getStatus());
 
-    tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance nodeInstance = JsonUtils.getInstance().convertValue(nodeInstancePO, tech.wetech.flexmodel.domain.model.flow.bo.NodeInstance.class);
+    tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance nodeInstance = JsonUtils.getInstance().convertValue(nodeInstancePO, tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance.class);
     nodeInstance.setCreateTime(null);
     nodeInstance.setModifyTime(null);
     nodeInstance.setModelKey(nodeInstancePO.getNodeKey());
@@ -318,7 +318,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
 
   private void saveCallActivityEndInstanceData(RuntimeContext runtimeContext, RuntimeResult runtimeResult) throws ProcessException {
     NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
-    List<tech.wetech.flexmodel.domain.model.flow.model.InstanceData> instanceDataFromSubFlow = calculateCallActivityOutParamFromSubFlow(runtimeContext, runtimeResult.getVariables());
+    List<InstanceData> instanceDataFromSubFlow = calculateCallActivityOutParamFromSubFlow(runtimeContext, runtimeResult.getVariables());
     // 1.merge to current data
     Map<String, InstanceData> currentInstanceDataMap = runtimeContext.getInstanceDataMap();
     currentInstanceDataMap.putAll(InstanceDataUtil.getInstanceDataMap(instanceDataFromSubFlow));

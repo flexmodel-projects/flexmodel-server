@@ -3,8 +3,8 @@ package tech.wetech.flexmodel.domain.model.flow.plugin.manager;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.wetech.flexmodel.domain.model.flow.common.PluginTypeEnum;
 import tech.wetech.flexmodel.domain.model.flow.plugin.*;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.PluginTypeEnum;
 
 import java.util.*;
 

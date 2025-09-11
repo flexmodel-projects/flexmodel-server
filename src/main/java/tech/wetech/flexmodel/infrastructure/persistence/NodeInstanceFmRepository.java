@@ -3,8 +3,8 @@ package tech.wetech.flexmodel.infrastructure.persistence;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.NodeInstance;
-import tech.wetech.flexmodel.domain.model.flow.common.NodeInstanceStatus;
 import tech.wetech.flexmodel.domain.model.flow.repository.NodeInstanceRepository;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.NodeInstanceStatus;
 import tech.wetech.flexmodel.session.Session;
 
 import java.util.List;

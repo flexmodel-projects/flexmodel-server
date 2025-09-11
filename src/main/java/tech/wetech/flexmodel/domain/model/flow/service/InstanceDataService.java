@@ -3,10 +3,10 @@ package tech.wetech.flexmodel.domain.model.flow.service;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import tech.wetech.flexmodel.codegen.entity.*;
-import tech.wetech.flexmodel.domain.model.flow.common.FlowElementType;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowElement;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.repository.*;
-import tech.wetech.flexmodel.domain.model.flow.util.FlowModelUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.FlowElementType;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
 
 import java.util.Map;
 

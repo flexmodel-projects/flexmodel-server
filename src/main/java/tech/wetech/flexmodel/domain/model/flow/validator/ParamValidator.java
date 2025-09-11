@@ -1,8 +1,8 @@
 package tech.wetech.flexmodel.domain.model.flow.validator;
 
-import tech.wetech.flexmodel.domain.model.flow.common.ErrorEnum;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.*;
 import tech.wetech.flexmodel.domain.model.flow.exception.ParamException;
-import tech.wetech.flexmodel.domain.model.flow.param.*;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 
 public class ParamValidator {

@@ -4,24 +4,24 @@ import com.google.common.collect.Maps;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import tech.wetech.flexmodel.codegen.entity.FlowDefinition;
-import tech.wetech.flexmodel.domain.model.flow.common.Constants;
-import tech.wetech.flexmodel.domain.model.flow.common.ErrorEnum;
-import tech.wetech.flexmodel.domain.model.flow.common.FlowElementType;
 import tech.wetech.flexmodel.domain.model.flow.config.BusinessConfig;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowModel;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.CommonParam;
 import tech.wetech.flexmodel.domain.model.flow.exception.DefinitionException;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowModel;
-import tech.wetech.flexmodel.domain.model.flow.param.CommonParam;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDefinitionRepository;
-import tech.wetech.flexmodel.domain.model.flow.util.FlowModelUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.Constants;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.FlowElementType;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
 
 import java.util.*;
 
-import static tech.wetech.flexmodel.domain.model.flow.common.Constants.CALL_ACTIVITY_EXECUTE_TYPE.ASYNC;
-import static tech.wetech.flexmodel.domain.model.flow.common.Constants.CALL_ACTIVITY_EXECUTE_TYPE.SYNC;
-import static tech.wetech.flexmodel.domain.model.flow.common.Constants.CALL_ACTIVITY_INSTANCE_TYPE.MULTIPLE;
-import static tech.wetech.flexmodel.domain.model.flow.common.Constants.CALL_ACTIVITY_INSTANCE_TYPE.SINGLE;
-import static tech.wetech.flexmodel.domain.model.flow.common.Constants.ELEMENT_PROPERTIES.*;
+import static tech.wetech.flexmodel.domain.model.flow.shared.common.Constants.CALL_ACTIVITY_EXECUTE_TYPE.ASYNC;
+import static tech.wetech.flexmodel.domain.model.flow.shared.common.Constants.CALL_ACTIVITY_EXECUTE_TYPE.SYNC;
+import static tech.wetech.flexmodel.domain.model.flow.shared.common.Constants.CALL_ACTIVITY_INSTANCE_TYPE.MULTIPLE;
+import static tech.wetech.flexmodel.domain.model.flow.shared.common.Constants.CALL_ACTIVITY_INSTANCE_TYPE.SINGLE;
+import static tech.wetech.flexmodel.domain.model.flow.shared.common.Constants.ELEMENT_PROPERTIES.*;
 
 @Singleton
 public class CallActivityValidator extends ElementValidator {

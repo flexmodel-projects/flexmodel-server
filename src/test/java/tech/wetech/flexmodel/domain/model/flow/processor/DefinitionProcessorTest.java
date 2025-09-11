@@ -9,15 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.domain.model.flow.EntityBuilder;
-import tech.wetech.flexmodel.domain.model.flow.common.ErrorEnum;
-import tech.wetech.flexmodel.domain.model.flow.param.CreateFlowParam;
-import tech.wetech.flexmodel.domain.model.flow.param.DeployFlowParam;
-import tech.wetech.flexmodel.domain.model.flow.param.GetFlowModuleParam;
-import tech.wetech.flexmodel.domain.model.flow.param.UpdateFlowParam;
-import tech.wetech.flexmodel.domain.model.flow.result.CreateFlowResult;
-import tech.wetech.flexmodel.domain.model.flow.result.DeployFlowResult;
-import tech.wetech.flexmodel.domain.model.flow.result.FlowModuleResult;
-import tech.wetech.flexmodel.domain.model.flow.result.UpdateFlowResult;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.CreateFlowParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.DeployFlowParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.GetFlowModuleParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.UpdateFlowParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.result.CreateFlowResult;
+import tech.wetech.flexmodel.domain.model.flow.dto.result.DeployFlowResult;
+import tech.wetech.flexmodel.domain.model.flow.dto.result.FlowModuleResult;
+import tech.wetech.flexmodel.domain.model.flow.dto.result.UpdateFlowResult;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 
 /**
  * @author cjbi

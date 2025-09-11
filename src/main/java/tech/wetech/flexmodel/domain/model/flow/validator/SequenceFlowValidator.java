@@ -1,9 +1,9 @@
 package tech.wetech.flexmodel.domain.model.flow.validator;
 
 import jakarta.inject.Singleton;
-import tech.wetech.flexmodel.domain.model.flow.common.ErrorEnum;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.exception.DefinitionException;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowElement;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 
 import java.util.List;
 import java.util.Map;

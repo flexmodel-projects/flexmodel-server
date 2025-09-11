@@ -8,13 +8,13 @@ import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.codegen.entity.FlowInstance;
 import tech.wetech.flexmodel.codegen.entity.FlowInstanceMapping;
 import tech.wetech.flexmodel.codegen.entity.NodeInstance;
-import tech.wetech.flexmodel.domain.model.flow.common.FlowElementType;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowElement;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDeploymentRepository;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowInstanceMappingRepository;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowInstanceRepository;
 import tech.wetech.flexmodel.domain.model.flow.repository.NodeInstanceRepository;
-import tech.wetech.flexmodel.domain.model.flow.util.FlowModelUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.FlowElementType;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 

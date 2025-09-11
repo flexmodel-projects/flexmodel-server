@@ -3,14 +3,14 @@ package tech.wetech.flexmodel.domain.model.flow.executor;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.wetech.flexmodel.domain.model.flow.bo.NodeInstanceBO;
-import tech.wetech.flexmodel.domain.model.flow.common.Constants;
-import tech.wetech.flexmodel.domain.model.flow.common.ErrorEnum;
-import tech.wetech.flexmodel.domain.model.flow.common.NodeInstanceStatus;
-import tech.wetech.flexmodel.domain.model.flow.common.RuntimeContext;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.util.FlowModelUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.Constants;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.NodeInstanceStatus;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
 
 import java.text.MessageFormat;
 

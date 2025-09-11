@@ -7,15 +7,15 @@ import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.codegen.entity.InstanceData;
-import tech.wetech.flexmodel.domain.model.flow.bo.NodeInstanceBO;
-import tech.wetech.flexmodel.domain.model.flow.common.InstanceDataType;
-import tech.wetech.flexmodel.domain.model.flow.common.NodeInstanceStatus;
-import tech.wetech.flexmodel.domain.model.flow.common.RuntimeContext;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
-import tech.wetech.flexmodel.domain.model.flow.model.FlowElement;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.InstanceDataType;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.NodeInstanceStatus;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.InstanceDataUtil;
 import tech.wetech.flexmodel.domain.model.flow.spi.HookService;
-import tech.wetech.flexmodel.domain.model.flow.util.FlowModelUtil;
-import tech.wetech.flexmodel.domain.model.flow.util.InstanceDataUtil;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
@@ -52,7 +52,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
     }
 
     // 3.invoke hook and get data result
-    Map<String, tech.wetech.flexmodel.domain.model.flow.model.InstanceData> hookInfoValueMap = getHookInfoValueMap(runtimeContext.getFlowInstanceId(), hookInfoParam, runtimeContext.getCurrentNodeInstance().getNodeKey(), runtimeContext.getCurrentNodeInstance().getNodeInstanceId());
+    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> hookInfoValueMap = getHookInfoValueMap(runtimeContext.getFlowInstanceId(), hookInfoParam, runtimeContext.getCurrentNodeInstance().getNodeKey(), runtimeContext.getCurrentNodeInstance().getNodeInstanceId());
     LOGGER.info("doExecute getHookInfoValueMap.||hookInfoValueMap={}", hookInfoValueMap);
     if (hookInfoValueMap == null || hookInfoValueMap.isEmpty()) {
       LOGGER.warn("doExecute: hookInfoValueMap is empty.||flowInstanceId={}||hookInfoParam={}||nodeKey={}",
@@ -61,7 +61,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
     }
 
     // 4.merge data to current dataMap
-    Map<String, tech.wetech.flexmodel.domain.model.flow.model.InstanceData> dataMap = runtimeContext.getInstanceDataMap();
+    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> dataMap = runtimeContext.getInstanceDataMap();
     dataMap.putAll(hookInfoValueMap);
 
     // 5.save data
@@ -71,11 +71,11 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
     }
   }
 
-  private Map<String, tech.wetech.flexmodel.domain.model.flow.model.InstanceData> getHookInfoValueMap(String flowInstanceId, String hookInfoParam, String nodeKey, String nodeInstanceId) {
-    List<tech.wetech.flexmodel.domain.model.flow.model.InstanceData> dataList = Lists.newArrayList();
+  private Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> getHookInfoValueMap(String flowInstanceId, String hookInfoParam, String nodeKey, String nodeInstanceId) {
+    List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> dataList = Lists.newArrayList();
     for (HookService service : hookServices) {
       try {
-        List<tech.wetech.flexmodel.domain.model.flow.model.InstanceData> list = service.invoke(flowInstanceId, hookInfoParam, nodeKey, nodeInstanceId);
+        List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> list = service.invoke(flowInstanceId, hookInfoParam, nodeKey, nodeInstanceId);
         if (CollectionUtils.isEmpty(list)) {
           LOGGER.warn("hook service invoke result is empty, serviceName={}, flowInstanceId={}, hookInfoParam={}",
             service.getClass().getName(), flowInstanceId, hookInfoParam);
