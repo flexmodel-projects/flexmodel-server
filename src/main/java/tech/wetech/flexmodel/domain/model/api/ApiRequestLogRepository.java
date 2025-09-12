@@ -10,9 +10,9 @@ import java.util.List;
  */
 public interface ApiRequestLogRepository {
 
-  List<ApiRequestLog> find(Predicate filter, Integer current, Integer pageSize);
+  List<ApiRequestLog> find(Predicate filter, Integer page, Integer size);
 
-  List<LogStat> stat(Predicate filter,String fmt);
+  List<LogStat> stat(Predicate filter, String fmt);
 
   List<LogApiRank> ranking(Predicate filter);
 

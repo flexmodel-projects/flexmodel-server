@@ -27,11 +27,11 @@ public class ApiLogFmRepository implements ApiRequestLogRepository {
   Session session;
 
   @Override
-  public List<ApiRequestLog> find(Predicate filter, Integer current, Integer pageSize) {
+  public List<ApiRequestLog> find(Predicate filter, Integer page, Integer size) {
     return session.dsl().selectFrom(ApiRequestLog.class)
       .where(filter)
       .orderBy("id", Direction.DESC)
-      .page(current, pageSize)
+      .page(page, size)
       .execute();
   }
 
