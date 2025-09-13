@@ -33,10 +33,10 @@ public class FlowExecutor extends RuntimeExecutor {
   private static final Logger LOGGER = LoggerFactory.getLogger(FlowExecutor.class);
 
   @Inject
-  private FlowInstanceRepository processInstanceDAO;
+  FlowInstanceRepository flowInstanceRepository;
 
   @Inject
-  private Instance<ExecutorFactory> executorFactoryInstance;
+  Instance<ExecutorFactory> executorFactoryInstance;
 
   ////////////////////////////////////////execute////////////////////////////////////////
 
@@ -78,7 +78,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
   private FlowInstance saveFlowInstance(RuntimeContext runtimeContext) throws ProcessException {
     FlowInstance flowInstancePO = buildFlowInstancePO(runtimeContext);
-    int result = processInstanceDAO.insert(flowInstancePO);
+    int result = flowInstanceRepository.insert(flowInstancePO);
     if (result == 1) {
       return flowInstancePO;
     }
@@ -182,10 +182,10 @@ public class FlowExecutor extends RuntimeExecutor {
     //3.update flowInstance status while completed
     if (isCompleted(runtimeContext)) {
       if (isSubFlowInstance(runtimeContext)) {
-        processInstanceDAO.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.END);
+        flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.END);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.END);
       } else {
-        processInstanceDAO.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.COMPLETED);
+        flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.COMPLETED);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
       }
       LOGGER.info("postExecute: flowInstance process completely.||flowInstanceId={}", runtimeContext.getFlowInstanceId());
@@ -329,10 +329,10 @@ public class FlowExecutor extends RuntimeExecutor {
 
     if (isCompleted(runtimeContext)) {
       if (isSubFlowInstance(runtimeContext)) {
-        processInstanceDAO.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.END);
+        flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.END);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.END);
       } else {
-        processInstanceDAO.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.COMPLETED);
+        flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.COMPLETED);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
       }
 
@@ -472,10 +472,10 @@ public class FlowExecutor extends RuntimeExecutor {
 
     if (FlowModelUtil.isElementType(runtimeContext.getCurrentNodeModel().getKey(), runtimeContext.getFlowElementMap(), FlowElementType.START_EVENT)) {
       runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.TERMINATED);
-      processInstanceDAO.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.TERMINATED);
+      flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.TERMINATED);
     } else if (runtimeContext.getFlowInstanceStatus() == FlowInstanceStatus.END) {
       runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.RUNNING);
-      processInstanceDAO.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.RUNNING);
+      flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.RUNNING);
     }
   }
 

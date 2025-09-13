@@ -50,13 +50,13 @@ public class RuntimeProcessor {
   FlowDeploymentRepository flowDeploymentRepository;
 
   @Inject
-  FlowInstanceRepository processInstanceDAO;
+  FlowInstanceRepository processInstanceRepository;
 
   @Inject
-  NodeInstanceRepository nodeInstanceDAO;
+  NodeInstanceRepository nodeInstanceRepository;
 
   @Inject
-  FlowInstanceMappingRepository flowInstanceMappingDAO;
+  FlowInstanceMappingRepository flowInstanceMappingRepository;
 
   @Inject
   FlowExecutor flowExecutor;
@@ -238,7 +238,7 @@ public class RuntimeProcessor {
     TerminateResult terminateResult;
     try {
       int flowInstanceStatus;
-      FlowInstance flowInstancePO = processInstanceDAO.selectByFlowInstanceId(flowInstanceId);
+      FlowInstance flowInstancePO = processInstanceRepository.selectByFlowInstanceId(flowInstanceId);
       if (flowInstancePO == null) {
         LOGGER.warn("terminateProcess failed: cannot find flowInstancePO from db.||flowInstanceId={}", flowInstanceId);
         throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
@@ -247,7 +247,7 @@ public class RuntimeProcessor {
         LOGGER.warn("terminateProcess: flowInstance is completed.||flowInstanceId={}", flowInstanceId);
         flowInstanceStatus = FlowInstanceStatus.COMPLETED;
       } else {
-        processInstanceDAO.updateStatus(flowInstancePO, FlowInstanceStatus.TERMINATED);
+        processInstanceRepository.updateStatus(flowInstancePO, FlowInstanceStatus.TERMINATED);
         flowInstanceStatus = FlowInstanceStatus.TERMINATED;
       }
       if (effectiveForSubFlowInstance) {
@@ -395,7 +395,7 @@ public class RuntimeProcessor {
         if (!effectiveForSubFlowInstance) {
           continue;
         }
-        List<FlowInstanceMapping> flowInstanceMappingPOS = flowInstanceMappingDAO.selectFlowInstanceMappingList(flowInstanceId, nodeInstanceId);
+        List<FlowInstanceMapping> flowInstanceMappingPOS = flowInstanceMappingRepository.selectFlowInstanceMappingList(flowInstanceId, nodeInstanceId);
         List<ElementInstance> subElementInstanceList = new ArrayList<>();
         nodeInstance.setSubElementInstanceList(subElementInstanceList);
         for (FlowInstanceMapping flowInstanceMappingPO : flowInstanceMappingPOS) {
@@ -411,7 +411,7 @@ public class RuntimeProcessor {
   }
 
   private String getExecuteSubFlowInstanceId(String flowInstanceId, String nodeInstanceId) {
-    List<FlowInstanceMapping> flowInstanceMappingPOList = flowInstanceMappingDAO.selectFlowInstanceMappingList(flowInstanceId, nodeInstanceId);
+    List<FlowInstanceMapping> flowInstanceMappingPOList = flowInstanceMappingRepository.selectFlowInstanceMappingList(flowInstanceId, nodeInstanceId);
     if (CollectionUtils.isEmpty(flowInstanceMappingPOList)) {
       return null;
     }
@@ -424,11 +424,11 @@ public class RuntimeProcessor {
   }
 
   private List<NodeInstance> getHistoryNodeInstanceList(String flowInstanceId) {
-    return nodeInstanceDAO.selectByFlowInstanceId(flowInstanceId);
+    return nodeInstanceRepository.selectByFlowInstanceId(flowInstanceId);
   }
 
   private List<NodeInstance> getDescHistoryNodeInstanceList(String flowInstanceId) {
-    return nodeInstanceDAO.selectDescByFlowInstanceId(flowInstanceId);
+    return nodeInstanceRepository.selectDescByFlowInstanceId(flowInstanceId);
   }
 
   public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance) {
@@ -513,7 +513,7 @@ public class RuntimeProcessor {
   }
 
   private FlowInstanceBO getFlowInstanceBO(String flowInstanceId) throws ProcessException {
-    FlowInstance flowInstancePO = processInstanceDAO.selectByFlowInstanceId(flowInstanceId);
+    FlowInstance flowInstancePO = processInstanceRepository.selectByFlowInstanceId(flowInstanceId);
     if (flowInstancePO == null) {
       LOGGER.warn("getFlowInstancePO failed: cannot find flowInstancePO from db.||flowInstanceId={}", flowInstanceId);
       throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
@@ -589,7 +589,7 @@ public class RuntimeProcessor {
   }
 
   public void checkIsSubFlowInstance(String flowInstanceId) {
-    FlowInstance flowInstancePO = processInstanceDAO.selectByFlowInstanceId(flowInstanceId);
+    FlowInstance flowInstancePO = processInstanceRepository.selectByFlowInstanceId(flowInstanceId);
     if (flowInstancePO == null) {
       LOGGER.warn("checkIsSubFlowInstance failed: cannot find flowInstancePO from db.||flowInstanceId={}", flowInstanceId);
       throw new RuntimeException(ErrorEnum.GET_FLOW_INSTANCE_FAILED.getErrMsg());

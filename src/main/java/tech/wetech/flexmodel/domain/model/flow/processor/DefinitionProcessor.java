@@ -46,10 +46,10 @@ public class DefinitionProcessor {
   ModelValidator modelValidator;
 
   @Inject
-  FlowDefinitionRepository flowDefinitionDAO;
+  FlowDefinitionRepository flowDefinitionRepository;
 
   @Inject
-  FlowDeploymentRepository flowDeploymentDAO;
+  FlowDeploymentRepository flowDeploymentRepository;
 
   @PostConstruct
   public void init() {
@@ -71,7 +71,7 @@ public class DefinitionProcessor {
       flowDefinitionPO.setFlowModuleId(flowModuleId);
       flowDefinitionPO.setStatus(FlowDefinitionStatus.INIT);
 
-      int rows = flowDefinitionDAO.insert(flowDefinitionPO);
+      int rows = flowDefinitionRepository.insert(flowDefinitionPO);
       if (rows != 1) {
         LOGGER.warn("create flow failed: insert to db failed.||createFlowParam={}", createFlowParam);
         throw new DefinitionException(ErrorEnum.DEFINITION_INSERT_INVALID);
@@ -93,7 +93,7 @@ public class DefinitionProcessor {
       FlowDefinition flowDefinitionPO = JsonUtils.getInstance().convertValue(updateFlowParam, FlowDefinition.class);
       flowDefinitionPO.setStatus(FlowDefinitionStatus.EDITING);
 
-      int rows = flowDefinitionDAO.updateByModuleId(flowDefinitionPO);
+      int rows = flowDefinitionRepository.updateByModuleId(flowDefinitionPO);
       if (rows != 1) {
         LOGGER.warn("update flow failed: update to db failed.||updateFlowParam={}", updateFlowParam);
         throw new DefinitionException(ErrorEnum.DEFINITION_UPDATE_INVALID);
@@ -111,7 +111,7 @@ public class DefinitionProcessor {
     try {
       ParamValidator.validate(deployFlowParam);
 
-      FlowDefinition flowDefinitionPO = flowDefinitionDAO.selectByModuleId(deployFlowParam.getFlowModuleId());
+      FlowDefinition flowDefinitionPO = flowDefinitionRepository.selectByModuleId(deployFlowParam.getFlowModuleId());
       if (null == flowDefinitionPO) {
         LOGGER.warn("deploy flow failed: flow is not exist.||deployFlowParam={}", deployFlowParam);
         throw new DefinitionException(ErrorEnum.FLOW_NOT_EXIST);
@@ -133,7 +133,7 @@ public class DefinitionProcessor {
       flowDeploymentPO.setFlowDeployId(flowDeployId);
       flowDeploymentPO.setStatus(FlowDeploymentStatus.DEPLOYED);
 
-      int rows = flowDeploymentDAO.insert(flowDeploymentPO);
+      int rows = flowDeploymentRepository.insert(flowDeploymentPO);
       if (rows != 1) {
         LOGGER.warn("deploy flow failed: insert to db failed.||deployFlowParam={}", deployFlowParam);
         throw new DefinitionException(ErrorEnum.DEFINITION_INSERT_INVALID);
@@ -165,7 +165,7 @@ public class DefinitionProcessor {
   }
 
   private FlowModuleResult getFlowModuleByFlowModuleId(String flowModuleId) throws ParamException {
-    FlowDefinition flowDefinitionPO = flowDefinitionDAO.selectByModuleId(flowModuleId);
+    FlowDefinition flowDefinitionPO = flowDefinitionRepository.selectByModuleId(flowModuleId);
     if (flowDefinitionPO == null) {
       LOGGER.warn("getFlowModuleByFlowModuleId failed: can not find flowDefinitionPO.||flowModuleId={}", flowModuleId);
       throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDefinitionPO is not exist");
@@ -178,7 +178,7 @@ public class DefinitionProcessor {
   }
 
   private FlowModuleResult getFlowModuleByFlowDeployId(String flowDeployId) throws ParamException {
-    FlowDeployment flowDeploymentPO = flowDeploymentDAO.selectByDeployId(flowDeployId);
+    FlowDeployment flowDeploymentPO = flowDeploymentRepository.selectByDeployId(flowDeployId);
     if (flowDeploymentPO == null) {
       LOGGER.warn("getFlowModuleByFlowDeployId failed: can not find flowDefinitionPO.||flowDeployId={}", flowDeployId);
       throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDefinitionPO is not exist");
