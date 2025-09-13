@@ -360,9 +360,11 @@ public class ModelingResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(implementation = IndexSchema.class),
-      example = """
+      examples = {
+        @ExampleObject(value = """
         { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false }
-        """
+          """)
+      }
     )}
   )
   @APIResponse(
@@ -373,9 +375,11 @@ public class ModelingResource {
       @Content(
         mediaType = "application/json",
         schema = @Schema(implementation = IndexSchema.class),
-        example = """
+        examples = {
+          @ExampleObject(value = """
           { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false }
-          """
+            """)
+        }
       )
     })
   @Parameter(name = "modelName", description = "模型名称", in = ParameterIn.PATH)
@@ -392,9 +396,11 @@ public class ModelingResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(implementation = IndexSchema.class),
-      example = """
+      examples = {
+        @ExampleObject(value = """
         { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false }
-        """
+          """)
+      }
     )}
   )
   @APIResponse(
@@ -405,9 +411,11 @@ public class ModelingResource {
       @Content(
         mediaType = "application/json",
         schema = @Schema(implementation = IndexSchema.class),
-        example = """
+        examples = {
+          @ExampleObject(value = """
           { "modelName": "Student", "name": "IDX_studentName", "fields": [ { "fieldName": "studentName", "direction": "ASC" } ], "unique": false }
-          """
+            """)
+        }
       )
     })
   @Parameter(name = "modelName", description = "模型名称", in = ParameterIn.PATH)

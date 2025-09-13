@@ -5,14 +5,14 @@ import tech.wetech.flexmodel.domain.model.flow.dto.bo.FlowInstanceBO;
 
 public class FlowInstanceResult extends CommonResult {
 
-  private FlowInstanceBO flowInstanceBO;
+  private FlowInstanceBO flowInstance;
 
-  public FlowInstanceBO getFlowInstanceBO() {
-    return flowInstanceBO;
+  public FlowInstanceBO getFlowInstance() {
+    return flowInstance;
   }
 
-  public void setFlowInstanceBO(FlowInstanceBO flowInstanceBO) {
-    this.flowInstanceBO = flowInstanceBO;
+  public void setFlowInstance(FlowInstanceBO flowInstanceBO) {
+    this.flowInstance = flowInstanceBO;
   }
 
   @Override
@@ -20,7 +20,7 @@ public class FlowInstanceResult extends CommonResult {
     return MoreObjects.toStringHelper(this)
       .add("errCode", getErrCode())
       .add("errMsg", getErrMsg())
-      .add("flowInstanceBO", flowInstanceBO)
+      .add("flowInstanceBO", flowInstance)
       .toString();
   }
 }

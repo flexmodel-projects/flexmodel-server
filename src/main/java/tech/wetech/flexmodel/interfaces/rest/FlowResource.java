@@ -3,6 +3,8 @@ package tech.wetech.flexmodel.interfaces.rest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import lombok.Getter;
+import lombok.Setter;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -14,6 +16,10 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.FlowApplicationService;
+import tech.wetech.flexmodel.application.dto.FlowInstanceListRequest;
+import tech.wetech.flexmodel.application.dto.FlowModuleListRequest;
+import tech.wetech.flexmodel.application.dto.FlowModuleResponse;
+import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.*;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.*;
 
@@ -28,6 +34,75 @@ public class FlowResource {
 
   @Inject
   FlowApplicationService flowApplicationService;
+
+
+  @Operation(summary = "获取流程列表")
+  @APIResponse(
+    name = "200",
+    responseCode = "200",
+    description = "OK",
+    content = {@Content(
+      mediaType = "application/json",
+      schema = @Schema(
+        implementation = FlowModuleListResponseSchema.class
+      )
+    )})
+  @GET
+  public PageDTO<FlowModuleResponse> findFlowList(
+    @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.QUERY)
+    @QueryParam("flowModuleId") String flowModuleId,
+    @Parameter(name = "flowName", description = "流程名称", in = ParameterIn.QUERY)
+    @QueryParam("flowName") String flowName,
+    @Parameter(name = "page", description = "页码", in = ParameterIn.QUERY)
+    @QueryParam("page") @DefaultValue("1") Integer page,
+    @Parameter(name = "size", description = "每页大小", in = ParameterIn.QUERY)
+    @QueryParam("size") @DefaultValue("20") Integer size) {
+    FlowModuleListRequest request = new FlowModuleListRequest();
+    request.setFlowModuleId(flowModuleId);
+    request.setFlowName(flowName);
+    request.setPage(page);
+    request.setSize(size);
+    return flowApplicationService.findFlowModuleList(request);
+  }
+
+  @Operation(summary = "获取流程实例列表")
+  @APIResponse(
+    name = "200",
+    responseCode = "200",
+    description = "OK",
+    content = {@Content(
+      mediaType = "application/json",
+      schema = @Schema(
+        implementation = FlowInstanceListResponseSchema.class
+      )
+    )})
+  @GET
+  @Path("/instances")
+  public PageDTO<?> findFlowInstanceList(
+    @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.QUERY)
+    @QueryParam("flowInstanceId") String flowInstanceId,
+    @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.QUERY)
+    @QueryParam("flowModuleId") String flowModuleId,
+    @Parameter(name = "flowDeployId", description = "流程部署ID", in = ParameterIn.QUERY)
+    @QueryParam("flowDeployId") String flowDeployId,
+    @Parameter(name = "status", description = "流程实例状态", in = ParameterIn.QUERY)
+    @QueryParam("status") Integer status,
+    @Parameter(name = "caller", description = "调用者", in = ParameterIn.QUERY)
+    @QueryParam("caller") String caller,
+    @Parameter(name = "page", description = "页码", in = ParameterIn.QUERY)
+    @QueryParam("page") @DefaultValue("1") Integer page,
+    @Parameter(name = "size", description = "每页大小", in = ParameterIn.QUERY)
+    @QueryParam("size") @DefaultValue("20") Integer size) {
+    FlowInstanceListRequest request = new FlowInstanceListRequest();
+    request.setFlowInstanceId(flowInstanceId);
+    request.setFlowModuleId(flowModuleId);
+    request.setFlowDeployId(flowDeployId);
+    request.setStatus(status);
+    request.setCaller(caller);
+    request.setPage(page);
+    request.setSize(size);
+    return flowApplicationService.findFlowInstanceList(request);
+  }
 
   @Operation(summary = "创建流程")
   @POST
@@ -223,25 +298,25 @@ public class FlowResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = FlowInstanceResultSchema.class
+        implementation = FlowInstanceSchema.class
       )
     )})
   @GET
   @Path("/instances/{flowInstanceId}")
-  public FlowInstanceResult getFlowInstance(
+  public Object getFlowInstance(
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH)
     @PathParam("flowInstanceId") String flowInstanceId) {
-    return flowApplicationService.getFlowInstance(flowInstanceId);
+    return flowApplicationService.findFlowInstance(flowInstanceId);
   }
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "flowKey", example = "order_process", description = "流程键"),
-      @SchemaProperty(name = "flowName", example = "订单处理流程", description = "流程名称"),
-      @SchemaProperty(name = "remark", example = "处理订单的完整业务流程", description = "备注"),
-      @SchemaProperty(name = "tenant", example = "default", description = "租户"),
-      @SchemaProperty(name = "caller", example = "admin", description = "调用者"),
-      @SchemaProperty(name = "operator", example = "admin", description = "操作者")
+      @SchemaProperty(name = "flowKey", examples = {"order_process"}, description = "流程键"),
+      @SchemaProperty(name = "flowName", examples = {"订单处理流程"}, description = "流程名称"),
+      @SchemaProperty(name = "remark", examples = {"处理订单的完整业务流程"}, description = "备注"),
+      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
+      @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
     }
   )
   public static class CreateFlowParamSchema extends CreateFlowParam {
@@ -252,9 +327,9 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "errCode", example = "0", description = "错误码"),
-      @SchemaProperty(name = "errMsg", example = "success", description = "错误信息"),
-      @SchemaProperty(name = "flowModuleId", example = "flow_module_001", description = "流程模块ID")
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+      @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID")
     }
   )
   public static class CreateFlowResultSchema extends CreateFlowResult {
@@ -262,10 +337,10 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "flowModuleId", example = "flow_module_001", description = "流程模块ID"),
-      @SchemaProperty(name = "tenant", example = "default", description = "租户"),
-      @SchemaProperty(name = "caller", example = "admin", description = "调用者"),
-      @SchemaProperty(name = "operator", example = "admin", description = "操作者")
+      @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID"),
+      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
+      @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
     }
   )
   public static class DeployFlowParamSchema extends DeployFlowParam {
@@ -276,10 +351,10 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "errCode", example = "0", description = "错误码"),
-      @SchemaProperty(name = "errMsg", example = "success", description = "错误信息"),
-      @SchemaProperty(name = "flowDeployId", example = "flow_deploy_001", description = "流程部署ID"),
-      @SchemaProperty(name = "flowModuleId", example = "flow_module_001", description = "流程模块ID")
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+      @SchemaProperty(name = "flowDeployId", examples = {"flow_deploy_001"}, description = "流程部署ID"),
+      @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID")
     }
   )
   public static class DeployFlowResultSchema extends DeployFlowResult {
@@ -287,10 +362,10 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "errCode", example = "0", description = "错误码"),
-      @SchemaProperty(name = "errMsg", example = "success", description = "错误信息"),
-      @SchemaProperty(name = "flowModuleId", example = "flow_module_001", description = "流程模块ID"),
-      @SchemaProperty(name = "flowDeployId", example = "flow_deploy_001", description = "流程部署ID")
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+      @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID"),
+      @SchemaProperty(name = "flowDeployId", examples = {"flow_deploy_001"}, description = "流程部署ID")
     }
   )
   public static class FlowModuleResultSchema extends FlowModuleResult {
@@ -298,8 +373,8 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "flowModuleId", example = "flow_module_001", description = "流程模块ID"),
-      @SchemaProperty(name = "flowDeployId", example = "flow_deploy_001", description = "流程部署ID"),
+      @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID"),
+      @SchemaProperty(name = "flowDeployId", examples = {"flow_deploy_001"}, description = "流程部署ID"),
       @SchemaProperty(name = "variables", description = "流程变量", type = SchemaType.ARRAY)
     }
   )
@@ -308,12 +383,12 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "errCode", example = "0", description = "错误码"),
-      @SchemaProperty(name = "errMsg", example = "success", description = "错误信息"),
-      @SchemaProperty(name = "flowInstanceId", example = "flow_inst_001", description = "流程实例ID"),
-      @SchemaProperty(name = "status", example = "1", description = "状态"),
-      @SchemaProperty(name = "flowDeployId", example = "flow_deploy_001", description = "流程部署ID"),
-      @SchemaProperty(name = "flowModuleId", example = "flow_module_001", description = "流程模块ID")
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+      @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
+      @SchemaProperty(name = "status", examples = {"1"}, description = "状态"),
+      @SchemaProperty(name = "flowDeployId", examples = {"flow_deploy_001"}, description = "流程部署ID"),
+      @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID")
     }
   )
   public static class StartProcessResultSchema extends StartProcessResult {
@@ -321,12 +396,12 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "flowInstanceId", example = "flow_inst_001", description = "流程实例ID"),
-      @SchemaProperty(name = "nodeInstanceId", example = "node_inst_001", description = "节点实例ID"),
+      @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
+      @SchemaProperty(name = "nodeInstanceId", examples = {"node_inst_001"}, description = "节点实例ID"),
       @SchemaProperty(name = "variables", description = "流程变量", type = SchemaType.ARRAY),
-      @SchemaProperty(name = "tenant", example = "default", description = "租户"),
-      @SchemaProperty(name = "caller", example = "admin", description = "调用者"),
-      @SchemaProperty(name = "operator", example = "admin", description = "操作者")
+      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
+      @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
     }
   )
   public static class CommitTaskParamSchema extends CommitTaskParam {
@@ -334,10 +409,10 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "errCode", example = "0", description = "错误码"),
-      @SchemaProperty(name = "errMsg", example = "success", description = "错误信息"),
-      @SchemaProperty(name = "flowInstanceId", example = "flow_inst_001", description = "流程实例ID"),
-      @SchemaProperty(name = "status", example = "1", description = "状态")
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+      @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
+      @SchemaProperty(name = "status", examples = {"1"}, description = "状态")
     }
   )
   public static class CommitTaskResultSchema extends CommitTaskResult {
@@ -345,11 +420,11 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "flowInstanceId", example = "flow_inst_001", description = "流程实例ID"),
-      @SchemaProperty(name = "nodeInstanceId", example = "node_inst_001", description = "节点实例ID"),
-      @SchemaProperty(name = "tenant", example = "default", description = "租户"),
-      @SchemaProperty(name = "caller", example = "admin", description = "调用者"),
-      @SchemaProperty(name = "operator", example = "admin", description = "操作者")
+      @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
+      @SchemaProperty(name = "nodeInstanceId", examples = {"node_inst_001"}, description = "节点实例ID"),
+      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
+      @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
     }
   )
   public static class RollbackTaskParamSchema extends RollbackTaskParam {
@@ -357,10 +432,10 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "errCode", example = "0", description = "错误码"),
-      @SchemaProperty(name = "errMsg", example = "success", description = "错误信息"),
-      @SchemaProperty(name = "flowInstanceId", example = "flow_inst_001", description = "流程实例ID"),
-      @SchemaProperty(name = "status", example = "1", description = "状态")
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+      @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
+      @SchemaProperty(name = "status", examples = {"1"}, description = "状态")
     }
   )
   public static class RollbackTaskResultSchema extends RollbackTaskResult {
@@ -368,10 +443,10 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "errCode", example = "0", description = "错误码"),
-      @SchemaProperty(name = "errMsg", example = "success", description = "错误信息"),
-      @SchemaProperty(name = "flowInstanceId", example = "flow_inst_001", description = "流程实例ID"),
-      @SchemaProperty(name = "status", example = "1", description = "状态")
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+      @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
+      @SchemaProperty(name = "status", examples = {"1"}, description = "状态")
     }
   )
   public static class TerminateResultSchema extends TerminateResult {
@@ -382,11 +457,75 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "errCode", example = "0", description = "错误码"),
-      @SchemaProperty(name = "errMsg", example = "success", description = "错误信息"),
-      @SchemaProperty(name = "flowInstanceBO", description = "流程实例业务对象", type = SchemaType.OBJECT)
+      @SchemaProperty(name = "list", description = "流程模块列表", type = SchemaType.ARRAY),
+      @SchemaProperty(name = "total", examples = {"100"}, description = "总记录数")
     }
   )
-  public static class FlowInstanceResultSchema extends FlowInstanceResult {
+  @Getter
+  @Setter
+  public static class FlowModuleListResponseSchema {
+    private java.util.List<FlowModuleResponseSchema> list;
+    private Long total;
+  }
+
+  @Schema(
+    properties = {
+      @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID"),
+      @SchemaProperty(name = "flowName", examples = {"订单处理流程"}, description = "流程名称"),
+      @SchemaProperty(name = "flowKey", examples = {"order_process"}, description = "流程键"),
+      @SchemaProperty(name = "status", examples = {"4"}, description = "状态：1-草稿，2-设计，3-测试，4-已发布"),
+      @SchemaProperty(name = "remark", examples = {"处理订单的完整业务流程"}, description = "备注"),
+      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
+      @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者"),
+      @SchemaProperty(name = "modifyTime", description = "修改时间", readOnly = true)
+    }
+  )
+  public static class FlowModuleResponseSchema extends FlowModuleResponse {
+  }
+
+  @Schema(
+    properties = {
+      @SchemaProperty(name = "list", description = "流程实例列表", type = SchemaType.ARRAY),
+      @SchemaProperty(name = "total", examples = {"100"}, description = "总记录数")
+    }
+  )
+  @Getter
+  @Setter
+  public static class FlowInstanceListResponseSchema {
+    private java.util.List<FlowInstanceSchema> list;
+    private Long total;
+
+    public FlowInstanceListResponseSchema() {
+    }
+
+  }
+
+  @Schema(
+    properties = {
+      @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
+      @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID"),
+      @SchemaProperty(name = "flowDeployId", examples = {"flow_deploy_001"}, description = "流程部署ID"),
+      @SchemaProperty(name = "status", examples = {"1"}, description = "流程实例状态：1-运行中，2-已完成，3-已终止，4-已暂停"),
+      @SchemaProperty(name = "parentFlowInstanceId", examples = {"parent_inst_001"}, description = "父流程实例ID"),
+      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
+      @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者"),
+      @SchemaProperty(name = "createTime", description = "创建时间", readOnly = true),
+      @SchemaProperty(name = "modifyTime", description = "修改时间", readOnly = true)
+    }
+  )
+  @Getter
+  @Setter
+  public static class FlowInstanceSchema {
+    private String flowInstanceId;
+    private String flowModuleId;
+    private String flowDeployId;
+    private Integer status;
+    private String parentFlowInstanceId;
+    private String tenant;
+    private String caller;
+    private java.time.LocalDateTime createTime;
+    private java.time.LocalDateTime modifyTime;
   }
 }

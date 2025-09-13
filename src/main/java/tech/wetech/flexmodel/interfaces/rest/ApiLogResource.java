@@ -7,6 +7,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.media.SchemaProperty;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -33,11 +34,11 @@ public class ApiLogResource {
   @Inject
   ApiRuntimeApplicationService apiRuntimeApplicationService;
 
-  @Parameter(name = "current", description = "当前页，默认值：1", example = "1", in = ParameterIn.QUERY)
-  @Parameter(name = "pageSize", description = "第几页，默认值：15", example = "15", in = ParameterIn.QUERY)
+  @Parameter(name = "current", description = "当前页，默认值：1", examples = {@ExampleObject(value = "1")}, in = ParameterIn.QUERY)
+  @Parameter(name = "pageSize", description = "第几页，默认值：15", examples = {@ExampleObject(value = "15")}, in = ParameterIn.QUERY)
   @Parameter(name = "keyword", description = "关键字", in = ParameterIn.QUERY)
-  @Parameter(name = "dateRange", description = "日期范围", example = "2025-01-01 00:00:00,2025-12-31 23:59:59", in = ParameterIn.QUERY)
-  @Parameter(name = "level", description = "日志等级", example = "INFO", in = ParameterIn.QUERY)
+  @Parameter(name = "dateRange", description = "日期范围", examples = {@ExampleObject(value = "2025-01-01 00:00:00,2025-12-31 23:59:59")}, in = ParameterIn.QUERY)
+  @Parameter(name = "level", description = "日志等级", examples = {@ExampleObject(value = "INFO")}, in = ParameterIn.QUERY)
   @APIResponse(
     name = "200",
     responseCode = "200",
@@ -65,8 +66,8 @@ public class ApiLogResource {
   }
 
   @Parameter(name = "keyword", description = "关键字", in = ParameterIn.QUERY)
-  @Parameter(name = "dateRange", description = "日期范围", example = "2022-01-01 00:00:00,2022-01-01 23:59:59", in = ParameterIn.QUERY)
-  @Parameter(name = "level", description = "日志等级，支持传多个通过“,”分隔", example = "INFO", in = ParameterIn.QUERY)
+  @Parameter(name = "dateRange", description = "日期范围", examples = {@ExampleObject(value = "2022-01-01 00:00:00,2022-01-01 23:59:59")}, in = ParameterIn.QUERY)
+  @Parameter(name = "level", description = "日志等级，支持传多个通过\",\"分隔", examples = {@ExampleObject(value = "INFO")}, in = ParameterIn.QUERY)
   @APIResponse(
     name = "200",
     responseCode = "200",

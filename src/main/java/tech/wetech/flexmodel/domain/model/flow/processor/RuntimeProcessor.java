@@ -482,7 +482,7 @@ public class RuntimeProcessor {
     FlowInstanceResult flowInstanceResult = new FlowInstanceResult();
     try {
       FlowInstanceBO flowInstanceBO = getFlowInstanceBO(flowInstanceId);
-      flowInstanceResult.setFlowInstanceBO(flowInstanceBO);
+      flowInstanceResult.setFlowInstance(flowInstanceBO);
     } catch (ProcessException e) {
       flowInstanceResult.setErrCode(e.getErrNo());
       flowInstanceResult.setErrMsg(e.getErrMsg());
@@ -518,8 +518,7 @@ public class RuntimeProcessor {
       LOGGER.warn("getFlowInstancePO failed: cannot find flowInstancePO from db.||flowInstanceId={}", flowInstanceId);
       throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
     }
-    FlowInstanceBO flowInstanceBO = JsonUtils.getInstance().convertValue(flowInstancePO, FlowInstanceBO.class);
-    return flowInstanceBO;
+    return JsonUtils.getInstance().convertValue(flowInstancePO, FlowInstanceBO.class);
   }
 
   private RuntimeContext buildRuntimeContext(FlowInfo flowInfo) {

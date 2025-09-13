@@ -1,6 +1,9 @@
 package tech.wetech.flexmodel.domain.model.flow.repository;
 
 import tech.wetech.flexmodel.codegen.entity.FlowInstance;
+import tech.wetech.flexmodel.query.Predicate;
+
+import java.util.List;
 
 /**
  * @author cjbi
@@ -13,4 +16,9 @@ public interface FlowInstanceRepository {
   void updateStatus(String flowInstanceId, int status);
 
   void updateStatus(FlowInstance flowInstance, int status);
+
+  long count(Predicate predicate);
+
+  List<FlowInstance> find(Predicate predicate, Integer page, Integer size);
+
 }

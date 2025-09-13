@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDeploymentRepository;
+import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.session.Session;
 
 import static tech.wetech.flexmodel.query.Expressions.field;
@@ -42,6 +43,14 @@ public class FlowDeploymentFmRepository implements FlowDeploymentRepository {
     session.dsl().deleteFrom(FlowDeployment.class)
       .where(field(FlowDeployment::getId).eq(id))
       .execute();
+  }
+
+  @Override
+  public long count(Predicate filter) {
+    return session.dsl()
+      .selectFrom(FlowDeployment.class)
+      .where(filter)
+      .count();
   }
 }
 

@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.media.SchemaProperty;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -45,7 +46,7 @@ public class OverviewResource {
       )
     )
     })
-  @Parameter(name = "dateRange", description = "日期范围", example = "2025-01-01 00:00:00,2025-12-31 23:59:59", in = ParameterIn.QUERY)
+  @Parameter(name = "dateRange", description = "日期范围", examples = {@ExampleObject(value = "2025-01-01 00:00:00,2025-12-31 23:59:59")}, in = ParameterIn.QUERY)
   @Operation(summary = "获取概述")
   @GET
   public OverviewDTO get(@QueryParam("dateRange") String dateRange) {

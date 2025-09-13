@@ -147,7 +147,7 @@ public class ApiDefinitionResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "id", example = "-1", description = "唯一标识"),
+      @SchemaProperty(name = "id", examples = {"-1"}, description = "唯一标识"),
       @SchemaProperty(name = "type", description = "类型, FOLDER: 文件夹；API: 接口"),
       @SchemaProperty(name = "path", description = "路径"),
       @SchemaProperty(name = "meta", description = "元数据，存放接口定义，例如graphql定义"),
@@ -156,7 +156,7 @@ public class ApiDefinitionResource {
       @SchemaProperty(name = "updatedAt", description = "更新时间", readOnly = true),
       @SchemaProperty(name = "parentId", description = "上级ID"),
       @SchemaProperty(name = "enabled", description = "是否开启", defaultValue = "true"),
-      @SchemaProperty(name = "method", description = "HTTP请求方法", example = "GET"),
+      @SchemaProperty(name = "method", description = "HTTP请求方法", examples = {"GET"}),
       @SchemaProperty(name = "children", description = "子节点", type = SchemaType.ARRAY)
     }
   )
@@ -166,7 +166,7 @@ public class ApiDefinitionResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "id", example = "-1", description = "唯一标识"),
+      @SchemaProperty(name = "id", examples = {"-1"}, description = "唯一标识"),
       @SchemaProperty(name = "type", description = "类型, FOLDER: 文件夹；API: 接口"),
       @SchemaProperty(name = "path", description = "路径"),
       @SchemaProperty(name = "meta", description = "元数据，存放接口定义，例如graphql定义"),
@@ -175,7 +175,7 @@ public class ApiDefinitionResource {
       @SchemaProperty(name = "updatedAt", description = "更新时间", readOnly = true),
       @SchemaProperty(name = "parentId", description = "上级ID"),
       @SchemaProperty(name = "enabled", description = "是否开启", defaultValue = "true"),
-      @SchemaProperty(name = "method", description = "HTTP请求方法", example = "GET"),
+      @SchemaProperty(name = "method", description = "HTTP请求方法", examples = {"GET"}),
     }
   )
   public static class ApiDefinitionSchema extends ApiDefinition {

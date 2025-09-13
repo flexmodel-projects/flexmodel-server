@@ -15,6 +15,7 @@ import tech.wetech.flexmodel.domain.model.flow.repository.FlowInstanceRepository
 import tech.wetech.flexmodel.domain.model.flow.repository.NodeInstanceRepository;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.FlowElementType;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
+import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 
@@ -32,7 +33,7 @@ public class FlowInstanceService {
   private FlowInstanceMappingRepository flowInstanceMappingRepository;
 
   @Inject
-  private FlowInstanceRepository processInstanceRepository;
+  private FlowInstanceRepository flowInstanceRepository;
 
   @Inject
   private FlowDeploymentRepository flowDeploymentRepository;
@@ -153,7 +154,7 @@ public class FlowInstanceService {
     flowInstance.setId(rootFlowInstanceId);
     flowInstanceTreeResult.setRootFlowInstancePOJO(flowInstance);
 
-    FlowInstance rootFlowInstance = processInstanceRepository.selectByFlowInstanceId(rootFlowInstanceId);
+    FlowInstance rootFlowInstance = flowInstanceRepository.selectByFlowInstanceId(rootFlowInstanceId);
     FlowDeployment rootFlowDeployment = flowDeploymentRepository.selectByDeployId(rootFlowInstance.getFlowDeployId());
     Map<String, FlowElement> rootFlowElementMap = FlowModelUtil.getFlowElementMap(rootFlowDeployment.getFlowModel());
 
@@ -186,6 +187,18 @@ public class FlowInstanceService {
       }
     }
     return flowInstanceTreeResult;
+  }
+
+  public long count(Predicate predicate) {
+    return flowInstanceRepository.count(predicate);
+  }
+
+  public List<FlowInstance> find(Predicate predicate, Integer page, Integer size) {
+    return flowInstanceRepository.find(predicate, page, size);
+  }
+
+  public FlowInstance findById(String flowInstanceId) {
+    return flowInstanceRepository.selectByFlowInstanceId(flowInstanceId);
   }
 
   private static class FlowInstancePOJO {

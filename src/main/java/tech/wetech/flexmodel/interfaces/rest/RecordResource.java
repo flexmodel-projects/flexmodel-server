@@ -54,18 +54,18 @@ public class RecordResource {
       )
     )
     })
-  @Parameter(name = "page", description = "当前页，默认值：1", example = "1", in = ParameterIn.QUERY)
-  @Parameter(name = "size", description = "第几页，默认值：15", example = "15", in = ParameterIn.QUERY)
+  @Parameter(name = "page", description = "当前页，默认值：1", examples = {@ExampleObject(value = "1")}, in = ParameterIn.QUERY)
+  @Parameter(name = "size", description = "第几页，默认值：15", examples = {@ExampleObject(value = "15")}, in = ParameterIn.QUERY)
   @Parameter(
     name = "filter", description = "查询条件，更多信息见查询条件文档",
-    example = """
+    examples = {@ExampleObject(value = """
       "{ \\"username\\": { \\"_eq\\": \\"john_doe\\" } }"
-      """,
+      """)},
     in = ParameterIn.QUERY)
-  @Parameter(name = "nestedQuery", description = "是否开启嵌套子查询，开启则查询关联数据，只查询5层，默认值false", example = "false", in = ParameterIn.QUERY)
-  @Parameter(name = "sort", description = "排序", example = """
+  @Parameter(name = "nestedQuery", description = "是否开启嵌套子查询，开启则查询关联数据，只查询5层，默认值false", examples = {@ExampleObject(value = "false")}, in = ParameterIn.QUERY)
+  @Parameter(name = "sort", description = "排序", examples = {@ExampleObject(value = """
     "[{\\"field\\":\\"name\\",\\"sort\\":\\"ASC\\"}, {\\"field\\":\\"id\\",\\"sort\\":\\"DESC\\"}]"
-    """, in = ParameterIn.QUERY)
+    """)}, in = ParameterIn.QUERY)
   @Operation(summary = "获取模型数据记录列表")
   @GET
   public PageDTO<Map<String, Object>> findPagingRecords(
@@ -78,7 +78,7 @@ public class RecordResource {
     return dataApplicationService.findPagingRecords(datasourceName, modelName, page, size, filter, sort, nestedQuery);
   }
 
-  @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+  @Parameter(name = "id", description = "ID", examples = {@ExampleObject(value = "1")}, in = ParameterIn.PATH)
   @Operation(summary = "获取单条模型数据记录")
   @GET
   @Path("/{id}")
@@ -162,7 +162,7 @@ public class RecordResource {
       }
     )}
   )
-  @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+  @Parameter(name = "id", description = "ID", examples = {@ExampleObject(value = "1")}, in = ParameterIn.PATH)
   @Operation(summary = "更新模型数据记录")
   @PUT
   @Path("/{id}")
@@ -204,7 +204,7 @@ public class RecordResource {
       }
     )}
   )
-  @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+  @Parameter(name = "id", description = "ID", examples = {@ExampleObject(value = "1")}, in = ParameterIn.PATH)
   @Operation(summary = "更新模型数据记录(局部更新)")
   @PATCH
   @Path("/{id}")
@@ -212,7 +212,7 @@ public class RecordResource {
     return dataApplicationService.updateRecordIgnoreNull(datasourceName, modelName, id, record);
   }
 
-  @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+  @Parameter(name = "id", description = "ID", examples = {@ExampleObject(value = "1")}, in = ParameterIn.PATH)
   @Operation(summary = "删除模型数据记录")
   @DELETE
   @Path("/{id}")

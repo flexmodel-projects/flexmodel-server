@@ -4,7 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.FlowInstance;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowInstanceRepository;
+import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.session.Session;
+
+import java.util.List;
 
 import static tech.wetech.flexmodel.query.Expressions.field;
 
@@ -44,6 +47,24 @@ public class FlowInstanceFmRepository implements FlowInstanceRepository {
       .where(field(FlowInstance::getFlowInstanceId).eq(flowInstance.getFlowInstanceId()))
       .execute();
   }
+
+  @Override
+  public long count(Predicate predicate) {
+    return session.dsl()
+      .selectFrom(FlowInstance.class)
+      .where(predicate)
+      .count();
+  }
+
+  @Override
+  public List<FlowInstance> find(Predicate predicate, Integer page, Integer size) {
+    return session.dsl()
+      .selectFrom(FlowInstance.class)
+      .where(predicate)
+      .page(page, size)
+      .execute();
+  }
+
 }
 
 
