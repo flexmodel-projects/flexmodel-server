@@ -27,16 +27,16 @@ public class FlowInstanceService {
   protected static final Logger LOGGER = LoggerFactory.getLogger(FlowInstanceService.class);
 
   @Inject
-  private NodeInstanceRepository nodeInstanceRepository;
+  NodeInstanceRepository nodeInstanceRepository;
 
   @Inject
-  private FlowInstanceMappingRepository flowInstanceMappingRepository;
+  FlowInstanceMappingRepository flowInstanceMappingRepository;
 
   @Inject
-  private FlowInstanceRepository flowInstanceRepository;
+  FlowInstanceRepository flowInstanceRepository;
 
   @Inject
-  private FlowDeploymentRepository flowDeploymentRepository;
+  FlowDeploymentRepository flowDeploymentRepository;
 
   /**
    * According to rootFlowInstanceId and commitNodeInstanceId, build and return NodeInstance stack.

@@ -47,28 +47,28 @@ public class RuntimeProcessor {
   private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeProcessor.class);
 
   @Inject
-  private FlowDeploymentRepository flowDeploymentRepository;
+  FlowDeploymentRepository flowDeploymentRepository;
 
   @Inject
-  private FlowInstanceRepository processInstanceDAO;
+  FlowInstanceRepository processInstanceDAO;
 
   @Inject
-  private NodeInstanceRepository nodeInstanceDAO;
+  NodeInstanceRepository nodeInstanceDAO;
 
   @Inject
-  private FlowInstanceMappingRepository flowInstanceMappingDAO;
+  FlowInstanceMappingRepository flowInstanceMappingDAO;
 
   @Inject
-  private FlowExecutor flowExecutor;
+  FlowExecutor flowExecutor;
 
   @Inject
-  private FlowInstanceService flowInstanceService;
+  FlowInstanceService flowInstanceService;
 
   @Inject
-  private InstanceDataService instanceDataService;
+  InstanceDataService instanceDataService;
 
   @Inject
-  private NodeInstanceService nodeInstanceService;
+  NodeInstanceService nodeInstanceService;
 
   ////////////////////////////////////////startProcess////////////////////////////////////////
 

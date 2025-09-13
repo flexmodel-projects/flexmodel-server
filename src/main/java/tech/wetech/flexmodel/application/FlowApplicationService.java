@@ -32,6 +32,7 @@ public class FlowApplicationService {
   @Inject
   ProcessService processService;
 
+  @Inject
   FlowInstanceService flowInstanceService;
 
   @Inject
