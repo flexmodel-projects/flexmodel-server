@@ -34,7 +34,7 @@ import java.util.UUID;
 
 
 @Slf4j
-@Path("/f/chat")
+@Path("/f/ai/chat")
 @ApplicationScoped
 public class AiChatResource {
 
