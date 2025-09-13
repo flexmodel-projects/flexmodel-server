@@ -3,7 +3,7 @@ package tech.wetech.flexmodel.domain.model.flow.dto.bo;
 import com.google.common.base.MoreObjects;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.RuntimeResult;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +12,8 @@ public class NodeInstance extends ElementInstance {
   private String nodeInstanceId;
   private int flowElementType;
   private List<RuntimeResult> subNodeResultList;
-  private Date createTime;
-  private Date modifyTime;
+  private LocalDateTime createTime;
+  private LocalDateTime modifyTime;
   private Map<String, Object> properties = new HashMap<>();
 
   public String getNodeInstanceId() {
@@ -24,19 +24,19 @@ public class NodeInstance extends ElementInstance {
     this.nodeInstanceId = nodeInstanceId;
   }
 
-  public Date getCreateTime() {
+  public LocalDateTime getCreateTime() {
     return createTime;
   }
 
-  public void setCreateTime(Date createTime) {
+  public void setCreateTime(LocalDateTime createTime) {
     this.createTime = createTime;
   }
 
-  public Date getModifyTime() {
+  public LocalDateTime getModifyTime() {
     return modifyTime;
   }
 
-  public void setModifyTime(Date modifyTime) {
+  public void setModifyTime(LocalDateTime modifyTime) {
     this.modifyTime = modifyTime;
   }
 

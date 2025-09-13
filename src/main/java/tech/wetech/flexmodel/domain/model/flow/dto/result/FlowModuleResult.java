@@ -2,7 +2,7 @@ package tech.wetech.flexmodel.domain.model.flow.dto.result;
 
 import com.google.common.base.MoreObjects;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class FlowModuleResult extends CommonResult {
   private String flowModuleId;
@@ -14,7 +14,7 @@ public class FlowModuleResult extends CommonResult {
   private String tenant;
   private String caller;
   private String operator;
-  private Date modifyTime;
+  private LocalDateTime modifyTime;
 
   public String getFlowModuleId() {
     return flowModuleId;
@@ -88,11 +88,11 @@ public class FlowModuleResult extends CommonResult {
     this.operator = operator;
   }
 
-  public Date getModifyTime() {
+  public LocalDateTime getModifyTime() {
     return modifyTime;
   }
 
-  public void setModifyTime(Date modifyTime) {
+  public void setModifyTime(LocalDateTime modifyTime) {
     this.modifyTime = modifyTime;
   }
 
