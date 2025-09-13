@@ -20,8 +20,15 @@ import tech.wetech.flexmodel.application.dto.FlowInstanceListRequest;
 import tech.wetech.flexmodel.application.dto.FlowModuleListRequest;
 import tech.wetech.flexmodel.application.dto.FlowModuleResponse;
 import tech.wetech.flexmodel.application.dto.PageDTO;
+import tech.wetech.flexmodel.codegen.entity.FlowInstance;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.ElementInstance;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.*;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.*;
+import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
+
+import java.util.List;
 
 /**
  * @author cjbi
@@ -35,6 +42,47 @@ public class FlowResource {
   @Inject
   FlowApplicationService flowApplicationService;
 
+  @Operation(summary = "获取流程实例历史用户任务列表", description = "获取指定流程实例的历史用户任务列表，按处理时间倒序排列。包含活跃和已完成的任务，不包含已禁用的任务。")
+  @APIResponse(
+    name = "200",
+    responseCode = "200",
+    description = "成功返回历史用户任务列表",
+    content = {@Content(
+      mediaType = "application/json",
+      schema = @Schema(
+        type = SchemaType.ARRAY,
+        implementation = NodeInstanceSchema.class
+      )
+    )})
+  @GET
+  @Path("/instances/{flowInstanceId}/user-tasks")
+  public List<NodeInstance> getHistoryUserTaskList(
+    @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH, required = true, example = "flow_inst_001")
+    @PathParam("flowInstanceId") String flowInstanceId,
+    @Parameter(name = "effectiveForSubFlowInstance", description = "是否对子流程实例生效", in = ParameterIn.QUERY, example = "true")
+    @QueryParam("effectiveForSubFlowInstance") @DefaultValue("true") boolean effectiveForSubFlowInstance) {
+    return flowApplicationService.getHistoryUserTaskList(flowInstanceId, effectiveForSubFlowInstance);
+  }
+
+  @Operation(summary = "获取流程实例历史元素列表", description = "获取指定流程实例的历史元素列表，主要用于显示流程快照视图。包含流程中已执行的所有节点信息。")
+  @APIResponse(
+    name = "200",
+    responseCode = "200",
+    description = "成功返回历史元素列表",
+    content = {@Content(
+      mediaType = "application/json",
+      schema = @Schema(
+        type = SchemaType.ARRAY,
+        implementation = ElementInstanceSchema.class
+      )
+    )})
+  @GET
+  @Path("/instances/{flowInstanceId}/elements")
+  public List<ElementInstance> getHistoryElementList(
+    @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH, required = true, example = "flow_inst_001")
+    @PathParam("flowInstanceId") String flowInstanceId) {
+    return flowApplicationService.getHistoryElementList(flowInstanceId);
+  }
 
   @Operation(summary = "获取流程列表")
   @APIResponse(
@@ -78,7 +126,7 @@ public class FlowResource {
     )})
   @GET
   @Path("/instances")
-  public PageDTO<?> findFlowInstanceList(
+  public PageDTO<FlowInstance> findFlowInstanceList(
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.QUERY)
     @QueryParam("flowInstanceId") String flowInstanceId,
     @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.QUERY)
@@ -303,7 +351,7 @@ public class FlowResource {
     )})
   @GET
   @Path("/instances/{flowInstanceId}")
-  public Object getFlowInstance(
+  public FlowInstance getFlowInstance(
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH)
     @PathParam("flowInstanceId") String flowInstanceId) {
     return flowApplicationService.findFlowInstance(flowInstanceId);
@@ -451,7 +499,7 @@ public class FlowResource {
   )
   public static class TerminateResultSchema extends TerminateResult {
     public TerminateResultSchema() {
-      super(tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum.SUCCESS);
+      super(ErrorEnum.SUCCESS);
     }
   }
 
@@ -528,4 +576,73 @@ public class FlowResource {
     private java.time.LocalDateTime createTime;
     private java.time.LocalDateTime modifyTime;
   }
+
+  @Schema(
+    properties = {
+      @SchemaProperty(name = "nodeInstanceId", examples = {"node_inst_001"}, description = "节点实例ID"),
+      @SchemaProperty(name = "modelKey", examples = {"user_task_001"}, description = "模型键"),
+      @SchemaProperty(name = "modelName", examples = {"用户审批任务"}, description = "模型名称"),
+      @SchemaProperty(name = "status", examples = {"2"}, description = "节点状态：1-待处理，2-已完成，3-已跳过，4-已禁用"),
+      @SchemaProperty(name = "flowElementType", examples = {"1"}, description = "流程元素类型：1-用户任务，2-服务任务，3-网关，4-事件"),
+      @SchemaProperty(name = "properties", description = "节点属性", type = SchemaType.OBJECT),
+      @SchemaProperty(name = "subNodeResultList", description = "子节点执行结果列表", type = SchemaType.ARRAY),
+      @SchemaProperty(name = "subFlowInstanceIdList", description = "子流程实例ID列表", type = SchemaType.ARRAY),
+      @SchemaProperty(name = "subElementInstanceList", description = "子元素实例列表", type = SchemaType.ARRAY),
+      @SchemaProperty(name = "instanceDataId", examples = {"data_001"}, description = "实例数据ID"),
+      @SchemaProperty(name = "createTime", description = "创建时间", readOnly = true),
+      @SchemaProperty(name = "modifyTime", description = "修改时间", readOnly = true)
+    }
+  )
+  public static class NodeInstanceSchema extends NodeInstance {
+  }
+
+  @Schema(
+    properties = {
+      @SchemaProperty(name = "modelKey", examples = {"start_event_001"}, description = "模型键"),
+      @SchemaProperty(name = "modelName", examples = {"开始事件"}, description = "模型名称"),
+      @SchemaProperty(name = "status", examples = {"2"}, description = "元素状态：1-待处理，2-已完成，3-已跳过，4-已禁用"),
+      @SchemaProperty(name = "properties", description = "元素属性", type = SchemaType.OBJECT),
+      @SchemaProperty(name = "nodeInstanceId", examples = {"node_inst_001"}, description = "节点实例ID"),
+      @SchemaProperty(name = "subFlowInstanceIdList", description = "子流程实例ID列表", type = SchemaType.ARRAY),
+      @SchemaProperty(name = "subElementInstanceList", description = "子元素实例列表", type = SchemaType.ARRAY),
+      @SchemaProperty(name = "instanceDataId", examples = {"data_001"}, description = "实例数据ID")
+    }
+  )
+  public static class ElementInstanceSchema extends ElementInstance {
+  }
+
+  @Schema(
+    properties = {
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+      @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
+      @SchemaProperty(name = "status", examples = {"2"}, description = "流程状态：1-运行中，2-已完成，3-已终止，4-已暂停"),
+      @SchemaProperty(name = "nodeExecuteResults", description = "节点执行结果列表", type = SchemaType.ARRAY),
+      @SchemaProperty(name = "extendProperties", description = "扩展属性", type = SchemaType.OBJECT)
+    }
+  )
+  public static class RuntimeResultSchema extends RuntimeResult {
+  }
+
+  @Schema(
+    properties = {
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+      @SchemaProperty(name = "activeTaskInstance", description = "活跃任务实例"),
+      @SchemaProperty(name = "variables", description = "流程变量列表", type = SchemaType.ARRAY)
+    }
+  )
+  public static class NodeExecuteResultSchema extends RuntimeResult.NodeExecuteResult {
+  }
+
+  @Schema(
+    properties = {
+      @SchemaProperty(name = "key", examples = {"orderId"}, description = "变量键"),
+      @SchemaProperty(name = "type", examples = {"String"}, description = "变量类型"),
+      @SchemaProperty(name = "value", examples = {"ORD001"}, description = "变量值")
+    }
+  )
+  public static class InstanceDataSchema extends InstanceData {
+  }
+
 }

@@ -7,6 +7,8 @@ import tech.wetech.flexmodel.application.dto.*;
 import tech.wetech.flexmodel.codegen.entity.FlowDefinition;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.codegen.entity.FlowInstance;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.ElementInstance;
+import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.*;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.*;
 import tech.wetech.flexmodel.domain.model.flow.service.FlowDefinitionService;
@@ -40,6 +42,14 @@ public class FlowApplicationService {
 
   @Inject
   FlowDeploymentService flowDeploymentService;
+
+  public List<NodeInstance> getHistoryUserTaskList(String flowInstanceId, boolean effectiveForSubFlowInstance) {
+    return processService.getHistoryUserTaskList(flowInstanceId, effectiveForSubFlowInstance).getNodeInstanceList();
+  }
+
+  public List<ElementInstance> getHistoryElementList(String flowInstanceId) {
+    return processService.getHistoryElementList(flowInstanceId).getElementInstanceList();
+  }
 
   /**
    * 获取流程模块列表
