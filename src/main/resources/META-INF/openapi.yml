@@ -2,8 +2,16 @@ openapi: 3.1.0
 info:
   title: Flexmodel API
   version: "0.0.1"
+  description: "FlexModel服务器API，提供模型管理和系统监控功能"
 paths: {}  # 此处为空，可根据实际 API 补充路径配置
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT Bearer Token认证 - 在Authorization header中使用 'Bearer {token}' 格式"
+
   responses:
     InternalError:
       description: Internal Error
