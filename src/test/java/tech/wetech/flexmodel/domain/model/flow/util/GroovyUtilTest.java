@@ -28,8 +28,7 @@ public class GroovyUtilTest {
       String expression = "";
       Map<String, Object> dataMap = Maps.newHashMap();
       Object result = GroovyUtil.execute(expression, dataMap);
-      Assertions.assertNotNull(result);
-      log.warn("result:{}:{}", result.getClass().getSimpleName(), result);
+      Assertions.assertNull(result);
     } catch (Exception e) {
       log.warn("catch exception", e);
     }
