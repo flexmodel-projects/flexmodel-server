@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.executor;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -24,6 +22,8 @@ import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -137,7 +137,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
     runtimeContext.setInstanceDataId(instanceDataId);
 
-    runtimeContext.setNodeInstanceList(Lists.newArrayList());
+    runtimeContext.setNodeInstanceList(new ArrayList<>());
 
     //set startEvent into suspendNodeInstance as the first node to process
     Map<String, FlowElement> flowElementMap = runtimeContext.getFlowElementMap();
@@ -251,7 +251,7 @@ public class FlowExecutor extends RuntimeExecutor {
     Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap;
     String instanceDataId = nodeInstancePO.getInstanceDataId();
     if (StringUtils.isBlank(instanceDataId)) {
-      instanceDataMap = Maps.newHashMap();
+      instanceDataMap = new HashMap<>();
     } else {
       InstanceData instanceDataPO = instanceDataRepository.select(flowInstanceId, instanceDataId);
       if (instanceDataPO == null) {
@@ -306,7 +306,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
     setCurrentFlowModel(runtimeContext);
 
-    runtimeContext.setNodeInstanceList(Lists.newArrayList());
+    runtimeContext.setNodeInstanceList(new ArrayList<>());
   }
 
   private void doCommit(RuntimeContext runtimeContext) throws ProcessException {
@@ -387,7 +387,7 @@ public class FlowExecutor extends RuntimeExecutor {
     String instanceDataId = rollbackNodeInstance.getInstanceDataId();
     Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap;
     if (StringUtils.isBlank(instanceDataId)) {
-      instanceDataMap = Maps.newHashMap();
+      instanceDataMap = new HashMap<>();
     } else {
       InstanceData instanceDataPO = instanceDataRepository.select(flowInstanceId, instanceDataId);
       if (instanceDataPO == null) {
@@ -483,7 +483,7 @@ public class FlowExecutor extends RuntimeExecutor {
                                    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap) throws ProcessException {
     runtimeContext.setInstanceDataId(nodeInstancePO.getInstanceDataId());
     runtimeContext.setInstanceDataMap(instanceDataMap);
-    runtimeContext.setNodeInstanceList(Lists.newArrayList());
+    runtimeContext.setNodeInstanceList(new ArrayList<>());
     NodeInstanceBO suspendNodeInstanceBO = buildSuspendNodeInstanceBO(nodeInstancePO);
     runtimeContext.setSuspendNodeInstance(suspendNodeInstanceBO);
     setCurrentFlowModel(runtimeContext);
@@ -572,8 +572,8 @@ public class FlowExecutor extends RuntimeExecutor {
       return;
     }
 
-    List<NodeInstance> nodeInstancePOList = Lists.newArrayList();
-    List<NodeInstanceLog> nodeInstanceLogPOList = Lists.newArrayList();
+    List<NodeInstance> nodeInstancePOList = new ArrayList<>();
+    List<NodeInstanceLog> nodeInstanceLogPOList = new ArrayList<>();
 
     processNodeList.forEach(nodeInstanceBO -> {
       NodeInstance nodeInstancePO = buildNodeInstance(runtimeContext, nodeInstanceBO);

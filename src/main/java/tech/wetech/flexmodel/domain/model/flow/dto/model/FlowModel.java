@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.model;
 
-import com.google.common.base.MoreObjects;
-
 import java.util.List;
 
 public class FlowModel {
@@ -17,8 +15,8 @@ public class FlowModel {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("flowElementList", flowElementList)
-      .toString();
+    return "FlowModel{" +
+           "flowElementList=" + flowElementList +
+           '}';
   }
 }

@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.validator;
 
-import com.google.common.collect.Maps;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import tech.wetech.flexmodel.codegen.entity.FlowDefinition;
@@ -97,7 +96,7 @@ public class CallActivityValidator extends ElementValidator {
       String caller = commonParam.getCaller();
       callActivityNestedLevel = businessConfig.getCallActivityNestedLevel(caller);
     }
-    int nestedLevel = getNestedLevel(flowElement, flowElement, Maps.newHashMap());
+      int nestedLevel = getNestedLevel(flowElement, flowElement, new HashMap<>());
     if (callActivityNestedLevel < nestedLevel) {
       throwElementValidatorException(flowElement, ErrorEnum.FLOW_NESTED_LEVEL_EXCEEDED);
     }

@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.bo;
 
-import com.google.common.base.MoreObjects;
-
 import java.util.List;
 import java.util.Map;
 
@@ -98,14 +96,15 @@ public class ElementInstance {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("modelKey", modelKey)
-      .add("modelName", modelName)
-      .add("properties", properties)
-      .add("status", status)
-      .add("nodeInstanceId", nodeInstanceId)
-      .add("subFlowInstanceIdList", subFlowInstanceIdList)
-      .add("instanceDataId", instanceDataId)
-      .toString();
+    return "ElementInstance{" +
+           "modelKey='" + modelKey + '\'' +
+           ", modelName='" + modelName + '\'' +
+           ", properties=" + properties +
+           ", status=" + status +
+           ", nodeInstanceId='" + nodeInstanceId + '\'' +
+           ", subFlowInstanceIdList=" + subFlowInstanceIdList +
+           ", subElementInstanceList=" + subElementInstanceList +
+           ", instanceDataId='" + instanceDataId + '\'' +
+           '}';
   }
 }

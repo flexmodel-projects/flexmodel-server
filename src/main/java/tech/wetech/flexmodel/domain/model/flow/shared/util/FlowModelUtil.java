@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.shared.util;
 
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
@@ -10,6 +9,7 @@ import tech.wetech.flexmodel.domain.model.flow.shared.common.FlowElementType;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,21 +28,21 @@ public class FlowModelUtil {
    */
   public static Map<String, FlowElement> getFlowElementMap(String flowModelStr) {
     if (StringUtils.isBlank(flowModelStr)) {
-      return Maps.newHashMap();
+      return new HashMap<>();
     }
 
     FlowModel flowModel = parseModelFromString(flowModelStr);
     if (flowModel == null) {
-      return Maps.newHashMap();
+      return new HashMap<>();
     }
     return getFlowElementMap(flowModel.getFlowElementList());
   }
 
   public static Map<String, FlowElement> getFlowElementMap(List<FlowElement> flowElementList) {
     if (CollectionUtils.isEmpty(flowElementList)) {
-      return Maps.newHashMap();
+      return new HashMap<>();
     }
-    Map<String, FlowElement> flowElementMap = Maps.newHashMap();
+    Map<String, FlowElement> flowElementMap = new HashMap<>();
     flowElementList.forEach(flowElement -> {
       flowElementMap.put(flowElement.getKey(), flowElement);
     });

@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.result;
 
-import com.google.common.base.MoreObjects;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
@@ -96,10 +95,12 @@ public class RuntimeResult extends CommonResult {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("flowInstanceId", flowInstanceId)
-      .add("status", status)
-      .toString();
+    return "RuntimeResult{" +
+           "flowInstanceId='" + flowInstanceId + '\'' +
+           ", status=" + status +
+           ", nodeExecuteResults=" + nodeExecuteResults +
+           ", extendProperties=" + extendProperties +
+           '}';
   }
 
   public static class NodeExecuteResult extends CommonResult {
@@ -124,10 +125,10 @@ public class RuntimeResult extends CommonResult {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-        .add("activeTaskInstance", activeTaskInstance)
-        .add("variables", variables)
-        .toString();
+      return "NodeExecuteResult{" +
+             "activeTaskInstance=" + activeTaskInstance +
+             ", variables=" + variables +
+             '}';
     }
   }
 }

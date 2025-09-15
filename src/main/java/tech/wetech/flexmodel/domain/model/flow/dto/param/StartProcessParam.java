@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
-import com.google.common.base.MoreObjects;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
 
@@ -48,10 +47,11 @@ public class StartProcessParam {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("flowModuleId", flowModuleId)
-      .add("flowDeployId", flowDeployId)
-      .add("variables", variables)
-      .toString();
+    return "StartProcessParam{" +
+           "runtimeContext=" + runtimeContext +
+           ", flowModuleId='" + flowModuleId + '\'' +
+           ", flowDeployId='" + flowDeployId + '\'' +
+           ", variables=" + variables +
+           '}';
   }
 }

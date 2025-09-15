@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.bo;
 
-import com.google.common.base.MoreObjects;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.RuntimeResult;
 
 import java.time.LocalDateTime;
@@ -76,16 +75,13 @@ public class NodeInstance extends ElementInstance {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("modelKey", getModelKey())
-      .add("modelName", getModelName())
-      .add("properties", getProperties())
-      .add("status", getStatus())
-      .add("nodeInstanceId", nodeInstanceId)
-      .add("subRuntimeResultList", subNodeResultList)
-      .add("flowElementType", flowElementType)
-      .add("createTime", createTime)
-      .add("modifyTime", modifyTime)
-      .toString();
+    return "NodeInstance{" +
+           "nodeInstanceId='" + nodeInstanceId + '\'' +
+           ", flowElementType=" + flowElementType +
+           ", subNodeResultList=" + subNodeResultList +
+           ", createTime=" + createTime +
+           ", modifyTime=" + modifyTime +
+           ", properties=" + properties +
+           '}';
   }
 }

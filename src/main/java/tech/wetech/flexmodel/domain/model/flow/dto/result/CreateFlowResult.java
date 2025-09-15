@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.result;
 
-import com.google.common.base.MoreObjects;
-
 public class CreateFlowResult extends CommonResult {
   private String flowModuleId;
 
@@ -15,10 +13,8 @@ public class CreateFlowResult extends CommonResult {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("errCode", getErrCode())
-      .add("errMsg", getErrMsg())
-      .add("flowModuleId", flowModuleId)
-      .toString();
+    return "CreateFlowResult{" +
+           "flowModuleId='" + flowModuleId + '\'' +
+           '}';
   }
 }

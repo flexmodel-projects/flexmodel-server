@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
-import com.google.common.base.MoreObjects;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 
 import java.util.List;
@@ -28,11 +27,9 @@ public class CommitTaskParam extends RuntimeTaskParam {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("flowInstanceId", getFlowInstanceId())
-      .add("taskInstanceId", getTaskInstanceId())
-      .add("variables", variables)
-      .add("callActivityFlowModuleId", callActivityFlowModuleId)
-      .toString();
+    return "CommitTaskParam{" +
+           "variables=" + variables +
+           ", callActivityFlowModuleId='" + callActivityFlowModuleId + '\'' +
+           "} " + super.toString();
   }
 }

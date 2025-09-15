@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
-import com.google.common.base.MoreObjects;
-
 public class OperationParam extends CommonParam {
   private String operator;
 
@@ -19,10 +17,8 @@ public class OperationParam extends CommonParam {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("tenant", getTenant())
-      .add("caller", getCaller())
-      .add("operator", operator)
-      .toString();
+    return "OperationParam{" +
+           "operator='" + operator + '\'' +
+           '}';
   }
 }

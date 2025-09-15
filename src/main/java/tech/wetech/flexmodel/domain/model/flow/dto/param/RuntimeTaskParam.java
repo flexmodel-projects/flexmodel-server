@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
-import com.google.common.base.MoreObjects;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
 
 import java.util.HashMap;
@@ -47,9 +46,11 @@ public class RuntimeTaskParam {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("flowInstanceId", flowInstanceId)
-      .add("taskInstanceId", taskInstanceId)
-      .toString();
+    return "RuntimeTaskParam{" +
+           "flowInstanceId='" + flowInstanceId + '\'' +
+           ", taskInstanceId='" + taskInstanceId + '\'' +
+           ", runtimeContext=" + runtimeContext +
+           ", extendProperties=" + extendProperties +
+           '}';
   }
 }

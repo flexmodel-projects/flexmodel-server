@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.result;
 
-import com.google.common.base.MoreObjects;
-
 import java.time.LocalDateTime;
 
 public class FlowModuleResult extends CommonResult {
@@ -98,19 +96,17 @@ public class FlowModuleResult extends CommonResult {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("errCode", getErrCode())
-      .add("errMsg", getErrMsg())
-      .add("flowModuleId", flowModuleId)
-      .add("flowName", flowName)
-      .add("flowKey", flowKey)
-      .add("flowModel", flowModel)
-      .add("status", status)
-      .add("remark", remark)
-      .add("tenant", tenant)
-      .add("caller", caller)
-      .add("operator", operator)
-      .add("modifyTime", modifyTime)
-      .toString();
+    return "FlowModuleResult{" +
+           "flowModuleId='" + flowModuleId + '\'' +
+           ", flowName='" + flowName + '\'' +
+           ", flowKey='" + flowKey + '\'' +
+           ", flowModel='" + flowModel + '\'' +
+           ", status=" + status +
+           ", remark='" + remark + '\'' +
+           ", tenant='" + tenant + '\'' +
+           ", caller='" + caller + '\'' +
+           ", operator='" + operator + '\'' +
+           ", modifyTime=" + modifyTime +
+           '}';
   }
 }

@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.executor;
 
-import com.google.common.collect.Lists;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -72,7 +71,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
   }
 
   private Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> getHookInfoValueMap(String flowInstanceId, String hookInfoParam, String nodeKey, String nodeInstanceId) {
-    List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> dataList = Lists.newArrayList();
+    List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> dataList = new ArrayList<>();
     for (HookService service : hookServices) {
       try {
         List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> list = service.invoke(flowInstanceId, hookInfoParam, nodeKey, nodeInstanceId);

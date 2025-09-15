@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
-import com.google.common.base.MoreObjects;
-
 public class CommonParam {
   private String tenant;
   private String caller;
@@ -29,9 +27,9 @@ public class CommonParam {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("tenant", tenant)
-      .add("caller", caller)
-      .toString();
+    return "CommonParam{" +
+           "tenant='" + tenant + '\'' +
+           ", caller='" + caller + '\'' +
+           '}';
   }
 }

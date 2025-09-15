@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.validator;
 
-import com.google.common.collect.Maps;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
@@ -17,6 +16,7 @@ import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +39,7 @@ public class FlowModelValidator {
     }
 
     List<FlowElement> flowElementList = flowModel.getFlowElementList();
-    Map<String, FlowElement> flowElementMap = Maps.newHashMap();
+    Map<String, FlowElement> flowElementMap = new HashMap<>();
 
     for (FlowElement flowElement : flowElementList) {
       if (flowElementMap.containsKey(flowElement.getKey())) {

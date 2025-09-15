@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.util;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import tech.wetech.flexmodel.codegen.entity.*;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.*;
@@ -62,7 +60,7 @@ public class EntityBuilder {
   }
 
   public static List<FlowElement> buildFlowElementList() {
-    List<FlowElement> flowElementList = Lists.newArrayList();
+    List<FlowElement> flowElementList = new ArrayList<>();
 
     //startEvent1
     StartEvent startEvent = new StartEvent();
@@ -120,7 +118,7 @@ public class EntityBuilder {
     exclusiveGateway.setKey("exclusiveGateway1");
     exclusiveGateway.setType(FlowElementType.EXCLUSIVE_GATEWAY);
 
-    Map<String, Object> properties = Maps.newHashMap();
+    Map<String, Object> properties = new HashMap<>();
     properties.put(Constants.ELEMENT_PROPERTIES.HOOK_INFO_IDS, "[1,2]");
     exclusiveGateway.setProperties(properties);
 
@@ -139,7 +137,7 @@ public class EntityBuilder {
     SequenceFlow sequenceFlow3 = new SequenceFlow();
     sequenceFlow3.setKey("sequenceFlow3");
     sequenceFlow3.setType(FlowElementType.SEQUENCE_FLOW);
-    Map<String, Object> sFproperties3 = Maps.newHashMap();
+    Map<String, Object> sFproperties3 = new HashMap<>();
     sFproperties3.put(Constants.ELEMENT_PROPERTIES.CONDITION, "a>1&&b==1");
     sequenceFlow3.setProperties(sFproperties3);
 
@@ -158,7 +156,7 @@ public class EntityBuilder {
     sequenceFlow4.setKey("sequenceFlow4");
     sequenceFlow4.setType(FlowElementType.SEQUENCE_FLOW);
 
-    Map<String, Object> sFproperties4 = Maps.newHashMap();
+    Map<String, Object> sFproperties4 = new HashMap<>();
     sFproperties4.put(Constants.ELEMENT_PROPERTIES.DEFAULT_CONDITION, "true");
     sequenceFlow4.setProperties(sFproperties4);
 
@@ -499,7 +497,7 @@ public class EntityBuilder {
     InstanceData instanceData1 = new InstanceData("key1", "value1");
     InstanceData instanceData2 = new InstanceData("key2", "value2");
     InstanceData instanceData3 = new InstanceData("key3", "value3");
-    List<InstanceData> instanceDataList = Lists.newArrayList();
+    List<InstanceData> instanceDataList = new ArrayList<>();
     instanceDataList.add(instanceData1);
     instanceDataList.add(instanceData2);
     instanceDataList.add(instanceData3);
@@ -508,7 +506,7 @@ public class EntityBuilder {
 
   public static String buildModelStringAccess() {
     FlowModel flowModel = new FlowModel();
-    List<FlowElement> flowElementList = Lists.newArrayList();
+    List<FlowElement> flowElementList = new ArrayList<>();
     //startEvent1
     StartEvent startEvent = new StartEvent();
     startEvent.setKey("startEvent1");
@@ -565,7 +563,7 @@ public class EntityBuilder {
     exclusiveGateway.setKey("exclusiveGateway1");
     exclusiveGateway.setType(FlowElementType.EXCLUSIVE_GATEWAY);
 
-    Map<String, Object> properties = Maps.newHashMap();
+    Map<String, Object> properties = new HashMap<>();
     properties.put(Constants.ELEMENT_PROPERTIES.HOOK_INFO_IDS, "[1,2]");
     exclusiveGateway.setProperties(properties);
 
@@ -584,7 +582,7 @@ public class EntityBuilder {
     SequenceFlow sequenceFlow3 = new SequenceFlow();
     sequenceFlow3.setKey("sequenceFlow3");
     sequenceFlow3.setType(FlowElementType.SEQUENCE_FLOW);
-    Map<String, Object> sFproperties3 = Maps.newHashMap();
+    Map<String, Object> sFproperties3 = new HashMap<>();
     sFproperties3.put(Constants.ELEMENT_PROPERTIES.CONDITION, "a>1&&b==1");
     sequenceFlow3.setProperties(sFproperties3);
 
@@ -603,7 +601,7 @@ public class EntityBuilder {
     sequenceFlow4.setKey("sequenceFlow4");
     sequenceFlow4.setType(FlowElementType.SEQUENCE_FLOW);
 
-    Map<String, Object> sFproperties4 = Maps.newHashMap();
+    Map<String, Object> sFproperties4 = new HashMap<>();
     sFproperties4.put(Constants.ELEMENT_PROPERTIES.DEFAULT_CONDITION, "true");
     sequenceFlow4.setProperties(sFproperties4);
 
@@ -849,7 +847,7 @@ public class EntityBuilder {
     flowModel.setFlowElementList(flowElementList);
     runtimeContext.setFlowElementMap(FlowModelUtil.getFlowElementMap(JsonUtils.getInstance().stringify(flowModel)));
 
-    runtimeContext.setNodeInstanceList(Lists.newArrayList());
+    runtimeContext.setNodeInstanceList(new ArrayList<>());
     runtimeContext.setCurrentNodeInstance(new NodeInstanceBO());
     runtimeContext.setSuspendNodeInstance(new NodeInstanceBO());
     runtimeContext.setInstanceDataId("");
@@ -876,7 +874,7 @@ public class EntityBuilder {
   }
 
   public static FlowModel buildSpecialFlowModel() {
-    List<FlowElement> flowElementList = Lists.newArrayList();
+    List<FlowElement> flowElementList = new ArrayList<>();
     {
       StartEvent startEvent = new StartEvent();
       startEvent.setKey("StartEvent_1r83q1z");

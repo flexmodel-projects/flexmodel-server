@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.model;
 
-import com.google.common.base.MoreObjects;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -55,12 +53,12 @@ public class FlowElement implements Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("key", key)
-      .add("type", type)
-      .add("outgoing", outgoing)
-      .add("properties", properties)
-      .add("incoming", incoming)
-      .toString();
+    return "FlowElement{" +
+           "key='" + key + '\'' +
+           ", type=" + type +
+           ", outgoing=" + outgoing +
+           ", properties=" + properties +
+           ", incoming=" + incoming +
+           '}';
   }
 }

@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.bo;
 
-import com.google.common.base.MoreObjects;
-
 public class FlowBasicInfo {
   private String flowDeployId;
   private String flowModuleId;
@@ -42,11 +40,11 @@ public class FlowBasicInfo {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("flowDeployId", flowDeployId)
-      .add("flowModuleId", flowModuleId)
-      .add("tenant", tenant)
-      .add("caller", caller)
-      .toString();
+    return "FlowBasicInfo{" +
+           "flowDeployId='" + flowDeployId + '\'' +
+           ", flowModuleId='" + flowModuleId + '\'' +
+           ", tenant='" + tenant + '\'' +
+           ", caller='" + caller + '\'' +
+           '}';
   }
 }

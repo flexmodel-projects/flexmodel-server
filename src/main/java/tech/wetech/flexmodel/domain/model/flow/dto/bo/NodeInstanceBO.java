@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.bo;
 
-import com.google.common.base.MoreObjects;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -100,15 +98,16 @@ public class NodeInstanceBO implements Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("id", id)
-      .add("nodeInstanceId", nodeInstanceId)
-      .add("nodeKey", nodeKey)
-      .add("sourceNodeInstanceId", sourceNodeInstanceId)
-      .add("sourceNodeKey", sourceNodeKey)
-      .add("instanceDataId", instanceDataId)
-      .add("status", status)
-      .add("nodeType", nodeType)
-      .toString();
+    return "NodeInstanceBO{" +
+           "id=" + id +
+           ", nodeInstanceId='" + nodeInstanceId + '\'' +
+           ", nodeKey='" + nodeKey + '\'' +
+           ", sourceNodeInstanceId='" + sourceNodeInstanceId + '\'' +
+           ", sourceNodeKey='" + sourceNodeKey + '\'' +
+           ", instanceDataId='" + instanceDataId + '\'' +
+           ", status=" + status +
+           ", nodeType=" + nodeType +
+           ", properties=" + properties +
+           '}';
   }
 }

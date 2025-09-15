@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.model;
 
-import com.google.common.base.MoreObjects;
-
 import java.io.Serializable;
 
 public class InstanceData implements Serializable {
@@ -49,10 +47,10 @@ public class InstanceData implements Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("key", key)
-      .add("type", type)
-      .add("value", value)
-      .toString();
+    return "InstanceData{" +
+           "key='" + key + '\'' +
+           ", type='" + type + '\'' +
+           ", value=" + value +
+           '}';
   }
 }

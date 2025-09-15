@@ -1,11 +1,11 @@
 package tech.wetech.flexmodel.domain.model.flow.util;
 
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.GroovyUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -26,7 +26,7 @@ public class GroovyUtilTest {
   public void fun1() {
     try {
       String expression = "";
-      Map<String, Object> dataMap = Maps.newHashMap();
+      Map<String, Object> dataMap = new HashMap<>();
       Object result = GroovyUtil.execute(expression, dataMap);
       Assertions.assertNull(result);
     } catch (Exception e) {

@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.executor.callactivity;
 
-import com.google.common.collect.Lists;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.InstanceData;
@@ -82,7 +81,7 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
       return new ArrayList<>();
     }
     if (callActivityInParamType.equals(Constants.CALL_ACTIVITY_PARAM_TYPE.PART)) {
-      List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataList = Lists.newArrayList();
+      List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataList = new ArrayList<>();
       String callActivityInParam = (String) currentNodeModel.getProperties().getOrDefault(callActivityParam, "");
       List<DataTransferBO> callActivityDataTransfers = tech.wetech.flexmodel.shared.utils.JsonUtils.getInstance().parseToList(callActivityInParam, DataTransferBO.class);
       for (DataTransferBO callActivityDataTransfer : callActivityDataTransfers) {

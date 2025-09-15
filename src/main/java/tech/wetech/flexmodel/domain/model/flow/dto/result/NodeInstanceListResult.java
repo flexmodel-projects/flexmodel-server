@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.result;
 
-import com.google.common.base.MoreObjects;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 
@@ -23,10 +22,8 @@ public class NodeInstanceListResult extends CommonResult {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("errCode", getErrCode())
-      .add("errMsg", getErrMsg())
-      .add("nodeInstanceList", nodeInstanceList)
-      .toString();
+    return "NodeInstanceListResult{" +
+           "nodeInstanceList=" + nodeInstanceList +
+           '}';
   }
 }

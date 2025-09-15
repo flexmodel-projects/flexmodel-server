@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.result;
 
-import com.google.common.base.MoreObjects;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 
 import java.io.Serializable;
@@ -37,9 +36,9 @@ public class CommonResult implements Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("errCode", errCode)
-      .add("errMsg", errMsg)
-      .toString();
+    return "CommonResult{" +
+           "errCode=" + errCode +
+           ", errMsg='" + errMsg + '\'' +
+           '}';
   }
 }

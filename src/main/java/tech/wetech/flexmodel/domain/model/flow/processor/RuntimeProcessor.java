@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.processor;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
@@ -276,7 +274,7 @@ public class RuntimeProcessor {
   public NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId, boolean effectiveForSubFlowInstance) {
     List<NodeInstance> historyNodeInstanceList = getDescHistoryNodeInstanceList(flowInstanceId);
     NodeInstanceListResult historyListResult = new NodeInstanceListResult(ErrorEnum.SUCCESS);
-    historyListResult.setNodeInstanceList(Lists.newArrayList());
+    historyListResult.setNodeInstanceList(new ArrayList<>());
     try {
       if (CollectionUtils.isEmpty(historyNodeInstanceList)) {
         LOGGER.warn("getHistoryUserTaskList: historyNodeInstanceList is empty.||flowInstanceId={}", flowInstanceId);
@@ -313,7 +311,7 @@ public class RuntimeProcessor {
         if (props != null && !props.isEmpty()) {
           nodeInstance.setProperties(props);
         } else {
-          nodeInstance.setProperties(Maps.newHashMap());
+          nodeInstance.setProperties(new HashMap<>());
         }
         userTaskList.add(nodeInstance);
       }
@@ -359,7 +357,7 @@ public class RuntimeProcessor {
   public ElementInstanceListResult getHistoryElementList(String flowInstanceId, boolean effectiveForSubFlowInstance) {
     List<NodeInstance> historyNodeInstanceList = getHistoryNodeInstanceList(flowInstanceId);
     ElementInstanceListResult elementInstanceListResult = new ElementInstanceListResult(ErrorEnum.SUCCESS);
-    elementInstanceListResult.setElementInstanceList(Lists.newArrayList());
+    elementInstanceListResult.setElementInstanceList(new ArrayList<>());
     try {
       if (CollectionUtils.isEmpty(historyNodeInstanceList)) {
         LOGGER.warn("getHistoryElementList: historyNodeInstanceList is empty.||flowInstanceId={}", flowInstanceId);
@@ -445,7 +443,7 @@ public class RuntimeProcessor {
       if (props != null && !props.isEmpty()) {
         nodeInstance.setProperties(props);
       } else {
-        nodeInstance.setProperties(Maps.newHashMap());
+        nodeInstance.setProperties(new HashMap<>());
       }
       nodeInstanceResult.setNodeInstance(nodeInstance);
       nodeInstanceResult.setErrCode(ErrorEnum.SUCCESS.getErrNo());
@@ -471,7 +469,7 @@ public class RuntimeProcessor {
   public InstanceDataListResult packageInstanceDataResult(tech.wetech.flexmodel.codegen.entity.InstanceData instanceDataPO) {
     List<InstanceData> instanceDataList = JsonUtils.getInstance().parseToList(instanceDataPO.getInstanceData(), InstanceData.class);
     if (CollectionUtils.isEmpty(instanceDataList)) {
-      instanceDataList = Lists.newArrayList();
+      instanceDataList = new ArrayList<>();
     }
     InstanceDataListResult instanceDataListResult = new InstanceDataListResult(ErrorEnum.SUCCESS);
     instanceDataListResult.setVariables(instanceDataList);
@@ -556,7 +554,7 @@ public class RuntimeProcessor {
     if (runtimeContext != null) {
       runtimeResult.setFlowInstanceId(runtimeContext.getFlowInstanceId());
       runtimeResult.setStatus(runtimeContext.getFlowInstanceStatus());
-      List<RuntimeResult.NodeExecuteResult> nodeExecuteResults = Lists.newArrayList();
+      List<RuntimeResult.NodeExecuteResult> nodeExecuteResults = new ArrayList<>();
       if (null != runtimeContext.getExtendRuntimeContextList() && !runtimeContext.getExtendRuntimeContextList().isEmpty()) {
         for (ExtendRuntimeContext extendRuntimeContext : runtimeContext.getExtendRuntimeContextList()) {
           RuntimeResult.NodeExecuteResult result = new RuntimeResult.NodeExecuteResult();

@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.executor;
 
-import com.google.common.collect.Maps;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -17,6 +16,7 @@ import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
 import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +43,7 @@ public class ExclusiveGatewayExecutorTest {
     FlowElement exclusiveGateway = FlowModelUtil.getFlowElement(flowElementMap, "exclusiveGateway1");
 
     runtimeContext = EntityBuilder.buildRuntimeContext();
-    Map<String, InstanceData> instanceDataMap = Maps.newHashMap();
+    Map<String, InstanceData> instanceDataMap = new HashMap<>();
     InstanceData instanceDataA = new InstanceData("a", 2);
     InstanceData instanceDataB = new InstanceData("b", 1);
     instanceDataMap.put(instanceDataA.getKey(), instanceDataA);

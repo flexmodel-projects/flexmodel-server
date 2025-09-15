@@ -1,13 +1,13 @@
 package tech.wetech.flexmodel.domain.model.flow.shared.util;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.DataType;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +18,9 @@ public class InstanceDataUtil {
 
   public static Map<String, InstanceData> getInstanceDataMap(List<InstanceData> instanceDataList) {
     if (CollectionUtils.isEmpty(instanceDataList)) {
-      return Maps.newHashMap();
+      return new HashMap<>();
     }
-    Map<String, InstanceData> instanceDataMap = Maps.newHashMap();
+    Map<String, InstanceData> instanceDataMap = new HashMap<>();
     instanceDataList.forEach(instanceData -> {
       instanceDataMap.put(instanceData.getKey(), instanceData);
     });
@@ -29,7 +29,7 @@ public class InstanceDataUtil {
 
   public static Map<String, InstanceData> getInstanceDataMap(String instanceDataStr) {
     if (StringUtils.isBlank(instanceDataStr)) {
-      return Maps.newHashMap();
+      return new HashMap<>();
     }
     List<InstanceData> instanceDataList = JsonUtils.getInstance().parseToList(instanceDataStr, InstanceData.class);
     return getInstanceDataMap(instanceDataList);
@@ -37,9 +37,9 @@ public class InstanceDataUtil {
 
   public static List<InstanceData> getInstanceDataList(Map<String, InstanceData> instanceDataMap) {
     if (instanceDataMap == null || instanceDataMap.isEmpty()) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
-    List<InstanceData> instanceDataList = Lists.newArrayList();
+    List<InstanceData> instanceDataList = new ArrayList<>();
     instanceDataMap.forEach((key, instanceData) -> {
       instanceDataList.add(instanceData);
     });
@@ -48,16 +48,16 @@ public class InstanceDataUtil {
 
   public static String getInstanceDataListStr(Map<String, InstanceData> instanceDataMap) {
     if (instanceDataMap == null || instanceDataMap.isEmpty()) {
-      return JsonUtils.getInstance().stringify(Lists.newArrayList());
+      return JsonUtils.getInstance().stringify(new ArrayList<>());
     }
     return JsonUtils.getInstance().stringify(instanceDataMap.values());
   }
 
   public static Map<String, Object> parseInstanceDataMap(Map<String, InstanceData> instanceDataMap) {
     if (instanceDataMap == null || instanceDataMap.isEmpty()) {
-      return Maps.newHashMap();
+      return new HashMap<>();
     }
-    Map<String, Object> dataMap = Maps.newHashMap();
+    Map<String, Object> dataMap = new HashMap<>();
     instanceDataMap.forEach((keyName, instanceData) -> {
       dataMap.put(keyName, parseInstanceData(instanceData));
     });

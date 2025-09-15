@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
-import com.google.common.base.MoreObjects;
-
 public class UpdateFlowParam extends OperationParam {
   private String flowKey;
   private String flowName;
@@ -55,15 +53,12 @@ public class UpdateFlowParam extends OperationParam {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("tenant", getTenant())
-      .add("caller", getCaller())
-      .add("operator", getOperator())
-      .add("flowKey", flowKey)
-      .add("flowName", flowName)
-      .add("flowModuleId", flowModuleId)
-      .add("flowModel", flowModel)
-      .add("remark", remark)
-      .toString();
+    return "UpdateFlowParam{" +
+           "flowKey='" + flowKey + '\'' +
+           ", flowName='" + flowName + '\'' +
+           ", flowModuleId='" + flowModuleId + '\'' +
+           ", flowModel='" + flowModel + '\'' +
+           ", remark='" + remark + '\'' +
+           '}';
   }
 }

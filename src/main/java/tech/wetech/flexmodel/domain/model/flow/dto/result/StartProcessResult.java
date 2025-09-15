@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.result;
 
-import com.google.common.base.MoreObjects;
-
 public class StartProcessResult extends RuntimeResult {
   private String flowDeployId;
   private String flowModuleId;
@@ -24,11 +22,9 @@ public class StartProcessResult extends RuntimeResult {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("errCode", getErrCode())
-      .add("errMsg", getErrMsg())
-      .add("flowDeployId", flowDeployId)
-      .add("flowModuleId", flowModuleId)
-      .toString();
+    return "StartProcessResult{" +
+           "flowDeployId='" + flowDeployId + '\'' +
+           ", flowModuleId='" + flowModuleId + '\'' +
+           '}';
   }
 }

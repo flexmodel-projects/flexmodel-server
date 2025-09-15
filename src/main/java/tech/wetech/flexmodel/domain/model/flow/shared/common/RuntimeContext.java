@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.shared.common;
 
-import com.google.common.base.MoreObjects;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
@@ -210,21 +209,27 @@ public class RuntimeContext implements Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("flowDeployId", flowDeployId)
-      .add("flowModuleId", flowModuleId)
-      .add("tenant", tenant)
-      .add("caller", caller)
-      .add("flowElementMap", flowElementMap)
-      .add("flowInstanceId", flowInstanceId)
-      .add("flowInstanceStatus", flowInstanceStatus)
-      .add("suspendNodeInstance", suspendNodeInstance)
-      .add("nodeInstanceList", nodeInstanceList)
-      .add("currentNodeModel", currentNodeModel)
-      .add("currentNodeInstance", currentNodeInstance)
-      .add("instanceDataId", instanceDataId)
-      .add("instanceDataMap", instanceDataMap)
-      .add("processStatus", processStatus)
-      .toString();
+    return "RuntimeContext{" +
+           "parentRuntimeContext=" + parentRuntimeContext +
+           ", flowDeployId='" + flowDeployId + '\'' +
+           ", flowModuleId='" + flowModuleId + '\'' +
+           ", tenant='" + tenant + '\'' +
+           ", caller='" + caller + '\'' +
+           ", flowElementMap=" + flowElementMap +
+           ", flowInstanceId='" + flowInstanceId + '\'' +
+           ", flowInstanceStatus=" + flowInstanceStatus +
+           ", suspendNodeInstance=" + suspendNodeInstance +
+           ", nodeInstanceList=" + nodeInstanceList +
+           ", suspendNodeInstanceStack=" + suspendNodeInstanceStack +
+           ", currentNodeModel=" + currentNodeModel +
+           ", currentNodeInstance=" + currentNodeInstance +
+           ", instanceDataId='" + instanceDataId + '\'' +
+           ", instanceDataMap=" + instanceDataMap +
+           ", processStatus=" + processStatus +
+           ", callActivityFlowModuleId='" + callActivityFlowModuleId + '\'' +
+           ", callActivityRuntimeResultList=" + callActivityRuntimeResultList +
+           ", extendProperties=" + extendProperties +
+           ", extendRuntimeContextList=" + extendRuntimeContextList +
+           '}';
   }
 }

@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.bo;
 
-import com.google.common.base.MoreObjects;
-
 public class FlowInfo extends FlowBasicInfo {
   private String flowModel;
 
@@ -15,12 +13,8 @@ public class FlowInfo extends FlowBasicInfo {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("flowDeployId", getFlowDeployId())
-      .add("flowModuleId", getFlowModuleId())
-      .add("tenant", getTenant())
-      .add("caller", getCaller())
-      .add("flowModel", flowModel)
-      .toString();
+    return "FlowInfo{" +
+           "flowModel='" + flowModel + '\'' +
+           '}';
   }
 }

@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
-import com.google.common.base.MoreObjects;
-
 public class DeployFlowParam extends OperationParam {
   private String flowModuleId;
 
@@ -19,11 +17,8 @@ public class DeployFlowParam extends OperationParam {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("tenant", getTenant())
-      .add("caller", getCaller())
-      .add("operator", getOperator())
-      .add("flowModuleId", flowModuleId)
-      .toString();
+    return "DeployFlowParam{" +
+           "flowModuleId='" + flowModuleId + '\'' +
+           '}';
   }
 }

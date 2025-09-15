@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.bo;
 
-import com.google.common.base.MoreObjects;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,12 +69,13 @@ public class FlowInstanceBO {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .add("flowInstanceId", flowInstanceId)
-      .add("flowDeployId", flowDeployId)
-      .add("flowModuleId", flowModuleId)
-      .add("status", status)
-      .add("parentFlowInstanceId", parentFlowInstanceId)
-      .toString();
+    return "FlowInstanceBO{" +
+           "flowInstanceId='" + flowInstanceId + '\'' +
+           ", flowDeployId='" + flowDeployId + '\'' +
+           ", flowModuleId='" + flowModuleId + '\'' +
+           ", status=" + status +
+           ", parentFlowInstanceId='" + parentFlowInstanceId + '\'' +
+           ", properties=" + properties +
+           '}';
   }
 }
