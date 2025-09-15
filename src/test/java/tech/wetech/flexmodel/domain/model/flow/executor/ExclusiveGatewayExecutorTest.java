@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowModel;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
 import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
@@ -43,11 +42,9 @@ public class ExclusiveGatewayExecutorTest {
     FlowElement exclusiveGateway = FlowModelUtil.getFlowElement(flowElementMap, "exclusiveGateway1");
 
     runtimeContext = EntityBuilder.buildRuntimeContext();
-    Map<String, InstanceData> instanceDataMap = new HashMap<>();
-    InstanceData instanceDataA = new InstanceData("a", 2);
-    InstanceData instanceDataB = new InstanceData("b", 1);
-    instanceDataMap.put(instanceDataA.getKey(), instanceDataA);
-    instanceDataMap.put(instanceDataB.getKey(), instanceDataB);
+    Map<String, Object> instanceDataMap = new HashMap<>();
+    instanceDataMap.put("a", 2);
+    instanceDataMap.put("b", 1);
     runtimeContext.setInstanceDataMap(instanceDataMap);
     runtimeContext.setCurrentNodeModel(exclusiveGateway);
 

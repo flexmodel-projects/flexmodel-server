@@ -100,7 +100,7 @@ public class FlowExecutor extends RuntimeExecutor {
     return flowInstancePO;
   }
 
-  private String saveInstanceData(FlowInstance flowInstancePO, Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap) throws ProcessException {
+  private String saveInstanceData(FlowInstance flowInstancePO, Map<String, Object> instanceDataMap) throws ProcessException {
     if (instanceDataMap == null || instanceDataMap.isEmpty()) {
       return "";
     }
@@ -115,14 +115,14 @@ public class FlowExecutor extends RuntimeExecutor {
     throw new ProcessException(ErrorEnum.SAVE_INSTANCE_DATA_FAILED);
   }
 
-  private InstanceData buildInstanceDataPO(FlowInstance flowInstancePO, Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap) {
+  private InstanceData buildInstanceDataPO(FlowInstance flowInstancePO, Map<String, Object> instanceDataMap) {
     InstanceData instanceDataPO = JsonUtils.getInstance().convertValue(flowInstancePO, InstanceData.class);
     // fix primary key duplicated
     instanceDataPO.setId(null);
 
     // generate instanceDataId
     instanceDataPO.setInstanceDataId(genId());
-    instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(instanceDataMap));
+    instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataStr(instanceDataMap));
 
     instanceDataPO.setNodeInstanceId("");
     instanceDataPO.setNodeKey("");
@@ -248,7 +248,7 @@ public class FlowExecutor extends RuntimeExecutor {
       suspendNodeInstance.setStatus(nodeInstancePO.getStatus());
       throw new ReentrantException(ErrorEnum.REENTRANT_WARNING);
     }
-    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap;
+    Map<String, Object> instanceDataMap;
     String instanceDataId = nodeInstancePO.getInstanceDataId();
     if (StringUtils.isBlank(instanceDataId)) {
       instanceDataMap = new HashMap<>();
@@ -263,7 +263,7 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     //2.merge data while commitDataMap is not empty
-    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> commitDataMap = runtimeContext.getInstanceDataMap();
+    Map<String, Object> commitDataMap = runtimeContext.getInstanceDataMap();
     boolean isCallActivityNode = FlowModelUtil.isElementType(nodeInstancePO.getNodeKey(), runtimeContext.getFlowElementMap(), FlowElementType.CALL_ACTIVITY);
     if (isCallActivityNode) {
       // commit callActivity not allow merge data
@@ -282,7 +282,7 @@ public class FlowExecutor extends RuntimeExecutor {
   }
 
   private InstanceData buildCommitInstanceData(RuntimeContext runtimeContext, String nodeInstanceId, String nodeKey,
-                                               String newInstanceDataId, Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap) {
+                                               String newInstanceDataId, Map<String, Object> instanceDataMap) {
     InstanceData instanceDataPO = JsonUtils.getInstance().convertValue(runtimeContext, InstanceData.class);
 
     instanceDataPO.setNodeInstanceId(nodeInstanceId);
@@ -291,13 +291,13 @@ public class FlowExecutor extends RuntimeExecutor {
     instanceDataPO.setCreateTime(LocalDateTime.now());
 
     instanceDataPO.setInstanceDataId(newInstanceDataId);
-    instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(instanceDataMap));
+    instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataStr(instanceDataMap));
 
     return instanceDataPO;
   }
 
   private void fillCommitContext(RuntimeContext runtimeContext, NodeInstance nodeInstancePO, String instanceDataId,
-                                 Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap) throws ProcessException {
+                                 Map<String, Object> instanceDataMap) throws ProcessException {
 
     runtimeContext.setInstanceDataId(instanceDataId);
     runtimeContext.setInstanceDataMap(instanceDataMap);
@@ -385,7 +385,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
     //3.get instanceData
     String instanceDataId = rollbackNodeInstance.getInstanceDataId();
-    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap;
+    Map<String, Object> instanceDataMap;
     if (StringUtils.isBlank(instanceDataId)) {
       instanceDataMap = new HashMap<>();
     } else {
@@ -480,7 +480,7 @@ public class FlowExecutor extends RuntimeExecutor {
   }
 
   private void fillRollbackContext(RuntimeContext runtimeContext, NodeInstance nodeInstancePO,
-                                   Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap) throws ProcessException {
+                                   Map<String, Object> instanceDataMap) throws ProcessException {
     runtimeContext.setInstanceDataId(nodeInstancePO.getInstanceDataId());
     runtimeContext.setInstanceDataMap(instanceDataMap);
     runtimeContext.setNodeInstanceList(new ArrayList<>());

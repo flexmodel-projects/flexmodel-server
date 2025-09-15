@@ -1,22 +1,21 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.result;
 
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 
-import java.util.List;
+import java.util.Map;
 
 public class InstanceDataListResult extends CommonResult {
-  private List<InstanceData> variables;
+  private Map<String, Object> variables;
 
   public InstanceDataListResult(ErrorEnum errorEnum) {
     super(errorEnum);
   }
 
-  public List<InstanceData> getVariables() {
+  public Map<String, Object> getVariables() {
     return variables;
   }
 
-  public void setVariables(List<InstanceData> variables) {
+  public void setVariables(Map<String, Object> variables) {
     this.variables = variables;
   }
 

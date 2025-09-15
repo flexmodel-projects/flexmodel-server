@@ -1,7 +1,6 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.result;
 
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class RuntimeResult extends CommonResult {
   }
 
   // 兼容旧版本
-  public List<InstanceData> getVariables() {
+  public Map<String, Object> getVariables() {
     if (nodeExecuteResults == null || nodeExecuteResults.isEmpty()) {
       return null;
     }
@@ -67,7 +66,7 @@ public class RuntimeResult extends CommonResult {
   }
 
   // 兼容旧版本
-  public void setVariables(List<InstanceData> variables) {
+  public void setVariables(Map<String, Object> variables) {
     if (nodeExecuteResults == null) {
       this.nodeExecuteResults = new ArrayList<>();
     }
@@ -105,7 +104,7 @@ public class RuntimeResult extends CommonResult {
 
   public static class NodeExecuteResult extends CommonResult {
     private NodeInstance activeTaskInstance;
-    private List<InstanceData> variables;
+    private Map<String, Object> variables;
 
     public NodeInstance getActiveTaskInstance() {
       return activeTaskInstance;
@@ -115,11 +114,11 @@ public class RuntimeResult extends CommonResult {
       this.activeTaskInstance = activeTaskInstance;
     }
 
-    public List<InstanceData> getVariables() {
+    public Map<String, Object> getVariables() {
       return variables;
     }
 
-    public void setVariables(List<InstanceData> variables) {
+    public void setVariables(Map<String, Object> variables) {
       this.variables = variables;
     }
 

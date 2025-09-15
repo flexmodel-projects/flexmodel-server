@@ -15,12 +15,12 @@ import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.InstanceDataUtil;
 import tech.wetech.flexmodel.domain.model.flow.spi.HookService;
-import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +51,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
     }
 
     // 3.invoke hook and get data result
-    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> hookInfoValueMap = getHookInfoValueMap(runtimeContext.getFlowInstanceId(), hookInfoParam, runtimeContext.getCurrentNodeInstance().getNodeKey(), runtimeContext.getCurrentNodeInstance().getNodeInstanceId());
+    Map<String, Object> hookInfoValueMap = getHookInfoValueMap(runtimeContext.getFlowInstanceId(), hookInfoParam, runtimeContext.getCurrentNodeInstance().getNodeKey(), runtimeContext.getCurrentNodeInstance().getNodeInstanceId());
     LOGGER.info("doExecute getHookInfoValueMap.||hookInfoValueMap={}", hookInfoValueMap);
     if (hookInfoValueMap == null || hookInfoValueMap.isEmpty()) {
       LOGGER.warn("doExecute: hookInfoValueMap is empty.||flowInstanceId={}||hookInfoParam={}||nodeKey={}",
@@ -60,7 +60,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
     }
 
     // 4.merge data to current dataMap
-    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> dataMap = runtimeContext.getInstanceDataMap();
+    Map<String, Object> dataMap = runtimeContext.getInstanceDataMap();
     dataMap.putAll(hookInfoValueMap);
 
     // 5.save data
@@ -70,22 +70,24 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
     }
   }
 
-  private Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> getHookInfoValueMap(String flowInstanceId, String hookInfoParam, String nodeKey, String nodeInstanceId) {
-    List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> dataList = new ArrayList<>();
+  private Map<String, Object> getHookInfoValueMap(String flowInstanceId, String hookInfoParam, String nodeKey, String nodeInstanceId) {
+    Map<String, Object> resultMap = new HashMap<>();
     for (HookService service : hookServices) {
       try {
-        List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> list = service.invoke(flowInstanceId, hookInfoParam, nodeKey, nodeInstanceId);
-        if (CollectionUtils.isEmpty(list)) {
+        Map<String, Object> dataMap = service.invoke(flowInstanceId, hookInfoParam, nodeKey, nodeInstanceId);
+        if (dataMap == null || dataMap.isEmpty()) {
           LOGGER.warn("hook service invoke result is empty, serviceName={}, flowInstanceId={}, hookInfoParam={}",
             service.getClass().getName(), flowInstanceId, hookInfoParam);
+        } else {
+          // 将Map合并到结果Map中
+          resultMap.putAll(dataMap);
         }
-        dataList.addAll(list);
       } catch (Exception e) {
         LOGGER.warn("hook service invoke fail, serviceName={}, flowInstanceId={}, hookInfoParam={}",
           service.getClass().getName(), flowInstanceId, hookInfoParam);
       }
     }
-    return InstanceDataUtil.getInstanceDataMap(dataList);
+    return resultMap;
   }
 
   private String saveInstanceData(RuntimeContext runtimeContext) {
@@ -98,7 +100,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
   private InstanceData buildHookInstanceData(String instanceDataId, RuntimeContext runtimeContext) {
     InstanceData instanceDataPO = JsonUtils.getInstance().convertValue(runtimeContext, InstanceData.class);
     instanceDataPO.setInstanceDataId(instanceDataId);
-    instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(runtimeContext.getInstanceDataMap()));
+    instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataStr(runtimeContext.getInstanceDataMap()));
     instanceDataPO.setNodeInstanceId(runtimeContext.getCurrentNodeInstance().getNodeInstanceId());
     instanceDataPO.setNodeKey(runtimeContext.getCurrentNodeModel().getKey());
     instanceDataPO.setType(InstanceDataType.HOOK);

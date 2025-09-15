@@ -13,7 +13,6 @@ import tech.wetech.flexmodel.domain.model.flow.dto.bo.FlowInfo;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.FlowInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.CommitTaskParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.RollbackTaskParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
@@ -95,7 +94,7 @@ public class RuntimeProcessor {
     }
   }
 
-  private RuntimeContext buildStartProcessContext(FlowInfo flowInfo, List<InstanceData> variables, RuntimeContext parentRuntimeContext) {
+  private RuntimeContext buildStartProcessContext(FlowInfo flowInfo, Map<String, Object> variables, RuntimeContext parentRuntimeContext) {
     return buildRuntimeContext(flowInfo, variables, parentRuntimeContext);
   }
 
@@ -467,12 +466,9 @@ public class RuntimeProcessor {
   }
 
   public InstanceDataListResult packageInstanceDataResult(tech.wetech.flexmodel.codegen.entity.InstanceData instanceDataPO) {
-    List<InstanceData> instanceDataList = JsonUtils.getInstance().parseToList(instanceDataPO.getInstanceData(), InstanceData.class);
-    if (CollectionUtils.isEmpty(instanceDataList)) {
-      instanceDataList = new ArrayList<>();
-    }
+    Map<String, Object> instanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
     InstanceDataListResult instanceDataListResult = new InstanceDataListResult(ErrorEnum.SUCCESS);
-    instanceDataListResult.setVariables(instanceDataList);
+    instanceDataListResult.setVariables(instanceDataMap);
     return instanceDataListResult;
   }
 
@@ -525,10 +521,9 @@ public class RuntimeProcessor {
     return runtimeContext;
   }
 
-  private RuntimeContext buildRuntimeContext(FlowInfo flowInfo, List<InstanceData> variables, RuntimeContext parentRuntimeContext) {
+  private RuntimeContext buildRuntimeContext(FlowInfo flowInfo, Map<String, Object> variables, RuntimeContext parentRuntimeContext) {
     RuntimeContext runtimeContext = buildRuntimeContext(flowInfo);
-    Map<String, InstanceData> instanceDataMap = InstanceDataUtil.getInstanceDataMap(variables);
-    runtimeContext.setInstanceDataMap(instanceDataMap);
+    runtimeContext.setInstanceDataMap(variables);
     runtimeContext.setParentRuntimeContext(parentRuntimeContext);
     return runtimeContext;
   }
@@ -559,7 +554,7 @@ public class RuntimeProcessor {
         for (ExtendRuntimeContext extendRuntimeContext : runtimeContext.getExtendRuntimeContextList()) {
           RuntimeResult.NodeExecuteResult result = new RuntimeResult.NodeExecuteResult();
           result.setActiveTaskInstance(buildActiveTaskInstance(extendRuntimeContext.getBranchSuspendNodeInstance(), runtimeContext));
-          result.setVariables(InstanceDataUtil.getInstanceDataList(extendRuntimeContext.getBranchExecuteDataMap()));
+          result.setVariables(extendRuntimeContext.getBranchExecuteDataMap());
           result.setErrCode(extendRuntimeContext.getException().getErrNo());
           result.setErrMsg(extendRuntimeContext.getException().getErrMsg());
           nodeExecuteResults.add(result);
@@ -567,7 +562,7 @@ public class RuntimeProcessor {
       } else {
         RuntimeResult.NodeExecuteResult result = new RuntimeResult.NodeExecuteResult();
         result.setActiveTaskInstance(buildActiveTaskInstance(runtimeContext.getSuspendNodeInstance(), runtimeContext));
-        result.setVariables(InstanceDataUtil.getInstanceDataList(runtimeContext.getInstanceDataMap()));
+        result.setVariables(runtimeContext.getInstanceDataMap());
         nodeExecuteResults.add(result);
       }
       runtimeResult.setNodeExecuteResults(nodeExecuteResults);

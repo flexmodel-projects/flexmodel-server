@@ -1,19 +1,17 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
-
-import java.util.List;
+import java.util.Map;
 
 public class CommitTaskParam extends RuntimeTaskParam {
-  private List<InstanceData> variables;
+  private Map<String, Object> variables;
   // Used to specify the FlowModuleId when commit CallActivity node
   private String callActivityFlowModuleId;
 
-  public List<InstanceData> getVariables() {
+  public Map<String, Object> getVariables() {
     return variables;
   }
 
-  public void setVariables(List<InstanceData> variables) {
+  public void setVariables(Map<String, Object> variables) {
     this.variables = variables;
   }
 

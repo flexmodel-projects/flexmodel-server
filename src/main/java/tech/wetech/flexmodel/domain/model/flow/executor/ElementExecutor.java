@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.codegen.entity.NodeInstance;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
 import tech.wetech.flexmodel.domain.model.flow.exception.ReentrantException;
 import tech.wetech.flexmodel.domain.model.flow.exception.SuspendException;
@@ -184,7 +183,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
       String currentInstanceDataId = currentNodeInstance.getInstanceDataId();
       runtimeContext.setInstanceDataId(currentInstanceDataId);
       tech.wetech.flexmodel.codegen.entity.InstanceData instanceData = instanceDataRepository.select(flowInstanceId, currentInstanceDataId);
-      Map<String, InstanceData> currentInstanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceData.getInstanceData());
+      Map<String, Object> currentInstanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceData.getInstanceData());
       runtimeContext.setInstanceDataMap(currentInstanceDataMap);
     }
     runtimeContext.setCurrentNodeInstance(currentNodeInstance);
@@ -286,7 +285,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
   }
 
   protected FlowElement calculateNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap,
-                                          Map<String, InstanceData> instanceDataMap) throws ProcessException {
+                                          Map<String, Object> instanceDataMap) throws ProcessException {
     FlowElement nextFlowElement = calculateOutgoing(currentFlowElement, flowElementMap, instanceDataMap);
 
     while (nextFlowElement.getType() == FlowElementType.SEQUENCE_FLOW) {
@@ -296,7 +295,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
   }
 
   private FlowElement calculateOutgoing(FlowElement flowElement, Map<String, FlowElement> flowElementMap,
-                                        Map<String, InstanceData> instanceDataMap) throws ProcessException {
+                                        Map<String, Object> instanceDataMap) throws ProcessException {
     FlowElement defaultElement = null;
 
     List<String> outgoingList = flowElement.getOutgoing();
@@ -323,8 +322,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     throw new ProcessException(ErrorEnum.GET_OUTGOING_FAILED);
   }
 
-  protected boolean processCondition(String expression, Map<String, InstanceData> instanceDataMap) throws ProcessException {
-    Map<String, Object> dataMap = InstanceDataUtil.parseInstanceDataMap(instanceDataMap);
-    return expressionCalculator.calculate(expression, dataMap);
+  protected boolean processCondition(String expression, Map<String, Object> instanceDataMap) throws ProcessException {
+    return expressionCalculator.calculate(expression, instanceDataMap);
   }
 }

@@ -2,7 +2,6 @@ package tech.wetech.flexmodel.domain.model.flow.shared.common;
 
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.RuntimeResult;
 
 import java.io.Serializable;
@@ -34,7 +33,7 @@ public class RuntimeContext implements Serializable {
 
   //2.3 data info
   private String instanceDataId;
-  private Map<String, InstanceData> instanceDataMap;
+  private Map<String, Object> instanceDataMap;
 
   //2.4 process status
   private int processStatus;
@@ -159,11 +158,11 @@ public class RuntimeContext implements Serializable {
     this.instanceDataId = instanceDataId;
   }
 
-  public Map<String, InstanceData> getInstanceDataMap() {
+  public Map<String, Object> getInstanceDataMap() {
     return instanceDataMap;
   }
 
-  public void setInstanceDataMap(Map<String, InstanceData> instanceDataMap) {
+  public void setInstanceDataMap(Map<String, Object> instanceDataMap) {
     this.instanceDataMap = instanceDataMap;
   }
 

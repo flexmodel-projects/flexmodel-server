@@ -23,7 +23,6 @@ import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.FlowInstance;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.ElementInstance;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.*;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.*;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
@@ -633,16 +632,6 @@ public class FlowResource {
     }
   )
   public static class NodeExecuteResultSchema extends RuntimeResult.NodeExecuteResult {
-  }
-
-  @Schema(
-    properties = {
-      @SchemaProperty(name = "key", examples = {"orderId"}, description = "变量键"),
-      @SchemaProperty(name = "type", examples = {"String"}, description = "变量类型"),
-      @SchemaProperty(name = "value", examples = {"ORD001"}, description = "变量值")
-    }
-  )
-  public static class InstanceDataSchema extends InstanceData {
   }
 
 }

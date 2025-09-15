@@ -19,7 +19,6 @@ import tech.wetech.flexmodel.domain.model.flow.shared.util.InstanceDataUtil;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,25 +40,26 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
   @Inject
   protected BusinessConfig businessConfig;
 
-  protected List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> getCallActivityVariables(RuntimeContext runtimeContext) throws ProcessException {
-    List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> callActivityInitData = InstanceDataUtil.getInstanceDataList(runtimeContext.getInstanceDataMap());
-    List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataFromMainFlow = calculateCallActivityInParamFromMainFlow(runtimeContext);
+  protected Map<String, Object> getCallActivityVariables(RuntimeContext runtimeContext) throws ProcessException {
+    Map<String, Object> callActivityInitData = runtimeContext.getInstanceDataMap();
+    Map<String, Object> instanceDataFromMainFlow = calculateCallActivityInParamFromMainFlow(runtimeContext);
     // merge data
-    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> callActivityInitDataMap = InstanceDataUtil.getInstanceDataMap(callActivityInitData);
-    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataFromMainFlowMap = InstanceDataUtil.getInstanceDataMap(instanceDataFromMainFlow);
-
-    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> allInstanceData = new HashMap<>();
-    allInstanceData.putAll(callActivityInitDataMap);
-    allInstanceData.putAll(instanceDataFromMainFlowMap);
-    return InstanceDataUtil.getInstanceDataList(allInstanceData);
+    Map<String, Object> allInstanceData = new HashMap<>();
+    if (callActivityInitData != null) {
+      allInstanceData.putAll(callActivityInitData);
+    }
+    if (instanceDataFromMainFlow != null) {
+      allInstanceData.putAll(instanceDataFromMainFlow);
+    }
+    return allInstanceData;
   }
 
   // main > sub
-  protected List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> calculateCallActivityInParamFromMainFlow(RuntimeContext runtimeContext) throws ProcessException {
+  protected Map<String, Object> calculateCallActivityInParamFromMainFlow(RuntimeContext runtimeContext) throws ProcessException {
     FlowElement currentNodeModel = runtimeContext.getCurrentNodeModel();
 
     InstanceData instanceDataPO = instanceDataRepository.select(runtimeContext.getFlowInstanceId(), runtimeContext.getInstanceDataId());
-    Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> mainInstanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
+    Map<String, Object> mainInstanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
 
     return calculateCallActivityDataTransfer(currentNodeModel, mainInstanceDataMap,
       Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_IN_PARAM_TYPE,
@@ -67,40 +67,37 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
   }
 
   // sub > main
-  protected List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> calculateCallActivityOutParamFromSubFlow(RuntimeContext runtimeContext, List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> subFlowData) throws ProcessException {
+  protected Map<String, Object> calculateCallActivityOutParamFromSubFlow(RuntimeContext runtimeContext, Map<String, Object> subFlowData) throws ProcessException {
     FlowElement currentNodeModel = runtimeContext.getCurrentNodeModel();
-    return calculateCallActivityDataTransfer(currentNodeModel, InstanceDataUtil.getInstanceDataMap(subFlowData),
+    return calculateCallActivityDataTransfer(currentNodeModel, subFlowData,
       Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_OUT_PARAM_TYPE,
       Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_OUT_PARAM);
   }
 
-  private List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> calculateCallActivityDataTransfer(FlowElement currentNodeModel, Map<String, tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataMap, String callActivityParamType, String callActivityParam) throws ProcessException {
+  private Map<String, Object> calculateCallActivityDataTransfer(FlowElement currentNodeModel, Map<String, Object> instanceDataMap, String callActivityParamType, String callActivityParam) throws ProcessException {
     // default FULL
     String callActivityInParamType = (String) currentNodeModel.getProperties().getOrDefault(callActivityParamType, Constants.CALL_ACTIVITY_PARAM_TYPE.FULL);
     if (callActivityInParamType.equals(Constants.CALL_ACTIVITY_PARAM_TYPE.NONE)) {
-      return new ArrayList<>();
+      return new HashMap<>();
     }
     if (callActivityInParamType.equals(Constants.CALL_ACTIVITY_PARAM_TYPE.PART)) {
-      List<tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData> instanceDataList = new ArrayList<>();
+      Map<String, Object> resultDataMap = new HashMap<>();
       String callActivityInParam = (String) currentNodeModel.getProperties().getOrDefault(callActivityParam, "");
       List<DataTransferBO> callActivityDataTransfers = tech.wetech.flexmodel.shared.utils.JsonUtils.getInstance().parseToList(callActivityInParam, DataTransferBO.class);
       for (DataTransferBO callActivityDataTransfer : callActivityDataTransfers) {
         if (Constants.CALL_ACTIVITY_DATA_TRANSFER_TYPE.SOURCE_TYPE_CONTEXT.equals(callActivityDataTransfer.getSourceType())) {
-          tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData sourceInstanceData = instanceDataMap.get(callActivityDataTransfer.getSourceKey());
-          Object sourceValue = sourceInstanceData == null ? null : sourceInstanceData.getValue();
-          tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData instanceData = new tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData(callActivityDataTransfer.getTargetKey(), sourceValue);
-          instanceDataList.add(instanceData);
+          Object sourceValue = instanceDataMap.get(callActivityDataTransfer.getSourceKey());
+          resultDataMap.put(callActivityDataTransfer.getTargetKey(), sourceValue);
         } else if (Constants.CALL_ACTIVITY_DATA_TRANSFER_TYPE.SOURCE_TYPE_FIXED.equals(callActivityDataTransfer.getSourceType())) {
-          tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData instanceData = new tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData(callActivityDataTransfer.getTargetKey(), callActivityDataTransfer.getSourceValue());
-          instanceDataList.add(instanceData);
+          resultDataMap.put(callActivityDataTransfer.getTargetKey(), callActivityDataTransfer.getSourceValue());
         } else {
           throw new ProcessException(ErrorEnum.MODEL_UNKNOWN_ELEMENT_VALUE);
         }
       }
-      return instanceDataList;
+      return resultDataMap;
     }
     if (callActivityInParamType.equals(Constants.CALL_ACTIVITY_PARAM_TYPE.FULL)) {
-      return InstanceDataUtil.getInstanceDataList(instanceDataMap);
+      return instanceDataMap;
     }
     throw new ProcessException(ErrorEnum.MODEL_UNKNOWN_ELEMENT_VALUE);
   }
@@ -108,7 +105,7 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
   protected InstanceData buildCallActivityEndInstanceData(String instanceDataId, RuntimeContext runtimeContext) {
     InstanceData instanceDataPO = JsonUtils.getInstance().convertValue(runtimeContext, InstanceData.class);
     instanceDataPO.setInstanceDataId(instanceDataId);
-    instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(runtimeContext.getInstanceDataMap()));
+    instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataStr(runtimeContext.getInstanceDataMap()));
     instanceDataPO.setNodeInstanceId(runtimeContext.getCurrentNodeInstance().getNodeInstanceId());
     instanceDataPO.setNodeKey(runtimeContext.getCurrentNodeModel().getKey());
     instanceDataPO.setType(InstanceDataType.UPDATE);

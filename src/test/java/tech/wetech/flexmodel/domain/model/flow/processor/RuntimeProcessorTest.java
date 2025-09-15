@@ -10,7 +10,6 @@ import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.ElementInstance;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.CommitTaskParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.RollbackTaskParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
@@ -20,8 +19,8 @@ import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @QuarkusTest
@@ -51,9 +50,9 @@ public class RuntimeProcessorTest {
     // start process
     StartProcessParam startProcessParam = new StartProcessParam();
     startProcessParam.setFlowDeployId(flowDeployment.getFlowDeployId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("orderId", "123"));
-    variables.add(new InstanceData("orderStatus", "1"));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("orderId", "123");
+    variables.put("orderStatus", "1");
     startProcessParam.setVariables(variables);
     // build
     return runtimeProcessor.startProcess(startProcessParam);
@@ -74,8 +73,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 1));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 1);
     commitTaskParam.setVariables(variables);
 
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
@@ -92,8 +91,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 0));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 0);
     commitTaskParam.setVariables(variables);
 
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
@@ -111,8 +110,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 0));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 0);
     commitTaskParam.setVariables(variables);
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
@@ -131,8 +130,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 1));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 1);
     commitTaskParam.setVariables(variables);
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
@@ -151,8 +150,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 1));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 1);
     commitTaskParam.setVariables(variables);
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
@@ -167,8 +166,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 0));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 0);
     commitTaskParam.setVariables(variables);
 
     // UserTask -> ExclusiveGateway -> UserTask
@@ -196,8 +195,8 @@ public class RuntimeProcessorTest {
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     String branchUserTaskNodeInstanceId = startProcessResult.getActiveTaskInstance().getNodeInstanceId();
     commitTaskParam.setTaskInstanceId(branchUserTaskNodeInstanceId);
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 0));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 0);
     commitTaskParam.setVariables(variables);
 
     // UserTask -> ExclusiveGateway -> UserTask
@@ -225,8 +224,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 0));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 0);
     commitTaskParam.setVariables(variables);
 
     // UserTask -> ExclusiveGateway -> UserTask
@@ -251,8 +250,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 0));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 0);
     commitTaskParam.setVariables(variables);
 
     // UserTask -> ExclusiveGateway -> UserTask
@@ -281,8 +280,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 1));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 1);
     commitTaskParam.setVariables(variables);
 
     // UserTask -> EndEvent
@@ -312,8 +311,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 0));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 0);
     commitTaskParam.setVariables(variables);
 
     // UserTask -> ExclusiveGateway -> UserTask
@@ -342,9 +341,9 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 0));
-    variables.add(new InstanceData("orderId", "notExistOrderId"));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 0);
+    variables.put("orderId", "notExistOrderId");
     commitTaskParam.setVariables(variables);
 
     // UserTask -> ExclusiveGateway : Failed
@@ -374,8 +373,8 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 1));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 1);
     commitTaskParam.setVariables(variables);
 
     // UserTask -> EndEvent
@@ -408,9 +407,9 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam = new CommitTaskParam();
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables = new ArrayList<>();
-    variables.add(new InstanceData("danxuankuang_ytgyk", 0));
-    variables.add(new InstanceData("commitTime", 1));
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("danxuankuang_ytgyk", 0);
+    variables.put("commitTime", 1);
     commitTaskParam.setVariables(variables);
 
     // UserTask -> ExclusiveGateway -> UserTask
@@ -420,9 +419,9 @@ public class RuntimeProcessorTest {
     CommitTaskParam commitTaskParam1 = new CommitTaskParam();
     commitTaskParam1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam1.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
-    List<InstanceData> variables1 = new ArrayList<>();
-    variables1.add(new InstanceData("orderStatus", "2"));
-    variables1.add(new InstanceData("commitTime", 2));
+    Map<String, Object> variables1 = new HashMap<>();
+    variables1.put("orderStatus", "2");
+    variables1.put("commitTime", 2);
     commitTaskParam1.setVariables(variables1);
     CommitTaskResult commitTaskResult1 = runtimeProcessor.commit(commitTaskParam1);
 

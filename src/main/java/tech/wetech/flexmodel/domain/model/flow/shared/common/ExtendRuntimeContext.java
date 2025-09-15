@@ -2,7 +2,6 @@ package tech.wetech.flexmodel.domain.model.flow.shared.common;
 
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.exception.TurboException;
 
 import java.io.Serializable;
@@ -12,7 +11,7 @@ public class ExtendRuntimeContext implements Serializable {
   /**
    * 分支执行数据
    */
-  private Map<String, InstanceData> branchExecuteDataMap;
+  private Map<String, Object> branchExecuteDataMap;
   /**
    * 分支挂起节点
    */
@@ -27,11 +26,11 @@ public class ExtendRuntimeContext implements Serializable {
    */
   private TurboException exception;
 
-  public Map<String, InstanceData> getBranchExecuteDataMap() {
+  public Map<String, Object> getBranchExecuteDataMap() {
     return branchExecuteDataMap;
   }
 
-  public void setBranchExecuteDataMap(Map<String, InstanceData> branchExecuteDataMap) {
+  public void setBranchExecuteDataMap(Map<String, Object> branchExecuteDataMap) {
     this.branchExecuteDataMap = branchExecuteDataMap;
   }
 

@@ -3,11 +3,9 @@ package tech.wetech.flexmodel.domain.model.flow.util;
 import tech.wetech.flexmodel.codegen.entity.*;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.*;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.*;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.*;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
-import tech.wetech.flexmodel.domain.model.flow.shared.util.InstanceDataUtil;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.time.LocalDateTime;
@@ -452,8 +450,8 @@ public class EntityBuilder {
     instanceData.setFlowModuleId(flowModuleId);
     instanceData.setInstanceDataId(instanceDataId);
     instanceData.setNodeKey(nodeKey);
-    List<InstanceData> instanceDataList = buildInstanceDataList();
-    instanceData.setInstanceData(JsonUtils.getInstance().stringify(instanceDataList));
+    Map<String, Object> instanceDataMap = buildInstanceDataMap();
+    instanceData.setInstanceData(JsonUtils.getInstance().stringify(instanceDataMap));
     instanceData.setType(InstanceDataType.EXECUTE);
     instanceData.setCreateTime(LocalDateTime.now());
     instanceData.setCaller("caller");
@@ -493,15 +491,12 @@ public class EntityBuilder {
   }
 
 
-  private static List<InstanceData> buildInstanceDataList() {
-    InstanceData instanceData1 = new InstanceData("key1", "value1");
-    InstanceData instanceData2 = new InstanceData("key2", "value2");
-    InstanceData instanceData3 = new InstanceData("key3", "value3");
-    List<InstanceData> instanceDataList = new ArrayList<>();
-    instanceDataList.add(instanceData1);
-    instanceDataList.add(instanceData2);
-    instanceDataList.add(instanceData3);
-    return instanceDataList;
+  private static Map<String, Object> buildInstanceDataMap() {
+    Map<String, Object> instanceDataMap = new HashMap<>();
+    instanceDataMap.put("key1", "value1");
+    instanceDataMap.put("key2", "value2");
+    instanceDataMap.put("key3", "value3");
+    return instanceDataMap;
   }
 
   public static String buildModelStringAccess() {
@@ -851,7 +846,7 @@ public class EntityBuilder {
     runtimeContext.setCurrentNodeInstance(new NodeInstanceBO());
     runtimeContext.setSuspendNodeInstance(new NodeInstanceBO());
     runtimeContext.setInstanceDataId("");
-    runtimeContext.setInstanceDataMap(InstanceDataUtil.getInstanceDataMap(buildInstanceDataList()));
+    runtimeContext.setInstanceDataMap(buildInstanceDataMap());
     runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.RUNNING);
     runtimeContext.setProcessStatus(ProcessStatus.DEFAULT);
     return runtimeContext;

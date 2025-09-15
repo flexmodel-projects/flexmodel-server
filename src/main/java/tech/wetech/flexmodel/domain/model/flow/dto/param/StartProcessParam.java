@@ -1,9 +1,8 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
 
-import java.util.List;
+import java.util.Map;
 
 public class StartProcessParam {
   // For internal transmission runtimeContext
@@ -11,7 +10,7 @@ public class StartProcessParam {
 
   private String flowModuleId;
   private String flowDeployId;
-  private List<InstanceData> variables;
+  private Map<String, Object> variables;
 
   public String getFlowModuleId() {
     return flowModuleId;
@@ -29,11 +28,11 @@ public class StartProcessParam {
     this.flowDeployId = flowDeployId;
   }
 
-  public List<InstanceData> getVariables() {
+  public Map<String, Object> getVariables() {
     return variables;
   }
 
-  public void setVariables(List<InstanceData> variables) {
+  public void setVariables(Map<String, Object> variables) {
     this.variables = variables;
   }
 

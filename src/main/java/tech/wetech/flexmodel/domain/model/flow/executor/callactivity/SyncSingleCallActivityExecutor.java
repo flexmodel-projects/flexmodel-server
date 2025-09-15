@@ -9,7 +9,6 @@ import tech.wetech.flexmodel.codegen.entity.FlowInstanceMapping;
 import tech.wetech.flexmodel.codegen.entity.NodeInstance;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.CommitTaskParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.RollbackTaskParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
@@ -136,7 +135,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     String callActivityFlowModuleId = runtimeContext.getCallActivityFlowModuleId();
     runtimeContext.setCallActivityFlowModuleId(null); // avoid misuse
     // 4.calculate variables
-    List<InstanceData> callActivityVariables = getCallActivityVariables(runtimeContext);
+    Map<String, Object> callActivityVariables = getCallActivityVariables(runtimeContext);
 
     StartProcessParam startProcessParam = new StartProcessParam();
     startProcessParam.setRuntimeContext(runtimeContext);
@@ -229,8 +228,8 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
 
     runtimeResult.setActiveTaskInstance(nodeInstance);
     tech.wetech.flexmodel.codegen.entity.InstanceData instanceDataPO = instanceDataRepository.select(subFlowInstance.getFlowInstanceId(), nodeInstancePO.getInstanceDataId());
-    Map<String, InstanceData> instanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
-    runtimeResult.setVariables(InstanceDataUtil.getInstanceDataList(instanceDataMap));
+    Map<String, Object> instanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
+    runtimeResult.setVariables(instanceDataMap);
     return runtimeResult;
   }
 
@@ -243,7 +242,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     commitTaskParam.setRuntimeContext(runtimeContext);
     commitTaskParam.setFlowInstanceId(subFlowInstanceId);
     commitTaskParam.setTaskInstanceId(runtimeContext.getSuspendNodeInstanceStack().pop());
-    commitTaskParam.setVariables(InstanceDataUtil.getInstanceDataList(runtimeContext.getInstanceDataMap()));
+    commitTaskParam.setVariables(runtimeContext.getInstanceDataMap());
     // transparent transmission callActivity param
     commitTaskParam.setCallActivityFlowModuleId(runtimeContext.getCallActivityFlowModuleId());
     runtimeContext.setCallActivityFlowModuleId(null); // avoid misuse
@@ -318,10 +317,10 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
 
   private void saveCallActivityEndInstanceData(RuntimeContext runtimeContext, RuntimeResult runtimeResult) throws ProcessException {
     NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
-    List<InstanceData> instanceDataFromSubFlow = calculateCallActivityOutParamFromSubFlow(runtimeContext, runtimeResult.getVariables());
+    Map<String, Object> instanceDataFromSubFlow = calculateCallActivityOutParamFromSubFlow(runtimeContext, runtimeResult.getVariables());
     // 1.merge to current data
-    Map<String, InstanceData> currentInstanceDataMap = runtimeContext.getInstanceDataMap();
-    currentInstanceDataMap.putAll(InstanceDataUtil.getInstanceDataMap(instanceDataFromSubFlow));
+    Map<String, Object> currentInstanceDataMap = runtimeContext.getInstanceDataMap();
+    currentInstanceDataMap.putAll(instanceDataFromSubFlow);
     // 2.save data
     String instanceDataId = genId();
     tech.wetech.flexmodel.codegen.entity.InstanceData instanceDataPO = buildCallActivityEndInstanceData(instanceDataId, runtimeContext);

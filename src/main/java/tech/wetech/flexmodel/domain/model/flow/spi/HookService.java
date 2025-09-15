@@ -1,8 +1,6 @@
 package tech.wetech.flexmodel.domain.model.flow.spi;
 
-import tech.wetech.flexmodel.domain.model.flow.dto.model.InstanceData;
-
-import java.util.List;
+import java.util.Map;
 
 /**
  * <p> HookService </p>
@@ -23,5 +21,5 @@ public interface HookService {
    * @param hookInfoParam  some info , you can refresh
    * @return new infos
    */
-  List<InstanceData> invoke(String flowInstanceId, String nodeInstanceId, String nodeKey, String hookInfoParam);
+  Map<String, Object> invoke(String flowInstanceId, String nodeInstanceId, String nodeKey, String hookInfoParam);
 }
