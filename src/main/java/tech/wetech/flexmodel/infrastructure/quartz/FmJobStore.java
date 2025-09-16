@@ -41,6 +41,9 @@ public class FmJobStore implements JobStore {
   // 进程内非并发作业占用表（仅用于 @DisallowConcurrentExecution）
   private final ConcurrentHashMap<JobKey, AtomicInteger> nonConcurrentRunning = new ConcurrentHashMap<>();
 
+  // JobDataMap 的内存级最新值缓存（避免 DB 提交时序导致的覆盖）
+  private final ConcurrentHashMap<JobKey, JobDataMap> lastJobData = new ConcurrentHashMap<>();
+
   @Override
   public void initialize(ClassLoadHelper loadHelper, SchedulerSignaler signaler) throws SchedulerConfigException {
     this.loadHelper = loadHelper;
@@ -210,7 +213,13 @@ public class FmJobStore implements JobStore {
         return null;
       }
 
-      return deserializeJobDetail(jobDetail);
+      JobDetail jd = deserializeJobDetail(jobDetail);
+      // 叠加内存缓存的最新 JobDataMap（若存在）
+      JobDataMap cached = lastJobData.get(jd.getKey());
+      if (cached != null) {
+        jd.getJobDataMap().putAll(cached);
+      }
+      return jd;
     } catch (Exception e) {
       log.error("Failed to retrieve job: {}", jobKey, e);
       throw new JobPersistenceException("Failed to retrieve job", e);
@@ -742,14 +751,17 @@ public class FmJobStore implements JobStore {
           OperableTrigger operableTrigger = deserializeTrigger(trigger, session);
           if (operableTrigger != null) {
             JobDetail jd = retrieveJob(operableTrigger.getJobKey());
-            if (jd != null && jd.isConcurrentExecutionDisallowed() && acquiredJobKeys.contains(jd.getKey())) {
+            boolean nonConcurrent = isJobNonConcurrent(operableTrigger.getJobKey(), jd, session);
+            if (nonConcurrent && jd != null && acquiredJobKeys.contains(jd.getKey())) {
+              // 将未入选本批的同作业触发器直接置为 BLOCKED，等待当前执行结束
+              updateTriggerState(trigger.getTriggerName(), trigger.getTriggerGroup(), Trigger.TriggerState.BLOCKED.name(), session);
               continue; // 避免同一作业并发
             }
             // 更新触发器状态为 NORMAL（此实现不引入 ACQUIRED 状态，但已筛掉并发）
             updateTriggerState(trigger.getTriggerName(), trigger.getTriggerGroup(),
               Trigger.TriggerState.NORMAL.name(), session);
             result.add(operableTrigger);
-            if (jd != null && jd.isConcurrentExecutionDisallowed()) {
+            if (nonConcurrent && jd != null) {
               acquiredJobKeys.add(jd.getKey());
             }
           }
@@ -782,18 +794,20 @@ public class FmJobStore implements JobStore {
         JobKey acquiredJobKey = null;
 
         // 基于 @DisallowConcurrentExecution 的进程内并发控制：未获取锁则跳过本次触发
-        if (jobDetail != null && jobDetail.isConcurrentExecutionDisallowed()) {
+        boolean nonConcurrent = isJobNonConcurrent(t.getJobKey(), jobDetail, session);
+        if (nonConcurrent) {
           AtomicInteger counter = nonConcurrentRunning.computeIfAbsent(jobDetail.getKey(), k -> new AtomicInteger(0));
           int valueAfterInc = counter.incrementAndGet();
           if (valueAfterInc > 1) {
             // 未能获取“独占”执行权，回退并跳过
             counter.decrementAndGet();
-            // 保持触发器为 NORMAL，不更新 prev/next，结果列表占位返回 null
-            results.add(null);
+            // 保持触发器为 NORMAL，不更新 prev/next，跳过本次
             continue;
           }
           acquiredNonConcurrentLock = true;
           acquiredJobKey = jobDetail.getKey();
+          // 将同一作业的其他 NORMAL 触发器置为 BLOCKED，避免并发调度
+          blockOtherTriggersOfJob(jobDetail.getKey(), t.getKey(), session);
         }
         org.quartz.Calendar cal = null;
         if (t.getCalendarName() != null) {
@@ -867,8 +881,11 @@ public class FmJobStore implements JobStore {
       };
       updateTriggerState(trigger.getKey().getName(), trigger.getKey().getGroup(), state, session);
 
-      // 持久化 JobDataMap（支持 @PersistJobDataAfterExecution）：按主键更新，避免唯一约束冲突
-      if (jobDetail != null && jobDetail.isPersistJobDataAfterExecution()) {
+      // 持久化 JobDataMap（支持 @PersistJobDataAfterExecution）：优先依据 JobDetail 标志，回退到 DB 标志
+      if (jobDetail != null && (jobDetail.isPersistJobDataAfterExecution()
+                                || shouldPersistJobData(jobDetail.getKey(), session))) {
+        // 先更新内存缓存，保证下一次 retrieveJob 能见到最新值
+        lastJobData.put(jobDetail.getKey(), new JobDataMap(new HashMap<>(jobDetail.getJobDataMap())));
         session.dsl()
           .update(QrtzJobDetail.class)
           .set(QrtzJobDetail::getJobData, jobDetail.getJobDataMap())
@@ -879,7 +896,15 @@ public class FmJobStore implements JobStore {
       }
 
       // 释放 @DisallowConcurrentExecution 的进程内“锁”
-      if (jobDetail != null && jobDetail.isConcurrentExecutionDisallowed()) {
+      if (isJobNonConcurrent(jobDetail != null ? jobDetail.getKey() : null, jobDetail, session)) {
+        // 解锁数据库中同作业被置为 BLOCKED 的触发器
+        unblockBlockedTriggersOfJob(jobDetail.getKey(), session);
+        try {
+          if (signaler != null) {
+            signaler.signalSchedulingChange(0L);
+          }
+        } catch (Exception ignored) {
+        }
         AtomicInteger counter = nonConcurrentRunning.get(jobDetail.getKey());
         if (counter != null) {
           int remaining = counter.decrementAndGet();
@@ -1093,6 +1118,75 @@ public class FmJobStore implements JobStore {
         .and(field(QrtzTrigger::getTriggerName).eq(triggerName))
         .and(field(QrtzTrigger::getTriggerGroup).eq(triggerGroup)))
       .execute();
+  }
+
+  /**
+   * 将同一作业的其他处于 NORMAL 的触发器置为 BLOCKED，避免与 @DisallowConcurrentExecution 作业并发。
+   */
+  private void blockOtherTriggersOfJob(JobKey jobKey, TriggerKey current, Session session) {
+    session.dsl()
+      .update(QrtzTrigger.class)
+      .set(QrtzTrigger::getTriggerState, Trigger.TriggerState.BLOCKED.name())
+      .where(field(QrtzTrigger::getSchedName).eq(instanceName)
+        .and(field(QrtzTrigger::getJobName).eq(jobKey.getName()))
+        .and(field(QrtzTrigger::getJobGroup).eq(jobKey.getGroup()))
+        .and(field(QrtzTrigger::getTriggerState).eq(Trigger.TriggerState.NORMAL.name()))
+        .and(field(QrtzTrigger::getTriggerName).ne(current.getName())
+          .or(field(QrtzTrigger::getTriggerGroup).ne(current.getGroup()))))
+      .execute();
+  }
+
+  /**
+   * 将同一作业的 BLOCKED 触发器恢复为 NORMAL。
+   */
+  private void unblockBlockedTriggersOfJob(JobKey jobKey, Session session) {
+    session.dsl()
+      .update(QrtzTrigger.class)
+      .set(QrtzTrigger::getTriggerState, Trigger.TriggerState.NORMAL.name())
+      .where(field(QrtzTrigger::getSchedName).eq(instanceName)
+        .and(field(QrtzTrigger::getJobName).eq(jobKey.getName()))
+        .and(field(QrtzTrigger::getJobGroup).eq(jobKey.getGroup()))
+        .and(field(QrtzTrigger::getTriggerState).eq(Trigger.TriggerState.BLOCKED.name())))
+      .execute();
+  }
+
+  /**
+   * 根据 DB 或 JobDetail 判定作业是否为非并发。
+   */
+  private boolean isJobNonConcurrent(JobKey jobKey, JobDetail jobDetail, Session session) {
+    if (jobDetail != null && jobDetail.isConcurrentExecutionDisallowed()) {
+      return true;
+    }
+    if (jobKey == null) return false;
+    try {
+      QrtzJobDetail jd = session.dsl()
+        .selectFrom(QrtzJobDetail.class)
+        .where(field(QrtzJobDetail::getSchedName).eq(instanceName)
+          .and(field(QrtzJobDetail::getJobName).eq(jobKey.getName()))
+          .and(field(QrtzJobDetail::getJobGroup).eq(jobKey.getGroup())))
+        .executeOne();
+      return jd != null && Boolean.TRUE.equals(jd.getIsNonconcurrent());
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  /**
+   * 判定是否应持久化 JobDataMap（依据 DB 中 is_update_data）。
+   */
+  private boolean shouldPersistJobData(JobKey jobKey, Session session) {
+    if (jobKey == null) return false;
+    try {
+      QrtzJobDetail jd = session.dsl()
+        .selectFrom(QrtzJobDetail.class)
+        .where(field(QrtzJobDetail::getSchedName).eq(instanceName)
+          .and(field(QrtzJobDetail::getJobName).eq(jobKey.getName()))
+          .and(field(QrtzJobDetail::getJobGroup).eq(jobKey.getGroup())))
+        .executeOne();
+      return jd != null && Boolean.TRUE.equals(jd.getIsUpdateData());
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   private String serializeQrtzCalendar(org.quartz.Calendar calendar) {
