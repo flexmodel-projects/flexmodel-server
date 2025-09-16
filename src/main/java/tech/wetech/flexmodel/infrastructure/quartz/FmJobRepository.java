@@ -6,7 +6,12 @@ import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
-import tech.wetech.flexmodel.codegen.entity.*;
+
+import tech.wetech.flexmodel.codegen.entity.QrtzJobDetail;
+import tech.wetech.flexmodel.codegen.entity.QrtzTrigger;
+import tech.wetech.flexmodel.codegen.entity.QrtzCronTrigger;
+import tech.wetech.flexmodel.codegen.entity.QrtzSimpleTrigger;
+import tech.wetech.flexmodel.codegen.entity.QrtzCalendar;
 import tech.wetech.flexmodel.session.Session;
 import tech.wetech.flexmodel.session.SessionFactory;
 
