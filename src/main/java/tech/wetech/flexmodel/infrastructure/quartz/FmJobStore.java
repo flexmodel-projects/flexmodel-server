@@ -1,14 +1,11 @@
 package tech.wetech.flexmodel.infrastructure.quartz;
 
-import jakarta.enterprise.inject.spi.CDI;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.Calendar;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.*;
 import tech.wetech.flexmodel.codegen.entity.*;
-import tech.wetech.flexmodel.session.Session;
-import tech.wetech.flexmodel.session.SessionFactory;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.io.ByteArrayInputStream;
@@ -20,15 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static tech.wetech.flexmodel.query.Expressions.field;
 
 /**
  * @author cjbi
  */
 @Slf4j
 public class FmJobStore implements JobStore {
-
-  SessionFactory sessionFactory;
+  FmJobRepository jobRepository;
 
   private String instanceId;
   private String instanceName = "flexmodel-scheduler";
@@ -36,7 +31,7 @@ public class FmJobStore implements JobStore {
   private long acquireRetryDelay = 1000L;
   private ClassLoadHelper loadHelper;
   private SchedulerSignaler signaler;
-  private static final String DEFAULT_SCHEMA_NAME = "system";
+  private static final String DEFAULT_SCHEMA_NAME = "system"; // kept for backward compat but unused
 
   // 进程内非并发作业占用表（仅用于 @DisallowConcurrentExecution）
   private final ConcurrentHashMap<JobKey, AtomicInteger> nonConcurrentRunning = new ConcurrentHashMap<>();
@@ -48,8 +43,8 @@ public class FmJobStore implements JobStore {
   public void initialize(ClassLoadHelper loadHelper, SchedulerSignaler signaler) throws SchedulerConfigException {
     this.loadHelper = loadHelper;
     this.signaler = signaler;
-    this.sessionFactory = CDI.current().select(SessionFactory.class).get();
-    log.info("FmJobStore initialized with Flexmodel ORM");
+    this.jobRepository = new FmJobRepository();
+    log.info("FmJobStore initialized with FmJobRepository");
   }
 
   @Override
@@ -95,14 +90,8 @@ public class FmJobStore implements JobStore {
 
   @Override
   public void storeJob(JobDetail newJob, boolean replaceExisting) throws ObjectAlreadyExistsException, JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      // 检查任务是否已存在
-      QrtzJobDetail existingJob = session.dsl()
-        .selectFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName)
-          .and(field(QrtzJobDetail::getJobName).eq(newJob.getKey().getName()))
-          .and(field(QrtzJobDetail::getJobGroup).eq(newJob.getKey().getGroup())))
-        .executeOne();
+    try {
+      QrtzJobDetail existingJob = jobRepository.findJobDetail(instanceName, newJob.getKey().getName(), newJob.getKey().getGroup());
 
       if (existingJob != null && !replaceExisting) {
         throw new ObjectAlreadyExistsException(newJob);
@@ -121,10 +110,7 @@ public class FmJobStore implements JobStore {
       jobDetail.setRequestsRecovery(newJob.requestsRecovery());
       jobDetail.setJobData(newJob.getJobDataMap());
 
-      session.dsl()
-        .mergeInto(QrtzJobDetail.class)
-        .values(jobDetail)
-        .execute();
+      jobRepository.upsertJobDetail(jobDetail);
 
       log.debug("Stored job: {}", newJob.getKey());
     } catch (Exception e) {
@@ -145,45 +131,12 @@ public class FmJobStore implements JobStore {
 
   @Override
   public boolean removeJob(JobKey jobKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      // 删除触发器
-      List<QrtzTrigger> triggers = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getJobName).eq(jobKey.getName()))
-          .and(field(QrtzTrigger::getJobGroup).eq(jobKey.getGroup())))
-        .execute();
-
+    try {
+      List<QrtzTrigger> triggers = jobRepository.findTriggersByJob(instanceName, jobKey.getName(), jobKey.getGroup());
       for (QrtzTrigger t : triggers) {
-        session.dsl()
-          .deleteFrom(QrtzTrigger.class)
-          .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-            .and(field(QrtzTrigger::getTriggerName).eq(t.getTriggerName()))
-            .and(field(QrtzTrigger::getTriggerGroup).eq(t.getTriggerGroup())))
-          .execute();
-
-        session.dsl()
-          .deleteFrom(QrtzSimpleTrigger.class)
-          .where(field(QrtzSimpleTrigger::getSchedName).eq(instanceName)
-            .and(field(QrtzSimpleTrigger::getTriggerName).eq(t.getTriggerName()))
-            .and(field(QrtzSimpleTrigger::getTriggerGroup).eq(t.getTriggerGroup())))
-          .execute();
-
-        session.dsl()
-          .deleteFrom(QrtzCronTrigger.class)
-          .where(field(QrtzCronTrigger::getSchedName).eq(instanceName)
-            .and(field(QrtzCronTrigger::getTriggerName).eq(t.getTriggerName()))
-            .and(field(QrtzCronTrigger::getTriggerGroup).eq(t.getTriggerGroup())))
-          .execute();
+        jobRepository.deleteTrigger(instanceName, t.getTriggerName(), t.getTriggerGroup());
       }
-
-      // 删除任务
-      session.dsl()
-        .deleteFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName)
-          .and(field(QrtzJobDetail::getJobName).eq(jobKey.getName()))
-          .and(field(QrtzJobDetail::getJobGroup).eq(jobKey.getGroup())))
-        .execute();
+      jobRepository.deleteJob(instanceName, jobKey.getName(), jobKey.getGroup());
       return true;
     } catch (Exception e) {
       throw new JobPersistenceException("Failed to remove job", e);
@@ -201,13 +154,8 @@ public class FmJobStore implements JobStore {
 
   @Override
   public JobDetail retrieveJob(JobKey jobKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      QrtzJobDetail jobDetail = session.dsl()
-        .selectFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName)
-          .and(field(QrtzJobDetail::getJobName).eq(jobKey.getName()))
-          .and(field(QrtzJobDetail::getJobGroup).eq(jobKey.getGroup())))
-        .executeOne();
+    try {
+      QrtzJobDetail jobDetail = jobRepository.findJobDetail(instanceName, jobKey.getName(), jobKey.getGroup());
 
       if (jobDetail == null) {
         return null;
@@ -228,14 +176,8 @@ public class FmJobStore implements JobStore {
 
   @Override
   public void storeTrigger(OperableTrigger newTrigger, boolean replaceExisting) throws ObjectAlreadyExistsException, JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      // 检查触发器是否已存在
-      QrtzTrigger existingTrigger = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getTriggerName).eq(newTrigger.getKey().getName()))
-          .and(field(QrtzTrigger::getTriggerGroup).eq(newTrigger.getKey().getGroup())))
-        .executeOne();
+    try {
+      QrtzTrigger existingTrigger = jobRepository.findTrigger(instanceName, newTrigger.getKey().getName(), newTrigger.getKey().getGroup());
 
       if (existingTrigger != null && !replaceExisting) {
         throw new ObjectAlreadyExistsException(newTrigger);
@@ -269,16 +211,26 @@ public class FmJobStore implements JobStore {
       trigger.setMisfireInstr(newTrigger.getMisfireInstruction());
       trigger.setJobData(newTrigger.getJobDataMap());
 
-      session.dsl()
-        .mergeInto(QrtzTrigger.class)
-        .values(trigger)
-        .execute();
+      jobRepository.upsertTrigger(trigger);
 
       // 如果是简单触发器，存储额外信息
       if (newTrigger instanceof SimpleTrigger) {
-        storeSimpleTrigger((SimpleTrigger) newTrigger, session);
+        QrtzSimpleTrigger simple = new QrtzSimpleTrigger();
+        simple.setSchedName(instanceName);
+        simple.setTriggerName(newTrigger.getKey().getName());
+        simple.setTriggerGroup(newTrigger.getKey().getGroup());
+        simple.setRepeatCount((long) ((SimpleTrigger) newTrigger).getRepeatCount());
+        simple.setRepeatInterval(((SimpleTrigger) newTrigger).getRepeatInterval());
+        simple.setTimesTriggered((long) ((SimpleTrigger) newTrigger).getTimesTriggered());
+        jobRepository.upsertSimpleTrigger(simple);
       } else if (newTrigger instanceof CronTrigger) {
-        storeCronTrigger((CronTrigger) newTrigger, session);
+        QrtzCronTrigger cron = new QrtzCronTrigger();
+        cron.setSchedName(instanceName);
+        cron.setTriggerName(newTrigger.getKey().getName());
+        cron.setTriggerGroup(newTrigger.getKey().getGroup());
+        cron.setCronExpression(((CronTrigger) newTrigger).getCronExpression());
+        cron.setTimeZoneId(((CronTrigger) newTrigger).getTimeZone() != null ? ((CronTrigger) newTrigger).getTimeZone().getID() : null);
+        jobRepository.upsertCronTrigger(cron);
       }
 
       log.debug("Stored trigger: {}", newTrigger.getKey());
@@ -290,27 +242,8 @@ public class FmJobStore implements JobStore {
 
   @Override
   public boolean removeTrigger(TriggerKey triggerKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      session.dsl()
-        .deleteFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getTriggerName).eq(triggerKey.getName()))
-          .and(field(QrtzTrigger::getTriggerGroup).eq(triggerKey.getGroup())))
-        .execute();
-
-      session.dsl()
-        .deleteFrom(QrtzSimpleTrigger.class)
-        .where(field(QrtzSimpleTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzSimpleTrigger::getTriggerName).eq(triggerKey.getName()))
-          .and(field(QrtzSimpleTrigger::getTriggerGroup).eq(triggerKey.getGroup())))
-        .execute();
-
-      session.dsl()
-        .deleteFrom(QrtzCronTrigger.class)
-        .where(field(QrtzCronTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzCronTrigger::getTriggerName).eq(triggerKey.getName()))
-          .and(field(QrtzCronTrigger::getTriggerGroup).eq(triggerKey.getGroup())))
-        .execute();
+    try {
+      jobRepository.deleteTrigger(instanceName, triggerKey.getName(), triggerKey.getGroup());
       return true;
     } catch (Exception e) {
       throw new JobPersistenceException("Failed to remove trigger", e);
@@ -335,19 +268,14 @@ public class FmJobStore implements JobStore {
 
   @Override
   public OperableTrigger retrieveTrigger(TriggerKey triggerKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      QrtzTrigger trigger = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getTriggerName).eq(triggerKey.getName()))
-          .and(field(QrtzTrigger::getTriggerGroup).eq(triggerKey.getGroup())))
-        .executeOne();
+    try {
+      QrtzTrigger trigger = jobRepository.findTrigger(instanceName, triggerKey.getName(), triggerKey.getGroup());
 
       if (trigger == null) {
         return null;
       }
 
-      return (OperableTrigger) deserializeTrigger(trigger, session);
+      return (OperableTrigger) deserializeTrigger(trigger);
     } catch (Exception e) {
       log.error("Failed to retrieve trigger: {}", triggerKey, e);
       throw new JobPersistenceException("Failed to retrieve trigger", e);
@@ -366,23 +294,17 @@ public class FmJobStore implements JobStore {
 
   @Override
   public void clearAllSchedulingData() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      session.dsl().deleteFrom(QrtzSimpleTrigger.class).execute();
-      session.dsl().deleteFrom(QrtzCronTrigger.class).execute();
-      session.dsl().deleteFrom(QrtzTrigger.class).execute();
-      session.dsl().deleteFrom(QrtzJobDetail.class).execute();
-      session.dsl().deleteFrom(QrtzCalendar.class).execute();
+    try {
+      jobRepository.clearAll(instanceName);
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to clear all scheduling data", e);
     }
   }
 
   @Override
   public void storeCalendar(String name, org.quartz.Calendar calendar, boolean replaceExisting, boolean updateTriggers) throws ObjectAlreadyExistsException, JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      QrtzCalendar existing = session.dsl()
-        .selectFrom(QrtzCalendar.class)
-        .where(field(QrtzCalendar::getSchedName).eq(instanceName)
-          .and(field(QrtzCalendar::getCalendarName).eq(name)))
-        .executeOne();
+    try {
+      QrtzCalendar existing = jobRepository.findCalendar(instanceName, name);
       if (existing != null && !replaceExisting) {
         throw new ObjectAlreadyExistsException("Calendar already exists: " + name);
       }
@@ -391,15 +313,9 @@ public class FmJobStore implements JobStore {
       c.setCalendarName(name);
       // 使用Quartz的Calendar序列化为JSON
       c.setCalendar(serializeQrtzCalendar(calendar));
-      session.dsl().mergeInto(QrtzCalendar.class).values(c).execute();
+      jobRepository.upsertCalendar(c);
       if (updateTriggers) {
-        // 受该calendar影响的触发器需要重新计算next_fire_time，这里只标记为WAITING
-        session.dsl()
-          .update(QrtzTrigger.class)
-          .set(QrtzTrigger::getTriggerState, Trigger.TriggerState.NORMAL.name())
-          .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-            .and(field(QrtzTrigger::getCalendarName).eq(name)))
-          .execute();
+        jobRepository.updateTriggersStateByCalendarName(instanceName, name, Trigger.TriggerState.NORMAL.name());
       }
     } catch (Exception e) {
       throw new JobPersistenceException("Failed to store calendar", e);
@@ -408,12 +324,8 @@ public class FmJobStore implements JobStore {
 
   @Override
   public boolean removeCalendar(String calName) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      session.dsl()
-        .deleteFrom(QrtzCalendar.class)
-        .where(field(QrtzCalendar::getSchedName).eq(instanceName)
-          .and(field(QrtzCalendar::getCalendarName).eq(calName)))
-        .execute();
+    try {
+      jobRepository.deleteCalendar(instanceName, calName);
       return true;
     } catch (Exception e) {
       throw new JobPersistenceException("Failed to remove calendar", e);
@@ -422,12 +334,8 @@ public class FmJobStore implements JobStore {
 
   @Override
   public org.quartz.Calendar retrieveCalendar(String calName) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      QrtzCalendar c = session.dsl()
-        .selectFrom(QrtzCalendar.class)
-        .where(field(QrtzCalendar::getSchedName).eq(instanceName)
-          .and(field(QrtzCalendar::getCalendarName).eq(calName)))
-        .executeOne();
+    try {
+      QrtzCalendar c = jobRepository.findCalendar(instanceName, calName);
       if (c == null) return null;
       return deserializeQrtzCalendar(c.getCalendar());
     } catch (Exception e) {
@@ -437,38 +345,35 @@ public class FmJobStore implements JobStore {
 
   @Override
   public int getNumberOfJobs() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      return Math.toIntExact(session.dsl().selectFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName))
-        .count());
+    try {
+      return Math.toIntExact(jobRepository.countJobs(instanceName));
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to count jobs", e);
     }
   }
 
   @Override
   public int getNumberOfTriggers() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      return Math.toIntExact(session.dsl().selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName))
-        .count());
+    try {
+      return Math.toIntExact(jobRepository.countTriggers(instanceName));
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to count triggers", e);
     }
   }
 
   @Override
   public int getNumberOfCalendars() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      return Math.toIntExact(session.dsl().selectFrom(QrtzCalendar.class)
-        .where(field(QrtzCalendar::getSchedName).eq(instanceName))
-        .count());
+    try {
+      return Math.toIntExact(jobRepository.countCalendars(instanceName));
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to count calendars", e);
     }
   }
 
   @Override
   public Set<JobKey> getJobKeys(GroupMatcher<JobKey> matcher) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzJobDetail> jobDetails = session.dsl()
-        .selectFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      List<QrtzJobDetail> jobDetails = jobRepository.findJobs(instanceName);
 
       return jobDetails.stream()
         .map(job -> new JobKey(job.getJobName(), job.getJobGroup()))
@@ -482,11 +387,8 @@ public class FmJobStore implements JobStore {
 
   @Override
   public Set<TriggerKey> getTriggerKeys(GroupMatcher<TriggerKey> matcher) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzTrigger> triggers = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      List<QrtzTrigger> triggers = jobRepository.findTriggers(instanceName);
 
       return triggers.stream()
         .map(trigger -> new TriggerKey(trigger.getTriggerName(), trigger.getTriggerGroup()))
@@ -500,130 +402,110 @@ public class FmJobStore implements JobStore {
 
   @Override
   public List<String> getJobGroupNames() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzJobDetail> list = session.dsl()
-        .selectFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      List<QrtzJobDetail> list = jobRepository.findJobs(instanceName);
       return list.stream().map(QrtzJobDetail::getJobGroup).distinct().collect(Collectors.toList());
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to get job group names", e);
     }
   }
 
   @Override
   public List<String> getTriggerGroupNames() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzTrigger> list = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      List<QrtzTrigger> list = jobRepository.findTriggers(instanceName);
       return list.stream().map(QrtzTrigger::getTriggerGroup).distinct().collect(Collectors.toList());
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to get trigger group names", e);
     }
   }
 
   @Override
   public List<String> getCalendarNames() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzCalendar> list = session.dsl()
-        .selectFrom(QrtzCalendar.class)
-        .where(field(QrtzCalendar::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      List<QrtzCalendar> list = jobRepository.findCalendars(instanceName);
       return list.stream().map(QrtzCalendar::getCalendarName).distinct().collect(Collectors.toList());
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to get calendar names", e);
     }
   }
 
   @Override
   public List<OperableTrigger> getTriggersForJob(JobKey jobKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzTrigger> triggers = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getJobName).eq(jobKey.getName()))
-          .and(field(QrtzTrigger::getJobGroup).eq(jobKey.getGroup())))
-        .execute();
+    try {
+      List<QrtzTrigger> triggers = jobRepository.findTriggersByJob(instanceName, jobKey.getName(), jobKey.getGroup());
       List<OperableTrigger> list = new ArrayList<>();
       for (QrtzTrigger t : triggers) {
         try {
-          list.add(deserializeTrigger(t, session));
+          list.add(deserializeTrigger(t));
         } catch (Exception ignored) {
         }
       }
       return list;
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to get triggers for job", e);
     }
   }
 
   @Override
   public Trigger.TriggerState getTriggerState(TriggerKey triggerKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      QrtzTrigger t = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getTriggerName).eq(triggerKey.getName()))
-          .and(field(QrtzTrigger::getTriggerGroup).eq(triggerKey.getGroup())))
-        .executeOne();
+    try {
+      QrtzTrigger t = jobRepository.findTrigger(instanceName, triggerKey.getName(), triggerKey.getGroup());
       if (t == null) return Trigger.TriggerState.NONE;
       try {
         return Trigger.TriggerState.valueOf(t.getTriggerState());
       } catch (Exception e) {
         return Trigger.TriggerState.NONE;
       }
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to get trigger state", e);
     }
   }
 
   @Override
   public void resetTriggerFromErrorState(TriggerKey triggerKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      updateTriggerState(triggerKey.getName(), triggerKey.getGroup(), Trigger.TriggerState.NORMAL.name(), session);
-    }
+    jobRepository.updateTriggerState(instanceName, triggerKey.getName(), triggerKey.getGroup(), Trigger.TriggerState.NORMAL.name());
   }
 
   @Override
   public void pauseTrigger(TriggerKey triggerKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      updateTriggerState(triggerKey.getName(), triggerKey.getGroup(), Trigger.TriggerState.PAUSED.name(), session);
-    }
+    jobRepository.updateTriggerState(instanceName, triggerKey.getName(), triggerKey.getGroup(), Trigger.TriggerState.PAUSED.name());
   }
 
   @Override
   public Collection<String> pauseTriggers(GroupMatcher<TriggerKey> matcher) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzTrigger> list = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      List<QrtzTrigger> list = jobRepository.findTriggers(instanceName);
       Set<String> groups = new HashSet<>();
       for (QrtzTrigger t : list) {
         TriggerKey key = new TriggerKey(t.getTriggerName(), t.getTriggerGroup());
         if (matcher.isMatch(key)) {
-          updateTriggerState(key.getName(), key.getGroup(), Trigger.TriggerState.PAUSED.name(), session);
+          jobRepository.updateTriggerState(instanceName, key.getName(), key.getGroup(), Trigger.TriggerState.PAUSED.name());
           groups.add(t.getTriggerGroup());
         }
       }
       return groups;
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to pause triggers", e);
     }
   }
 
   @Override
   public void pauseJob(JobKey jobKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzTrigger> triggers = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getJobName).eq(jobKey.getName()))
-          .and(field(QrtzTrigger::getJobGroup).eq(jobKey.getGroup())))
-        .execute();
+    try {
+      List<QrtzTrigger> triggers = jobRepository.findTriggersByJob(instanceName, jobKey.getName(), jobKey.getGroup());
       for (QrtzTrigger t : triggers) {
-        updateTriggerState(t.getTriggerName(), t.getTriggerGroup(), Trigger.TriggerState.PAUSED.name(), session);
+        jobRepository.updateTriggerState(instanceName, t.getTriggerName(), t.getTriggerGroup(), Trigger.TriggerState.PAUSED.name());
       }
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to pause job", e);
     }
   }
 
   @Override
   public Collection<String> pauseJobs(GroupMatcher<JobKey> groupMatcher) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzJobDetail> jobs = session.dsl()
-        .selectFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      List<QrtzJobDetail> jobs = jobRepository.findJobs(instanceName);
       Set<String> groups = new HashSet<>();
       for (QrtzJobDetail j : jobs) {
         JobKey key = new JobKey(j.getJobName(), j.getJobGroup());
@@ -633,69 +515,61 @@ public class FmJobStore implements JobStore {
         }
       }
       return groups;
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to pause jobs", e);
     }
   }
 
   @Override
   public void resumeTrigger(TriggerKey triggerKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      updateTriggerState(triggerKey.getName(), triggerKey.getGroup(), Trigger.TriggerState.NORMAL.name(), session);
-    }
+    jobRepository.updateTriggerState(instanceName, triggerKey.getName(), triggerKey.getGroup(), Trigger.TriggerState.NORMAL.name());
   }
 
   @Override
   public Collection<String> resumeTriggers(GroupMatcher<TriggerKey> matcher) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzTrigger> list = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      List<QrtzTrigger> list = jobRepository.findTriggers(instanceName);
       Set<String> groups = new HashSet<>();
       for (QrtzTrigger t : list) {
         TriggerKey key = new TriggerKey(t.getTriggerName(), t.getTriggerGroup());
         if (matcher.isMatch(key)) {
-          updateTriggerState(key.getName(), key.getGroup(), Trigger.TriggerState.NORMAL.name(), session);
+          jobRepository.updateTriggerState(instanceName, key.getName(), key.getGroup(), Trigger.TriggerState.NORMAL.name());
           groups.add(t.getTriggerGroup());
         }
       }
       return groups;
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to resume triggers", e);
     }
   }
 
   @Override
   public Set<String> getPausedTriggerGroups() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzTrigger> list = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getTriggerState).eq(Trigger.TriggerState.PAUSED.name())))
-        .execute();
+    try {
+      List<QrtzTrigger> list = jobRepository.findTriggers(instanceName);
+      list.removeIf(t -> !Trigger.TriggerState.PAUSED.name().equals(t.getTriggerState()));
       return list.stream().map(QrtzTrigger::getTriggerGroup).collect(Collectors.toSet());
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to get paused trigger groups", e);
     }
   }
 
   @Override
   public void resumeJob(JobKey jobKey) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzTrigger> triggers = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getJobName).eq(jobKey.getName()))
-          .and(field(QrtzTrigger::getJobGroup).eq(jobKey.getGroup())))
-        .execute();
+    try {
+      List<QrtzTrigger> triggers = jobRepository.findTriggersByJob(instanceName, jobKey.getName(), jobKey.getGroup());
       for (QrtzTrigger t : triggers) {
-        updateTriggerState(t.getTriggerName(), t.getTriggerGroup(), Trigger.TriggerState.NORMAL.name(), session);
+        jobRepository.updateTriggerState(instanceName, t.getTriggerName(), t.getTriggerGroup(), Trigger.TriggerState.NORMAL.name());
       }
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to resume job", e);
     }
   }
 
   @Override
   public Collection<String> resumeJobs(GroupMatcher<JobKey> matcher) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      List<QrtzJobDetail> jobs = session.dsl()
-        .selectFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      List<QrtzJobDetail> jobs = jobRepository.findJobs(instanceName);
       Set<String> groups = new HashSet<>();
       for (QrtzJobDetail j : jobs) {
         JobKey key = new JobKey(j.getJobName(), j.getJobGroup());
@@ -705,61 +579,50 @@ public class FmJobStore implements JobStore {
         }
       }
       return groups;
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to resume jobs", e);
     }
   }
 
   @Override
   public void pauseAll() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      session.dsl()
-        .update(QrtzTrigger.class)
-        .set(QrtzTrigger::getTriggerState, Trigger.TriggerState.PAUSED.name())
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      jobRepository.updateAllTriggersState(instanceName, Trigger.TriggerState.PAUSED.name());
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to pause all triggers", e);
     }
   }
 
   @Override
   public void resumeAll() throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      session.dsl()
-        .update(QrtzTrigger.class)
-        .set(QrtzTrigger::getTriggerState, Trigger.TriggerState.NORMAL.name())
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName))
-        .execute();
+    try {
+      jobRepository.updateAllTriggersState(instanceName, Trigger.TriggerState.NORMAL.name());
+    } catch (Exception e) {
+      throw new JobPersistenceException("Failed to resume all triggers", e);
     }
   }
 
   @Override
   public List<OperableTrigger> acquireNextTriggers(long noLaterThan, int maxCount, long timeWindow) throws JobPersistenceException {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      // 查询需要触发的触发器
-      List<QrtzTrigger> triggers = session.dsl()
-        .selectFrom(QrtzTrigger.class)
-        .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-          .and(field(QrtzTrigger::getTriggerState).eq(Trigger.TriggerState.NORMAL.name()))
-          .and(field(QrtzTrigger::getNextFireTime).lte(noLaterThan + timeWindow)))
-        .orderBy(QrtzTrigger::getNextFireTime)
-        .orderByDesc(QrtzTrigger::getPriority)
-        .page(1, maxCount)
-        .execute();
+    try {
+      List<QrtzTrigger> triggers = jobRepository.findDueTriggers(instanceName, noLaterThan, timeWindow, maxCount);
 
       List<OperableTrigger> result = new ArrayList<>();
       Set<JobKey> acquiredJobKeys = new HashSet<>();
       for (QrtzTrigger trigger : triggers) {
         try {
-          OperableTrigger operableTrigger = deserializeTrigger(trigger, session);
+          OperableTrigger operableTrigger = deserializeTrigger(trigger);
           if (operableTrigger != null) {
             JobDetail jd = retrieveJob(operableTrigger.getJobKey());
-            boolean nonConcurrent = isJobNonConcurrent(operableTrigger.getJobKey(), jd, session);
+            boolean nonConcurrent = isJobNonConcurrent(operableTrigger.getJobKey(), jd);
             if (nonConcurrent && jd != null && acquiredJobKeys.contains(jd.getKey())) {
               // 将未入选本批的同作业触发器直接置为 BLOCKED，等待当前执行结束
-              updateTriggerState(trigger.getTriggerName(), trigger.getTriggerGroup(), Trigger.TriggerState.BLOCKED.name(), session);
+              jobRepository.updateTriggerState(instanceName, trigger.getTriggerName(), trigger.getTriggerGroup(), Trigger.TriggerState.BLOCKED.name());
               continue; // 避免同一作业并发
             }
             // 更新触发器状态为 NORMAL（此实现不引入 ACQUIRED 状态，但已筛掉并发）
-            updateTriggerState(trigger.getTriggerName(), trigger.getTriggerGroup(),
-              Trigger.TriggerState.NORMAL.name(), session);
+            jobRepository.updateTriggerState(instanceName, trigger.getTriggerName(), trigger.getTriggerGroup(),
+              Trigger.TriggerState.NORMAL.name());
             result.add(operableTrigger);
             if (nonConcurrent && jd != null) {
               acquiredJobKeys.add(jd.getKey());
@@ -779,22 +642,24 @@ public class FmJobStore implements JobStore {
 
   @Override
   public void releaseAcquiredTrigger(OperableTrigger trigger) {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      updateTriggerState(trigger.getKey().getName(), trigger.getKey().getGroup(), Trigger.TriggerState.NORMAL.name(), session);
+    try {
+      jobRepository.updateTriggerState(instanceName, trigger.getKey().getName(), trigger.getKey().getGroup(), Trigger.TriggerState.NORMAL.name());
+    } catch (Exception e) {
+      throw new RuntimeException(new JobPersistenceException("Failed to release acquired trigger", e));
     }
   }
 
   @Override
   public List<TriggerFiredResult> triggersFired(List<OperableTrigger> triggers) throws JobPersistenceException {
     List<TriggerFiredResult> results = new ArrayList<>();
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
+    try {
       for (OperableTrigger t : triggers) {
         JobDetail jobDetail = retrieveJob(t.getJobKey());
         boolean acquiredNonConcurrentLock = false;
         JobKey acquiredJobKey = null;
 
         // 基于 @DisallowConcurrentExecution 的进程内并发控制：未获取锁则跳过本次触发
-        boolean nonConcurrent = isJobNonConcurrent(t.getJobKey(), jobDetail, session);
+        boolean nonConcurrent = isJobNonConcurrent(t.getJobKey(), jobDetail);
         if (nonConcurrent) {
           AtomicInteger counter = nonConcurrentRunning.computeIfAbsent(jobDetail.getKey(), k -> new AtomicInteger(0));
           int valueAfterInc = counter.incrementAndGet();
@@ -807,7 +672,7 @@ public class FmJobStore implements JobStore {
           acquiredNonConcurrentLock = true;
           acquiredJobKey = jobDetail.getKey();
           // 将同一作业的其他 NORMAL 触发器置为 BLOCKED，避免并发调度
-          blockOtherTriggersOfJob(jobDetail.getKey(), t.getKey(), session);
+          jobRepository.blockOtherTriggersOfJob(instanceName, jobDetail.getKey(), t.getKey());
         }
         org.quartz.Calendar cal = null;
         if (t.getCalendarName() != null) {
@@ -821,20 +686,13 @@ public class FmJobStore implements JobStore {
           // 持久化 prev/nextFireTime
           Long prev = t.getPreviousFireTime() != null ? t.getPreviousFireTime().getTime() : null;
           Long next = t.getNextFireTime() != null ? t.getNextFireTime().getTime() : null;
-          session.dsl()
-            .update(QrtzTrigger.class)
-            .set(QrtzTrigger::getPrevFireTime, prev)
-            .set(QrtzTrigger::getNextFireTime, next)
-            .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-              .and(field(QrtzTrigger::getTriggerName).eq(t.getKey().getName()))
-              .and(field(QrtzTrigger::getTriggerGroup).eq(t.getKey().getGroup())))
-            .execute();
+          jobRepository.updateTriggerFireTimes(instanceName, t.getKey().getName(), t.getKey().getGroup(), prev, next);
 
           // 如果没有下一次触发，标记完成
           if (t.getNextFireTime() == null) {
-            updateTriggerState(t.getKey().getName(), t.getKey().getGroup(), Trigger.TriggerState.COMPLETE.name(), session);
+            jobRepository.updateTriggerState(instanceName, t.getKey().getName(), t.getKey().getGroup(), Trigger.TriggerState.COMPLETE.name());
           } else {
-            updateTriggerState(t.getKey().getName(), t.getKey().getGroup(), Trigger.TriggerState.NORMAL.name(), session);
+            jobRepository.updateTriggerState(instanceName, t.getKey().getName(), t.getKey().getGroup(), Trigger.TriggerState.NORMAL.name());
           }
 
           TriggerFiredBundle b = new TriggerFiredBundle(
@@ -870,47 +728,39 @@ public class FmJobStore implements JobStore {
 
   @Override
   public void triggeredJobComplete(OperableTrigger trigger, JobDetail jobDetail, Trigger.CompletedExecutionInstruction triggerInstCode) {
-    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
-      String state = switch (triggerInstCode) {
-        case DELETE_TRIGGER -> Trigger.TriggerState.NONE.name();
-        case SET_TRIGGER_COMPLETE -> Trigger.TriggerState.COMPLETE.name();
-        case SET_TRIGGER_ERROR -> Trigger.TriggerState.ERROR.name();
-        case SET_ALL_JOB_TRIGGERS_COMPLETE -> Trigger.TriggerState.COMPLETE.name();
-        case SET_ALL_JOB_TRIGGERS_ERROR -> Trigger.TriggerState.ERROR.name();
-        default -> Trigger.TriggerState.NORMAL.name();
-      };
-      updateTriggerState(trigger.getKey().getName(), trigger.getKey().getGroup(), state, session);
+    String state = switch (triggerInstCode) {
+      case DELETE_TRIGGER -> Trigger.TriggerState.NONE.name();
+      case SET_TRIGGER_COMPLETE -> Trigger.TriggerState.COMPLETE.name();
+      case SET_TRIGGER_ERROR -> Trigger.TriggerState.ERROR.name();
+      case SET_ALL_JOB_TRIGGERS_COMPLETE -> Trigger.TriggerState.COMPLETE.name();
+      case SET_ALL_JOB_TRIGGERS_ERROR -> Trigger.TriggerState.ERROR.name();
+      default -> Trigger.TriggerState.NORMAL.name();
+    };
+    jobRepository.updateTriggerState(instanceName, trigger.getKey().getName(), trigger.getKey().getGroup(), state);
 
-      // 持久化 JobDataMap（支持 @PersistJobDataAfterExecution）：优先依据 JobDetail 标志，回退到 DB 标志
-      if (jobDetail != null && (jobDetail.isPersistJobDataAfterExecution()
-                                || shouldPersistJobData(jobDetail.getKey(), session))) {
-        // 先更新内存缓存，保证下一次 retrieveJob 能见到最新值
-        lastJobData.put(jobDetail.getKey(), new JobDataMap(new HashMap<>(jobDetail.getJobDataMap())));
-        session.dsl()
-          .update(QrtzJobDetail.class)
-          .set(QrtzJobDetail::getJobData, jobDetail.getJobDataMap())
-          .where(field(QrtzJobDetail::getSchedName).eq(instanceName)
-            .and(field(QrtzJobDetail::getJobName).eq(jobDetail.getKey().getName()))
-            .and(field(QrtzJobDetail::getJobGroup).eq(jobDetail.getKey().getGroup())))
-          .execute();
-      }
+    // 持久化 JobDataMap（支持 @PersistJobDataAfterExecution）：优先依据 JobDetail 标志，回退到 DB 标志
+    if (jobDetail != null && (jobDetail.isPersistJobDataAfterExecution()
+                              || shouldPersistJobData(jobDetail.getKey()))) {
+      // 先更新内存缓存，保证下一次 retrieveJob 能见到最新值
+      lastJobData.put(jobDetail.getKey(), new JobDataMap(new HashMap<>(jobDetail.getJobDataMap())));
+      jobRepository.updateJobData(instanceName, jobDetail.getKey(), jobDetail.getJobDataMap());
+    }
 
-      // 释放 @DisallowConcurrentExecution 的进程内“锁”
-      if (isJobNonConcurrent(jobDetail != null ? jobDetail.getKey() : null, jobDetail, session)) {
-        // 解锁数据库中同作业被置为 BLOCKED 的触发器
-        unblockBlockedTriggersOfJob(jobDetail.getKey(), session);
-        try {
-          if (signaler != null) {
-            signaler.signalSchedulingChange(0L);
-          }
-        } catch (Exception ignored) {
+    // 释放 @DisallowConcurrentExecution 的进程内“锁”
+    if (isJobNonConcurrent(jobDetail != null ? jobDetail.getKey() : null, jobDetail)) {
+      // 解锁数据库中同作业被置为 BLOCKED 的触发器
+      jobRepository.unblockBlockedTriggersOfJob(instanceName, jobDetail.getKey());
+      try {
+        if (signaler != null) {
+          signaler.signalSchedulingChange(0L);
         }
-        AtomicInteger counter = nonConcurrentRunning.get(jobDetail.getKey());
-        if (counter != null) {
-          int remaining = counter.decrementAndGet();
-          if (remaining <= 0) {
-            nonConcurrentRunning.remove(jobDetail.getKey(), counter);
-          }
+      } catch (Exception ignored) {
+      }
+      AtomicInteger counter = nonConcurrentRunning.get(jobDetail.getKey());
+      if (counter != null) {
+        int remaining = counter.decrementAndGet();
+        if (remaining <= 0) {
+          nonConcurrentRunning.remove(jobDetail.getKey(), counter);
         }
       }
     }
@@ -974,7 +824,7 @@ public class FmJobStore implements JobStore {
   /**
    * 反序列化触发器
    */
-  private OperableTrigger deserializeTrigger(QrtzTrigger trigger, Session session) throws Exception {
+  private OperableTrigger deserializeTrigger(QrtzTrigger trigger) throws Exception {
     JobDetail jobDetail = retrieveJob(new JobKey(trigger.getJobName(), trigger.getJobGroup()));
     if (jobDetail == null) {
       return null;
@@ -982,9 +832,9 @@ public class FmJobStore implements JobStore {
 
     OperableTrigger operableTrigger;
     if ("CRON".equals(trigger.getTriggerType())) {
-      operableTrigger = deserializeCronTrigger(trigger, jobDetail, session);
+      operableTrigger = deserializeCronTrigger(trigger, jobDetail);
     } else if ("SIMPLE".equals(trigger.getTriggerType())) {
-      operableTrigger = deserializeSimpleTrigger(trigger, jobDetail, session);
+      operableTrigger = deserializeSimpleTrigger(trigger, jobDetail);
     } else {
       throw new JobPersistenceException("Unknown trigger type: " + trigger.getTriggerType());
     }
@@ -995,13 +845,8 @@ public class FmJobStore implements JobStore {
   /**
    * 反序列化Cron触发器
    */
-  private OperableTrigger deserializeCronTrigger(QrtzTrigger trigger, JobDetail jobDetail, Session session) throws Exception {
-    QrtzCronTrigger cronMeta = session.dsl()
-      .selectFrom(QrtzCronTrigger.class)
-      .where(field(QrtzCronTrigger::getSchedName).eq(trigger.getSchedName())
-        .and(field(QrtzCronTrigger::getTriggerName).eq(trigger.getTriggerName()))
-        .and(field(QrtzCronTrigger::getTriggerGroup).eq(trigger.getTriggerGroup())))
-      .executeOne();
+  private OperableTrigger deserializeCronTrigger(QrtzTrigger trigger, JobDetail jobDetail) throws Exception {
+    QrtzCronTrigger cronMeta = jobRepository.findCronMeta(trigger.getSchedName(), trigger.getTriggerName(), trigger.getTriggerGroup());
 
     if (cronMeta == null) {
       throw new JobPersistenceException("Cron trigger not found: " + trigger.getTriggerName());
@@ -1029,13 +874,8 @@ public class FmJobStore implements JobStore {
   /**
    * 反序列化简单触发器
    */
-  private OperableTrigger deserializeSimpleTrigger(QrtzTrigger trigger, JobDetail jobDetail, Session session) throws Exception {
-    QrtzSimpleTrigger simpleMeta = session.dsl()
-      .selectFrom(QrtzSimpleTrigger.class)
-      .where(field(QrtzSimpleTrigger::getSchedName).eq(trigger.getSchedName())
-        .and(field(QrtzSimpleTrigger::getTriggerName).eq(trigger.getTriggerName()))
-        .and(field(QrtzSimpleTrigger::getTriggerGroup).eq(trigger.getTriggerGroup())))
-      .executeOne();
+  private OperableTrigger deserializeSimpleTrigger(QrtzTrigger trigger, JobDetail jobDetail) throws Exception {
+    QrtzSimpleTrigger simpleMeta = jobRepository.findSimpleMeta(trigger.getSchedName(), trigger.getTriggerName(), trigger.getTriggerGroup());
 
     if (simpleMeta == null) {
       throw new JobPersistenceException("Simple trigger not found: " + trigger.getTriggerName());
@@ -1073,98 +913,15 @@ public class FmJobStore implements JobStore {
   }
 
   /**
-   * 存储简单触发器
-   */
-  private void storeSimpleTrigger(SimpleTrigger trigger, Session session) {
-    QrtzSimpleTrigger simpleTrigger = new QrtzSimpleTrigger();
-    simpleTrigger.setSchedName(instanceName);
-    simpleTrigger.setTriggerName(trigger.getKey().getName());
-    simpleTrigger.setTriggerGroup(trigger.getKey().getGroup());
-    simpleTrigger.setRepeatCount((long) trigger.getRepeatCount());
-    simpleTrigger.setRepeatInterval(trigger.getRepeatInterval());
-    simpleTrigger.setTimesTriggered((long) trigger.getTimesTriggered());
-
-    session.dsl()
-      .mergeInto(QrtzSimpleTrigger.class)
-      .values(simpleTrigger)
-      .execute();
-  }
-
-  /**
-   * 存储Cron触发器
-   */
-  private void storeCronTrigger(CronTrigger trigger, Session session) {
-    QrtzCronTrigger cronTrigger = new QrtzCronTrigger();
-    cronTrigger.setSchedName(instanceName);
-    cronTrigger.setTriggerName(trigger.getKey().getName());
-    cronTrigger.setTriggerGroup(trigger.getKey().getGroup());
-    cronTrigger.setCronExpression(trigger.getCronExpression());
-    cronTrigger.setTimeZoneId(trigger.getTimeZone() != null ? trigger.getTimeZone().getID() : null);
-
-    session.dsl()
-      .mergeInto(QrtzCronTrigger.class)
-      .values(cronTrigger)
-      .execute();
-  }
-
-  /**
-   * 更新触发器状态
-   */
-  private void updateTriggerState(String triggerName, String triggerGroup, String state, Session session) {
-    session.dsl()
-      .update(QrtzTrigger.class)
-      .set(QrtzTrigger::getTriggerState, state)
-      .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-        .and(field(QrtzTrigger::getTriggerName).eq(triggerName))
-        .and(field(QrtzTrigger::getTriggerGroup).eq(triggerGroup)))
-      .execute();
-  }
-
-  /**
-   * 将同一作业的其他处于 NORMAL 的触发器置为 BLOCKED，避免与 @DisallowConcurrentExecution 作业并发。
-   */
-  private void blockOtherTriggersOfJob(JobKey jobKey, TriggerKey current, Session session) {
-    session.dsl()
-      .update(QrtzTrigger.class)
-      .set(QrtzTrigger::getTriggerState, Trigger.TriggerState.BLOCKED.name())
-      .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-        .and(field(QrtzTrigger::getJobName).eq(jobKey.getName()))
-        .and(field(QrtzTrigger::getJobGroup).eq(jobKey.getGroup()))
-        .and(field(QrtzTrigger::getTriggerState).eq(Trigger.TriggerState.NORMAL.name()))
-        .and(field(QrtzTrigger::getTriggerName).ne(current.getName())
-          .or(field(QrtzTrigger::getTriggerGroup).ne(current.getGroup()))))
-      .execute();
-  }
-
-  /**
-   * 将同一作业的 BLOCKED 触发器恢复为 NORMAL。
-   */
-  private void unblockBlockedTriggersOfJob(JobKey jobKey, Session session) {
-    session.dsl()
-      .update(QrtzTrigger.class)
-      .set(QrtzTrigger::getTriggerState, Trigger.TriggerState.NORMAL.name())
-      .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-        .and(field(QrtzTrigger::getJobName).eq(jobKey.getName()))
-        .and(field(QrtzTrigger::getJobGroup).eq(jobKey.getGroup()))
-        .and(field(QrtzTrigger::getTriggerState).eq(Trigger.TriggerState.BLOCKED.name())))
-      .execute();
-  }
-
-  /**
    * 根据 DB 或 JobDetail 判定作业是否为非并发。
    */
-  private boolean isJobNonConcurrent(JobKey jobKey, JobDetail jobDetail, Session session) {
+  private boolean isJobNonConcurrent(JobKey jobKey, JobDetail jobDetail) {
     if (jobDetail != null && jobDetail.isConcurrentExecutionDisallowed()) {
       return true;
     }
     if (jobKey == null) return false;
     try {
-      QrtzJobDetail jd = session.dsl()
-        .selectFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName)
-          .and(field(QrtzJobDetail::getJobName).eq(jobKey.getName()))
-          .and(field(QrtzJobDetail::getJobGroup).eq(jobKey.getGroup())))
-        .executeOne();
+      QrtzJobDetail jd = jobRepository.findJobDetail(instanceName, jobKey.getName(), jobKey.getGroup());
       return jd != null && Boolean.TRUE.equals(jd.getIsNonconcurrent());
     } catch (Exception e) {
       return false;
@@ -1174,15 +931,10 @@ public class FmJobStore implements JobStore {
   /**
    * 判定是否应持久化 JobDataMap（依据 DB 中 is_update_data）。
    */
-  private boolean shouldPersistJobData(JobKey jobKey, Session session) {
+  private boolean shouldPersistJobData(JobKey jobKey) {
     if (jobKey == null) return false;
     try {
-      QrtzJobDetail jd = session.dsl()
-        .selectFrom(QrtzJobDetail.class)
-        .where(field(QrtzJobDetail::getSchedName).eq(instanceName)
-          .and(field(QrtzJobDetail::getJobName).eq(jobKey.getName()))
-          .and(field(QrtzJobDetail::getJobGroup).eq(jobKey.getGroup())))
-        .executeOne();
+      QrtzJobDetail jd = jobRepository.findJobDetail(instanceName, jobKey.getName(), jobKey.getGroup());
       return jd != null && Boolean.TRUE.equals(jd.getIsUpdateData());
     } catch (Exception e) {
       return false;
