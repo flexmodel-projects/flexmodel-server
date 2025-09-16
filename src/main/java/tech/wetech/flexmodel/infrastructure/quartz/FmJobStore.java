@@ -17,7 +17,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static tech.wetech.flexmodel.query.Expressions.field;
@@ -37,48 +37,9 @@ public class FmJobStore implements JobStore {
   private ClassLoadHelper loadHelper;
   private SchedulerSignaler signaler;
   private static final String DEFAULT_SCHEMA_NAME = "system";
-  private static final String LOCK_MARKER = "__fm_lock_acquired";
-  private final Map<JobKey, AtomicBoolean> jobKeyBusy = new ConcurrentHashMap<>();
 
-  private boolean isNonConcurrentJob(JobDetail jobDetail) {
-    return jobDetail != null && (jobDetail.isConcurrentExecutionDisallowed()
-                                 || jobDetail.getJobClass().isAnnotationPresent(DisallowConcurrentExecution.class));
-  }
-
-  private boolean isPersistDataJob(JobDetail jobDetail) {
-    return jobDetail != null && (jobDetail.isPersistJobDataAfterExecution()
-                                 || jobDetail.getJobClass().isAnnotationPresent(PersistJobDataAfterExecution.class));
-  }
-
-  /**
-   * 如果作业声明了禁并发，尝试获取进程内锁；成功则在触发器 JobDataMap 标记，失败返回 false。
-   */
-  private boolean tryAcquireJobLockIfNeeded(JobDetail jobDetail, OperableTrigger trigger) {
-    if (isNonConcurrentJob(jobDetail)) {
-      AtomicBoolean busy = jobKeyBusy.computeIfAbsent(jobDetail.getKey(), k -> new AtomicBoolean(false));
-      if (!busy.compareAndSet(false, true)) {
-        return false;
-      }
-      trigger.getJobDataMap().put(LOCK_MARKER, Boolean.TRUE);
-    }
-    return true;
-  }
-
-  /**
-   * 如果先前为该触发器获取过进程内锁，则在当前线程释放并去除标记。
-   */
-  private void releaseJobLockIfHeld(OperableTrigger trigger) {
-    try {
-      if (Boolean.TRUE.equals(trigger.getJobDataMap().get(LOCK_MARKER))) {
-        AtomicBoolean busy = jobKeyBusy.get(trigger.getJobKey());
-        if (busy != null) {
-          busy.set(false);
-        }
-        trigger.getJobDataMap().remove(LOCK_MARKER);
-      }
-    } catch (Exception ignored) {
-    }
-  }
+  // 进程内非并发作业占用表（仅用于 @DisallowConcurrentExecution）
+  private final ConcurrentHashMap<JobKey, AtomicInteger> nonConcurrentRunning = new ConcurrentHashMap<>();
 
   @Override
   public void initialize(ClassLoadHelper loadHelper, SchedulerSignaler signaler) throws SchedulerConfigException {
@@ -775,18 +736,22 @@ public class FmJobStore implements JobStore {
         .execute();
 
       List<OperableTrigger> result = new ArrayList<>();
+      Set<JobKey> acquiredJobKeys = new HashSet<>();
       for (QrtzTrigger trigger : triggers) {
         try {
           OperableTrigger operableTrigger = deserializeTrigger(trigger, session);
           if (operableTrigger != null) {
             JobDetail jd = retrieveJob(operableTrigger.getJobKey());
-            if (!tryAcquireJobLockIfNeeded(jd, operableTrigger)) {
-              continue;
+            if (jd != null && jd.isConcurrentExecutionDisallowed() && acquiredJobKeys.contains(jd.getKey())) {
+              continue; // 避免同一作业并发
             }
-            // 仍保持 NORMAL 状态（不引入 ACQUIRED 状态）
+            // 更新触发器状态为 NORMAL（此实现不引入 ACQUIRED 状态，但已筛掉并发）
             updateTriggerState(trigger.getTriggerName(), trigger.getTriggerGroup(),
               Trigger.TriggerState.NORMAL.name(), session);
             result.add(operableTrigger);
+            if (jd != null && jd.isConcurrentExecutionDisallowed()) {
+              acquiredJobKeys.add(jd.getKey());
+            }
           }
         } catch (Exception e) {
           log.warn("Failed to deserialize trigger: {}", trigger.getTriggerName(), e);
@@ -805,8 +770,6 @@ public class FmJobStore implements JobStore {
     try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
       updateTriggerState(trigger.getKey().getName(), trigger.getKey().getGroup(), Trigger.TriggerState.NORMAL.name(), session);
     }
-    // 若此前在 acquireNextTriggers 获取了锁，这里需要释放
-    releaseJobLockIfHeld(trigger);
   }
 
   @Override
@@ -815,44 +778,75 @@ public class FmJobStore implements JobStore {
     try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
       for (OperableTrigger t : triggers) {
         JobDetail jobDetail = retrieveJob(t.getJobKey());
+        boolean acquiredNonConcurrentLock = false;
+        JobKey acquiredJobKey = null;
+
+        // 基于 @DisallowConcurrentExecution 的进程内并发控制：未获取锁则跳过本次触发
+        if (jobDetail != null && jobDetail.isConcurrentExecutionDisallowed()) {
+          AtomicInteger counter = nonConcurrentRunning.computeIfAbsent(jobDetail.getKey(), k -> new AtomicInteger(0));
+          int valueAfterInc = counter.incrementAndGet();
+          if (valueAfterInc > 1) {
+            // 未能获取“独占”执行权，回退并跳过
+            counter.decrementAndGet();
+            // 保持触发器为 NORMAL，不更新 prev/next，结果列表占位返回 null
+            results.add(null);
+            continue;
+          }
+          acquiredNonConcurrentLock = true;
+          acquiredJobKey = jobDetail.getKey();
+        }
         org.quartz.Calendar cal = null;
         if (t.getCalendarName() != null) {
           cal = retrieveCalendar(t.getCalendarName());
         }
         Date fireTime = new Date();
-        // 触发前，先调用 triggered 以更新 prev/next
-        t.triggered(cal);
+        try {
+          // 触发前，先调用 triggered 以更新 prev/next
+          t.triggered(cal);
 
-        // 持久化 prev/nextFireTime
-        Long prev = t.getPreviousFireTime() != null ? t.getPreviousFireTime().getTime() : null;
-        Long next = t.getNextFireTime() != null ? t.getNextFireTime().getTime() : null;
-        session.dsl()
-          .update(QrtzTrigger.class)
-          .set(QrtzTrigger::getPrevFireTime, prev)
-          .set(QrtzTrigger::getNextFireTime, next)
-          .where(field(QrtzTrigger::getSchedName).eq(instanceName)
-            .and(field(QrtzTrigger::getTriggerName).eq(t.getKey().getName()))
-            .and(field(QrtzTrigger::getTriggerGroup).eq(t.getKey().getGroup())))
-          .execute();
+          // 持久化 prev/nextFireTime
+          Long prev = t.getPreviousFireTime() != null ? t.getPreviousFireTime().getTime() : null;
+          Long next = t.getNextFireTime() != null ? t.getNextFireTime().getTime() : null;
+          session.dsl()
+            .update(QrtzTrigger.class)
+            .set(QrtzTrigger::getPrevFireTime, prev)
+            .set(QrtzTrigger::getNextFireTime, next)
+            .where(field(QrtzTrigger::getSchedName).eq(instanceName)
+              .and(field(QrtzTrigger::getTriggerName).eq(t.getKey().getName()))
+              .and(field(QrtzTrigger::getTriggerGroup).eq(t.getKey().getGroup())))
+            .execute();
 
-        // 如果没有下一次触发，标记完成
-        if (t.getNextFireTime() == null) {
-          updateTriggerState(t.getKey().getName(), t.getKey().getGroup(), Trigger.TriggerState.COMPLETE.name(), session);
-        } else {
-          updateTriggerState(t.getKey().getName(), t.getKey().getGroup(), Trigger.TriggerState.NORMAL.name(), session);
+          // 如果没有下一次触发，标记完成
+          if (t.getNextFireTime() == null) {
+            updateTriggerState(t.getKey().getName(), t.getKey().getGroup(), Trigger.TriggerState.COMPLETE.name(), session);
+          } else {
+            updateTriggerState(t.getKey().getName(), t.getKey().getGroup(), Trigger.TriggerState.NORMAL.name(), session);
+          }
+
+          TriggerFiredBundle b = new TriggerFiredBundle(
+            jobDetail,
+            t,
+            cal,
+            false,
+            fireTime,
+            t.getPreviousFireTime(),
+            t.getNextFireTime(),
+            null
+          );
+          results.add(new TriggerFiredResult(b));
+        } catch (Exception ex) {
+          // 构建触发结果过程中异常：如果占用了非并发锁，需要回退释放，避免死锁
+          if (acquiredNonConcurrentLock && acquiredJobKey != null) {
+            AtomicInteger counter = nonConcurrentRunning.get(acquiredJobKey);
+            if (counter != null) {
+              int remaining = counter.decrementAndGet();
+              if (remaining <= 0) {
+                nonConcurrentRunning.remove(acquiredJobKey, counter);
+              }
+            }
+          }
+          throw ex;
         }
-
-        TriggerFiredBundle b = new TriggerFiredBundle(
-          jobDetail,
-          t,
-          cal,
-          false,
-          fireTime,
-          t.getPreviousFireTime(),
-          t.getNextFireTime(),
-          null
-        );
-        results.add(new TriggerFiredResult(b));
       }
     } catch (Exception e) {
       throw new JobPersistenceException("Failed in triggersFired", e);
@@ -874,7 +868,7 @@ public class FmJobStore implements JobStore {
       updateTriggerState(trigger.getKey().getName(), trigger.getKey().getGroup(), state, session);
 
       // 持久化 JobDataMap（支持 @PersistJobDataAfterExecution）：按主键更新，避免唯一约束冲突
-      if (isPersistDataJob(jobDetail)) {
+      if (jobDetail != null && jobDetail.isPersistJobDataAfterExecution()) {
         session.dsl()
           .update(QrtzJobDetail.class)
           .set(QrtzJobDetail::getJobData, jobDetail.getJobDataMap())
@@ -883,9 +877,17 @@ public class FmJobStore implements JobStore {
             .and(field(QrtzJobDetail::getJobGroup).eq(jobDetail.getKey().getGroup())))
           .execute();
       }
-    } finally {
-      // 若 acquireNextTriggers 时获取了锁，这里在作业完成后释放
-      releaseJobLockIfHeld(trigger);
+
+      // 释放 @DisallowConcurrentExecution 的进程内“锁”
+      if (jobDetail != null && jobDetail.isConcurrentExecutionDisallowed()) {
+        AtomicInteger counter = nonConcurrentRunning.get(jobDetail.getKey());
+        if (counter != null) {
+          int remaining = counter.decrementAndGet();
+          if (remaining <= 0) {
+            nonConcurrentRunning.remove(jobDetail.getKey(), counter);
+          }
+        }
+      }
     }
   }
 
