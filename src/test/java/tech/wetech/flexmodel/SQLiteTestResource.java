@@ -15,9 +15,11 @@ public class SQLiteTestResource implements QuarkusTestResourceLifecycleManager {
     return Map.of(
       "flexmodel.datasource.db-kind", "sqlite",
       "flexmodel.datasource.url", "jdbc:sqlite:file::memory:?cache=shared",
+//      "flexmodel.datasource.url", "jdbc:sqlite:file:sqlite.db",
       "flexmodel.datasource.username", "",
       "flexmodel.datasource.password", "",
       "SQLITE_URL", "jdbc:sqlite:file::memory:?cache=shared",
+//      "SQLITE_URL", "jdbc:sqlite:file:sqlite.db",
       "SQLITE_USERNAME", "",
       "SQLITE_PASSWORD", "");
   }
