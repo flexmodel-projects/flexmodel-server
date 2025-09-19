@@ -5,6 +5,7 @@ model f_datasource {
   createdAt? : DateTime @default(now()),
   updatedAt? : DateTime @default(now()),
   enabled : Boolean @comment("数据源") @default("true"),
+  @comment("数据源")
 }
 model f_api_definition {
   id : String @id @unique @default(uuid()),
@@ -17,6 +18,7 @@ model f_api_definition {
   updatedAt : DateTime @default(now()),
   meta? : JSON,
   enabled : Boolean @comment("是否开启") @default("true"),
+  @comment("API定义")
 }
 model f_api_request_log {
   id : String @id @default(uuid()),
@@ -34,7 +36,8 @@ model f_api_request_log {
   @index(fields: [created_at]),
   @index(fields: [is_error]),
   @index(fields: [endpoint, created_at]),
-  @index(fields: [status_code, created_at])
+  @index(fields: [status_code, created_at]),
+  @comment("API请求日志")
 }
 model f_identity_provider {
   name : String @id,
@@ -50,11 +53,14 @@ model f_config {
   updatedAt : DateTime @default(now()),
   @comment("配置"),
   @index(name:"IDX_CONFIG_KEY", unique: "true", fields: [key]),
+  @comment("系统配置")
 }
 model Teacher {
   id : Long @id @default(autoIncrement()),
   teacherName? : String @length("255"),
   subject? : String @length("255"),
+  @index(name:"IDX_TEACHER_NAME", unique: "false", fields: [teacherName]),
+  @comment("教师")
 }
 model Student {
   id : Long @id @default(autoIncrement()),
@@ -67,23 +73,28 @@ model Student {
   studentDetail? : StudentDetail @relation(localField: "id", foreignField: "studentId", cascadeDelete: "true"),
   @index(name: "IDX_STUDENT_NAME",unique: "false", fields: [studentName]),
   @index(name:"IDX_CLASS_ID", unique: "false", fields: [classId]),
+  @comment("学生")
 }
 model StudentDetail {
   id : Long @id @default(autoIncrement()),
   studentId? : Long,
   student? : Student @comment("学生") @relation(localField: "studentId", foreignField: "id", cascadeDelete: "false"),
   description? : String @length("255"),
+  @comment("学生详情")
 }
 model Classes {
   id : Long @id @default(autoIncrement()),
   classCode? : String @length("255"),
   className? : String @length("255"),
   students? : Student[] @relation(localField: "id", foreignField: "classId", cascadeDelete: "true"),
+  @index(name:"IDX_CLASS_CODE", unique: "false", fields: [classCode]),
+  @comment("班级")
 }
 model Course {
   courseNo : String @id @default(uuid()),
   courseName? : String @length("255"),
   @index(name:"IDX_COURSE_NO", unique: "false", fields: [courseNo]),
+  @comment("课程")
 }
 model f_user {
     id : String @id @default(uuid()),
@@ -129,7 +140,7 @@ model f_em_flow_definition {
   caller?: String @comment("调用方"),
 
   @index(name: "IDX_flow_define_module", fields: [flow_module_id])
-  @comment("流程定义表")
+  @comment("流程定义")
 }
 
 model f_em_flow_deployment {
@@ -151,7 +162,7 @@ model f_em_flow_deployment {
 
   @index(name: "IDX_flow_deploy", fields: [flow_deploy_id]),
   @index(name: "IDX_flow_module", fields: [flow_module_id])
-  @comment("流程部署表")
+  @comment("流程部署")
 }
 
 model f_ei_flow_instance {
@@ -169,7 +180,7 @@ model f_ei_flow_instance {
   caller?: String @comment("调用方"),
 
   @index(name: "IDX_flow_instance", fields: [flow_instance_id])
-  @comment("流程执行实例表")
+  @comment("流程执行实例")
 }
 
 model f_ei_flow_instance_mapping {
@@ -187,7 +198,7 @@ model f_ei_flow_instance_mapping {
   caller?: String @default("optimus-prime") @comment("调用方"),
 
   @index(name: "IDX_ei_flow_node", fields: [flow_instance_id])
-  @comment("父子流程实例映射表")
+  @comment("父子流程实例映射")
 }
 
 model f_ei_node_instance {
@@ -210,7 +221,7 @@ model f_ei_node_instance {
 
   @index(name: "IDX_node_instance_id", fields: [node_instance_id]),
   @index(name: "IDX_fiid_sniid_nk", fields: [flow_instance_id, source_node_instance_id, node_key]),
-  @comment("节点执行实例表")
+  @comment("节点执行实例")
 }
 
 model f_ei_node_instance_log {
@@ -227,7 +238,7 @@ model f_ei_node_instance_log {
   tenant?: String @comment("租户"),
   caller?: String @comment("调用方"),
 
-  @comment("节点执行记录表")
+  @comment("节点执行记录")
 }
 
 model f_ei_instance_data {
@@ -248,27 +259,7 @@ model f_ei_instance_data {
 
   @index(name: "IDX_instance_data_id", fields: [instance_data_id]),
   @index(name: "IDX_flow_instance", fields: [flow_instance_id]),
-  @comment("实例数据表")
-}
-
-enum ApiType {
-  FOLDER,
-  API
-}
-enum DatasourceType {
-  SYSTEM,
-  USER
-}
-enum UserGender {
-  UNKNOWN,
-  MALE,
-  FEMALE
-}
-enum user_interest {
-  chang,
-  tiao,
-  rap,
-  daLanQiu
+  @comment("实例数据")
 }
 
 // Quartz 持久化表模型（根据提供的表结构生成）
@@ -292,7 +283,7 @@ model f_qrtz_job_detail {
   @index(name:"UQ_QRTZ_JOB_DETAILS_PK", unique: "true", fields: [sched_name, job_name, job_group]),
   @index(name:"IDX_QRTZ_J_REQ_RECOVERY", unique: "false", fields: [sched_name, requests_recovery]),
   @index(name:"IDX_QRTZ_J_GRP", unique: "false", fields: [sched_name, job_group]),
-  @comment("Quartz 任务明细表")
+  @comment("Quartz 任务明细")
 }
 
 model f_qrtz_trigger {
@@ -326,7 +317,7 @@ model f_qrtz_trigger {
   @index(name:"IDX_QRTZ_T_NFT_MISFIRE", unique: "false", fields: [sched_name, misfire_instr, next_fire_time]),
   @index(name:"IDX_QRTZ_T_NFT_ST_MISFIRE", unique: "false", fields: [sched_name, misfire_instr, next_fire_time, trigger_state]),
   @index(name:"IDX_QRTZ_T_NFT_ST_MISFIRE_GRP", unique: "false", fields: [sched_name, misfire_instr, next_fire_time, trigger_group, trigger_state]),
-  @comment("Quartz 触发器表")
+  @comment("Quartz 触发器")
 }
 
 model f_qrtz_simple_trigger {
@@ -338,7 +329,7 @@ model f_qrtz_simple_trigger {
   repeat_interval : Long @comment("重复间隔(毫秒)"),
   times_triggered : Long @comment("已触发次数"),
   @index(name:"UQ_QRTZ_SIMPLE_TRIGGERS_PK", unique: "true", fields: [sched_name, trigger_name, trigger_group]),
-  @comment("Quartz Simple 类型触发器明细表")
+  @comment("Quartz Simple 类型触发器明细")
 }
 
 model f_qrtz_cron_trigger {
@@ -349,7 +340,7 @@ model f_qrtz_cron_trigger {
   cron_expression : String @length("120") @comment("CRON 表达式"),
   time_zone_id? : String @length("80") @comment("时区标识"),
   @index(name:"UQ_QRTZ_CRON_TRIGGERS_PK", unique: "true", fields: [sched_name, trigger_name, trigger_group]),
-  @comment("Quartz Cron 类型触发器明细表")
+  @comment("Quartz Cron 类型触发器明细")
 }
 
 model f_qrtz_simprop_trigger {
@@ -369,7 +360,7 @@ model f_qrtz_simprop_trigger {
   bool_prop_1? : Boolean @comment("布尔属性1(原 VARCHAR(1))"),
   bool_prop_2? : Boolean @comment("布尔属性2(原 VARCHAR(1))"),
   @index(name:"UQ_QRTZ_SIMPROP_TRIGGERS_PK", unique: "true", fields: [sched_name, trigger_name, trigger_group]),
-  @comment("Quartz Simprop 类型触发器明细表")
+  @comment("Quartz Simprop 类型触发器明细")
 }
 
 model f_qrtz_blob_trigger {
@@ -380,7 +371,7 @@ model f_qrtz_blob_trigger {
   blob_data? : JSON @comment("触发器二进制数据(原 BLOB)"),
   @index(name:"UQ_QRTZ_BLOB_TRIGGERS_PK", unique: "true", fields: [sched_name, trigger_name, trigger_group]),
   @index(name:"IDX_QRTZ_BLOB_TRIG", unique: "false", fields: [sched_name, trigger_name, trigger_group]),
-  @comment("Quartz Blob 类型触发器明细表")
+  @comment("Quartz Blob 类型触发器明细")
 }
 
 model f_qrtz_calendar {
@@ -389,7 +380,7 @@ model f_qrtz_calendar {
   calendar_name : String @length("190") @comment("日历名称"),
   calendar : String @comment("日历数据(原 BLOB)"),
   @index(name:"UQ_QRTZ_CALENDARS_PK", unique: "true", fields: [sched_name, calendar_name]),
-  @comment("Quartz 日历表")
+  @comment("Quartz 日历")
 }
 
 model f_qrtz_paused_trigger_grp {
@@ -397,7 +388,7 @@ model f_qrtz_paused_trigger_grp {
   sched_name : String @length("120") @comment("调度器名称"),
   trigger_group : String @length("190") @comment("触发器分组"),
   @index(name:"UQ_QRTZ_PAUSED_TRIGGER_GRPS_PK", unique: "true", fields: [sched_name, trigger_group]),
-  @comment("Quartz 已暂停触发器分组表")
+  @comment("Quartz 已暂停触发器分组")
 }
 
 model f_qrtz_fired_trigger {
@@ -422,7 +413,7 @@ model f_qrtz_fired_trigger {
   @index(name:"IDX_QRTZ_FT_JG", unique: "false", fields: [sched_name, job_group]),
   @index(name:"IDX_QRTZ_FT_T_G", unique: "false", fields: [sched_name, trigger_name, trigger_group]),
   @index(name:"IDX_QRTZ_FT_TG", unique: "false", fields: [sched_name, trigger_group]),
-  @comment("Quartz 已触发触发器记录表")
+  @comment("Quartz 已触发触发器记录")
 }
 
 model f_qrtz_scheduler_state {
@@ -432,7 +423,7 @@ model f_qrtz_scheduler_state {
   last_checkin_time : Long @comment("最后检查时间(毫秒)"),
   checkin_interval : Long @comment("检查间隔(毫秒)"),
   @index(name:"UQ_QRTZ_SCHEDULER_STATE_PK", unique: "true", fields: [sched_name, instance_name]),
-  @comment("Quartz 调度器状态表")
+  @comment("Quartz 调度器状态")
 }
 
 model f_qrtz_lock {
@@ -440,5 +431,44 @@ model f_qrtz_lock {
   sched_name : String @length("120") @comment("调度器名称"),
   lock_name : String @length("40") @comment("锁名称"),
   @index(name:"UQ_QRTZ_LOCKS_PK", unique: "true", fields: [sched_name, lock_name]),
-  @comment("Quartz 锁表")
+  @comment("Quartz 锁")
+}
+
+model f_trigger {
+  id : String @id @default(uuid()),
+  name : String @comment("描述"),
+  description? : String @length("100") @comment("描述"),
+  type: TriggerType @comment("触发器类型"),
+  config: JSON @comment("触发器配置"),
+  executor_id: String @length("50") @comment("执行器的ID"),
+  executor_type: String @length("50") @default("FLOW") @comment("执行器的类型"),
+  state: Boolean @default(true) @comment("状态"),
+  @index(name:"UQ_TRIGGER_PK", unique: "true", fields: [id]),
+  @comment("触发器配置")
+}
+
+enum TriggerType {
+  EVENT,
+  SCHEDULED
+}
+
+
+enum ApiType {
+  FOLDER,
+  API
+}
+enum DatasourceType {
+  SYSTEM,
+  USER
+}
+enum UserGender {
+  UNKNOWN,
+  MALE,
+  FEMALE
+}
+enum user_interest {
+  chang,
+  tiao,
+  rap,
+  daLanQiu
 }

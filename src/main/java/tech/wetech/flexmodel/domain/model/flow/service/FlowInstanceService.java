@@ -155,7 +155,7 @@ public class FlowInstanceService {
     flowInstanceTreeResult.setRootFlowInstancePOJO(flowInstance);
 
     FlowInstance rootFlowInstance = flowInstanceRepository.selectByFlowInstanceId(rootFlowInstanceId);
-    FlowDeployment rootFlowDeployment = flowDeploymentRepository.selectByDeployId(rootFlowInstance.getFlowDeployId());
+    FlowDeployment rootFlowDeployment = flowDeploymentRepository.findByDeployId(rootFlowInstance.getFlowDeployId());
     Map<String, FlowElement> rootFlowElementMap = FlowModelUtil.getFlowElementMap(rootFlowDeployment.getFlowModel());
 
     List<NodeInstance> nodeInstancePOList = nodeInstanceRepository.selectDescByFlowInstanceId(rootFlowInstanceId);

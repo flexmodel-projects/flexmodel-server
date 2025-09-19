@@ -178,7 +178,7 @@ public class DefinitionProcessor {
   }
 
   private FlowModuleResult getFlowModuleByFlowDeployId(String flowDeployId) throws ParamException {
-    FlowDeployment flowDeploymentPO = flowDeploymentRepository.selectByDeployId(flowDeployId);
+    FlowDeployment flowDeploymentPO = flowDeploymentRepository.findByDeployId(flowDeployId);
     if (flowDeploymentPO == null) {
       LOGGER.warn("getFlowModuleByFlowDeployId failed: can not find flowDefinitionPO.||flowDeployId={}", flowDeployId);
       throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDefinitionPO is not exist");

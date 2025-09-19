@@ -3,6 +3,7 @@ package tech.wetech.flexmodel.infrastructure.quartz;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.Calendar;
+import org.quartz.Trigger;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.*;
 import tech.wetech.flexmodel.codegen.entity.*;

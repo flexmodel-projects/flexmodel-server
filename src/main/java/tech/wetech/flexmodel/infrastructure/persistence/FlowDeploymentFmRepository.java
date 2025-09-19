@@ -21,7 +21,7 @@ public class FlowDeploymentFmRepository implements FlowDeploymentRepository {
   }
 
   @Override
-  public FlowDeployment selectByDeployId(String flowDeployId) {
+  public FlowDeployment findByDeployId(String flowDeployId) {
     return session.dsl()
       .selectFrom(FlowDeployment.class)
       .where(field(FlowDeployment::getFlowDeployId).eq(flowDeployId))
@@ -29,7 +29,7 @@ public class FlowDeploymentFmRepository implements FlowDeploymentRepository {
   }
 
   @Override
-  public FlowDeployment selectRecentByFlowModuleId(String flowModuleId) {
+  public FlowDeployment findRecentByFlowModuleId(String flowModuleId) {
     return session.dsl()
       .selectFrom(FlowDeployment.class)
       .where(field(FlowDeployment::getFlowModuleId).eq(flowModuleId))
@@ -51,6 +51,17 @@ public class FlowDeploymentFmRepository implements FlowDeploymentRepository {
       .selectFrom(FlowDeployment.class)
       .where(filter)
       .count();
+  }
+
+  @Override
+  public FlowDeployment findRecentByFlowKey(String flowKey) {
+    return session.dsl()
+      .selectFrom(FlowDeployment.class)
+      .where(field(FlowDeployment::getFlowKey)
+        .eq(flowKey))
+      .orderByDesc(FlowDeployment::getId)
+      .limit(1)
+      .executeOne();
   }
 }
 

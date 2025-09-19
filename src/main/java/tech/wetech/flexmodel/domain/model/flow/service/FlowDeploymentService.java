@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.domain.model.flow.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDeploymentRepository;
 import tech.wetech.flexmodel.query.Predicate;
 
@@ -16,6 +17,10 @@ public class FlowDeploymentService {
 
   public long count(Predicate filter) {
     return flowDeploymentRepository.count(filter);
+  }
+
+  public FlowDeployment findRecentByFlowKey(String flowKey) {
+    return flowDeploymentRepository.findRecentByFlowKey(flowKey);
   }
 
 }

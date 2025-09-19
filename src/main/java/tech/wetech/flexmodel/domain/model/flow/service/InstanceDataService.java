@@ -49,7 +49,7 @@ public class InstanceDataService {
       return instanceData;
     }
     FlowInstance flowInstance = flowInstanceRepository.selectByFlowInstanceId(flowInstanceId);
-    FlowDeployment flowDeployment = flowDeploymentRepository.selectByDeployId(flowInstance.getFlowDeployId());
+    FlowDeployment flowDeployment = flowDeploymentRepository.findByDeployId(flowInstance.getFlowDeployId());
     Map<String, FlowElement> flowElementMap = FlowModelUtil.getFlowElementMap(flowDeployment.getFlowModel());
 
     NodeInstance nodeInstance = nodeInstanceRepository.selectRecentOne(flowInstanceId);

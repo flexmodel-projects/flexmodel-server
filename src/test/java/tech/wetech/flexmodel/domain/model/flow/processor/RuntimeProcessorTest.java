@@ -37,7 +37,7 @@ public class RuntimeProcessorTest {
   private StartProcessResult startProcess() throws Exception {
     // prepare
     FlowDeployment flowDeployment = EntityBuilder.buildSpecialFlowDeployment();
-    FlowDeployment _flowDeployment = flowDeploymentRepository.selectByDeployId(flowDeployment.getFlowDeployId());
+    FlowDeployment _flowDeployment = flowDeploymentRepository.findByDeployId(flowDeployment.getFlowDeployId());
     if (_flowDeployment != null) {
       if (!Objects.equals(_flowDeployment.getFlowModel(), flowDeployment.getFlowModel())) {
         flowDeploymentRepository.deleteById(_flowDeployment.getId());

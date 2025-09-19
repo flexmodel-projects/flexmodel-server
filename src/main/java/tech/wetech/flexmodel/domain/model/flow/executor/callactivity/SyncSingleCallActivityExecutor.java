@@ -188,7 +188,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
 
   private RuntimeResult getSubFlowInstanceFirstUserTask(String subFlowInstanceId) {
     FlowInstance subFlowInstance = processInstanceRepository.selectByFlowInstanceId(subFlowInstanceId);
-    FlowDeployment subFlowDeploymentPO = flowDeploymentRepository.selectByDeployId(subFlowInstance.getFlowDeployId());
+    FlowDeployment subFlowDeploymentPO = flowDeploymentRepository.findByDeployId(subFlowInstance.getFlowDeployId());
     Map<String, FlowElement> subFlowElementMap = FlowModelUtil.getFlowElementMap(subFlowDeploymentPO.getFlowModel());
 
     List<tech.wetech.flexmodel.codegen.entity.NodeInstance> nodeInstancePOList = nodeInstanceRepository.selectByFlowInstanceId(subFlowInstanceId);

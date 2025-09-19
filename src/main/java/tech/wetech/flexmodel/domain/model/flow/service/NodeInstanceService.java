@@ -44,7 +44,7 @@ public class NodeInstanceService {
 
   public NodeInstance selectRecentEndNode(String flowInstanceId) {
     FlowInstance rootFlowInstance = processInstanceRepository.selectByFlowInstanceId(flowInstanceId);
-    FlowDeployment rootFlowDeployment = flowDeploymentRepository.selectByDeployId(rootFlowInstance.getFlowDeployId());
+    FlowDeployment rootFlowDeployment = flowDeploymentRepository.findByDeployId(rootFlowInstance.getFlowDeployId());
     Map<String, FlowElement> rootFlowElementMap = FlowModelUtil.getFlowElementMap(rootFlowDeployment.getFlowModel());
 
     List<NodeInstance> nodeInstanceList = nodeInstanceRepository.selectDescByFlowInstanceId(flowInstanceId);
