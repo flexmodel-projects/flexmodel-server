@@ -19,7 +19,7 @@ import java.util.List;
  * @author cjbi
  */
 @ApplicationScoped
-public class TriggerApplicationService {
+public class ScheduleApplicationService {
 
   @Inject
   TriggerService triggerService;
@@ -29,6 +29,9 @@ public class TriggerApplicationService {
   Scheduler scheduler;
 
   private TriggerDTO toTriggerDTO(Trigger trigger) {
+    if (trigger == null) {
+      return null;
+    }
     TriggerDTO dto = new TriggerDTO();
     dto.setId(trigger.getId());
     dto.setName(trigger.getName());
@@ -38,7 +41,9 @@ public class TriggerApplicationService {
     dto.setJobId(trigger.getJobId());
     dto.setJobType(trigger.getJobType());
     dto.setState(trigger.getState());
-    FlowDeployment flowDeployment = flowService.findRecentByFlowKey(trigger.getJobId());
+    dto.setCreatedAt(trigger.getCreatedAt());
+    dto.setUpdatedAt(trigger.getUpdatedAt());
+    FlowDeployment flowDeployment = flowService.findRecentByFlowModuleId(trigger.getJobId());
     if (flowDeployment != null) {
       dto.setJobName(flowDeployment.getFlowName());
     }
@@ -65,7 +70,7 @@ public class TriggerApplicationService {
     triggerService.deleteById(id);
   }
 
-  public PageDTO<TriggerDTO> find(String name, Integer page, Integer size) {
+  public PageDTO<TriggerDTO> findPage(String name, Integer page, Integer size) {
     Predicate filter = Expressions.TRUE;
     if (name != null) {
       filter = filter.and(Expressions.field("name").eq(name));

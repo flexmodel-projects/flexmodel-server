@@ -96,8 +96,9 @@ public class FlowResource {
     )})
   @GET
   public PageDTO<FlowModuleResponse> findFlowList(
-    @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.QUERY)
+    @Parameter(name = "flowKey", description = "流程模块ID", in = ParameterIn.QUERY)
     @QueryParam("flowModuleId") String flowModuleId,
+    @QueryParam("flowKey") String flowKey,
     @Parameter(name = "flowName", description = "流程名称", in = ParameterIn.QUERY)
     @QueryParam("flowName") String flowName,
     @Parameter(name = "page", description = "页码", in = ParameterIn.QUERY)
@@ -106,6 +107,7 @@ public class FlowResource {
     @QueryParam("size") @DefaultValue("20") Integer size) {
     FlowModuleListRequest request = new FlowModuleListRequest();
     request.setFlowModuleId(flowModuleId);
+    request.setFlowKey(flowKey);
     request.setFlowName(flowName);
     request.setPage(page);
     request.setSize(size);

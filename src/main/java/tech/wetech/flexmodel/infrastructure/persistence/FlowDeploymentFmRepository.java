@@ -53,16 +53,6 @@ public class FlowDeploymentFmRepository implements FlowDeploymentRepository {
       .count();
   }
 
-  @Override
-  public FlowDeployment findRecentByFlowKey(String flowKey) {
-    return session.dsl()
-      .selectFrom(FlowDeployment.class)
-      .where(field(FlowDeployment::getFlowKey)
-        .eq(flowKey))
-      .orderByDesc(FlowDeployment::getId)
-      .limit(1)
-      .executeOne();
-  }
 }
 
 

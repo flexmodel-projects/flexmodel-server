@@ -60,6 +60,9 @@ public class FlowApplicationService {
     if (StringUtils.isNotBlank(request.getFlowModuleId())) {
       predicate = predicate.and(Expressions.field(FlowDefinition::getFlowModuleId).eq(request.getFlowModuleId()));
     }
+    if (StringUtils.isNotBlank(request.getFlowKey())) {
+      predicate = predicate.and(Expressions.field(FlowDefinition::getFlowKey).eq(request.getFlowKey()));
+    }
     if (StringUtils.isNotBlank(request.getFlowName())) {
       predicate = predicate.and(Expressions.field(FlowDefinition::getFlowName).contains(request.getFlowName()));
     }

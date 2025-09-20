@@ -10,6 +10,8 @@ import lombok.Setter;
 @Setter
 public class FlowModuleListRequest {
   private String flowModuleId;
+  private String flowKey;
+  private Integer status;
   private String flowName;
   private Integer page;
   private Integer size;

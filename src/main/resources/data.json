@@ -300,6 +300,109 @@
           "created_at": "2025-08-30 19:58:23.000"
         }
       ]
+    },
+    {
+      "modelName": "f_trigger",
+      "values": [
+        {
+          "id": "bf492f37-1f01-4eb8-b76d-d319299b4d8e",
+          "name": "定时触发-间隔触发",
+          "description": "1111",
+          "type": "SCHEDULED",
+          "config": {
+            "interval": 1,
+            "intervalUnit": "minute",
+            "repeatCount": 100
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "state": 1,
+          "created_at": "2025-09-20T20:48:11.122367",
+          "updated_at": "2025-09-20T20:48:11.122367"
+        },
+        {
+          "id": "d8c60d2a-19d8-4c3c-b370-96318733858f",
+          "name": "定时触发-Cron表达式",
+          "description": "2222",
+          "type": "SCHEDULED",
+          "config": {
+            "cronExpression": "0 0 12 * * ?"
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "state": 1,
+          "created_at": "2025-09-20T20:59:41.575981800",
+          "updated_at": "2025-09-20T20:59:41.575981800"
+        },
+        {
+          "id": "78505887-128a-4b24-a637-42ea8836a69b",
+          "name": "定时触发-每日时间段",
+          "description": "3333",
+          "type": "SCHEDULED",
+          "config": {
+            "startTime": "2025-09-20T01:00:00.000Z",
+            "endTime": "2025-09-20T10:00:00.000Z",
+            "interval": 1,
+            "intervalUnit": "minute",
+            "daysOfWeek": [
+              1,
+              4,
+              7,
+              5,
+              2,
+              3,
+              6
+            ]
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "state": 1,
+          "created_at": "2025-09-20T21:00:47.412662100",
+          "updated_at": "2025-09-20T21:00:47.412662100"
+        },
+        {
+          "id": "9434666d-6b3b-417a-80e3-3352f40ded71",
+          "name": "事件触发-之前",
+          "description": "事件触发-之前\t-描述",
+          "type": "EVENT",
+          "config": {
+            "datasourceName": "system",
+            "modelName": "Student",
+            "mutationTypes": [
+              "delete",
+              "update",
+              "create"
+            ],
+            "triggerTiming": "after"
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "state": 1,
+          "created_at": "2025-09-20T21:02:53.160394200",
+          "updated_at": "2025-09-20T21:02:53.160394200"
+        },
+        {
+          "id": "f351b8d9-a450-4f2c-8fff-cf862d690352",
+          "name": "事件触发-之后",
+          "description": "事件触发-之后-描述",
+          "type": "EVENT",
+          "config": {
+            "datasourceName": "system",
+            "modelName": "Classes",
+            "mutationTypes": [
+              "create",
+              "update",
+              "delete"
+            ],
+            "triggerTiming": "after"
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "state": 1,
+          "created_at": "2025-09-20T21:02:43.009589",
+          "updated_at": "2025-09-20T21:02:43.010580600"
+        }
+      ]
     }
   ]
 }

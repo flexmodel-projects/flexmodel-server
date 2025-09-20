@@ -17,5 +17,4 @@ public interface FlowDeploymentRepository {
 
   long count(Predicate filter);
 
-  FlowDeployment findRecentByFlowKey(String flowKey);
 }

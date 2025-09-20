@@ -19,8 +19,8 @@ public class FlowDeploymentService {
     return flowDeploymentRepository.count(filter);
   }
 
-  public FlowDeployment findRecentByFlowKey(String flowKey) {
-    return flowDeploymentRepository.findRecentByFlowKey(flowKey);
+  public FlowDeployment findRecentByFlowModuleId(String flowKey) {
+    return flowDeploymentRepository.findRecentByFlowModuleId(flowKey);
   }
 
 }
