@@ -1,12 +1,5 @@
 package tech.wetech.flexmodel.interfaces.rest;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
-import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -43,19 +36,7 @@ import java.util.stream.Collectors;
 @SecurityRequirement(name = "BearerAuth")
 public class MetricsResource {
 
-  @Inject
-  MeterRegistry meterRegistry;
-
   private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
-
-  @PostConstruct
-  public void init() {
-    // 绑定Micrometer内置的指标收集器
-    new JvmMemoryMetrics().bindTo(meterRegistry);
-    new JvmGcMetrics().bindTo(meterRegistry);
-    new ProcessorMetrics().bindTo(meterRegistry);
-    new JvmThreadMetrics().bindTo(meterRegistry);
-  }
 
   /**
    * JVM监控信息

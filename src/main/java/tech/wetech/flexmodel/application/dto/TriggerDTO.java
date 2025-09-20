@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 
+import java.time.LocalDateTime;
+
 /**
  * @author cjbi
  */
@@ -11,6 +13,8 @@ import tech.wetech.flexmodel.codegen.entity.Trigger;
 @Setter
 public class TriggerDTO extends Trigger {
 
-  private String executorName;
+  private String jobName;
+  private LocalDateTime nextFireTime;
+  private LocalDateTime previousFireTime;
 
 }

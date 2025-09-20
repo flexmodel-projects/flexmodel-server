@@ -440,10 +440,12 @@ model f_trigger {
   description? : String @length("100") @comment("描述"),
   type: TriggerType @comment("触发器类型"),
   config: JSON @comment("触发器配置"),
-  executor_id: String @length("50") @comment("执行器的ID"),
-  executor_type: String @length("50") @default("FLOW") @comment("执行器的类型"),
+  job_type: String @length("50") @default("FLOW") @comment("作业的类型"),
+  job_id: String @length("50") @comment("作业的ID"),
   state: Boolean @default(true) @comment("状态"),
   @index(name:"UQ_TRIGGER_PK", unique: "true", fields: [id]),
+  created_at? : DateTime @default(now()),
+  updated_at? : DateTime @default(now()),
   @comment("触发器配置")
 }
 

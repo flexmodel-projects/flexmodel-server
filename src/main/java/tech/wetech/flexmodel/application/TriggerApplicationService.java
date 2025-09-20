@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.quartz.Scheduler;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.application.dto.TriggerDTO;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
@@ -9,6 +10,7 @@ import tech.wetech.flexmodel.codegen.entity.Trigger;
 import tech.wetech.flexmodel.domain.model.flow.service.FlowDeploymentService;
 import tech.wetech.flexmodel.domain.model.trigger.TriggerException;
 import tech.wetech.flexmodel.domain.model.trigger.TriggerService;
+import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.query.Predicate;
 
 import java.util.List;
@@ -23,6 +25,8 @@ public class TriggerApplicationService {
   TriggerService triggerService;
   @Inject
   FlowDeploymentService flowService;
+  @Inject
+  Scheduler scheduler;
 
   private TriggerDTO toTriggerDTO(Trigger trigger) {
     TriggerDTO dto = new TriggerDTO();
@@ -31,15 +35,17 @@ public class TriggerApplicationService {
     dto.setDescription(trigger.getDescription());
     dto.setType(trigger.getType());
     dto.setConfig(trigger.getConfig());
-    dto.setExecutorId(trigger.getExecutorId());
-    dto.setExecutorType(trigger.getExecutorType());
+    dto.setJobId(trigger.getJobId());
+    dto.setJobType(trigger.getJobType());
     dto.setState(trigger.getState());
-    FlowDeployment flowDeployment = flowService.findRecentByFlowKey(trigger.getExecutorId());
-    dto.setExecutorName(flowDeployment.getFlowName());
+    FlowDeployment flowDeployment = flowService.findRecentByFlowKey(trigger.getJobId());
+    if (flowDeployment != null) {
+      dto.setJobName(flowDeployment.getFlowName());
+    }
     return dto;
   }
 
-  public Trigger findById(String id) {
+  public TriggerDTO findById(String id) {
     return toTriggerDTO(triggerService.findById(id));
   }
 
@@ -59,7 +65,11 @@ public class TriggerApplicationService {
     triggerService.deleteById(id);
   }
 
-  public PageDTO<TriggerDTO> find(Predicate filter, Integer page, Integer size) {
+  public PageDTO<TriggerDTO> find(String name, Integer page, Integer size) {
+    Predicate filter = Expressions.TRUE;
+    if (name != null) {
+      filter = filter.and(Expressions.field("name").eq(name));
+    }
     long total = triggerService.count(filter);
     if (total == 0) {
       return PageDTO.empty();
@@ -70,4 +80,7 @@ public class TriggerApplicationService {
     return new PageDTO<>(triggers, total);
   }
 
+  public void executeNow(String id) {
+
+  }
 }

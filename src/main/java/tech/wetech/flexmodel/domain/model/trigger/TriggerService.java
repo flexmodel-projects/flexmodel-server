@@ -2,7 +2,6 @@ package tech.wetech.flexmodel.domain.model.trigger;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 import tech.wetech.flexmodel.query.Predicate;
 
