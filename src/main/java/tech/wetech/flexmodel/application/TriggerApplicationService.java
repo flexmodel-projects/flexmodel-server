@@ -11,9 +11,9 @@ import tech.wetech.flexmodel.application.job.ScheduledFlowExecutionJob;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 import tech.wetech.flexmodel.domain.model.flow.service.FlowDeploymentService;
-import tech.wetech.flexmodel.domain.model.trigger.TriggerException;
-import tech.wetech.flexmodel.domain.model.trigger.TriggerService;
-import tech.wetech.flexmodel.domain.model.trigger.config.*;
+import tech.wetech.flexmodel.domain.model.schedule.TriggerException;
+import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
+import tech.wetech.flexmodel.domain.model.schedule.config.*;
 import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
@@ -220,7 +220,7 @@ public class TriggerApplicationService {
 
   private TriggerKey buildTriggerKey(Trigger trigger) {
     String triggerId = trigger.getId();
-    return TriggerKey.triggerKey("trigger-" + triggerId, trigger.getType().name());
+    return TriggerKey.triggerKey("trigger-" + triggerId, trigger.getJobGroup());
   }
 
   /**

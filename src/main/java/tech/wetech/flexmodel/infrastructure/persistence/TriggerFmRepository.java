@@ -3,7 +3,7 @@ package tech.wetech.flexmodel.infrastructure.persistence;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
-import tech.wetech.flexmodel.domain.model.trigger.TriggerRepository;
+import tech.wetech.flexmodel.domain.model.schedule.TriggerRepository;
 import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.session.Session;
 

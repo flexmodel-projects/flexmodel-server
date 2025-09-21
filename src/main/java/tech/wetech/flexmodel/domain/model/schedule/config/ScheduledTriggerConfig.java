@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.domain.model.trigger.config;
+package tech.wetech.flexmodel.domain.model.schedule.config;
 
 /**
  * 定时触发器配置抽象类

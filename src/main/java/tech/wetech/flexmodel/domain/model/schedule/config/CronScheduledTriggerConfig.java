@@ -1,8 +1,8 @@
-package tech.wetech.flexmodel.domain.model.trigger.config;
+package tech.wetech.flexmodel.domain.model.schedule.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import tech.wetech.flexmodel.domain.model.trigger.TriggerException;
+import tech.wetech.flexmodel.domain.model.schedule.TriggerException;
 
 /**
  * Cron表达式定时触发器配置类

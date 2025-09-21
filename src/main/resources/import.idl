@@ -450,6 +450,43 @@ model f_trigger {
   @comment("触发器配置")
 }
 
+model f_job_execution_log {
+  id : String @id @default(uuid()),
+  trigger_id : String @length("50") @comment("触发器ID"),
+  job_id : String @length("50") @comment("作业ID"),
+  job_group : String @length("50") @comment("作业分组"),
+  job_type : String @length("50") @comment("作业类型"),
+  job_name : String @length("255") @comment("作业名称"),
+  execution_status : String @length("20") @comment("执行状态(SUCCESS/FAILED/RUNNING)"),
+  start_time : DateTime @comment("开始执行时间"),
+  end_time? : DateTime @comment("结束执行时间"),
+  execution_duration? : Long @comment("执行时长(毫秒)"),
+  is_success : Boolean @default(false) @comment("是否执行成功"),
+  error_message? : String @length("2000") @comment("错误信息"),
+  error_stack_trace? : JSON @comment("错误堆栈信息"),
+  input_data? : JSON @comment("输入数据"),
+  output_data? : JSON @comment("输出数据"),
+  retry_count : Int @default(0) @comment("重试次数"),
+  max_retry_count : Int @default(0) @comment("最大重试次数"),
+  scheduler_name : String @length("120") @comment("调度器名称"),
+  instance_name : String @length("190") @comment("调度实例名称"),
+  fired_time : Long @comment("实际触发时间(毫秒)"),
+  scheduled_time : Long @comment("计划执行时间(毫秒)"),
+  tenant_id? : String @length("50") @comment("租户ID"),
+  created_at : DateTime @default(now()) @comment("创建时间"),
+  updated_at : DateTime @default(now()) @comment("更新时间"),
+  
+  @index(name:"IDX_JOB_EXEC_TRIGGER_ID", unique: false, fields: [trigger_id]),
+  @index(name:"IDX_JOB_EXEC_JOB_ID", unique: false, fields: [job_id]),
+  @index(name:"IDX_JOB_EXEC_FLOW_INSTANCE", unique: false, fields: [flow_instance_id]),
+  @index(name:"IDX_JOB_EXEC_STATUS", unique: false, fields: [execution_status]),
+  @index(name:"IDX_JOB_EXEC_START_TIME", unique: false, fields: [start_time]),
+  @index(name:"IDX_JOB_EXEC_SUCCESS", unique: false, fields: [is_success]),
+  @index(name:"IDX_JOB_EXEC_TENANT", unique: false, fields: [tenant_id]),
+  @index(name:"IDX_JOB_EXEC_COMPOSITE", unique: false, fields: [trigger_id, start_time]),
+  @comment("作业执行日志")
+}
+
 enum TriggerType {
   EVENT,
   SCHEDULED

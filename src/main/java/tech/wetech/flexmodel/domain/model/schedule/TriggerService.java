@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.domain.model.trigger;
+package tech.wetech.flexmodel.domain.model.schedule;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

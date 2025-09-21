@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.domain.model.trigger.config;
+package tech.wetech.flexmodel.domain.model.schedule.config;
 
 /**
  * 触发器配置接口

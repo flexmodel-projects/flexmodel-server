@@ -2,9 +2,9 @@ package tech.wetech.flexmodel.interfaces.rest.json.jackson.mixin;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import tech.wetech.flexmodel.domain.model.trigger.config.CronScheduledTriggerConfig;
-import tech.wetech.flexmodel.domain.model.trigger.config.EventTriggerConfig;
-import tech.wetech.flexmodel.domain.model.trigger.config.IntervalScheduledTriggerConfig;
+import tech.wetech.flexmodel.domain.model.schedule.config.CronScheduledTriggerConfig;
+import tech.wetech.flexmodel.domain.model.schedule.config.EventTriggerConfig;
+import tech.wetech.flexmodel.domain.model.schedule.config.IntervalScheduledTriggerConfig;
 
 /**
  * 定时触发器配置 MixIn 类

@@ -1,9 +1,9 @@
-package tech.wetech.flexmodel.domain.model.trigger.config;
+package tech.wetech.flexmodel.domain.model.schedule.config;
 
 import lombok.Getter;
 import lombok.Setter;
 import tech.wetech.flexmodel.codegen.StringUtils;
-import tech.wetech.flexmodel.domain.model.trigger.TriggerException;
+import tech.wetech.flexmodel.domain.model.schedule.TriggerException;
 import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 
 import java.util.List;

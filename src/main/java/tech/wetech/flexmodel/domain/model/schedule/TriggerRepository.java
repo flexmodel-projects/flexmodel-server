@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.domain.model.trigger;
+package tech.wetech.flexmodel.domain.model.schedule;
 
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 import tech.wetech.flexmodel.query.Predicate;
