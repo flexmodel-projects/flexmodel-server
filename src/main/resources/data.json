@@ -310,6 +310,7 @@
           "description": "1111",
           "type": "SCHEDULED",
           "config": {
+            "from": "interval",
             "interval": 1,
             "intervalUnit": "minute",
             "repeatCount": 100
@@ -326,6 +327,7 @@
           "description": "2222",
           "type": "SCHEDULED",
           "config": {
+            "from": "cron",
             "cronExpression": "0 0 12 * * ?"
           },
           "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
@@ -340,6 +342,7 @@
           "description": "3333",
           "type": "SCHEDULED",
           "config": {
+            "from": "daily_time_interval",
             "startTime": "2025-09-20T01:00:00.000Z",
             "endTime": "2025-09-20T10:00:00.000Z",
             "interval": 1,
@@ -366,6 +369,7 @@
           "description": "事件触发-之前\t-描述",
           "type": "EVENT",
           "config": {
+            "from": "event",
             "datasourceName": "system",
             "modelName": "Student",
             "mutationTypes": [
@@ -387,6 +391,7 @@
           "description": "事件触发-之后-描述",
           "type": "EVENT",
           "config": {
+            "from": "event",
             "datasourceName": "system",
             "modelName": "Classes",
             "mutationTypes": [
