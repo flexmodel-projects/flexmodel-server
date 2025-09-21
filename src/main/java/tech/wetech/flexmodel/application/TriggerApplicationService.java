@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.application.dto.TriggerDTO;
+import tech.wetech.flexmodel.application.dto.TriggerPageRequest;
 import tech.wetech.flexmodel.application.job.ScheduledFlowExecutionJob;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
@@ -26,7 +27,7 @@ import java.util.List;
  */
 @Slf4j
 @ApplicationScoped
-public class ScheduleApplicationService {
+public class TriggerApplicationService {
 
   @Inject
   TriggerService triggerService;
@@ -61,9 +62,24 @@ public class ScheduleApplicationService {
     return toTriggerDTO(triggerService.findById(id));
   }
 
+  private String getJobGroup(Trigger trigger, TriggerConfig triggerConfig) {
+    if (triggerConfig instanceof EventTriggerConfig eventTriggerConfig) {
+      return eventTriggerConfig.getDatasourceName() + "_" + eventTriggerConfig.getModelName();
+    } else {
+      if (triggerConfig instanceof ScheduledTriggerConfig) {
+        FlowDeployment flowDeployment = flowService.findRecentByFlowModuleId(trigger.getJobId());
+        if (flowDeployment != null) {
+          return flowDeployment.getFlowKey();
+        }
+      }
+    }
+    return null;
+  }
+
   public Trigger create(Trigger trigger) {
-    trigger = triggerService.save(trigger);
     TriggerConfig triggerConfig = JsonUtils.getInstance().convertValue(trigger.getConfig(), TriggerConfig.class);
+    trigger.setJobGroup(getJobGroup(trigger, triggerConfig));
+    trigger = triggerService.save(trigger);
     // 规则校验
     triggerConfig.validate();
     if (triggerConfig instanceof ScheduledTriggerConfig scheduledTriggerConfig) {
@@ -83,6 +99,7 @@ public class ScheduleApplicationService {
     TriggerConfig triggerConfig = JsonUtils.getInstance().convertValue(req.getConfig(), TriggerConfig.class);
     // 规则校验
     triggerConfig.validate();
+    req.setJobId(getJobGroup(req, triggerConfig));
     if (triggerConfig instanceof ScheduledTriggerConfig scheduledTriggerConfig) {
       // 实现定时任务调度
       try {
@@ -118,18 +135,27 @@ public class ScheduleApplicationService {
     triggerService.deleteById(id);
   }
 
-  public PageDTO<TriggerDTO> findPage(String name, Integer page, Integer size) {
+  public PageDTO<TriggerDTO> findPage(TriggerPageRequest request) {
     Predicate filter = Expressions.TRUE;
-    if (name != null) {
-      filter = filter.and(Expressions.field("name").eq(name));
+    if (request.getName() != null) {
+      filter = filter.and(Expressions.field("name").eq(request.getName()));
+    }
+    if (request.getJobType() != null) {
+      filter = filter.and(Expressions.field("jobType").eq(request.getJobType()));
+    }
+    if (request.getJobId() != null) {
+      filter = filter.and(Expressions.field("jobId").eq(request.getJobId()));
+    }
+    if (request.getJobGroup() != null) {
+      filter = filter.and(Expressions.field("jobGroup").eq(request.getJobGroup()));
     }
     long total = triggerService.count(filter);
     if (total == 0) {
       return PageDTO.empty();
     }
-    List<TriggerDTO> triggers = triggerService.find(filter, page, size).stream()
-        .map(this::toTriggerDTO)
-        .toList();
+    List<TriggerDTO> triggers = triggerService.find(filter, request.getPage(), request.getSize()).stream()
+      .map(this::toTriggerDTO)
+      .toList();
     return new PageDTO<>(triggers, total);
   }
 
@@ -145,11 +171,11 @@ public class ScheduleApplicationService {
 
     // 创建 JobDetail
     JobDetail jobDetail = JobBuilder.newJob(ScheduledFlowExecutionJob.class)
-        .withIdentity("job-" + triggerId, "trigger-group")
-        .withDescription(trigger.getDescription())
-        .usingJobData("triggerId", triggerId)
-        .usingJobData("flowModuleId", trigger.getJobId()) // 这里可能需要根据实际业务逻辑调整
-        .build();
+      .withIdentity("job-" + triggerId, "trigger-group")
+      .withDescription(trigger.getDescription())
+      .usingJobData("triggerId", triggerId)
+      .usingJobData("flowModuleId", trigger.getJobId()) // 这里可能需要根据实际业务逻辑调整
+      .build();
 
     // 创建 Trigger
     org.quartz.Trigger quartzTrigger = createQuartzTrigger(triggerId, config, jobDetail);
@@ -179,20 +205,18 @@ public class ScheduleApplicationService {
    */
   private org.quartz.Trigger createQuartzTrigger(String triggerId, ScheduledTriggerConfig config, JobDetail jobDetail) {
     TriggerBuilder<org.quartz.Trigger> triggerBuilder = TriggerBuilder.newTrigger()
-        .withIdentity("trigger-" + triggerId, "trigger-group")
-        .forJob(jobDetail)
-        .withDescription("定时触发器: " + triggerId);
+      .withIdentity("trigger-" + triggerId, "trigger-group")
+      .forJob(jobDetail)
+      .withDescription("定时触发器: " + triggerId);
 
     // 根据不同的配置类型创建不同的触发器
-    if (config instanceof CronScheduledTriggerConfig cronConfig) {
-      return createCronTrigger(triggerBuilder, cronConfig);
-    } else if (config instanceof IntervalScheduledTriggerConfig intervalConfig) {
-      return createIntervalTrigger(triggerBuilder, intervalConfig);
-    } else if (config instanceof DailyTimeIntervalScheduledTriggerConfig dailyConfig) {
-      return createDailyTimeIntervalTrigger(triggerBuilder, dailyConfig);
-    } else {
-      throw new TriggerException("不支持的定时触发器配置类型: " + config.getClass().getSimpleName());
-    }
+    return switch (config) {
+      case CronScheduledTriggerConfig cronConfig -> createCronTrigger(triggerBuilder, cronConfig);
+      case IntervalScheduledTriggerConfig intervalConfig -> createIntervalTrigger(triggerBuilder, intervalConfig);
+      case DailyTimeIntervalScheduledTriggerConfig dailyConfig ->
+        createDailyTimeIntervalTrigger(triggerBuilder, dailyConfig);
+      default -> throw new TriggerException("不支持的定时触发器配置类型: " + config.getClass().getSimpleName());
+    };
   }
 
   /**
@@ -201,10 +225,10 @@ public class ScheduleApplicationService {
   private org.quartz.Trigger createCronTrigger(TriggerBuilder<org.quartz.Trigger> triggerBuilder,
                                                CronScheduledTriggerConfig config) {
     return triggerBuilder
-        .withSchedule(CronScheduleBuilder.cronSchedule(config.getCronExpression())
-            .withMisfireHandlingInstructionFireAndProceed())
-        .startNow()
-        .build();
+      .withSchedule(CronScheduleBuilder.cronSchedule(config.getCronExpression())
+        .withMisfireHandlingInstructionFireAndProceed())
+      .startNow()
+      .build();
   }
 
   /**
@@ -234,16 +258,16 @@ public class ScheduleApplicationService {
     }
 
     return triggerBuilder
-        .withSchedule(scheduleBuilder.withMisfireHandlingInstructionFireNow())
-        .startNow()
-        .build();
+      .withSchedule(scheduleBuilder.withMisfireHandlingInstructionFireNow())
+      .startNow()
+      .build();
   }
 
   /**
    * 创建每日时间间隔触发器
    */
   private org.quartz.Trigger createDailyTimeIntervalTrigger(TriggerBuilder<org.quartz.Trigger> triggerBuilder,
-                                                           DailyTimeIntervalScheduledTriggerConfig config) {
+                                                            DailyTimeIntervalScheduledTriggerConfig config) {
     DailyTimeIntervalScheduleBuilder scheduleBuilder = DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule();
     // 设置时间间隔
     switch (config.getIntervalUnit().toLowerCase()) {
@@ -273,7 +297,7 @@ public class ScheduleApplicationService {
     }
 
     return triggerBuilder
-        .withSchedule(scheduleBuilder.withMisfireHandlingInstructionFireAndProceed())
-        .build();
+      .withSchedule(scheduleBuilder.withMisfireHandlingInstructionFireAndProceed())
+      .build();
   }
 }

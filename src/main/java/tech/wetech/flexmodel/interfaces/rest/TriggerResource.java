@@ -5,9 +5,10 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import tech.wetech.flexmodel.application.ScheduleApplicationService;
+import tech.wetech.flexmodel.application.TriggerApplicationService;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.application.dto.TriggerDTO;
+import tech.wetech.flexmodel.application.dto.TriggerPageRequest;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 
 /**
@@ -15,10 +16,10 @@ import tech.wetech.flexmodel.codegen.entity.Trigger;
  */
 @ApplicationScoped
 @Tag(name = "【Flexmodel】触发器", description = "触发器管理")
-@Path("/f/schedule/triggers")
-public class ScheduleResource {
+@Path("/f/triggers")
+public class TriggerResource {
   @Inject
-  ScheduleApplicationService scheduleApplicationService;
+  TriggerApplicationService scheduleApplicationService;
 
   @Operation(summary = "获取单个触发器")
   @GET
@@ -30,9 +31,19 @@ public class ScheduleResource {
   @Operation(summary = "获取触发器列表")
   @GET
   public PageDTO<TriggerDTO> findPage(@QueryParam("name") String name,
+                                      @QueryParam("jobType") String jobType,
+                                      @QueryParam("jobId") String jobId,
+                                      @QueryParam("jobGroup") String jobGroup,
                                       @QueryParam("page") @DefaultValue("1") Integer page,
                                       @QueryParam("size") @DefaultValue("15") Integer size) {
-    return scheduleApplicationService.findPage(name, page, size);
+    TriggerPageRequest request = new TriggerPageRequest();
+    request.setName(name);
+    request.setJobType(jobType);
+    request.setJobId(jobId);
+    request.setJobGroup(jobGroup);
+    request.setPage(page);
+    request.setSize(size);
+    return scheduleApplicationService.findPage(request);
   }
 
   @Operation(summary = "创建触发器")

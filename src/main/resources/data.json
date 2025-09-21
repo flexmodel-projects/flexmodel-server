@@ -317,6 +317,7 @@
           },
           "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
           "job_type": "FLOW",
+          "job_group": "testFlowName_1757909108656",
           "state": 1,
           "created_at": "2025-09-20T20:48:11.122367",
           "updated_at": "2025-09-20T20:48:11.122367"
@@ -332,6 +333,7 @@
           },
           "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
           "job_type": "FLOW",
+          "job_group": "testFlowName_1757909108656",
           "state": 1,
           "created_at": "2025-09-20T20:59:41.575981800",
           "updated_at": "2025-09-20T20:59:41.575981800"
@@ -359,6 +361,7 @@
           },
           "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
           "job_type": "FLOW",
+          "job_group": "testFlowName_1757909108656",
           "state": 1,
           "created_at": "2025-09-20T21:00:47.412662100",
           "updated_at": "2025-09-20T21:00:47.412662100"
@@ -381,6 +384,7 @@
           },
           "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
           "job_type": "FLOW",
+          "job_group": "system_Student",
           "state": 1,
           "created_at": "2025-09-20T21:02:53.160394200",
           "updated_at": "2025-09-20T21:02:53.160394200"
@@ -403,6 +407,7 @@
           },
           "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
           "job_type": "FLOW",
+          "job_group": "system_Classes",
           "state": 1,
           "created_at": "2025-09-20T21:02:43.009589",
           "updated_at": "2025-09-20T21:02:43.010580600"
