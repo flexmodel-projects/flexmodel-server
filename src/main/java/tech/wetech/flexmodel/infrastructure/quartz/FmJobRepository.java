@@ -11,6 +11,7 @@ import tech.wetech.flexmodel.codegen.entity.QrtzJobDetail;
 import tech.wetech.flexmodel.codegen.entity.QrtzTrigger;
 import tech.wetech.flexmodel.codegen.entity.QrtzCronTrigger;
 import tech.wetech.flexmodel.codegen.entity.QrtzSimpleTrigger;
+import tech.wetech.flexmodel.codegen.entity.QrtzSimpropTrigger;
 import tech.wetech.flexmodel.codegen.entity.QrtzCalendar;
 import tech.wetech.flexmodel.session.Session;
 import tech.wetech.flexmodel.session.SessionFactory;
@@ -98,6 +99,12 @@ public class FmJobRepository {
     }
   }
 
+  public void upsertSimpropTrigger(QrtzSimpropTrigger simprop) {
+    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
+      session.dsl().mergeInto(QrtzSimpropTrigger.class).values(simprop).execute();
+    }
+  }
+
   public void deleteTrigger(String schedName, String triggerName, String triggerGroup) {
     try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
       session.dsl()
@@ -117,6 +124,12 @@ public class FmJobRepository {
         .where(field(QrtzCronTrigger::getSchedName).eq(schedName)
           .and(field(QrtzCronTrigger::getTriggerName).eq(triggerName))
           .and(field(QrtzCronTrigger::getTriggerGroup).eq(triggerGroup)))
+        .execute();
+      session.dsl()
+        .deleteFrom(QrtzSimpropTrigger.class)
+        .where(field(QrtzSimpropTrigger::getSchedName).eq(schedName)
+          .and(field(QrtzSimpropTrigger::getTriggerName).eq(triggerName))
+          .and(field(QrtzSimpropTrigger::getTriggerGroup).eq(triggerGroup)))
         .execute();
     }
   }
@@ -149,6 +162,7 @@ public class FmJobRepository {
     try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
       session.dsl().deleteFrom(QrtzSimpleTrigger.class).execute();
       session.dsl().deleteFrom(QrtzCronTrigger.class).execute();
+      session.dsl().deleteFrom(QrtzSimpropTrigger.class).execute();
       session.dsl().deleteFrom(QrtzTrigger.class).execute();
       session.dsl().deleteFrom(QrtzJobDetail.class).execute();
       session.dsl().deleteFrom(QrtzCalendar.class).execute();
@@ -297,6 +311,17 @@ public class FmJobRepository {
         .where(field(QrtzSimpleTrigger::getSchedName).eq(schedName)
           .and(field(QrtzSimpleTrigger::getTriggerName).eq(triggerName))
           .and(field(QrtzSimpleTrigger::getTriggerGroup).eq(triggerGroup)))
+        .executeOne();
+    }
+  }
+
+  public QrtzSimpropTrigger findSimpropMeta(String schedName, String triggerName, String triggerGroup) {
+    try (Session session = sessionFactory.createSession(DEFAULT_SCHEMA_NAME)) {
+      return session.dsl()
+        .selectFrom(QrtzSimpropTrigger.class)
+        .where(field(QrtzSimpropTrigger::getSchedName).eq(schedName)
+          .and(field(QrtzSimpropTrigger::getTriggerName).eq(triggerName))
+          .and(field(QrtzSimpropTrigger::getTriggerGroup).eq(triggerGroup)))
         .executeOne();
     }
   }

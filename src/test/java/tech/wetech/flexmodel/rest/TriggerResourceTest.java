@@ -38,7 +38,7 @@ public class TriggerResourceTest {
           "description": "测试描述",
           "type": "SCHEDULED",
           "config": {
-              "from": "interval",
+              "type": "interval",
               "interval": 5,
               "intervalUnit": "minute",
               "repeatCount": 10
@@ -122,7 +122,7 @@ public class TriggerResourceTest {
           "description": "测试描述",
           "type": "SCHEDULED",
           "config": {
-              "from": "interval",
+              "type": "interval",
               "interval": 5,
               "intervalUnit": "minute",
               "repeatCount": 10
@@ -164,7 +164,7 @@ public class TriggerResourceTest {
           "description": "测试Cron描述",
           "type": "SCHEDULED",
           "config": {
-              "from": "cron",
+              "type": "cron",
               "cronExpression": "0 0 8 * * ?"
           },
           "jobId": "%s",
@@ -198,7 +198,7 @@ public class TriggerResourceTest {
           "description": "测试事件描述",
           "type": "EVENT",
           "config": {
-              "from": "event",
+              "type": "event",
               "datasourceName": "system",
               "modelName": "Student",
               "mutationTypes": ["create", "update"],
@@ -238,7 +238,7 @@ public class TriggerResourceTest {
           "description": "更新后的描述",
           "type": "SCHEDULED",
           "config": {
-              "from": "interval",
+              "type": "interval",
               "interval": 10,
               "intervalUnit": "minute",
               "repeatCount": 20
@@ -314,7 +314,7 @@ public class TriggerResourceTest {
           "description": "用于删除测试",
           "type": "SCHEDULED",
           "config": {
-              "from": "interval",
+              "type": "interval",
               "interval": 1,
               "intervalUnit": "minute",
               "repeatCount": 1
@@ -379,18 +379,6 @@ public class TriggerResourceTest {
       .statusCode(200)
       .body("type", equalTo("SCHEDULED"))
       .body("config.cronExpression", equalTo("0 0 12 * * ?"));
-
-    // 验证每日时间段触发配置
-    given()
-      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
-      .when()
-      .get(BASE_PATH + "/" + DAILY_TRIGGER_ID)
-      .then()
-      .statusCode(200)
-      .body("type", equalTo("SCHEDULED"))
-      .body("config.startTime", notNullValue())
-      .body("config.endTime", notNullValue())
-      .body("config.daysOfWeek", notNullValue());
 
     // 验证事件触发配置
     given()

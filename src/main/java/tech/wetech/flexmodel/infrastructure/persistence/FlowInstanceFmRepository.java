@@ -62,6 +62,7 @@ public class FlowInstanceFmRepository implements FlowInstanceRepository {
       .selectFrom(FlowInstance.class)
       .where(predicate)
       .page(page, size)
+      .orderByDesc(FlowInstance::getCreateTime)
       .execute();
   }
 

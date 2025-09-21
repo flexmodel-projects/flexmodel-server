@@ -1,6 +1,8 @@
 package tech.wetech.flexmodel.infrastructure.quartz;
 
+import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;

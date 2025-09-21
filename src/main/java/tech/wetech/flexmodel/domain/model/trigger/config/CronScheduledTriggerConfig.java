@@ -26,7 +26,7 @@ public class CronScheduledTriggerConfig extends ScheduledTriggerConfig {
    * @return 触发器来源 "cron"
    */
   @Override
-  public String from() {
+  public String type() {
     return "cron";
   }
 

@@ -38,7 +38,7 @@ public class IntervalScheduledTriggerConfig extends ScheduledTriggerConfig {
    * @return 触发器来源 "interval"
    */
   @Override
-  public String from() {
+  public String type() {
     return "interval";
   }
 

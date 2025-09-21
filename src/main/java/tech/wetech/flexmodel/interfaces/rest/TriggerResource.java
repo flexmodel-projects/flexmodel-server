@@ -11,6 +11,8 @@ import tech.wetech.flexmodel.application.dto.TriggerDTO;
 import tech.wetech.flexmodel.application.dto.TriggerPageRequest;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 
+import java.time.LocalDateTime;
+
 /**
  * @author cjbi
  */
@@ -55,9 +57,9 @@ public class TriggerResource {
   @Operation(summary = "更新触发器")
   @PUT
   @Path("/{id}")
-  public Trigger save(@PathParam("id") String id, Trigger trigger) {
-    trigger.setId(id);
-    return scheduleApplicationService.update(trigger);
+  public Trigger update(@PathParam("id") String id, Trigger req) {
+    req.setId(id);
+    return scheduleApplicationService.update(req);
   }
 
   @Operation(summary = "部分更新触发器")

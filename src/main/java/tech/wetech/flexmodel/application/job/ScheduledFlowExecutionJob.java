@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.application.job;
 
+import jakarta.enterprise.context.control.RequestContextController;
 import jakarta.enterprise.inject.spi.CDI;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
@@ -8,6 +9,9 @@ import org.quartz.JobExecutionException;
 import tech.wetech.flexmodel.application.FlowApplicationService;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.StartProcessResult;
+
+import java.util.Map;
+import io.quarkus.arc.Arc;
 
 /**
  * 流程执行任务
@@ -20,13 +24,15 @@ public class ScheduledFlowExecutionJob implements Job {
 
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
+    Arc.container().requestContext().activate();
     try {
+      // 业务逻辑
       // 从 JobDataMap 中获取流程执行参数
-      String flowModuleId = context.getJobDetail().getJobDataMap().getString("flowModuleId");
+      String flowModuleId = context.getJobDetail().getJobDataMap().getString("jobId");
       String triggerId = context.getJobDetail().getJobDataMap().getString("triggerId");
 
       if (flowModuleId == null) {
-        log.error("流程执行任务缺少必要参数: flowModuleId={}", flowModuleId);
+        log.error("流程执行任务缺少必要参数: flowModuleId=null");
         throw new JobExecutionException("流程执行任务缺少必要参数");
       }
 
@@ -36,6 +42,7 @@ public class ScheduledFlowExecutionJob implements Job {
       // 构建启动流程参数
       StartProcessParam startProcessParam = new StartProcessParam();
       startProcessParam.setFlowModuleId(flowModuleId);
+      startProcessParam.setVariables(Map.of());
 
       FlowApplicationService flowApplicationService = CDI.current().select(FlowApplicationService.class).get();
       // 启动流程实例
@@ -48,6 +55,8 @@ public class ScheduledFlowExecutionJob implements Job {
     } catch (Exception e) {
       log.error("执行定时流程任务失败", e);
       throw new JobExecutionException("执行定时流程任务失败", e);
+    } finally {
+      Arc.container().requestContext().deactivate();
     }
   }
 }

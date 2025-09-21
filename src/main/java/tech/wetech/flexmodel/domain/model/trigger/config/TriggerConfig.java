@@ -9,16 +9,10 @@ package tech.wetech.flexmodel.domain.model.trigger.config;
 public interface TriggerConfig {
 
   /**
-   * 获取触发器类型
-   * @return 触发器类型字符串
-   */
-  String type();
-
-  /**
    * 获取触发器来源
    * @return 触发器来源字符串
    */
-  String from();
+  String type();
 
   void validate();
 

@@ -3,7 +3,6 @@ package tech.wetech.flexmodel.interfaces.rest.json.jackson.mixin;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import tech.wetech.flexmodel.domain.model.trigger.config.CronScheduledTriggerConfig;
-import tech.wetech.flexmodel.domain.model.trigger.config.DailyTimeIntervalScheduledTriggerConfig;
 import tech.wetech.flexmodel.domain.model.trigger.config.EventTriggerConfig;
 import tech.wetech.flexmodel.domain.model.trigger.config.IntervalScheduledTriggerConfig;
 
@@ -13,14 +12,13 @@ import tech.wetech.flexmodel.domain.model.trigger.config.IntervalScheduledTrigge
  *
  * @author cjbi
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "from")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
   // Cron 表达式定时触发器
   @JsonSubTypes.Type(value = CronScheduledTriggerConfig.class, name = "cron"),
   // 间隔定时触发器
   @JsonSubTypes.Type(value = IntervalScheduledTriggerConfig.class, name = "interval"),
   // 每日时间间隔定时触发器
-  @JsonSubTypes.Type(value = DailyTimeIntervalScheduledTriggerConfig.class, name = "daily_time_interval"),
   @JsonSubTypes.Type(value = EventTriggerConfig.class, name = "event"),
 })
 public class ScheduledTriggerConfigMixIn {

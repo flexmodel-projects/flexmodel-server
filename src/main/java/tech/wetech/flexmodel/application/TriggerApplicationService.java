@@ -18,8 +18,7 @@ import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -48,6 +47,7 @@ public class TriggerApplicationService {
     dto.setConfig(trigger.getConfig());
     dto.setJobId(trigger.getJobId());
     dto.setJobType(trigger.getJobType());
+    dto.setJobGroup(trigger.getJobGroup());
     dto.setState(trigger.getState());
     dto.setCreatedAt(trigger.getCreatedAt());
     dto.setUpdatedAt(trigger.getUpdatedAt());
@@ -96,15 +96,25 @@ public class TriggerApplicationService {
   }
 
   public Trigger update(Trigger req) {
+    Trigger record = triggerService.findById(req.getId());
+    if (record == null) {
+      throw new TriggerException("记录不存在");
+    }
+    if (req.getState() == null) {
+      req.setState(record.getState());
+    }
+    req.setCreatedAt(record.getCreatedAt());
+    req.setUpdatedAt(LocalDateTime.now());
     TriggerConfig triggerConfig = JsonUtils.getInstance().convertValue(req.getConfig(), TriggerConfig.class);
     // 规则校验
     triggerConfig.validate();
-    req.setJobId(getJobGroup(req, triggerConfig));
+    req.setJobGroup(getJobGroup(req, triggerConfig));
+    Trigger trigger = triggerService.save(req);
     if (triggerConfig instanceof ScheduledTriggerConfig scheduledTriggerConfig) {
       // 实现定时任务调度
       try {
         // 先删除旧的定时任务
-        unscheduleTrigger(req.getId());
+        unscheduleTrigger(req);
         // 创建新的定时任务
         scheduleTrigger(req, scheduledTriggerConfig);
         log.info("成功更新定时任务: {}", req.getId());
@@ -113,11 +123,7 @@ public class TriggerApplicationService {
         throw new TriggerException("更新定时任务失败: " + e.getMessage(), e);
       }
     }
-    Trigger record = findById(req.getId());
-    if (record == null) {
-      throw new TriggerException("记录不存在");
-    }
-    return triggerService.save(req);
+    return trigger;
   }
 
   public void deleteById(String id) {
@@ -125,7 +131,7 @@ public class TriggerApplicationService {
     if (record != null) {
       // 实现定时任务调度
       try {
-        unscheduleTrigger(id);
+        unscheduleTrigger(record);
         log.info("成功删除定时任务: {}", id);
       } catch (Exception e) {
         log.error("删除定时任务失败: {}", id, e);
@@ -138,16 +144,16 @@ public class TriggerApplicationService {
   public PageDTO<TriggerDTO> findPage(TriggerPageRequest request) {
     Predicate filter = Expressions.TRUE;
     if (request.getName() != null) {
-      filter = filter.and(Expressions.field("name").eq(request.getName()));
+      filter = filter.and(Expressions.field(Trigger::getName).eq(request.getName()));
     }
     if (request.getJobType() != null) {
-      filter = filter.and(Expressions.field("jobType").eq(request.getJobType()));
+      filter = filter.and(Expressions.field(Trigger::getJobType).eq(request.getJobType()));
     }
     if (request.getJobId() != null) {
-      filter = filter.and(Expressions.field("jobId").eq(request.getJobId()));
+      filter = filter.and(Expressions.field(Trigger::getJobId).eq(request.getJobId()));
     }
     if (request.getJobGroup() != null) {
-      filter = filter.and(Expressions.field("jobGroup").eq(request.getJobGroup()));
+      filter = filter.and(Expressions.field(Trigger::getJobGroup).eq(request.getJobGroup()));
     }
     long total = triggerService.count(filter);
     if (total == 0) {
@@ -167,54 +173,70 @@ public class TriggerApplicationService {
    * 调度定时任务
    */
   private void scheduleTrigger(Trigger trigger, ScheduledTriggerConfig config) throws SchedulerException {
-    String triggerId = trigger.getId();
-
+    JobKey jobKey = buildJobKey(trigger);
     // 创建 JobDetail
     JobDetail jobDetail = JobBuilder.newJob(ScheduledFlowExecutionJob.class)
-      .withIdentity("job-" + triggerId, "trigger-group")
+      .withIdentity(jobKey)
       .withDescription(trigger.getDescription())
-      .usingJobData("triggerId", triggerId)
-      .usingJobData("flowModuleId", trigger.getJobId()) // 这里可能需要根据实际业务逻辑调整
+      .usingJobData("triggerId", trigger.getId())
+      .usingJobData("jobGroup", trigger.getJobGroup())
+      .usingJobData("jobType", trigger.getJobType())
+      .usingJobData("jobId", trigger.getJobId())
       .build();
 
     // 创建 Trigger
-    org.quartz.Trigger quartzTrigger = createQuartzTrigger(triggerId, config, jobDetail);
+    org.quartz.Trigger quartzTrigger = createQuartzTrigger(trigger, config, jobDetail);
 
     // 调度任务
     scheduler.scheduleJob(jobDetail, quartzTrigger);
 
-    log.info("已调度定时任务: {}", triggerId);
+    log.info("已调度定时任务: {}", jobKey);
   }
 
   /**
    * 取消调度定时任务
    */
-  private void unscheduleTrigger(String triggerId) throws SchedulerException {
-    JobKey jobKey = JobKey.jobKey("job-" + triggerId, "trigger-group");
-
+  private void unscheduleTrigger(Trigger trigger) throws SchedulerException {
+    TriggerKey triggerKey = buildTriggerKey(trigger);
+    JobKey jobKey = buildJobKey(trigger);
+    if (scheduler.checkExists(triggerKey)) {
+      scheduler.unscheduleJob(triggerKey);
+      log.info("已取消调度定时任务: {}", triggerKey);
+    } else {
+      log.warn("定时任务不存在，无需取消: {}", triggerKey);
+    }
     if (scheduler.checkExists(jobKey)) {
       scheduler.deleteJob(jobKey);
-      log.info("已取消调度定时任务: {}", triggerId);
+      log.info("已取消调度定时任务: {}", jobKey);
     } else {
-      log.warn("定时任务不存在，无需删除: {}", triggerId);
+      log.warn("定时任务不存在，无需删除: {}", jobKey);
     }
+  }
+
+  private JobKey buildJobKey(Trigger trigger) {
+    String triggerId = trigger.getId();
+    return JobKey.jobKey("job-" + triggerId, trigger.getJobGroup());
+  }
+
+  private TriggerKey buildTriggerKey(Trigger trigger) {
+    String triggerId = trigger.getId();
+    return TriggerKey.triggerKey("trigger-" + triggerId, trigger.getType().name());
   }
 
   /**
    * 根据配置创建 Quartz Trigger
    */
-  private org.quartz.Trigger createQuartzTrigger(String triggerId, ScheduledTriggerConfig config, JobDetail jobDetail) {
+  private org.quartz.Trigger createQuartzTrigger(Trigger trigger, ScheduledTriggerConfig config, JobDetail jobDetail) {
+    TriggerKey triggerKey = buildTriggerKey(trigger);
     TriggerBuilder<org.quartz.Trigger> triggerBuilder = TriggerBuilder.newTrigger()
-      .withIdentity("trigger-" + triggerId, "trigger-group")
+      .withIdentity(triggerKey)
       .forJob(jobDetail)
-      .withDescription("定时触发器: " + triggerId);
+      .withDescription("定时触发器: " + triggerKey);
 
     // 根据不同的配置类型创建不同的触发器
     return switch (config) {
       case CronScheduledTriggerConfig cronConfig -> createCronTrigger(triggerBuilder, cronConfig);
       case IntervalScheduledTriggerConfig intervalConfig -> createIntervalTrigger(triggerBuilder, intervalConfig);
-      case DailyTimeIntervalScheduledTriggerConfig dailyConfig ->
-        createDailyTimeIntervalTrigger(triggerBuilder, dailyConfig);
       default -> throw new TriggerException("不支持的定时触发器配置类型: " + config.getClass().getSimpleName());
     };
   }
@@ -263,41 +285,4 @@ public class TriggerApplicationService {
       .build();
   }
 
-  /**
-   * 创建每日时间间隔触发器
-   */
-  private org.quartz.Trigger createDailyTimeIntervalTrigger(TriggerBuilder<org.quartz.Trigger> triggerBuilder,
-                                                            DailyTimeIntervalScheduledTriggerConfig config) {
-    DailyTimeIntervalScheduleBuilder scheduleBuilder = DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule();
-    // 设置时间间隔
-    switch (config.getIntervalUnit().toLowerCase()) {
-      case "second" -> scheduleBuilder.withIntervalInSeconds(config.getInterval());
-      case "minute" -> scheduleBuilder.withIntervalInMinutes(config.getInterval());
-      case "hour" -> scheduleBuilder.withIntervalInHours(config.getInterval());
-      default -> throw new TriggerException("不支持的间隔时间单位: " + config.getIntervalUnit());
-    }
-
-    // 设置开始和结束时间
-    if (config.getStartTime() != null) {
-      Date startTime = Date.from(config.getStartTime().atZone(ZoneId.systemDefault()).toInstant());
-      triggerBuilder.startAt(startTime);
-    } else {
-      triggerBuilder.startNow();
-    }
-
-    if (config.getEndTime() != null) {
-      Date endTime = Date.from(config.getEndTime().atZone(ZoneId.systemDefault()).toInstant());
-      triggerBuilder.endAt(endTime);
-    }
-
-    // 设置星期几
-    if (config.getDaysOfWeek() != null && !config.getDaysOfWeek().isEmpty()) {
-      // 将 1-7 转换为 Quartz 的 1-7 (周日=1, 周一=2, ..., 周六=7)
-      scheduleBuilder.onDaysOfTheWeek(config.getDaysOfWeek());
-    }
-
-    return triggerBuilder
-      .withSchedule(scheduleBuilder.withMisfireHandlingInstructionFireAndProceed())
-      .build();
-  }
 }

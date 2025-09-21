@@ -5,6 +5,7 @@ import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 import io.smallrye.config.WithUnnamedKey;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
  * @author cjbi
  */
 @ConfigMapping(prefix = "flexmodel")
-public interface FlexmodelConfig {
+public interface FlexmodelConfig extends Serializable {
 
   @WithName("datasource")
   @WithUnnamedKey("system")

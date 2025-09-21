@@ -45,20 +45,11 @@ public class EventTriggerConfig implements TriggerConfig {
   private String triggerTiming = "after";
 
   /**
-   * 获取触发器类型
-   * @return 触发器类型 "EVENT"
-   */
-  @Override
-  public String type() {
-    return "EVENT";
-  }
-
-  /**
    * 获取触发器来源
    * @return 触发器来源 "event"
    */
   @Override
-  public String from() {
+  public String type() {
     return "event";
   }
 

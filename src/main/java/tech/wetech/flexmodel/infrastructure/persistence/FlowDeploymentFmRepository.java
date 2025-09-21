@@ -1,6 +1,8 @@
 package tech.wetech.flexmodel.infrastructure.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDeploymentRepository;
