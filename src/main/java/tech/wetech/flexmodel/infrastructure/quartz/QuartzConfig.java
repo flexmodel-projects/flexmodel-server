@@ -1,20 +1,26 @@
 package tech.wetech.flexmodel.infrastructure.quartz;
 
-import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
+import tech.wetech.flexmodel.application.job.ScheduledFlowExecutionJobListener;
 
 import java.util.Properties;
 
 /**
  * @author cjbi
  */
+@Slf4j
 @ApplicationScoped
 public class QuartzConfig {
+
+  @Inject
+  ScheduledFlowExecutionJobListener jobListener;
 
   @Produces
   public Scheduler scheduler() throws Exception {
@@ -30,6 +36,15 @@ public class QuartzConfig {
 
     SchedulerFactory schedulerFactory = new StdSchedulerFactory(props);
     Scheduler scheduler = schedulerFactory.getScheduler();
+    
+    // 注册作业监听器
+    try {
+      scheduler.getListenerManager().addJobListener(jobListener);
+      log.info("已注册作业执行监听器: {}", jobListener.getName());
+    } catch (SchedulerException e) {
+      log.error("注册作业监听器失败", e);
+    }
+    
     scheduler.start();
     return scheduler;
   }

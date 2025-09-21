@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.application.job;
 
-import jakarta.enterprise.context.control.RequestContextController;
 import jakarta.enterprise.inject.spi.CDI;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
@@ -26,7 +25,6 @@ public class ScheduledFlowExecutionJob implements Job {
   public void execute(JobExecutionContext context) throws JobExecutionException {
     Arc.container().requestContext().activate();
     try {
-      // 业务逻辑
       // 从 JobDataMap 中获取流程执行参数
       String flowModuleId = context.getJobDetail().getJobDataMap().getString("jobId");
       String triggerId = context.getJobDetail().getJobDataMap().getString("triggerId");
@@ -49,11 +47,30 @@ public class ScheduledFlowExecutionJob implements Job {
       StartProcessResult result = flowApplicationService.startProcess(startProcessParam);
 
       boolean success = result.getErrCode() == 0;
+
+      // 将执行结果存储到上下文中，供监听器使用
+      context.setResult(Map.of(
+        "success", success,
+        "errCode", result.getErrCode(),
+        "errMsg", result.getErrMsg(),
+        "flowInstanceId", result.getFlowInstanceId(),
+        "flowModuleId", flowModuleId,
+        "triggerId", triggerId
+      ));
+
       log.info("定时流程任务执行完成: triggerId={}, flowInstanceId={}, success={}",
         triggerId, result.getFlowInstanceId(), success);
 
     } catch (Exception e) {
       log.error("执行定时流程任务失败", e);
+
+      // 将错误信息存储到上下文中
+      context.setResult(Map.of(
+        "success", false,
+        "error", e.getMessage(),
+        "exception", e.getClass().getSimpleName()
+      ));
+
       throw new JobExecutionException("执行定时流程任务失败", e);
     } finally {
       Arc.container().requestContext().deactivate();
