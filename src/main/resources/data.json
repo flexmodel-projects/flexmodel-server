@@ -385,6 +385,49 @@
           "updated_at": "2025-09-20T21:02:43.010580600"
         }
       ]
+    },
+    {
+      "modelName": "f_em_flow_definition",
+      "values": [
+        {
+          "id": 4,
+          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "flow_name": "testFlowName_17579091086564",
+          "flow_key": "testFlowKey_17579091086564",
+          "tenant_id": null,
+          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
+          "status": 2,
+          "create_time": "2025-09-15T12:05:09.014210500",
+          "modify_time": "2025-09-15T12:05:09.014210500",
+          "operator": "testOperator",
+          "remark": "testRemark",
+          "archive": 0,
+          "tenant": "testTenant",
+          "caller": "testCaller"
+        }
+      ]
+    },
+    {
+      "modelName": "f_em_flow_deployment",
+      "values": [
+        {
+          "id": 3,
+          "flow_deploy_id": "c2d6f2bb-0d7b-4eb0-81a6-5a72262740d4",
+          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "flow_name": "testFlowName_1757909108656",
+          "flow_key": "testFlowKey_1757909108656",
+          "tenant_id": null,
+          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
+          "status": 1,
+          "create_time": "2025-09-15T12:05:09.014210500",
+          "modify_time": "2025-09-15T12:05:09.014210500",
+          "operator": "testOperator",
+          "remark": "testRemark",
+          "archive": 0,
+          "tenant": "testTenant",
+          "caller": "testCaller"
+        }
+      ]
     }
   ]
 }
