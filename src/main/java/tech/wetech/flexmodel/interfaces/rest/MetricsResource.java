@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * @author cjbi
  */
 @Path("/f/metrics")
-@Tag(name = "系统监控", description = "系统监控相关接口，包括JVM、CPU、内存、线程、磁盘（含I/O）、网络等监控信息")
+@Tag(name = "【Flexmodel】系统监控", description = "系统监控相关接口，包括JVM、CPU、内存、线程、磁盘（含I/O）、网络等监控信息")
 @SecurityRequirement(name = "BearerAuth")
 public class MetricsResource {
 
