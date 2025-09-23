@@ -18,7 +18,7 @@ import static tech.wetech.flexmodel.query.Expressions.field;
 @Slf4j
 @ApplicationScoped
 @ActivateRequestContext
-public class ApiLogRequestService {
+public class ApiRequestLogService {
 
   @Inject
   ApiRequestLogRepository apiLogRepository;

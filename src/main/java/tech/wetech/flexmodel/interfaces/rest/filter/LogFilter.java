@@ -8,7 +8,7 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
-import tech.wetech.flexmodel.domain.model.api.ApiLogRequestService;
+import tech.wetech.flexmodel.domain.model.api.ApiRequestLogService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 public class LogFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
   @Inject
-  ApiLogRequestService apiLogService;
+  ApiRequestLogService apiLogService;
 
   @Inject
   SettingsService settingsService;

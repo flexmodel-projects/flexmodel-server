@@ -6,7 +6,7 @@ import tech.wetech.flexmodel.application.dto.OverviewDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
-import tech.wetech.flexmodel.domain.model.api.ApiLogRequestService;
+import tech.wetech.flexmodel.domain.model.api.ApiRequestLogService;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.query.Predicate;
@@ -31,7 +31,7 @@ public class OverviewApplicationService {
   ApiDefinitionService apiDefinitionService;
 
   @Inject
-  ApiLogRequestService apiLogService;
+  ApiRequestLogService apiLogService;
 
   @Inject
   DatasourceService datasourceService;

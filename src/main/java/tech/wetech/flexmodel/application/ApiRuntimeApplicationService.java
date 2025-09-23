@@ -16,8 +16,8 @@ import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
-import tech.wetech.flexmodel.domain.model.api.ApiLogRequestService;
 import tech.wetech.flexmodel.domain.model.api.ApiRateLimiterHolder;
+import tech.wetech.flexmodel.domain.model.api.ApiRequestLogService;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
@@ -63,7 +63,7 @@ public class ApiRuntimeApplicationService {
   IdentityProviderService identityProviderService;
 
   @Inject
-  ApiLogRequestService apiLogService;
+  ApiRequestLogService apiLogService;
 
   @Inject
   ModelService modelService;
