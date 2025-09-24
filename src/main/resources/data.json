@@ -329,7 +329,7 @@
           "type": "SCHEDULED",
           "config": {
             "type": "cron",
-            "cronExpression": "0 0 12 * * ?"
+            "cronExpression": "0 0 * * * ? *"
           },
           "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
           "job_type": "FLOW",
