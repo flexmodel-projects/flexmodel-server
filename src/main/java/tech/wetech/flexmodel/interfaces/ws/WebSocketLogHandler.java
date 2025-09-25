@@ -3,7 +3,7 @@ package tech.wetech.flexmodel.interfaces.ws;
 import jakarta.websocket.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.logmanager.ExtLogRecord;
-import tech.wetech.flexmodel.shared.utils.JsonUtils;
+import tech.wetech.flexmodel.interfaces.ws.dto.JsonRpcResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,23 +29,17 @@ public class WebSocketLogHandler extends Handler {
   @Override
   public void publish(LogRecord record) {
     if (sessions.isEmpty()) return;
-
     try {
       String message = record.getMessage();
       Map<String, Object> map = new HashMap<>();
-      map.put("jsonrpc", "2.0");
-      map.put("method", "logEvent");
       map.put("thread", ((ExtLogRecord) record).getThreadName());
       map.put("level", record.getLevel().toString());
       map.put("logger", record.getLoggerName().replace("tech.wetech.flexmodel.", ""));
       map.put("message", message);
-
-
-      String payload = JsonUtils.getInstance().stringify(map);
-
+      JsonRpcResponse response = JsonRpcResponse.success("-1", "log", map);
       for (Session s : sessions) {
         if (s.isOpen()) {
-          s.getBasicRemote().sendText(payload);
+          s.getBasicRemote().sendText(response.toString());
         }
       }
     } catch (IOException e) {

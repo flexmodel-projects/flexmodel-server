@@ -6,16 +6,19 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
+import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.interfaces.ws.dto.JsonRpcRequest;
+import tech.wetech.flexmodel.interfaces.ws.dto.JsonRpcResponse;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author cjbi
  */
+@Slf4j
 @ApplicationScoped
 @ServerEndpoint("/api/f/json-rpc-ws")
 public class JsonRpcWebSocket {
@@ -30,7 +33,7 @@ public class JsonRpcWebSocket {
     sessions.put(session.getId(), session);
     // 注册日志订阅
     WebSocketLogHandler.register(session);
-    System.out.println("WebSocket connected: " + session.getId());
+    log.info("WebSocket connected: {}", session.getId());
   }
 
   /**
@@ -41,7 +44,7 @@ public class JsonRpcWebSocket {
     sessions.remove(session.getId());
     // 取消日志订阅
     WebSocketLogHandler.unregister(session);
-    System.out.println("WebSocket closed: " + session.getId());
+    log.info("WebSocket closed: {}", session.getId());
   }
 
   /**
@@ -50,12 +53,10 @@ public class JsonRpcWebSocket {
   @OnMessage
   public void onMessage(String message, Session session) throws IOException {
     try {
-      Map json = JsonUtils.getInstance().parseToObject(message, Map.class);
-
-
-      String method = (String) json.get("method");
-      Object params = json.get("params");
-      String id = (String) json.get("id");
+      JsonRpcRequest request = JsonUtils.getInstance().parseToObject(message, JsonRpcRequest.class);
+      String method = request.getMethod();
+      Object params = request.getParams();
+      String id = request.getId();
 
       Object result;
       switch (method) {
@@ -66,13 +67,8 @@ public class JsonRpcWebSocket {
           return;
         }
       }
-
-      Map<String, Object> response = new HashMap<>();
-      response.put("jsonrpc", "2.0");
-      response.put("id", id);
-      response.put("result", result);
-
-      session.getBasicRemote().sendText(JsonUtils.getInstance().stringify(response));
+      JsonRpcResponse response = JsonRpcResponse.success(id, method, result);
+      session.getBasicRemote().sendText(response.toString());
 
     } catch (Exception e) {
       sendError(session, null, "Parse error: " + e.getMessage());
@@ -80,11 +76,8 @@ public class JsonRpcWebSocket {
   }
 
   private void sendError(Session session, String id, String message) throws IOException {
-    Map<String, Object> error = new HashMap<>();
-    error.put("jsonrpc", "2.0");
-    error.put("id", id);
-    error.put("error", Map.of("code", -32601, "message", message));
-    session.getBasicRemote().sendText(JsonUtils.getInstance().stringify(error));
+    JsonRpcResponse response = JsonRpcResponse.error(id, "-32601", message);
+    session.getBasicRemote().sendText(response.toString());
   }
 
 }

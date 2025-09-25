@@ -24,7 +24,6 @@ public class FlowModuleResponse {
   private LocalDateTime modifyTime;
 
   public FlowModuleResponse() {
-
   }
 
   public FlowModuleResponse(FlowDefinition flowDefinition) {
