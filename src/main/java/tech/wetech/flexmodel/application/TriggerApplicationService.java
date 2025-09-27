@@ -110,14 +110,19 @@ public class TriggerApplicationService {
     triggerConfig.validate();
     req.setJobGroup(getJobGroup(req, triggerConfig));
     Trigger trigger = triggerService.save(req);
+    
     if (triggerConfig instanceof ScheduledTriggerConfig scheduledTriggerConfig) {
-      // 实现定时任务调度
       try {
         // 先删除旧的定时任务
         unscheduleTrigger(req);
-        // 创建新的定时任务
-        scheduleTrigger(req, scheduledTriggerConfig);
-        log.info("成功更新定时任务: {}", req.getId());
+        
+        // 只有当 state=true 时才创建新的定时任务
+        if (Boolean.TRUE.equals(req.getState())) {
+          scheduleTrigger(req, scheduledTriggerConfig);
+          log.info("成功更新定时任务: {}", req.getId());
+        } else {
+          log.info("触发器状态为禁用，已停止定时任务: {}", req.getId());
+        }
       } catch (Exception e) {
         log.error("更新定时任务失败: {}", req.getId(), e);
         throw new TriggerException("更新定时任务失败: " + e.getMessage(), e);

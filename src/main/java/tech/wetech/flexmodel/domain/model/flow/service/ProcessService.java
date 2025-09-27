@@ -4,7 +4,10 @@ package tech.wetech.flexmodel.domain.model.flow.service;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.codegen.entity.FlowInstance;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.*;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.EndEvent;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowModel;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.StartEvent;
+import tech.wetech.flexmodel.domain.model.flow.dto.model.UserTask;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.*;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.*;
 
@@ -172,7 +175,7 @@ public interface ProcessService {
   ElementInstanceListResult getHistoryElementList(String flowInstanceId, boolean effectiveForSubFlowInstance);
 
   /**
-   * Get latest {@link InstanceData} list of the specified flow instance.
+   * Get latest {@link InstanceDataListResult} list of the specified flow instance.
    *
    * <p>
    * Effective for SubFlowInstance by default
@@ -182,7 +185,7 @@ public interface ProcessService {
   InstanceDataListResult getInstanceData(String flowInstanceId);
 
   /**
-   * Get latest {@link InstanceData} list of the specified flow instance.
+   * Get latest {@link InstanceDataListResult} list of the specified flow instance.
    *
    * @param flowInstanceId
    * @param effectiveForSubFlowInstance
@@ -190,7 +193,7 @@ public interface ProcessService {
   InstanceDataListResult getInstanceData(String flowInstanceId, boolean effectiveForSubFlowInstance);
 
   /**
-   * Get {@link InstanceData} list of the specified instance data.
+   * Get {@link InstanceDataListResult} list of the specified instance data.
    *
    * <p>
    * Effective for SubFlowInstance by default
@@ -201,7 +204,7 @@ public interface ProcessService {
   InstanceDataListResult getInstanceData(String flowInstanceId, String instanceDataId);
 
   /**
-   * Get {@link InstanceData} list of the specified instance data.
+   * Get {@link InstanceDataListResult} list of the specified instance data.
    *
    * @param flowInstanceId
    * @param instanceDataId

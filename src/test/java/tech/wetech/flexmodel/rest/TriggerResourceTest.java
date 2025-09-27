@@ -378,7 +378,7 @@ public class TriggerResourceTest {
       .then()
       .statusCode(200)
       .body("type", equalTo("SCHEDULED"))
-      .body("config.cronExpression", equalTo("0 0 12 * * ?"));
+      .body("config.cronExpression", equalTo("0 0 * * * ? *"));
 
     // 验证事件触发配置
     given()

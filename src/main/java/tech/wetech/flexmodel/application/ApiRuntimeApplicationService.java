@@ -11,14 +11,12 @@ import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import tech.wetech.flexmodel.application.dto.LogStatResponse;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
-import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
-import tech.wetech.flexmodel.domain.model.api.ApiRateLimiterHolder;
-import tech.wetech.flexmodel.domain.model.api.ApiRequestLogService;
-import tech.wetech.flexmodel.domain.model.api.LogStat;
+import tech.wetech.flexmodel.domain.model.api.*;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
@@ -39,10 +37,10 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static graphql.ExecutionInput.newExecutionInput;
 import static tech.wetech.flexmodel.query.Expressions.field;
@@ -50,12 +48,12 @@ import static tech.wetech.flexmodel.query.Expressions.field;
 /**
  * @author cjbi
  */
-@Slf4j
 @SuppressWarnings("all")
 @ActivateRequestContext
 @ApplicationScoped
 public class ApiRuntimeApplicationService {
 
+  private static final Logger log = org.slf4j.LoggerFactory.getLogger(ApiRuntimeApplicationService.class);
   @Inject
   ApiDefinitionService apiDefinitionService;
 
@@ -89,8 +87,80 @@ public class ApiRuntimeApplicationService {
     return new PageDTO<>(list, total);
   }
 
-  public List<LogStat> stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
-    return apiLogService.stat(getCondition(keyword, startDate, endDate, isSuccess), "yyyy-MM-dd HH:00:00");
+  public LogStatResponse stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
+
+
+    LogStatResponse.ApiChart statDTO = null;
+    List<String> dateList = new ArrayList<>();
+    String fmt = "yyyy-MM-dd HH:00:00";
+    if (startDate == null) {
+      startDate = LocalDateTime.now().minusDays(7);
+    }
+    if (endDate == null) {
+      endDate = LocalDateTime.now();
+    }
+    if (ChronoUnit.DAYS.between(startDate, endDate) <= 1) {
+      fmt = "yyyy-MM-dd HH:00:00";
+      LocalDateTime currentTime = startDate;
+      while (!currentTime.isAfter(endDate)) {
+        dateList.add(currentTime.format(DateTimeFormatter.ofPattern(fmt)));
+        currentTime = currentTime.plusHours(1);
+      }
+    } else if (ChronoUnit.DAYS.between(startDate, endDate) > 1 && ChronoUnit.DAYS.between(startDate, endDate) <= 7) {
+      fmt = "yyyy-MM-dd";
+      LocalDateTime currentTime = startDate;
+      while (!currentTime.isAfter(endDate)) {
+        dateList.add(currentTime.format(DateTimeFormatter.ofPattern(fmt)));
+        currentTime = currentTime.plusDays(1);
+      }
+
+    } else if (ChronoUnit.DAYS.between(startDate, endDate) > 7 && ChronoUnit.DAYS.between(startDate, endDate) <= 31) {
+      fmt = "yyyy-MM-dd";
+      LocalDateTime currentTime = startDate;
+      while (!currentTime.isAfter(endDate)) {
+        dateList.add(currentTime.format(DateTimeFormatter.ofPattern(fmt)));
+        currentTime = currentTime.plusDays(1);
+      }
+    } else if (ChronoUnit.DAYS.between(startDate, endDate) > 31 && ChronoUnit.DAYS.between(startDate, endDate) <= 365) {
+      fmt = "yyyy-MM";
+      LocalDateTime currentTime = startDate;
+      while (!currentTime.isAfter(endDate)) {
+        dateList.add(currentTime.format(DateTimeFormatter.ofPattern(fmt)));
+        currentTime = currentTime.plusMonths(1);
+      }
+    } else {
+      fmt = "yyyy";
+      LocalDateTime currentTime = startDate;
+      while (!currentTime.isAfter(endDate)) {
+        dateList.add(currentTime.format(DateTimeFormatter.ofPattern(fmt)));
+        currentTime = currentTime.plusYears(1);
+      }
+    }
+
+    Predicate condition = getCondition(keyword, startDate, endDate, isSuccess);
+
+    Map<String, Long> successMap = apiLogService.stat(condition.and(field(ApiRequestLog::getIsSuccess).eq(true)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
+    Map<String, Long> failMap = apiLogService.stat(condition.and(field(ApiRequestLog::getIsSuccess).eq(false)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
+    statDTO = new LogStatResponse.ApiChart();
+    List<Long> successData = new ArrayList<>();
+    List<Long> failData = new ArrayList<>();
+    for (String date : dateList) {
+      successData.add(successMap.getOrDefault(date, 0L));
+      failData.add(failMap.getOrDefault(date, 0L));
+    }
+    statDTO.setDateList(dateList);
+    statDTO.setSuccessData(successData);
+    statDTO.setFailData(failData);
+
+    List<LogStat> stat = apiLogService.stat(condition, fmt);
+
+    List<LogApiRank> apiRankList = apiLogService.ranking(condition);
+
+    return LogStatResponse.builder()
+      .apiStatList(stat)
+      .apiRankingList(apiRankList)
+      .apiChart(statDTO)
+      .build();
   }
 
   private static Predicate getCondition(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {

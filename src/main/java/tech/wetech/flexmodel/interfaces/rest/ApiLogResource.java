@@ -14,13 +14,13 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
+import tech.wetech.flexmodel.application.dto.LogStatResponse;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.domain.model.api.LogStat;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 /**
  * @author cjbi
@@ -82,9 +82,9 @@ public class ApiLogResource {
   @Operation(summary = "统计接口日志")
   @GET
   @Path("/stat")
-  public List<LogStat> stat(@QueryParam("keyword") String keyword,
-                            @QueryParam("dateRange") String dateRange,
-                            @QueryParam("isSuccess") Boolean isSuccess) {
+  public LogStatResponse stat(@QueryParam("keyword") String keyword,
+                              @QueryParam("dateRange") String dateRange,
+                              @QueryParam("isSuccess") Boolean isSuccess) {
     RequestResult result = parseQuery(dateRange, isSuccess);
     return apiRuntimeApplicationService.stat(keyword, result.startDate(), result.endDate(), isSuccess);
   }
