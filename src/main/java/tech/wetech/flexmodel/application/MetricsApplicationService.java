@@ -1,6 +1,5 @@
 package tech.wetech.flexmodel.application;
 
-import io.quarkus.arc.Arc;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -64,19 +63,19 @@ public class MetricsApplicationService {
     int queryCount = 0;
     int mutationCount = 0;
     int subscribeCount = 0;
-    
+
     try {
       // 同步调用所有服务
       List<ApiDefinition> defList = apiDefinitionService.findList();
       List<Datasource> dsList = datasourceService.findAll();
-      
+
       // 计算模型数量
       AtomicInteger modelCount = new AtomicInteger();
       for (Datasource datasource : dsList) {
         List<SchemaObject> ds = modelService.findAll(datasource.getName());
         modelCount.addAndGet(ds.size());
       }
-      
+
       // 获取各种计数
       int reqLogCount = (int) apiLogService.count(TRUE);
       int flowDefCount = (int) flowDefService.count(TRUE);
@@ -915,16 +914,6 @@ public class MetricsApplicationService {
     long startTime = System.currentTimeMillis();
     try {
       // 并行获取所有指标
-      CompletableFuture<FmMetricsResponse> fmFuture =
-        CompletableFuture.supplyAsync(() -> {
-          Arc.container().requestContext().activate();
-          try {
-            return this.getFmMetrics();
-          } finally {
-            Arc.container().requestContext().deactivate();
-          }
-        });
-
       CompletableFuture<JvmMetricsResponse> jvmFuture =
         CompletableFuture.supplyAsync(this::getJvmMetrics);
 
@@ -951,7 +940,7 @@ public class MetricsApplicationService {
 
       // 等待所有任务完成，设置超时时间为30秒
       CompletableFuture<Void> allFutures = CompletableFuture.allOf(
-        fmFuture, jvmFuture, cpuFuture, memoryFuture, threadsFuture,
+         jvmFuture, cpuFuture, memoryFuture, threadsFuture,
         diskFuture, networkFuture, summaryFuture, prometheusFuture
       );
 
@@ -959,7 +948,7 @@ public class MetricsApplicationService {
       allFutures.get(30, TimeUnit.SECONDS);
 
       // 获取结果
-      FmMetricsResponse fm = fmFuture.get();
+      FmMetricsResponse fm = this.getFmMetrics();
       JvmMetricsResponse jvm = jvmFuture.get();
       CpuMetricsResponse cpu = cpuFuture.get();
       MemoryMetricsResponse memory = memoryFuture.get();
