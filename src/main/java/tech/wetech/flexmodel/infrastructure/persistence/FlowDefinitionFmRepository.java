@@ -43,6 +43,7 @@ public class FlowDefinitionFmRepository implements FlowDefinitionRepository {
   public List<FlowDefinition> find(Predicate filter, Integer page, Integer size) {
     return session.dsl().selectFrom(FlowDefinition.class)
       .page(page, size)
+      .where(filter)
       .orderByDesc("id")
       .execute();
   }

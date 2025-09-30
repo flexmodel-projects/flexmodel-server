@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.application.dto.*;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
+import tech.wetech.flexmodel.codegen.entity.FlowDefinition;
 import tech.wetech.flexmodel.codegen.entity.JobExecutionLog;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.domain.model.api.ApiRequestLogService;
@@ -78,7 +79,7 @@ public class MetricsApplicationService {
 
       // 获取各种计数
       int reqLogCount = (int) apiLogService.count(TRUE);
-      int flowDefCount = (int) flowDefService.count(TRUE);
+      int flowDefCount = (int) flowDefService.count(Expressions.field(FlowDefinition::getIsDeleted).eq(false));
       int flowInsCount = (int) flowInstanceService.count(TRUE);
       int triggerCount = (int) triggerService.count(TRUE);
       int jobSuccessCount = (int) jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("SUCCESS"));

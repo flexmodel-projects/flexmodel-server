@@ -111,6 +111,11 @@ public class ProcessEngineImpl implements ProcessService {
   }
 
   @Override
+  public void deleteFlow(String flowModuleId) {
+    definitionProcessor.delete(flowModuleId);
+  }
+
+  @Override
   public InstanceDataListResult getInstanceData(String flowInstanceId, String instanceDataId) {
     return runtimeProcessor.getInstanceData(flowInstanceId, instanceDataId, true);
   }

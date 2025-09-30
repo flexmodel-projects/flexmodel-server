@@ -175,6 +175,8 @@ public class FlowResource {
       )
     )})
   public CreateFlowResult createFlow(CreateFlowParam createFlowParam) {
+    createFlowParam.setTenant("default");
+    createFlowParam.setCaller("admin");
     return flowApplicationService.createFlow(createFlowParam);
   }
 
@@ -205,7 +207,48 @@ public class FlowResource {
     @PathParam("flowModuleId") String flowModuleId,
     DeployFlowParam deployFlowParam) {
     deployFlowParam.setFlowModuleId(flowModuleId);
+    deployFlowParam.setTenant("default");
+    deployFlowParam.setCaller("admin");
     return flowApplicationService.deployFlow(deployFlowParam);
+  }
+
+  @Operation(summary = "更新流程")
+  @PUT
+  @Path("/{flowModuleId}")
+  @RequestBody(
+    name = "请求体",
+    content = {@Content(
+      mediaType = "application/json",
+      schema = @Schema(
+        implementation = UpdateFlowParamSchema.class
+      )
+    )}
+  )
+  @APIResponse(
+    name = "200",
+    responseCode = "200",
+    description = "OK",
+    content = {@Content(
+      mediaType = "application/json",
+      schema = @Schema(
+        implementation = UpdateFlowResultSchema.class
+      )
+    )})
+  public UpdateFlowResult updateFlow(
+    @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.PATH)
+    @PathParam("flowModuleId") String flowModuleId,
+    UpdateFlowParam updateFlowParam) {
+    updateFlowParam.setFlowModuleId(flowModuleId);
+    updateFlowParam.setTenant("default");
+    updateFlowParam.setCaller("admin");
+    return flowApplicationService.updateFlow(updateFlowParam);
+  }
+
+  @DELETE
+  @Path("/{flowModuleId}")
+  public void deleteFlow(@Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.PATH)
+                         @PathParam("flowModuleId") String flowModuleId) {
+    flowApplicationService.deleteFlow(flowModuleId);
   }
 
   @Operation(summary = "获取流程模块信息")
@@ -400,6 +443,20 @@ public class FlowResource {
 
   @Schema(
     properties = {
+      @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID"),
+      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
+      @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
+    }
+  )
+  public static class UpdateFlowParamSchema extends DeployFlowParam {
+    public UpdateFlowParamSchema() {
+      super("default", "admin");
+    }
+  }
+
+  @Schema(
+    properties = {
       @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
       @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
       @SchemaProperty(name = "flowDeployId", examples = {"flow_deploy_001"}, description = "流程部署ID"),
@@ -407,6 +464,16 @@ public class FlowResource {
     }
   )
   public static class DeployFlowResultSchema extends DeployFlowResult {
+  }
+
+  @Schema(
+    properties = {
+      @SchemaProperty(name = "errCode", examples = {"0"}, description = "错误码"),
+      @SchemaProperty(name = "errMsg", examples = {"success"}, description = "错误信息"),
+    }
+  )
+  public static class UpdateFlowResultSchema extends UpdateFlowResult {
+
   }
 
   @Schema(

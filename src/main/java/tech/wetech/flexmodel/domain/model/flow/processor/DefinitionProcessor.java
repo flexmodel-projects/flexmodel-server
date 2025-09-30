@@ -30,6 +30,7 @@ import tech.wetech.flexmodel.domain.model.flow.validator.ParamValidator;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ApplicationScoped
@@ -104,6 +105,17 @@ public class DefinitionProcessor {
       fillCommonResult(updateFlowResult, te);
     }
     return updateFlowResult;
+  }
+
+
+  public void delete(String flowModuleId) {
+    if (StringUtils.isBlank(flowModuleId)) {
+      throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModuleId is null");
+    }
+    FlowDefinition flowDefinition = flowDefinitionRepository.selectByModuleId(flowModuleId);
+    flowDefinition.setIsDeleted(true);
+    flowDefinition.setModifyTime(LocalDateTime.now());
+    flowDefinitionRepository.updateByModuleId(flowDefinition);
   }
 
   public DeployFlowResult deploy(DeployFlowParam deployFlowParam) {

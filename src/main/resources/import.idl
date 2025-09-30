@@ -138,6 +138,7 @@ model f_em_flow_definition {
   archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
   tenant: String @comment("租户"),
   caller?: String @comment("调用方"),
+  is_deleted: Boolean @default(0) @comment("删除状态(0未删除，1已删除)"),
 
   @index(name: "IDX_flow_define_module", fields: [flow_module_id])
   @comment("流程定义")
@@ -475,7 +476,7 @@ model f_job_execution_log {
   tenant_id? : String @length("50") @comment("租户ID"),
   created_at : DateTime @default(now()) @comment("创建时间"),
   updated_at : DateTime @default(now()) @comment("更新时间"),
-  
+
   @index(name:"IDX_JOB_EXEC_TRIGGER_ID", unique: false, fields: [trigger_id]),
   @index(name:"IDX_JOB_EXEC_JOB_ID", unique: false, fields: [job_id]),
   @index(name:"IDX_JOB_EXEC_FLOW_INSTANCE", unique: false, fields: [flow_instance_id]),

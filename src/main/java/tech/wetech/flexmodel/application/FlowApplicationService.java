@@ -56,7 +56,7 @@ public class FlowApplicationService {
    */
   public PageDTO<FlowModuleResponse> findFlowModuleList(FlowModuleListRequest request) {
     log.info("获取流程模块列表，参数: {}", request);
-    Predicate predicate = Expressions.TRUE;
+    Predicate predicate = Expressions.field(FlowDefinition::getIsDeleted).eq(false);
     if (StringUtils.isNotBlank(request.getFlowModuleId())) {
       predicate = predicate.and(Expressions.field(FlowDefinition::getFlowModuleId).eq(request.getFlowModuleId()));
     }
@@ -131,6 +131,19 @@ public class FlowApplicationService {
   }
 
   /**
+   * 更新流程
+   */
+  public UpdateFlowResult updateFlow(UpdateFlowParam updateFlowParam) {
+    log.info("更新流程，流程模块ID: {}", updateFlowParam.getFlowModuleId());
+    return processService.updateFlow(updateFlowParam);
+  }
+
+  public void deleteFlow(String flowModuleId) {
+    log.info("删除流程，流程模块ID: {}", flowModuleId);
+    processService.deleteFlow(flowModuleId);
+  }
+
+  /**
    * 获取流程模块信息
    */
   public FlowModuleResult getFlowModule(GetFlowModuleParam getFlowModuleParam) {
@@ -187,5 +200,4 @@ public class FlowApplicationService {
     }
     return flowInstanceService.findById(flowInstanceId);
   }
-
 }

@@ -238,4 +238,6 @@ public interface ProcessService {
    * @param flowInstanceId
    */
   FlowInstanceResult getFlowInstance(String flowInstanceId);
+
+  void deleteFlow(String flowModuleId);
 }
