@@ -18,6 +18,7 @@ import tech.wetech.flexmodel.domain.model.flow.service.ProcessService;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.FlowDeploymentStatus;
 import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.query.Predicate;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import tech.wetech.flexmodel.shared.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class FlowApplicationService {
   /**
    * 获取流程实例列表
    */
-  public PageDTO<FlowInstance> findFlowInstanceList(FlowInstanceListRequest request) {
+  public PageDTO<FlowInstanceResponse> findFlowInstanceList(FlowInstanceListRequest request) {
     log.info("获取流程实例列表，参数: {}", request);
     Predicate predicate = Expressions.TRUE;
     if (StringUtils.isNotBlank(request.getFlowInstanceId())) {
@@ -110,7 +111,14 @@ public class FlowApplicationService {
     if (count == 0) {
       return PageDTO.empty();
     }
-    List<FlowInstance> list = flowInstanceService.find(predicate, request.getPage(), request.getSize());
+    List<FlowInstanceResponse> list = flowInstanceService.find(predicate, request.getPage(), request.getSize()).stream()
+      .map(entity -> {
+        FlowInstanceResponse response = JsonUtils.getInstance().convertValue(entity, FlowInstanceResponse.class);
+        FlowDeployment flowDeployment = flowDeploymentService.findByFlowDeployId(entity.getFlowDeployId());
+        response.setFlowName(flowDeployment.getFlowName());
+        response.setFlowKey(flowDeployment.getFlowKey());
+        return response;
+      }).toList();
     return new PageDTO<>(list, count);
   }
 

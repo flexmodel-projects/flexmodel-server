@@ -23,4 +23,7 @@ public class FlowDeploymentService {
     return flowDeploymentRepository.findRecentByFlowModuleId(flowKey);
   }
 
+  public FlowDeployment findByFlowDeployId(String flowDeployId) {
+    return flowDeploymentRepository.findByDeployId(flowDeployId);
+  }
 }
