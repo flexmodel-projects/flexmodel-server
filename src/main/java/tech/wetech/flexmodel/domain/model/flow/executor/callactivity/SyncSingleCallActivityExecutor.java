@@ -221,9 +221,9 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance nodeInstance = JsonUtils.getInstance().convertValue(nodeInstancePO, tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance.class);
     nodeInstance.setCreateTime(null);
     nodeInstance.setModifyTime(null);
-    nodeInstance.setModelKey(nodeInstancePO.getNodeKey());
+    nodeInstance.setKey(nodeInstancePO.getNodeKey());
     FlowElement flowElement = subFlowElementMap.get(nodeInstancePO.getNodeKey());
-    nodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
+    nodeInstance.setName(FlowModelUtil.getElementName(flowElement));
     nodeInstance.setProperties(flowElement.getProperties());
 
     runtimeResult.setActiveTaskInstance(nodeInstance);

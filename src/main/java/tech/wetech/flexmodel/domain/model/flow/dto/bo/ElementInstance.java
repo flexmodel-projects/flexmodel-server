@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class ElementInstance {
 
-  private String modelKey;
-  private String modelName;
+  private String key;
+  private String name;
   private Map<String, Object> properties;
   private int status;
   private String nodeInstanceId;
@@ -18,32 +18,32 @@ public class ElementInstance {
     super();
   }
 
-  public ElementInstance(String modelKey, int status) {
-    this(modelKey, status, null, null);
+  public ElementInstance(String key, int status) {
+    this(key, status, null, null);
   }
 
-  public ElementInstance(String modelKey, int status, String nodeInstanceId, String instanceDataId) {
+  public ElementInstance(String key, int status, String nodeInstanceId, String instanceDataId) {
     super();
-    this.modelKey = modelKey;
+    this.key = key;
     this.status = status;
     this.nodeInstanceId = nodeInstanceId;
     this.instanceDataId = instanceDataId;
   }
 
-  public String getModelKey() {
-    return modelKey;
+  public String getKey() {
+    return key;
   }
 
-  public void setModelKey(String modelKey) {
-    this.modelKey = modelKey;
+  public void setKey(String Key) {
+    this.key = Key;
   }
 
-  public String getModelName() {
-    return modelName;
+  public String getName() {
+    return name;
   }
 
-  public void setModelName(String modelName) {
-    this.modelName = modelName;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public Map<String, Object> getProperties() {
@@ -97,8 +97,8 @@ public class ElementInstance {
   @Override
   public String toString() {
     return "ElementInstance{" +
-           "modelKey='" + modelKey + '\'' +
-           ", modelName='" + modelName + '\'' +
+           "Key='" + key + '\'' +
+           ", name='" + name + '\'' +
            ", properties=" + properties +
            ", status=" + status +
            ", nodeInstanceId='" + nodeInstanceId + '\'' +

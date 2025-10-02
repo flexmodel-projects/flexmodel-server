@@ -69,8 +69,8 @@ public class ExclusiveGatewayExecutorTest {
   public void testGetExecuteExecutor() {
     try {
       exclusiveGatewayExecutor.getExecuteExecutor(runtimeContext);
-      String modelKey = runtimeContext.getCurrentNodeModel().getKey();
-      Assertions.assertEquals("userTask2", modelKey);
+      String Key = runtimeContext.getCurrentNodeModel().getKey();
+      Assertions.assertEquals("userTask2", Key);
     } catch (Exception e) {
       log.error("", e);
     }

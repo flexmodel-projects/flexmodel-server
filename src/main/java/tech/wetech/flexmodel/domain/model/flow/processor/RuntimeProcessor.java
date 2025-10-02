@@ -304,8 +304,8 @@ public class RuntimeProcessor {
         //build effective userTask instance
         tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance nodeInstance = JsonUtils.getInstance().convertValue(nodeInstancePO, tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance.class);
         FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
-        nodeInstance.setModelKey(flowElement.getKey());
-        nodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
+        nodeInstance.setKey(flowElement.getKey());
+        nodeInstance.setName(FlowModelUtil.getElementName(flowElement));
         Map<String, Object> props = flowElement.getProperties();
         if (props != null && !props.isEmpty()) {
           nodeInstance.setProperties(props);
@@ -436,8 +436,8 @@ public class RuntimeProcessor {
       Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
       tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance nodeInstance = JsonUtils.getInstance().convertValue(nodeInstancePO, tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance.class);
       FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
-      nodeInstance.setModelKey(flowElement.getKey());
-      nodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
+      nodeInstance.setKey(flowElement.getKey());
+      nodeInstance.setName(FlowModelUtil.getElementName(flowElement));
       Map<String, Object> props = flowElement.getProperties();
       if (props != null && !props.isEmpty()) {
         nodeInstance.setProperties(props);
@@ -572,9 +572,9 @@ public class RuntimeProcessor {
 
   private tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance buildActiveTaskInstance(NodeInstanceBO nodeInstanceBO, RuntimeContext runtimeContext) {
     tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance activeNodeInstance = JsonUtils.getInstance().convertValue(nodeInstanceBO, tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstance.class);
-    activeNodeInstance.setModelKey(nodeInstanceBO.getNodeKey());
+    activeNodeInstance.setKey(nodeInstanceBO.getNodeKey());
     FlowElement flowElement = runtimeContext.getFlowElementMap().get(nodeInstanceBO.getNodeKey());
-    activeNodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
+    activeNodeInstance.setName(FlowModelUtil.getElementName(flowElement));
     activeNodeInstance.setProperties(flowElement.getProperties());
     activeNodeInstance.setFlowElementType(flowElement.getType());
     activeNodeInstance.setSubNodeResultList(runtimeContext.getCallActivityRuntimeResultList());

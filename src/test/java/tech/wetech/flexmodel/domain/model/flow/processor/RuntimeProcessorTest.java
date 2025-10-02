@@ -62,7 +62,7 @@ public class RuntimeProcessorTest {
   public void testStartProcess() throws Exception {
     StartProcessResult startProcessResult = startProcess();
     Assertions.assertEquals(startProcessResult.getErrCode(), ErrorEnum.COMMIT_SUSPEND.getErrNo());
-    Assertions.assertEquals("BranchUserTask_0scrl8d", startProcessResult.getActiveTaskInstance().getModelKey());
+    Assertions.assertEquals("BranchUserTask_0scrl8d", startProcessResult.getActiveTaskInstance().getKey());
   }
 
   // UserTask -> EndEvent
@@ -80,7 +80,7 @@ public class RuntimeProcessorTest {
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
     log.info("testCommit.||commitTaskResult={}", commitTaskResult);
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
-    Assertions.assertEquals("EndEvent_0s4vsxw", commitTaskResult.getActiveTaskInstance().getModelKey());
+    Assertions.assertEquals("EndEvent_0s4vsxw", commitTaskResult.getActiveTaskInstance().getKey());
   }
 
   // UserTask -> ExclusiveGateway -> UserTask
@@ -98,7 +98,7 @@ public class RuntimeProcessorTest {
     CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
     log.info("testCommit.||commitTaskResult={}", commitTaskResult);
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.COMMIT_SUSPEND.getErrNo());
-    Assertions.assertEquals("UserTask_0uld0u9", commitTaskResult.getActiveTaskInstance().getModelKey());
+    Assertions.assertEquals("UserTask_0uld0u9", commitTaskResult.getActiveTaskInstance().getKey());
   }
 
   // UserTask -> ExclusiveGateway -> UserTask
@@ -119,7 +119,7 @@ public class RuntimeProcessorTest {
     log.info("testCommit.||commitTaskResult={}", commitTaskResult);
 
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.COMMIT_SUSPEND.getErrNo());
-    Assertions.assertEquals("UserTask_0uld0u9", commitTaskResult.getActiveTaskInstance().getModelKey());
+    Assertions.assertEquals("UserTask_0uld0u9", commitTaskResult.getActiveTaskInstance().getKey());
   }
 
   // UserTask -> EndEvent -> Commit again
@@ -184,7 +184,7 @@ public class RuntimeProcessorTest {
 
     log.info("testRollbackToUserTaskAndCommitOldUserTask.||commitTaskResult={}", commitTaskResult);
     Assertions.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.COMMIT_FAILED.getErrNo());
-    Assertions.assertEquals("BranchUserTask_0scrl8d", commitTaskResult.getActiveTaskInstance().getModelKey());
+    Assertions.assertEquals("BranchUserTask_0scrl8d", commitTaskResult.getActiveTaskInstance().getKey());
   }
 
   @Test
@@ -212,7 +212,7 @@ public class RuntimeProcessorTest {
     // Ignore current userTask
     log.info("testRollbackFromMiddleUserTask.||rollbackTaskResult={}", rollbackTaskResult);
     Assertions.assertEquals(rollbackTaskResult.getErrCode(), ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
-    Assertions.assertEquals("BranchUserTask_0scrl8d", rollbackTaskResult.getActiveTaskInstance().getModelKey());
+    Assertions.assertEquals("BranchUserTask_0scrl8d", rollbackTaskResult.getActiveTaskInstance().getKey());
   }
 
 
@@ -239,7 +239,7 @@ public class RuntimeProcessorTest {
 
     log.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
     Assertions.assertEquals(rollbackTaskResult.getErrCode(), ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
-    Assertions.assertEquals("BranchUserTask_0scrl8d", rollbackTaskResult.getActiveTaskInstance().getModelKey());
+    Assertions.assertEquals("BranchUserTask_0scrl8d", rollbackTaskResult.getActiveTaskInstance().getKey());
   }
 
   // StartEvent <- UserTask
@@ -323,7 +323,7 @@ public class RuntimeProcessorTest {
     StringBuilder sb = new StringBuilder();
     for (NodeInstance elementInstanceResult : nodeInstanceListResult.getNodeInstanceList()) {
       sb.append("[");
-      sb.append(elementInstanceResult.getModelKey());
+      sb.append(elementInstanceResult.getKey());
       sb.append(" ");
       sb.append(elementInstanceResult.getStatus());
       sb.append("]->");
@@ -331,7 +331,7 @@ public class RuntimeProcessorTest {
     log.info("testGetHistoryUserTaskList.||snapshot={}", sb.toString());
 
     Assertions.assertEquals(2, nodeInstanceListResult.getNodeInstanceList().size());
-    Assertions.assertEquals("UserTask_0uld0u9", nodeInstanceListResult.getNodeInstanceList().getFirst().getModelKey());
+    Assertions.assertEquals("UserTask_0uld0u9", nodeInstanceListResult.getNodeInstanceList().getFirst().getKey());
   }
 
 
@@ -356,7 +356,7 @@ public class RuntimeProcessorTest {
     StringBuilder sb = new StringBuilder();
     for (ElementInstance elementInstanceResult : elementInstanceListResult.getElementInstanceList()) {
       sb.append("[");
-      sb.append(elementInstanceResult.getModelKey());
+      sb.append(elementInstanceResult.getKey());
       sb.append(" ");
       sb.append(elementInstanceResult.getStatus());
       sb.append("]->");
@@ -364,7 +364,7 @@ public class RuntimeProcessorTest {
     log.info("testGetHistoryElementList.||snapshot={}", sb.toString());
 
     Assertions.assertEquals(5, elementInstanceListResult.getElementInstanceList().size());
-    Assertions.assertEquals("ExclusiveGateway_0yq2l0s", elementInstanceListResult.getElementInstanceList().get(4).getModelKey());
+    Assertions.assertEquals("ExclusiveGateway_0yq2l0s", elementInstanceListResult.getElementInstanceList().get(4).getKey());
   }
 
   @Test
@@ -385,7 +385,7 @@ public class RuntimeProcessorTest {
     StringBuilder sb = new StringBuilder();
     for (ElementInstance elementInstanceResult : elementInstanceListResult.getElementInstanceList()) {
       sb.append("[");
-      sb.append(elementInstanceResult.getModelKey());
+      sb.append(elementInstanceResult.getKey());
       sb.append(" ");
       sb.append(elementInstanceResult.getStatus());
       sb.append("]->");
@@ -393,7 +393,7 @@ public class RuntimeProcessorTest {
     log.info("testGetHistoryElementList.||snapshot={}", sb.toString());
 
     Assertions.assertEquals(5, elementInstanceListResult.getElementInstanceList().size());
-    Assertions.assertEquals("EndEvent_0s4vsxw", elementInstanceListResult.getElementInstanceList().get(4).getModelKey());
+    Assertions.assertEquals("EndEvent_0s4vsxw", elementInstanceListResult.getElementInstanceList().get(4).getKey());
   }
 
 

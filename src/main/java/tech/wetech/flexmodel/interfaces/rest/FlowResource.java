@@ -645,7 +645,7 @@ public class FlowResource {
   @Schema(
     properties = {
       @SchemaProperty(name = "nodeInstanceId", examples = {"node_inst_001"}, description = "节点实例ID"),
-      @SchemaProperty(name = "modelKey", examples = {"user_task_001"}, description = "模型键"),
+      @SchemaProperty(name = "Key", examples = {"user_task_001"}, description = "模型键"),
       @SchemaProperty(name = "modelName", examples = {"用户审批任务"}, description = "模型名称"),
       @SchemaProperty(name = "status", examples = {"2"}, description = "节点状态：1-待处理，2-已完成，3-已跳过，4-已禁用"),
       @SchemaProperty(name = "flowElementType", examples = {"1"}, description = "流程元素类型：1-用户任务，2-服务任务，3-网关，4-事件"),
@@ -663,8 +663,8 @@ public class FlowResource {
 
   @Schema(
     properties = {
-      @SchemaProperty(name = "modelKey", examples = {"start_event_001"}, description = "模型键"),
-      @SchemaProperty(name = "modelName", examples = {"开始事件"}, description = "模型名称"),
+      @SchemaProperty(name = "Key", examples = {"start_event_001"}, description = "键"),
+      @SchemaProperty(name = "name", examples = {"开始事件"}, description = "名称"),
       @SchemaProperty(name = "status", examples = {"2"}, description = "元素状态：1-待处理，2-已完成，3-已跳过，4-已禁用"),
       @SchemaProperty(name = "properties", description = "元素属性", type = SchemaType.OBJECT),
       @SchemaProperty(name = "nodeInstanceId", examples = {"node_inst_001"}, description = "节点实例ID"),
