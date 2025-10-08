@@ -25,6 +25,7 @@ import tech.wetech.flexmodel.domain.model.flow.dto.result.*;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author cjbi
@@ -78,6 +79,13 @@ public class FlowResource {
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH, required = true, example = "flow_inst_001")
     @PathParam("flowInstanceId") String flowInstanceId) {
     return flowApplicationService.getHistoryElementList(flowInstanceId);
+  }
+
+  @Operation(summary = "获取流程实例元素实例数据")
+  @Path("/instances/{flowInstanceId}/data/{instanceDataId}")
+  public Map<String, Object> getElementInstanceData(@PathParam("flowInstanceId") String flowInstanceId,
+                                                    @PathParam("instanceDataId") String instanceDataId) {
+    return flowApplicationService.getInstanceData(flowInstanceId, instanceDataId);
   }
 
   @Operation(summary = "获取流程列表")

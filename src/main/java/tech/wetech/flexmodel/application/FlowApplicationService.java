@@ -23,6 +23,7 @@ import tech.wetech.flexmodel.shared.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 流程编排应用服务
@@ -207,5 +208,9 @@ public class FlowApplicationService {
       throw new IllegalArgumentException("流程实例ID不能为空");
     }
     return flowInstanceService.findById(flowInstanceId);
+  }
+
+  public Map<String, Object> getInstanceData(String flowInstanceId, String instanceDataId) {
+    return null;
   }
 }

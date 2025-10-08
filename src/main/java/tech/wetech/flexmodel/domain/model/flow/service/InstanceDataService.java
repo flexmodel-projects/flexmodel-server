@@ -14,22 +14,22 @@ import java.util.Map;
 public class InstanceDataService {
 
   @Inject
-  private InstanceDataRepository instanceDataRepository;
+  InstanceDataRepository instanceDataRepository;
 
   @Inject
-  private FlowInstanceRepository flowInstanceRepository;
+  FlowInstanceRepository flowInstanceRepository;
 
   @Inject
-  private FlowDeploymentRepository flowDeploymentRepository;
+  FlowDeploymentRepository flowDeploymentRepository;
 
   @Inject
-  private NodeInstanceRepository nodeInstanceRepository;
+  NodeInstanceRepository nodeInstanceRepository;
 
   @Inject
-  private FlowInstanceMappingRepository flowInstanceMappingRepository;
+  FlowInstanceMappingRepository flowInstanceMappingRepository;
 
   @Inject
-  private FlowInstanceService flowInstanceService;
+  FlowInstanceService flowInstanceService;
 
   public InstanceData select(String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance) {
     InstanceData instanceData = instanceDataRepository.select(flowInstanceId, instanceDataId);
