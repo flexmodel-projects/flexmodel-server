@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.domain.model.flow.util;
+package tech.wetech.flexmodel.domain.model.flow.shared;
 
 import tech.wetech.flexmodel.codegen.entity.*;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;

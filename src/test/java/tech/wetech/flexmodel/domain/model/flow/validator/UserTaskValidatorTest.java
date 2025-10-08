@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.exception.DefinitionException;
-import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
+import tech.wetech.flexmodel.domain.model.flow.shared.EntityBuilder;
 
 import java.util.HashMap;
 import java.util.Map;

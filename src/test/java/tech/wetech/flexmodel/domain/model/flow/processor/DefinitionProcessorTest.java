@@ -15,8 +15,8 @@ import tech.wetech.flexmodel.domain.model.flow.dto.result.CreateFlowResult;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.DeployFlowResult;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.FlowModuleResult;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.UpdateFlowResult;
+import tech.wetech.flexmodel.domain.model.flow.shared.EntityBuilder;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
-import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
 
 /**
  * @author cjbi

@@ -14,8 +14,8 @@ import tech.wetech.flexmodel.domain.model.flow.dto.model.SequenceFlow;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.StartEvent;
 import tech.wetech.flexmodel.domain.model.flow.exception.DefinitionException;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
+import tech.wetech.flexmodel.domain.model.flow.shared.EntityBuilder;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.FlowElementType;
-import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
 
 import java.util.ArrayList;
 import java.util.List;

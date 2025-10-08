@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowModel;
+import tech.wetech.flexmodel.domain.model.flow.shared.EntityBuilder;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
-import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.HashMap;

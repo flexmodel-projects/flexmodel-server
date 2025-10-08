@@ -15,8 +15,8 @@ import tech.wetech.flexmodel.domain.model.flow.dto.param.RollbackTaskParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
 import tech.wetech.flexmodel.domain.model.flow.dto.result.*;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDeploymentRepository;
+import tech.wetech.flexmodel.domain.model.flow.shared.EntityBuilder;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
-import tech.wetech.flexmodel.domain.model.flow.util.EntityBuilder;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.HashMap;
