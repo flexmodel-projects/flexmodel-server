@@ -86,6 +86,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     currentNodeInstance.setSourceNodeInstanceId(sourceNodeInstanceId);
     currentNodeInstance.setSourceNodeKey(sourceNodeKey);
     currentNodeInstance.setStatus(NodeInstanceStatus.ACTIVE);
+    FlowElement flowElement = FlowModelUtil.getFlowElement(runtimeContext.getFlowElementMap(), currentNodeInstance.getNodeKey());
+    currentNodeInstance.getProperties().putAll(flowElement.getProperties());
     currentNodeInstance.getProperties().putAll(runtimeContext.getExtendProperties());
     currentNodeInstance.setNodeType(runtimeContext.getCurrentNodeModel().getType());
     currentNodeInstance.setInstanceDataId(Objects.toString(runtimeContext.getInstanceDataId(), ""));

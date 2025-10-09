@@ -60,6 +60,7 @@ public enum ErrorEnum {
   GET_CALL_ACTIVITY_MODEL_FAILED(4019, "Get CallActivity model failed"),
   NO_RECEIVE_SUB_FLOW_INSTANCE(4020, "Do not receive subFlowInstanceId"),
   UPDATE_INSTANCE_DATA_FAILED(4021, "Update instanceData failed"),
+  SERVICE_TASK_EXECUTION_FAILED(4022, "Service task execution failed"),
 
 
   //5000~5999 系统错误
