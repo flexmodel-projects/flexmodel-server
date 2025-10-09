@@ -334,8 +334,8 @@ class JavaScriptUtilTest {
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertNotNull(result);
-    assertTrue(result instanceof Map);
-    
+    assertInstanceOf(Map.class, result);
+
     @SuppressWarnings("unchecked")
     Map<String, Object> resultMap = (Map<String, Object>) result;
     assertEquals("Alice", resultMap.get("name"));
@@ -362,8 +362,8 @@ class JavaScriptUtilTest {
 
     Object result = JavaScriptUtil.executeScript(script, dataMap);
     assertNotNull(result);
-    assertTrue(result instanceof Map);
-    
+    assertInstanceOf(Map.class, result);
+
     @SuppressWarnings("unchecked")
     Map<String, Object> resultMap = (Map<String, Object>) result;
     assertEquals("Bob", resultMap.get("name"));
@@ -392,24 +392,24 @@ class JavaScriptUtilTest {
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertNotNull(result);
-    assertTrue(result instanceof Map);
-    
+    assertInstanceOf(Map.class, result);
+
     @SuppressWarnings("unchecked")
     Map<String, Object> resultMap = (Map<String, Object>) result;
-    
+
     // 验证嵌套对象
-    assertTrue(resultMap.get("person") instanceof Map);
+    assertInstanceOf(Map.class, resultMap.get("person"));
     @SuppressWarnings("unchecked")
     Map<String, Object> personMap = (Map<String, Object>) resultMap.get("person");
     assertEquals("Charlie", personMap.get("name"));
     assertEquals(35, personMap.get("age"));
-    
+
     assertTrue(resultMap.get("address") instanceof Map);
     @SuppressWarnings("unchecked")
     Map<String, Object> addressMap = (Map<String, Object>) resultMap.get("address");
     assertEquals("123 Main St", addressMap.get("street"));
     assertEquals("Shanghai", addressMap.get("city"));
-    
+
     assertEquals(true, resultMap.get("active"));
   }
 
@@ -428,23 +428,23 @@ class JavaScriptUtilTest {
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertNotNull(result);
-    assertTrue(result instanceof Map);
-    
+    assertInstanceOf(Map.class, result);
+
     @SuppressWarnings("unchecked")
     Map<String, Object> resultMap = (Map<String, Object>) result;
     assertEquals("David", resultMap.get("name"));
-    
+
     // 验证数组
     Object hobbies = resultMap.get("hobbies");
-    assertTrue(hobbies instanceof Object[]);
+    assertInstanceOf(Object[].class, hobbies);
     Object[] hobbiesArray = (Object[]) hobbies;
     assertEquals(3, hobbiesArray.length);
     assertEquals("reading", hobbiesArray[0]);
     assertEquals("swimming", hobbiesArray[1]);
     assertEquals("coding", hobbiesArray[2]);
-    
+
     Object scores = resultMap.get("scores");
-    assertTrue(scores instanceof Object[]);
+    assertInstanceOf(Object[].class, scores);
     Object[] scoresArray = (Object[]) scores;
     assertEquals(3, scoresArray.length);
     assertEquals(85, scoresArray[0]);
@@ -473,8 +473,8 @@ class JavaScriptUtilTest {
 
     Object result = JavaScriptUtil.executeScript(script, dataMap);
     assertNotNull(result);
-    assertTrue(result instanceof Map);
-    
+    assertInstanceOf(Map.class, result);
+
     @SuppressWarnings("unchecked")
     Map<String, Object> resultMap = (Map<String, Object>) result;
     assertEquals(100, resultMap.get("originalPrice"));
@@ -491,8 +491,8 @@ class JavaScriptUtilTest {
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertNotNull(result);
-    assertTrue(result instanceof Map);
-    
+    assertInstanceOf(Map.class, result);
+
     @SuppressWarnings("unchecked")
     Map<String, Object> resultMap = (Map<String, Object>) result;
     assertTrue(resultMap.isEmpty());
