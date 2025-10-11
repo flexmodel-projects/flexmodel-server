@@ -9,7 +9,6 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.ConfigProvider;
 import tech.wetech.flexmodel.application.AuthApplicationService;
-import tech.wetech.flexmodel.application.SettingsApplicationService;
 import tech.wetech.flexmodel.codegen.entity.User;
 import tech.wetech.flexmodel.interfaces.rest.jwt.JwtUtil;
 import tech.wetech.flexmodel.interfaces.rest.response.UserinfoResponse;
@@ -28,9 +27,6 @@ public class AuthResource {
 
   @Inject
   AuthApplicationService authApplicationService;
-
-  @Inject
-  SettingsApplicationService settingsApplicationService;
 
   @POST
   @Path("/login")
@@ -91,7 +87,7 @@ public class AuthResource {
   }
 
   @GET
-  @Path("/me")
+  @Path("/whoami")
   public Response getUserInfo(@HeaderParam("Authorization") String authorization) {
     try {
       String accessToken = authorization.replace("Bearer ", "");

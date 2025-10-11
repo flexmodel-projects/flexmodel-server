@@ -167,7 +167,7 @@ class AuthResourceTest {
     given()
       .when()
       .header("Authorization", "Bearer " + accessToken)
-      .get(Resources.ROOT_PATH + "/auth/me")
+      .get(Resources.ROOT_PATH + "/auth/whoami")
       .then()
       .statusCode(200)
       .body("token", is(accessToken))
@@ -183,7 +183,7 @@ class AuthResourceTest {
   void testGetUserInfoFailureNoAuthHeader() {
     given()
       .when()
-      .get(Resources.ROOT_PATH + "/auth/me")
+      .get(Resources.ROOT_PATH + "/auth/whoami")
       .then()
       .statusCode(400);
   }
@@ -196,7 +196,7 @@ class AuthResourceTest {
     given()
       .when()
       .header("Authorization", "Bearer invalid_token")
-      .get(Resources.ROOT_PATH + "/auth/me")
+      .get(Resources.ROOT_PATH + "/auth/whoami")
       .then()
       .statusCode(401);
   }
@@ -211,7 +211,7 @@ class AuthResourceTest {
     given()
       .when()
       .header("Authorization", "Bearer " + expiredToken)
-      .get(Resources.ROOT_PATH + "/auth/me")
+      .get(Resources.ROOT_PATH + "/auth/whoami")
       .then()
       .statusCode(401);
   }
@@ -224,7 +224,7 @@ class AuthResourceTest {
     given()
       .when()
       .header("Authorization", "InvalidFormat token")
-      .get(Resources.ROOT_PATH + "/auth/me")
+      .get(Resources.ROOT_PATH + "/auth/whoami")
       .then()
       .statusCode(401);
   }
@@ -239,7 +239,7 @@ class AuthResourceTest {
     given()
       .when()
       .header("Authorization", "Bearer " + tokenForNonExistentUser)
-      .get(Resources.ROOT_PATH + "/auth/me")
+      .get(Resources.ROOT_PATH + "/auth/whoami")
       .then()
       .statusCode(401);
   }
@@ -284,7 +284,7 @@ class AuthResourceTest {
     given()
       .when()
       .header("Authorization", "Bearer " + accessToken)
-      .get(Resources.ROOT_PATH + "/auth/me")
+      .get(Resources.ROOT_PATH + "/auth/whoami")
       .then()
       .statusCode(200)
       .body("token", is(accessToken))
@@ -304,7 +304,7 @@ class AuthResourceTest {
     given()
       .when()
       .header("Authorization", "Bearer " + newAccessToken)
-      .get(Resources.ROOT_PATH + "/auth/me")
+      .get(Resources.ROOT_PATH + "/auth/whoami")
       .then()
       .statusCode(200)
       .body("token", is(newAccessToken))

@@ -1,6 +1,25 @@
 {
   "data": [
     {
+      "modelName": "f_tenant",
+      "values": [
+        {
+          "id": "default"
+        }
+      ]
+    },
+    {
+      "modelName": "f_user",
+      "values": [
+        {
+          "id": "admin",
+          "username": "admin",
+          "password_hash": "172eee54aa664e9dd0536b063796e54e",
+          "created_at": "2025-08-30 19:58:23.000"
+        }
+      ]
+    },
+    {
       "modelName": "f_api_definition",
       "values": [
         {
@@ -148,6 +167,132 @@
       ]
     },
     {
+      "modelName": "f_trigger",
+      "values": [
+        {
+          "id": "bf492f37-1f01-4eb8-b76d-d319299b4d8e",
+          "name": "定时触发-间隔触发",
+          "description": "定时触发-间隔触发-备注",
+          "type": "SCHEDULED",
+          "config": {
+            "type": "interval",
+            "interval": 1,
+            "intervalUnit": "minute",
+            "repeatCount": 100
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "job_group": "testFlowName_1757909108656",
+          "state": false,
+          "created_at": "2025-09-15 12:05:09.000",
+          "updated_at": "2025-09-15 12:05:09.000"
+        },
+        {
+          "id": "d8c60d2a-19d8-4c3c-b370-96318733858f",
+          "name": "定时触发-Cron表达式",
+          "description": "定时触发-Cron表达式-备注",
+          "type": "SCHEDULED",
+          "config": {
+            "type": "cron",
+            "cronExpression": "0 0 * * * ? *"
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "job_group": "testFlowName_1757909108656",
+          "state": false,
+          "created_at": "2025-09-15 12:05:09.000",
+          "updated_at": "2025-09-15 12:05:09.000"
+        },
+        {
+          "id": "9434666d-6b3b-417a-80e3-3352f40ded71",
+          "name": "事件触发-之前",
+          "description": "事件触发-之前-描述",
+          "type": "EVENT",
+          "config": {
+            "type": "event",
+            "datasourceName": "system",
+            "modelName": "Student",
+            "mutationTypes": [
+              "delete",
+              "update",
+              "create"
+            ],
+            "triggerTiming": "after"
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "job_group": "system_Student",
+          "state": true,
+          "created_at": "2025-09-15 12:05:09.000",
+          "updated_at": "2025-09-15 12:05:09.000"
+        },
+        {
+          "id": "f351b8d9-a450-4f2c-8fff-cf862d690352",
+          "name": "事件触发-之后",
+          "description": "事件触发-之后-描述",
+          "type": "EVENT",
+          "config": {
+            "type": "event",
+            "datasourceName": "system",
+            "modelName": "Classes",
+            "mutationTypes": [
+              "create",
+              "update",
+              "delete"
+            ],
+            "triggerTiming": "after"
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "job_group": "system_Classes",
+          "state": true,
+          "created_at": "2025-09-15 12:05:09.000",
+          "updated_at": "2025-09-15 12:05:09.000"
+        }
+      ]
+    },
+    {
+      "modelName": "f_em_flow_definition",
+      "values": [
+        {
+          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "flow_name": "testFlowName_1757909108656",
+          "flow_key": "testFlowKey_1757909108656",
+          "tenant_id": null,
+          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
+          "status": 2,
+          "create_time": "2025-09-15 12:05:09.000",
+          "modify_time": "2025-09-15 12:05:09.000",
+          "operator": "testOperator",
+          "remark": "testRemark",
+          "archive": 0,
+          "tenant": "testTenant",
+          "caller": "testCaller"
+        }
+      ]
+    },
+    {
+      "modelName": "f_em_flow_deployment",
+      "values": [
+        {
+          "flow_deploy_id": "c2d6f2bb-0d7b-4eb0-81a6-5a72262740d4",
+          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "flow_name": "testFlowName_1757909108656",
+          "flow_key": "testFlowKey_1757909108656",
+          "tenant_id": null,
+          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
+          "status": 1,
+          "create_time": "2025-09-15 12:05:09.000",
+          "modify_time": "2025-09-15 12:05:09.000",
+          "operator": "testOperator",
+          "remark": "testRemark",
+          "archive": 0,
+          "tenant": "testTenant",
+          "caller": "testCaller"
+        }
+      ]
+    },
+    {
       "modelName": "Course",
       "values": [
         {
@@ -287,143 +432,6 @@
               "id": 3
             }
           ]
-        }
-      ]
-    },
-    {
-      "modelName": "f_user",
-      "values": [
-        {
-          "id": "admin",
-          "username": "admin",
-          "password_hash": "172eee54aa664e9dd0536b063796e54e",
-          "created_at": "2025-08-30 19:58:23.000"
-        }
-      ]
-    },
-    {
-      "modelName": "f_trigger",
-      "values": [
-        {
-          "id": "bf492f37-1f01-4eb8-b76d-d319299b4d8e",
-          "name": "定时触发-间隔触发",
-          "description": "定时触发-间隔触发-备注",
-          "type": "SCHEDULED",
-          "config": {
-            "type": "interval",
-            "interval": 1,
-            "intervalUnit": "minute",
-            "repeatCount": 100
-          },
-          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "job_type": "FLOW",
-          "job_group": "testFlowName_1757909108656",
-          "state": false,
-          "created_at": "2025-09-15 12:05:09.000",
-          "updated_at": "2025-09-15 12:05:09.000"
-        },
-        {
-          "id": "d8c60d2a-19d8-4c3c-b370-96318733858f",
-          "name": "定时触发-Cron表达式",
-          "description": "定时触发-Cron表达式-备注",
-          "type": "SCHEDULED",
-          "config": {
-            "type": "cron",
-            "cronExpression": "0 0 * * * ? *"
-          },
-          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "job_type": "FLOW",
-          "job_group": "testFlowName_1757909108656",
-          "state": false,
-          "created_at": "2025-09-15 12:05:09.000",
-          "updated_at": "2025-09-15 12:05:09.000"
-        },
-        {
-          "id": "9434666d-6b3b-417a-80e3-3352f40ded71",
-          "name": "事件触发-之前",
-          "description": "事件触发-之前-描述",
-          "type": "EVENT",
-          "config": {
-            "type": "event",
-            "datasourceName": "system",
-            "modelName": "Student",
-            "mutationTypes": [
-              "delete",
-              "update",
-              "create"
-            ],
-            "triggerTiming": "after"
-          },
-          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "job_type": "FLOW",
-          "job_group": "system_Student",
-          "state": true,
-          "created_at": "2025-09-15 12:05:09.000",
-          "updated_at": "2025-09-15 12:05:09.000"
-        },
-        {
-          "id": "f351b8d9-a450-4f2c-8fff-cf862d690352",
-          "name": "事件触发-之后",
-          "description": "事件触发-之后-描述",
-          "type": "EVENT",
-          "config": {
-            "type": "event",
-            "datasourceName": "system",
-            "modelName": "Classes",
-            "mutationTypes": [
-              "create",
-              "update",
-              "delete"
-            ],
-            "triggerTiming": "after"
-          },
-          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "job_type": "FLOW",
-          "job_group": "system_Classes",
-          "state": true,
-          "created_at": "2025-09-15 12:05:09.000",
-          "updated_at": "2025-09-15 12:05:09.000"
-        }
-      ]
-    },
-    {
-      "modelName": "f_em_flow_definition",
-      "values": [
-        {
-          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "flow_name": "testFlowName_1757909108656",
-          "flow_key": "testFlowKey_1757909108656",
-          "tenant_id": null,
-          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
-          "status": 2,
-          "create_time": "2025-09-15 12:05:09.000",
-          "modify_time": "2025-09-15 12:05:09.000",
-          "operator": "testOperator",
-          "remark": "testRemark",
-          "archive": 0,
-          "tenant": "testTenant",
-          "caller": "testCaller"
-        }
-      ]
-    },
-    {
-      "modelName": "f_em_flow_deployment",
-      "values": [
-        {
-          "flow_deploy_id": "c2d6f2bb-0d7b-4eb0-81a6-5a72262740d4",
-          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "flow_name": "testFlowName_1757909108656",
-          "flow_key": "testFlowKey_1757909108656",
-          "tenant_id": null,
-          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
-          "status": 1,
-          "create_time": "2025-09-15 12:05:09.000",
-          "modify_time": "2025-09-15 12:05:09.000",
-          "operator": "testOperator",
-          "remark": "testRemark",
-          "archive": 0,
-          "tenant": "testTenant",
-          "caller": "testCaller"
         }
       ]
     }
