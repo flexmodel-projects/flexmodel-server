@@ -380,7 +380,7 @@ public class EntityBuilder {
     flowInstance.setCreateTime(LocalDateTime.now());
     flowInstance.setModifyTime(LocalDateTime.now());
     flowInstance.setCaller("caller");
-    flowInstance.setTenant("tenant");
+    flowInstance.setTenantId("tenant");
     return flowInstance;
   }
 
@@ -403,7 +403,7 @@ public class EntityBuilder {
     nodeInstance.setCreateTime(LocalDateTime.now());
     nodeInstance.setModifyTime(LocalDateTime.now());
     nodeInstance.setCaller("caller");
-    nodeInstance.setTenant("tenant");
+    nodeInstance.setTenantId("tenant");
     return nodeInstance;
   }
 
@@ -424,7 +424,7 @@ public class EntityBuilder {
     nodeInstanceLog.setStatus(NodeInstanceStatus.ACTIVE);
     nodeInstanceLog.setCreateTime(LocalDateTime.now());
     nodeInstanceLog.setCaller("caller");
-    nodeInstanceLog.setTenant("tenant");
+    nodeInstanceLog.setTenantId("tenant");
     return nodeInstanceLog;
   }
 
@@ -438,7 +438,7 @@ public class EntityBuilder {
     nodeInstanceLog.setStatus(NodeInstanceStatus.ACTIVE);
     nodeInstanceLog.setCreateTime(LocalDateTime.now());
     nodeInstanceLog.setCaller("caller");
-    nodeInstanceLog.setTenant("tenant");
+    nodeInstanceLog.setTenantId("tenant");
     return nodeInstanceLog;
   }
 
@@ -455,7 +455,7 @@ public class EntityBuilder {
     instanceData.setType(InstanceDataType.EXECUTE);
     instanceData.setCreateTime(LocalDateTime.now());
     instanceData.setCaller("caller");
-    instanceData.setTenant("tenant");
+    instanceData.setTenantId("tenant");
     return instanceData;
   }
 

@@ -602,7 +602,7 @@ public class FlowExecutor extends RuntimeExecutor {
     NodeInstance nodeInstancePO = JsonUtils.getInstance().convertValue(nodeInstanceBO, NodeInstance.class);
     nodeInstancePO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
     nodeInstancePO.setFlowDeployId(runtimeContext.getFlowDeployId());
-    nodeInstancePO.setTenant(runtimeContext.getTenant());
+    nodeInstancePO.setTenantId(runtimeContext.getTenant());
     nodeInstancePO.setCaller(runtimeContext.getCaller());
     LocalDateTime currentTime = LocalDateTime.now();
     nodeInstancePO.setCreateTime(currentTime);
