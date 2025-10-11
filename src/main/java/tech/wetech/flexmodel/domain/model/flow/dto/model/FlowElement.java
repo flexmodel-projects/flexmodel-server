@@ -1,6 +1,7 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,9 @@ public class FlowElement implements Serializable {
   }
 
   public Map<String, Object> getProperties() {
+    if (properties == null) {
+      properties = new HashMap<>();
+    }
     return properties;
   }
 
