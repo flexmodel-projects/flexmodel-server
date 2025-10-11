@@ -182,6 +182,7 @@ public class FlowResource {
   public CreateFlowResult createFlow(CreateFlowParam createFlowParam) {
     createFlowParam.setTenant("default");
     createFlowParam.setCaller("admin");
+    createFlowParam.setOperator("admin");
     return flowApplicationService.createFlow(createFlowParam);
   }
 
@@ -214,6 +215,7 @@ public class FlowResource {
     deployFlowParam.setFlowModuleId(flowModuleId);
     deployFlowParam.setTenant("default");
     deployFlowParam.setCaller("admin");
+    deployFlowParam.setOperator("admin");
     return flowApplicationService.deployFlow(deployFlowParam);
   }
 
@@ -246,6 +248,7 @@ public class FlowResource {
     updateFlowParam.setFlowModuleId(flowModuleId);
     updateFlowParam.setTenant("default");
     updateFlowParam.setCaller("admin");
+    updateFlowParam.setOperator("admin");
     return flowApplicationService.updateFlow(updateFlowParam);
   }
 
