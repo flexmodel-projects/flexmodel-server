@@ -1,7 +1,12 @@
 package tech.wetech.flexmodel.domain.model.flow.executor;
 
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tech.wetech.flexmodel.SQLiteTestResource;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
@@ -43,15 +48,18 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author cjbi
  */
+@Slf4j
+@QuarkusTest
+@QuarkusTestResource(SQLiteTestResource.class)
 class ServiceTaskExecutorTest {
 
-  private ServiceTaskExecutor serviceTaskExecutor;
+  @Inject
+  ServiceTaskExecutor serviceTaskExecutor;
   private RuntimeContext runtimeContext;
   private NodeInstanceBO nodeInstance;
 
   @BeforeEach
   void setUp() {
-    serviceTaskExecutor = new ServiceTaskExecutor();
 
     // 创建测试用的RuntimeContext
     runtimeContext = new RuntimeContext();
@@ -406,22 +414,22 @@ class ServiceTaskExecutorTest {
     // 准备测试数据 - 复杂数据结构
     nodeInstance.put("subType", "groovy");
     nodeInstance.put("script", """
-        def complexData = [
-            numbers: [1, 2, 3, 4, 5],
-            nested: [
-                level1: [
-                    level2: [
-                        value: 'deep'
-                    ]
-                ]
-            ],
-            functions: [
-                add: { a, b -> a + b },
-                multiply: { a, b -> a * b }
-            ]
-        ]
-        return complexData
-        """);
+      def complexData = [
+          numbers: [1, 2, 3, 4, 5],
+          nested: [
+              level1: [
+                  level2: [
+                      value: 'deep'
+                  ]
+              ]
+          ],
+          functions: [
+              add: { a, b -> a + b },
+              multiply: { a, b -> a * b }
+          ]
+      ]
+      return complexData
+      """);
 
     Map<String, Object> instanceDataMap = new HashMap<>();
     runtimeContext.setInstanceDataMap(instanceDataMap);
