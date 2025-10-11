@@ -8,6 +8,7 @@ model f_datasource {
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("数据源")
 }
 model f_api_definition {
@@ -24,6 +25,7 @@ model f_api_definition {
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("API定义")
 }
 model f_api_request_log {
@@ -40,10 +42,11 @@ model f_api_request_log {
   is_success: Boolean @comment("是否成功") @default("true"),
   error_message? : JSON @comment("异常信息"),
   tenant_id?: String @comment("业务方标识"),
-  @index(fields: [created_at]),
-  @index(fields: [is_error]),
-  @index(fields: [endpoint, created_at]),
-  @index(fields: [status_code, created_at]),
+  @index(name: "IDX_API_REQUEST_LOG_CREATED_AT", fields: [created_at]),
+  @index(name: "IDX_API_REQUEST_LOG_IS_ERROR", fields: [is_success]),
+  @index(name: "IDX_API_REQUEST_LOG_PATH_CREATED_AT", fields: [path, created_at]),
+  @index(name: "IDX_API_REQUEST_LOG_STATUS_CREATED_AT", fields: [status_code, created_at]),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("API请求日志")
 }
 model f_identity_provider {
@@ -54,6 +57,8 @@ model f_identity_provider {
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @comment("身份源")
 }
 model f_config {
   id : String @id @unique @default(uuid()),
@@ -116,6 +121,7 @@ model f_user {
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name : "IDX_USERNAME", unique: "true", fields: [username]),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("用户")
 }
 model f_ai_chat_conversation {
@@ -127,6 +133,7 @@ model f_ai_chat_conversation {
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("AI聊天会话")
 }
 
@@ -142,6 +149,7 @@ model f_ai_chat_message {
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name:"IDX_CONVERSATION_ID", unique: false, fields: [conversation_id]),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("AI聊天消息")
 }
 
@@ -164,7 +172,8 @@ model f_em_flow_definition {
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name: "IDX_flow_define_module", fields: [flow_module_id])
+  @index(name: "IDX_flow_define_module", fields: [flow_module_id]),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("流程定义")
 }
 
@@ -189,7 +198,8 @@ model f_em_flow_deployment {
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name: "IDX_flow_deploy", fields: [flow_deploy_id]),
-  @index(name: "IDX_flow_module", fields: [flow_module_id])
+  @index(name: "IDX_flow_module", fields: [flow_module_id]),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("流程部署")
 }
 
@@ -209,7 +219,8 @@ model f_ei_flow_instance {
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-@index(name: "IDX_flow_instance", fields: [flow_instance_id])
+  @index(name: "IDX_flow_instance", fields: [flow_instance_id]),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("流程执行实例")
 }
 
@@ -229,7 +240,8 @@ model f_ei_flow_instance_mapping {
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name: "IDX_ei_flow_node", fields: [flow_instance_id])
+  @index(name: "IDX_ei_flow_node", fields: [flow_instance_id]),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("父子流程实例映射")
 }
 
@@ -255,6 +267,7 @@ model f_ei_node_instance {
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name: "IDX_node_instance_id", fields: [node_instance_id]),
   @index(name: "IDX_fiid_sniid_nk", fields: [flow_instance_id, source_node_instance_id, node_key]),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("节点执行实例")
 }
 
@@ -274,6 +287,7 @@ model f_ei_node_instance_log {
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("节点执行记录")
 }
 
@@ -297,6 +311,7 @@ model f_ei_instance_data {
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name: "IDX_instance_data_id", fields: [instance_data_id]),
   @index(name: "IDX_flow_instance", fields: [flow_instance_id]),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("实例数据")
 }
 
@@ -485,6 +500,10 @@ model f_trigger {
   @index(name:"UQ_TRIGGER_PK", unique: "true", fields: [id]),
   created_at? : DateTime @default(now()),
   updated_at? : DateTime @default(now()),
+  created_by?: String @comment("创建人"),
+  updated_by?: String @comment("更新人"),
+  tenant_id?: String @comment("业务方标识"),
+  @index(name:"IDX_TENANT", unique: false, fields: [tenant_id]),
   @comment("触发器配置")
 }
 
@@ -518,11 +537,11 @@ model f_job_execution_log {
 
   @index(name:"IDX_JOB_EXEC_TRIGGER_ID", unique: false, fields: [trigger_id]),
   @index(name:"IDX_JOB_EXEC_JOB_ID", unique: false, fields: [job_id]),
-  @index(name:"IDX_JOB_EXEC_FLOW_INSTANCE", unique: false, fields: [flow_instance_id]),
+  @index(name:"IDX_JOB_EXEC_SCHEDULER", unique: false, fields: [scheduler_name]),
   @index(name:"IDX_JOB_EXEC_STATUS", unique: false, fields: [execution_status]),
   @index(name:"IDX_JOB_EXEC_START_TIME", unique: false, fields: [start_time]),
   @index(name:"IDX_JOB_EXEC_SUCCESS", unique: false, fields: [is_success]),
-  @index(name:"IDX_JOB_EXEC_TENANT", unique: false, fields: [tenant_id]),
+  @index(name:"IDX_TENANT", unique: false, fields: [tenant_id]),
   @index(name:"IDX_JOB_EXEC_COMPOSITE", unique: false, fields: [trigger_id, start_time]),
   @comment("作业执行日志")
 }
