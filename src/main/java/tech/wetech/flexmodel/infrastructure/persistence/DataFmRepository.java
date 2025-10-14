@@ -61,8 +61,10 @@ public class DataFmRepository implements DataRepository {
           log.error("Invalid sort string: {}", sortString, e);
         }
       }
-      return queryBuilder.enableNested()
-        .execute();
+      if (nestedQueryEnabled) {
+        queryBuilder.enableNested();
+      }
+      return queryBuilder.execute();
     }
   }
 

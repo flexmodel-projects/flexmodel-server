@@ -13,7 +13,6 @@ import tech.wetech.flexmodel.domain.model.flow.shared.common.NodeInstanceStatus;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.GroovyUtil;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.JavaScriptUtil;
-import tech.wetech.flexmodel.jsonlogic.JsonPathUtils;
 import tech.wetech.flexmodel.query.Query;
 import tech.wetech.flexmodel.session.Session;
 import tech.wetech.flexmodel.session.SessionFactory;
@@ -24,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * 自动任务执行器
@@ -51,20 +51,20 @@ public class ServiceTaskExecutor extends ElementExecutor {
     // 检查节点状态，避免重复执行
     if (nodeInstance.getStatus() == NodeInstanceStatus.COMPLETED) {
       LOGGER.warn("doExecute: nodeInstance is already completed.||nodeInstanceId={}||nodeKey={}",
-          nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey());
+        nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey());
       return;
     }
     // 获取子类型
     Object subTypeObj = nodeInstance.get("subType");
     if (subTypeObj == null) {
       LOGGER.error("doExecute: subType is null.||nodeInstanceId={}||nodeKey={}",
-          nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey());
+        nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey());
       throw new ProcessException(ErrorEnum.MISSING_DATA, "服务任务缺少subType属性");
     }
 
     String subType = subTypeObj.toString();
     LOGGER.info("doExecute: executing service task.||nodeInstanceId={}||nodeKey={}||subType={}",
-        nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType);
+      nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType);
 
     try {
       Object result;
@@ -80,14 +80,14 @@ public class ServiceTaskExecutor extends ElementExecutor {
         Object scriptObj = nodeInstance.get("script");
         if (scriptObj == null) {
           LOGGER.error("doExecute: script is null.||nodeInstanceId={}||nodeKey={}||subType={}",
-              nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType);
+            nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType);
           throw new ProcessException(ErrorEnum.MISSING_DATA, "服务任务缺少script属性");
         }
 
         String script = scriptObj.toString();
         if (StringUtils.isBlank(script)) {
           LOGGER.warn("doExecute: script is empty.||nodeInstanceId={}||nodeKey={}||subType={}",
-              nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType);
+            nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType);
           throw new ProcessException(ErrorEnum.MISSING_DATA, "服务任务脚本内容为空");
         }
 
@@ -103,18 +103,18 @@ public class ServiceTaskExecutor extends ElementExecutor {
       runtimeContext.getNodeInstanceList().add(nodeInstance);
 
       LOGGER.info(
-          "doExecute: service task completed successfully.||nodeInstanceId={}||nodeKey={}||subType={}||result={}",
-          nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType, result);
+        "doExecute: service task completed successfully.||nodeInstanceId={}||nodeKey={}||subType={}||result={}",
+        nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType, result);
 
     } catch (ProcessException pe) {
       LOGGER.error("doExecute: ProcessException occurred.||nodeInstanceId={}||nodeKey={}||subType={}",
-          nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType, pe);
+        nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType, pe);
       throw pe;
     } catch (Exception e) {
       LOGGER.error("doExecute: unexpected exception occurred.||nodeInstanceId={}||nodeKey={}||subType={}",
-          nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType, e);
+        nodeInstance.getNodeInstanceId(), nodeInstance.getNodeKey(), subType, e);
       throw new ProcessException(ErrorEnum.SERVICE_TASK_EXECUTION_FAILED.getErrNo(),
-          "服务任务执行失败: " + e.getMessage());
+        "服务任务执行失败: " + e.getMessage());
     }
   }
 
@@ -178,6 +178,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
    */
   private void handleExecutionResult(NodeInstanceBO nodeInstance, Object result, RuntimeContext runtimeContext) {
     if (result != null) {
+      String resultPath = getOptionalProperty(nodeInstance, "resultPath");
       // 将执行结果存储到runtimeContext.instanceDataMap中
       Map<String, Object> instanceDataMap = runtimeContext.getInstanceDataMap();
       if (instanceDataMap == null) {
@@ -185,17 +186,20 @@ public class ServiceTaskExecutor extends ElementExecutor {
         runtimeContext.setInstanceDataMap(instanceDataMap);
       }
 
-      // 存储执行结果
-      instanceDataMap.put("executionResult", result);
-
-      // 如果结果是Map类型，将其合并到实例数据中
-      if (result instanceof Map) {
+      // 将结果存储到指定路径
+      if (StringUtils.isNotBlank(resultPath)) {
+        setResultPath(runtimeContext.getInstanceDataMap(), resultPath, result);
+      } else if(result instanceof Map) {
         @SuppressWarnings("unchecked")
         Map<String, Object> resultMap = (Map<String, Object>) result;
         instanceDataMap.putAll(resultMap);
         LOGGER.debug("handleExecutionResult: merged result map to instance data.||nodeInstanceId={}||resultSize={}",
-            nodeInstance.getNodeInstanceId(), resultMap.size());
+          nodeInstance.getNodeInstanceId(), resultMap.size());
+      } else {
+        // 存储执行结果
+        instanceDataMap.put("executionResult", result);
       }
+
       String instanceDataId = saveInstanceData(runtimeContext);
       nodeInstance.setInstanceDataId(instanceDataId);
       runtimeContext.setInstanceDataId(instanceDataId);
@@ -210,10 +214,8 @@ public class ServiceTaskExecutor extends ElementExecutor {
     String modelName = getRequiredProperty(nodeInstance, "modelName");
     Object dataMappingObj = nodeInstance.get("dataMapping");
     String inputPath = getOptionalProperty(nodeInstance, "inputPath");
-    String resultPath = getOptionalProperty(nodeInstance, "resultPath");
-
-    LOGGER.debug("executeInsertRecord: datasource={}, model={}, inputPath={}, resultPath={}",
-        datasourceName, modelName, inputPath, resultPath);
+    LOGGER.debug("executeInsertRecord: datasource={}, model={}, inputPath={}",
+      datasourceName, modelName, inputPath);
 
     int affectedRows = 0;
 
@@ -221,49 +223,39 @@ public class ServiceTaskExecutor extends ElementExecutor {
       // 获取输入数据
       Object inputData = getInputData(inputPath, contextData);
 
-      if (inputData instanceof List) {
+      if (inputData instanceof List<?> dataList) {
         // 批量插入
-        List<?> dataList = (List<?>) inputData;
         for (Object item : dataList) {
           Map<String, Object> recordData = applyDataMapping(dataMappingObj, (Map<String, Object>) item);
-          session.dsl().insertInto(modelName).values(recordData).execute();
-          affectedRows++;
+          affectedRows += session.dsl().insertInto(modelName).values(recordData).execute();
         }
       } else if (inputData instanceof Map) {
         // 单条插入
         Map<String, Object> recordData = applyDataMapping(dataMappingObj, (Map<String, Object>) inputData);
-        session.dsl().insertInto(modelName).values(recordData).execute();
-        affectedRows = 1;
+        affectedRows += session.dsl().insertInto(modelName).values(recordData).execute();
       } else {
         // 没有 inputPath，直接使用 dataMapping
         Map<String, Object> recordData = applyDataMapping(dataMappingObj, contextData);
-        session.dsl().insertInto(modelName).values(recordData).execute();
-        affectedRows = 1;
+        affectedRows += session.dsl().insertInto(modelName).values(recordData).execute();
       }
     }
 
-    // 将结果存储到指定路径
-    if (StringUtils.isNotBlank(resultPath)) {
-      setResultPath(contextData, resultPath, affectedRows);
-    }
-
     LOGGER.info("executeInsertRecord: completed, affectedRows={}", affectedRows);
-    return Map.of("affectedRows", affectedRows);
+    return affectedRows;
   }
 
   /**
    * 执行更新记录操作
    */
-  private Object executeUpdateRecord(NodeInstanceBO nodeInstance, Map<String, Object> contextData) throws Exception {
+  private Object executeUpdateRecord(NodeInstanceBO nodeInstance, Map<String, Object> contextData) {
     String datasourceName = getRequiredProperty(nodeInstance, "datasourceName");
     String modelName = getRequiredProperty(nodeInstance, "modelName");
     Object dataMappingObj = nodeInstance.get("dataMapping");
     String inputPath = getOptionalProperty(nodeInstance, "inputPath");
     String filter = getOptionalProperty(nodeInstance, "filter");
-    String resultPath = getOptionalProperty(nodeInstance, "resultPath");
 
-    LOGGER.debug("executeUpdateRecord: datasource={}, model={}, filter={}, inputPath={}, resultPath={}",
-        datasourceName, modelName, filter, inputPath, resultPath);
+    LOGGER.debug("executeUpdateRecord: datasource={}, model={}, filter={}, inputPath={}",
+      datasourceName, modelName, filter, inputPath);
 
     int affectedRows = 0;
 
@@ -271,52 +263,43 @@ public class ServiceTaskExecutor extends ElementExecutor {
       // 获取输入数据
       Object inputData = getInputData(inputPath, contextData);
 
-      if (inputData instanceof List) {
+      if (inputData instanceof List<?> dataList) {
         // 批量更新
-        List<?> dataList = (List<?>) inputData;
         for (Object item : dataList) {
           Map<String, Object> recordData = applyDataMapping(dataMappingObj, (Map<String, Object>) item);
-          String processedFilter = processFilter(filter, (Map<String, Object>) item);
+          String processedFilter = StringUtils.simpleRenderTemplate(filter, contextData);
 
           var updateBuilder = session.dsl().update(modelName).values(recordData);
           if (StringUtils.isNotBlank(processedFilter)) {
             updateBuilder.where(processedFilter);
           }
-          updateBuilder.execute();
-          affectedRows++;
+          affectedRows += updateBuilder.execute();
         }
       } else if (inputData instanceof Map) {
         // 单条更新
         Map<String, Object> recordData = applyDataMapping(dataMappingObj, (Map<String, Object>) inputData);
-        String processedFilter = processFilter(filter, (Map<String, Object>) inputData);
+        String processedFilter = StringUtils.simpleRenderTemplate(filter, contextData);
 
         var updateBuilder = session.dsl().update(modelName).values(recordData);
         if (StringUtils.isNotBlank(processedFilter)) {
           updateBuilder.where(processedFilter);
         }
-        updateBuilder.execute();
-        affectedRows = 1;
+        affectedRows += updateBuilder.execute();
       } else {
         // 没有 inputPath，直接使用 dataMapping 和 filter
         Map<String, Object> recordData = applyDataMapping(dataMappingObj, contextData);
-        String processedFilter = processFilter(filter, contextData);
+        String processedFilter = StringUtils.simpleRenderTemplate(filter, contextData);
 
         var updateBuilder = session.dsl().update(modelName).values(recordData);
         if (StringUtils.isNotBlank(processedFilter)) {
           updateBuilder.where(processedFilter);
         }
-        updateBuilder.execute();
-        affectedRows = 1;
+        affectedRows += updateBuilder.execute();
       }
     }
 
-    // 将结果存储到指定路径
-    if (StringUtils.isNotBlank(resultPath)) {
-      setResultPath(contextData, resultPath, affectedRows);
-    }
-
     LOGGER.info("executeUpdateRecord: completed, affectedRows={}", affectedRows);
-    return Map.of("affectedRows", affectedRows);
+    return affectedRows;
   }
 
   /**
@@ -326,42 +309,29 @@ public class ServiceTaskExecutor extends ElementExecutor {
     String datasourceName = getRequiredProperty(nodeInstance, "datasourceName");
     String modelName = getRequiredProperty(nodeInstance, "modelName");
     String filter = getOptionalProperty(nodeInstance, "filter");
-    String resultPath = getOptionalProperty(nodeInstance, "resultPath");
 
-    LOGGER.debug("executeDeleteRecord: datasource={}, model={}, filter={}, resultPath={}",
-        datasourceName, modelName, filter, resultPath);
-
-    int affectedRows = 0;
+    LOGGER.debug("executeDeleteRecord: datasource={}, model={}, filter={}",
+      datasourceName, modelName, filter);
 
     try (Session session = sessionFactory.createSession(datasourceName)) {
-      String processedFilter = processFilter(filter, contextData);
+      String processedFilter = StringUtils.simpleRenderTemplate(filter, contextData);
 
       var deleteBuilder = session.dsl().deleteFrom(modelName);
       if (StringUtils.isNotBlank(processedFilter)) {
         deleteBuilder.where(processedFilter);
       }
-      deleteBuilder.execute();
-      affectedRows = 1; // DSL 不返回实际删除行数，这里设为1表示执行成功
+      return deleteBuilder.execute();
     }
-
-    // 将结果存储到指定路径
-    if (StringUtils.isNotBlank(resultPath)) {
-      setResultPath(contextData, resultPath, affectedRows);
-    }
-
-    LOGGER.info("executeDeleteRecord: completed, affectedRows={}", affectedRows);
-    return Map.of("affectedRows", affectedRows);
   }
 
   /**
    * 执行查询记录操作
    */
-  private Object executeQueryRecord(NodeInstanceBO nodeInstance, Map<String, Object> contextData) throws Exception {
+  private Object executeQueryRecord(NodeInstanceBO nodeInstance, Map<String, Object> contextData) {
     String datasourceName = getRequiredProperty(nodeInstance, "datasourceName");
     String modelName = getRequiredProperty(nodeInstance, "modelName");
     String filter = getOptionalProperty(nodeInstance, "filter");
     String sortString = getOptionalProperty(nodeInstance, "sort");
-    String resultPath = getOptionalProperty(nodeInstance, "resultPath");
 
     Integer page = null;
     Integer size = null;
@@ -373,8 +343,8 @@ public class ServiceTaskExecutor extends ElementExecutor {
       size = Integer.parseInt(sizeObj.toString());
     }
 
-    LOGGER.debug("executeQueryRecord: datasource={}, model={}, filter={}, sort={}, page={}, size={}, resultPath={}",
-        datasourceName, modelName, filter, sortString, page, size, resultPath);
+    LOGGER.debug("executeQueryRecord: datasource={}, model={}, filter={}, sort={}, page={}, size={}",
+      datasourceName, modelName, filter, sortString, page, size);
 
     List<Map<String, Object>> records;
 
@@ -383,7 +353,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
 
       // 处理 filter
       if (StringUtils.isNotBlank(filter)) {
-        String processedFilter = processFilter(filter, contextData);
+        String processedFilter = StringUtils.simpleRenderTemplate(filter, contextData);
         queryBuilder.where(processedFilter);
       }
 
@@ -403,13 +373,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
           LOGGER.error("Invalid sort string: {}", sortString, e);
         }
       }
-
-      records = queryBuilder.enableNested().execute();
-    }
-
-    // 将结果存储到指定路径
-    if (StringUtils.isNotBlank(resultPath)) {
-      setResultPath(contextData, resultPath, records);
+      records = queryBuilder.execute();
     }
 
     LOGGER.info("executeQueryRecord: completed, recordCount={}", records.size());
@@ -426,11 +390,9 @@ public class ServiceTaskExecutor extends ElementExecutor {
       return result;
     }
 
-    if (dataMappingObj instanceof List) {
-      List<?> mappingList = (List<?>) dataMappingObj;
+    if (dataMappingObj instanceof List<?> mappingList) {
       for (Object item : mappingList) {
-        if (item instanceof Map) {
-          Map<?, ?> mapping = (Map<?, ?>) item;
+        if (item instanceof Map<?, ?> mapping) {
           String field = (String) mapping.get("field");
           Object valueTemplate = mapping.get("value");
 
@@ -448,20 +410,11 @@ public class ServiceTaskExecutor extends ElementExecutor {
   }
 
   /**
-   * 处理 filter，支持变量替换
-   */
-  private String processFilter(String filter, Map<String, Object> contextData) {
-    if (StringUtils.isBlank(filter)) {
-      return filter;
-    }
-
-    // 使用 StringUtils.simpleRenderTemplate 替换 ${variable} 格式的变量
-    // filter 中的 JSONPath 表达式由 DSL 查询引擎自己处理
-    return StringUtils.simpleRenderTemplate(filter, contextData);
-  }
-
-  /**
    * 从 contextData 中根据 inputPath 提取数据
+   *
+   * @param inputPath 输入路径
+   * @param contextData 上下文数据
+   * @return 提取的数据
    */
   private Object getInputData(String inputPath, Map<String, Object> contextData) {
     if (StringUtils.isBlank(inputPath)) {
@@ -469,9 +422,8 @@ public class ServiceTaskExecutor extends ElementExecutor {
     }
 
     try {
-      // 使用 JsonPathUtils 提取数据
-      String jsonData = JsonUtils.getInstance().stringify(contextData);
-      return JsonPathUtils.evaluateJsonPath(inputPath, jsonData);
+      // 使用简化的路径解析提取数据
+      return extractValueByPath(contextData, inputPath);
     } catch (Exception e) {
       LOGGER.error("Failed to extract data from inputPath: {}", inputPath, e);
       return null;
@@ -480,15 +432,18 @@ public class ServiceTaskExecutor extends ElementExecutor {
 
   /**
    * 将结果按照 resultPath 存入 contextData
+   *
+   * @param contextData 上下文数据
+   * @param resultPath 结果路径
+   * @param value 值
    */
   private void setResultPath(Map<String, Object> contextData, String resultPath, Object value) {
-    if (StringUtils.isBlank(resultPath) || !resultPath.startsWith("$.")) {
+    if (StringUtils.isBlank(resultPath)) {
+      contextData.put("executionResult", value);
       return;
     }
 
-    // 去掉开头的 "$."
-    String path = resultPath.substring(2);
-    String[] parts = path.split("\\.");
+    String[] parts = resultPath.split("\\.");
 
     Map<String, Object> current = contextData;
     for (int i = 0; i < parts.length - 1; i++) {
@@ -508,6 +463,44 @@ public class ServiceTaskExecutor extends ElementExecutor {
 
     // 设置最后一个字段的值
     current.put(parts[parts.length - 1], value);
+  }
+
+  public Object extractValueByPath(Object data, String path) {
+    if (data == null || path == null || path.isEmpty()) {
+      return data;
+    }
+
+    String[] parts = path.split("\\.");
+    Object current = data;
+
+    for (String part : parts) {
+      if (current == null) {
+        return null;
+      }
+
+      if (current instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) current;
+        current = map.get(part);
+      } else if (current instanceof List) {
+        @SuppressWarnings("unchecked")
+        List<Object> list = (List<Object>) current;
+        try {
+          int index = Integer.parseInt(part);
+          if (index >= 0 && index < list.size()) {
+            current = list.get(index);
+          } else {
+            return null;
+          }
+        } catch (NumberFormatException e) {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    }
+
+    return current;
   }
 
   /**
