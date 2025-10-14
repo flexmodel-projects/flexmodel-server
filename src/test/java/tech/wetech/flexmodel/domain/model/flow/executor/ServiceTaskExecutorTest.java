@@ -146,7 +146,7 @@ class ServiceTaskExecutorTest {
 
     // 验证结果 - Map结果合并到instanceDataMap中
     assertEquals(NodeInstanceStatus.COMPLETED, nodeInstance.getStatus());
-    assertNotNull(runtimeContext.getInstanceDataMap().get("executionResult"));
+    assertNotNull(runtimeContext.getInstanceDataMap());
     assertEquals("success", runtimeContext.getInstanceDataMap().get("result"));
     assertEquals(100, runtimeContext.getInstanceDataMap().get("value"));
   }
@@ -439,10 +439,10 @@ class ServiceTaskExecutorTest {
 
     // 验证结果
     assertEquals(NodeInstanceStatus.COMPLETED, nodeInstance.getStatus());
-    assertNotNull(runtimeContext.getInstanceDataMap().get("executionResult"));
+    assertNotNull(runtimeContext.getInstanceDataMap());
 
     @SuppressWarnings("unchecked")
-    Map<String, Object> result = (Map<String, Object>) runtimeContext.getInstanceDataMap().get("executionResult");
+    Map<String, Object> result = runtimeContext.getInstanceDataMap();
     assertNotNull(result.get("numbers"));
     assertNotNull(result.get("nested"));
     assertNotNull(result.get("functions"));
