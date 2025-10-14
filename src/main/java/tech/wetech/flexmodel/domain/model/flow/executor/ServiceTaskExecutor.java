@@ -13,6 +13,7 @@ import tech.wetech.flexmodel.domain.model.flow.shared.common.NodeInstanceStatus;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.RuntimeContext;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.GroovyUtil;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.JavaScriptUtil;
+import tech.wetech.flexmodel.query.Direction;
 import tech.wetech.flexmodel.query.Query;
 import tech.wetech.flexmodel.session.Session;
 import tech.wetech.flexmodel.session.SessionFactory;
@@ -189,7 +190,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
       // 将结果存储到指定路径
       if (StringUtils.isNotBlank(resultPath)) {
         setResultPath(runtimeContext.getInstanceDataMap(), resultPath, result);
-      } else if(result instanceof Map) {
+      } else if (result instanceof Map) {
         @SuppressWarnings("unchecked")
         Map<String, Object> resultMap = (Map<String, Object>) result;
         instanceDataMap.putAll(resultMap);
@@ -327,6 +328,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
   /**
    * 执行查询记录操作
    */
+  @SuppressWarnings("rawtypes")
   private Object executeQueryRecord(NodeInstanceBO nodeInstance, Map<String, Object> contextData) {
     String datasourceName = getRequiredProperty(nodeInstance, "datasourceName");
     String modelName = getRequiredProperty(nodeInstance, "modelName");
@@ -365,10 +367,13 @@ public class ServiceTaskExecutor extends ElementExecutor {
       // 处理排序
       if (StringUtils.isNotBlank(sortString)) {
         try {
-          List<Query.OrderBy.Sort> sorts = JsonUtils.getInstance().parseToList(sortString, Query.OrderBy.Sort.class);
+          List<Map> orders = JsonUtils.getInstance().parseToList(sortString, Map.class);
           Query.OrderBy orderBy = new Query.OrderBy();
-          orderBy.getSorts().addAll(sorts);
+          for (Map order : orders) {
+            orderBy.addOrder(order.get("field").toString(), Direction.fromString(order.get("direction").toString()));
+          }
           queryBuilder.orderBy(orderBy);
+
         } catch (Exception e) {
           LOGGER.error("Invalid sort string: {}", sortString, e);
         }
