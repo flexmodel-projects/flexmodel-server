@@ -166,7 +166,7 @@ model f_em_flow_definition {
   flow_module_id: String @comment("流程模型id") @unique,
   flow_name: String @comment("流程名称"),
   flow_key: String @comment("流程业务标识"),
-  flow_model: String @length(10000) @comment("表单定义"),
+  flow_model?: String @length(10000) @comment("表单定义"),
   status: Int @default(0) @comment("状态(1.初始态 2.编辑中 3.已下线)"),
   create_time: DateTime @default(now()) @comment("流程创建时间"),
   modify_time: DateTime @default(now()) @comment("流程修改时间"),
