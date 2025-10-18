@@ -13,5 +13,5 @@ import java.util.Map;
 @Getter
 public class NativeQueryResult {
   private long time;
-  private List<Map<String, Object>> result;
+  private Object result;
 }
