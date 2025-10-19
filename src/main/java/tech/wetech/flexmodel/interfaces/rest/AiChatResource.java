@@ -112,8 +112,8 @@ public class AiChatResource {
      // 自增主键
      id: Long @id @default(autoIncrement())
 
-     // ULID主键
-     id: String @id @default(ulid())
+     // UUID主键
+     id: String @id @default(uuid())
      ```
 
      #### 关联关系注解
@@ -237,7 +237,7 @@ public class AiChatResource {
 
      // API定义
      model fs_api_definition {
-       id: String @id @unique @default(ulid()),
+       id: String @id @unique @default(uuid()),
        name: String @length(255),
        parentId?: String @length(255),
        type: ApiType,
@@ -251,7 +251,7 @@ public class AiChatResource {
 
      // 用户模型
      model fs_user {
-       id: String @id @default(ulid()),
+       id: String @id @default(uuid()),
        username: String @length(255) @comment("用户名"),
        avatar?: String @length(255) @comment("头像"),
        password_hash: String @length(255) @comment("密码HASH"),
@@ -286,8 +286,8 @@ public class AiChatResource {
      // 自增ID
      id: Long @id @default(autoIncrement())
 
-     // ULID生成
-     id: String @id @default(ulid())
+     // UUID生成
+     id: String @id @default(uuid())
 
      // 不自动生成
      id: String @id
