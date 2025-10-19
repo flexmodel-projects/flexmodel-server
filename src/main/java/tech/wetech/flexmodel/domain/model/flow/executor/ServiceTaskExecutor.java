@@ -5,6 +5,7 @@ import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.codegen.entity.InstanceData;
+import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
 import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
 import tech.wetech.flexmodel.domain.model.flow.shared.common.ErrorEnum;
@@ -38,6 +39,9 @@ public class ServiceTaskExecutor extends ElementExecutor {
 
   @Inject
   SessionFactory sessionFactory;
+
+  @Inject
+  SessionDatasource sessionDatasource;
 
   @Override
   protected void doExecute(RuntimeContext runtimeContext) throws ProcessException {
@@ -154,6 +158,10 @@ public class ServiceTaskExecutor extends ElementExecutor {
       case "js" -> {
         LOGGER.debug("executeScript: executing JavaScript script.||script={}", script);
         return JavaScriptUtil.executeScript(script, contextData);
+      }
+      case "sql" -> {
+        LOGGER.debug("executeScript: executing SQL script.||script={}", script);
+        return executeSqlScript(nodeInstance, contextData);
       }
       case "insert_record" -> {
         return executeInsertRecord(nodeInstance, contextData);
@@ -525,6 +533,29 @@ public class ServiceTaskExecutor extends ElementExecutor {
   private String getOptionalProperty(NodeInstanceBO nodeInstance, String propertyName) {
     Object value = nodeInstance.get(propertyName);
     return value != null ? value.toString() : null;
+  }
+
+  /**
+   * 执行SQL脚本
+   */
+  private Object executeSqlScript(NodeInstanceBO nodeInstance, Map<String, Object> contextData) {
+    String datasourceName = getRequiredProperty(nodeInstance, "datasourceName");
+    String script = getRequiredProperty(nodeInstance, "script");
+
+    LOGGER.debug("executeSqlScript: datasource={}, script={}", datasourceName, script);
+
+    // 使用StringUtils.simpleRenderTemplate处理SQL脚本中的变量替换
+    String processedScript = StringUtils.simpleRenderTemplate(script, contextData);
+
+    // 执行原生SQL查询
+    long beginTime = System.currentTimeMillis();
+    try (Session session = sessionFactory.createSession(datasourceName)) {
+      return session.data().executeNativeStatement(processedScript, contextData);
+    } finally {
+      long endTime = System.currentTimeMillis() - beginTime;
+      // 释放Session
+      LOGGER.info("executeSqlScript: completed, executionTime={}ms", endTime);
+    }
   }
 
 }
