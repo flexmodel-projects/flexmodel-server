@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
+import tech.wetech.flexmodel.domain.model.schedule.JobExecutionLogService;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
 import tech.wetech.flexmodel.event.ChangedEvent;
 import tech.wetech.flexmodel.event.EventListener;
@@ -25,6 +26,8 @@ public class TriggerDataChangedEventListener implements EventListener {
 
   @Inject
   TriggerService triggerService;
+  @Inject
+  JobExecutionLogService jobExecutionLogService;
   @Inject
   EventBus eventBus;
 
@@ -47,6 +50,7 @@ public class TriggerDataChangedEventListener implements EventListener {
     List<Trigger> triggers = triggerService.find(
       Expressions.field(Trigger::getJobGroup).eq(groupName)
         .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
+    
     for (Trigger trigger : triggers) {
       @SuppressWarnings("unchecked")
       Map<String, Object> config = (Map<String, Object>) trigger.getConfig();
@@ -57,7 +61,12 @@ public class TriggerDataChangedEventListener implements EventListener {
         for (String mutationType : mutationTypes) {
           String eventType = beforeMutationTypeMap.get(mutationType);
           if (eventType.equals(event.getEventType())) {
-            log.info("触发前置定时任务: {}", trigger.getId());
+            log.info("触发前置定时任务: triggerId={}, eventType={}, schemaName={}, modelName={}", 
+              trigger.getId(), eventType, event.getSchemaName(), event.getModelName());
+            
+            // 记录事件触发日志
+            recordEventTriggerLog(trigger, event, "PRE_CHANGE", mutationType);
+            
             // 构建启动流程参数
             StartProcessParam startProcessParam = new StartProcessParam();
             startProcessParam.setFlowModuleId(trigger.getJobId());
@@ -78,6 +87,7 @@ public class TriggerDataChangedEventListener implements EventListener {
     List<Trigger> triggers = triggerService.find(
       Expressions.field(Trigger::getJobGroup).eq(groupName)
         .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
+    
     for (Trigger trigger : triggers) {
       @SuppressWarnings("unchecked")
       Map<String, Object> config = (Map<String, Object>) trigger.getConfig();
@@ -88,7 +98,12 @@ public class TriggerDataChangedEventListener implements EventListener {
         for (String mutationType : mutationTypes) {
           String eventType = afterMutationTypeMap.get(mutationType);
           if (eventType.equals(event.getEventType())) {
-            log.info("触发后置定时任务: {}", trigger.getId());
+            log.info("触发后置定时任务: triggerId={}, eventType={}, schemaName={}, modelName={}", 
+              trigger.getId(), eventType, event.getSchemaName(), event.getModelName());
+            
+            // 记录事件触发日志
+            recordEventTriggerLog(trigger, event, "POST_CHANGE", mutationType);
+            
             // 构建启动流程参数
             StartProcessParam startProcessParam = new StartProcessParam();
             startProcessParam.setFlowModuleId(trigger.getJobId());
@@ -110,5 +125,42 @@ public class TriggerDataChangedEventListener implements EventListener {
   @Override
   public int getOrder() {
     return 0;
+  }
+
+  /**
+   * 记录事件触发日志
+   */
+  private void recordEventTriggerLog(Trigger trigger, Object event, String triggerPhase, String mutationType) {
+    try {
+      // 构建输入数据
+      Map<String, Object> inputData = Map.of(
+        "triggerId", trigger.getId(),
+        "triggerName", trigger.getName(),
+        "triggerPhase", triggerPhase,
+        "mutationType", mutationType,
+        "eventData", event,
+        "triggerTime", System.currentTimeMillis()
+      );
+
+      // 记录事件触发日志
+      jobExecutionLogService.recordJobStart(
+        trigger.getId(),
+        trigger.getJobId(),
+        trigger.getJobGroup(),
+        trigger.getJobType(),
+        trigger.getName(),
+        "EventTrigger",
+        "EventTriggerInstance",
+        System.currentTimeMillis(),
+        System.currentTimeMillis(),
+        inputData,
+        null // tenantId
+      );
+
+      log.debug("已记录事件触发日志: triggerId={}, phase={}, mutationType={}", 
+        trigger.getId(), triggerPhase, mutationType);
+    } catch (Exception e) {
+      log.error("记录事件触发日志失败: triggerId={}, phase={}", trigger.getId(), triggerPhase, e);
+    }
   }
 }
