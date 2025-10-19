@@ -248,6 +248,29 @@
           "state": true,
           "created_at": "2025-09-15 12:05:09.000",
           "updated_at": "2025-09-15 12:05:09.000"
+        },
+        {
+          "name": "请求日志归档任务",
+          "description": "写入日志归档表进行数据归档",
+          "type": "EVENT",
+          "config": {
+            "type": "event",
+            "modelName": "f_api_request_log",
+            "mutationTypes": [
+              "create"
+            ],
+            "triggerTiming": "after",
+            "datasourceName": "system"
+          },
+          "job_type": "FLOW",
+          "job_group": "system_f_api_request_log",
+          "job_id": "22203aa0-5f25-4b8a-974d-e4288c1bbd18",
+          "state": false,
+          "created_at": "2025-10-19 17:59:45",
+          "updated_at": "2025-10-19 20:38:24",
+          "created_by": null,
+          "updated_by": null,
+          "tenant_id": null
         }
       ]
     },
@@ -295,6 +318,25 @@
           "remark": "增删改查测试",
           "archive": 0,
           "tenant_id": "default"
+        },
+        {
+          "flow_module_id": "22203aa0-5f25-4b8a-974d-e4288c1bbd18",
+          "flow_name": "日志归档流程",
+          "flow_key": "log_archive_task",
+          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgxfy945jnpgtk\"],\"properties\":{\"positionX\":-112,\"positionY\":96}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgxgy62ycwn9ca\"],\"outgoing\":[],\"properties\":{\"positionX\":576,\"positionY\":80}},{\"key\":\"serviceTask_mgxfv7fk1v40d9\",\"type\":5,\"incoming\":[\"SequenceFlow_mgxfy945jnpgtk\"],\"outgoing\":[\"SequenceFlow_mgxgy4t2xqtz2x\"],\"properties\":{\"subType\":\"sql\",\"datasourceName\":\"system\",\"script\":\"create table if not exists `f_api_request_log_202510`\\r\\n(\\r\\n    `id`              varchar(255)  not null,\\r\\n    `url`             varchar(2000) not null comment '请求地址',\\r\\n    `http_method`     varchar(255)  not null comment '请求方法',\\r\\n    `path`            varchar(1000) not null comment '请求路径',\\r\\n    `request_body`    json          not null comment '请求参数',\\r\\n    `request_headers` json          not null comment '请求头',\\r\\n    `status_code`     int           not null,\\r\\n    `response_time`   int           not null,\\r\\n    `client_ip`       varchar(45)            default null comment 'ip地址',\\r\\n    `created_at`      datetime      null,\\r\\n    `is_success`      bit(1)        not null default false comment '是否成功',\\r\\n    `error_message`   json                   default null comment '异常信息',\\r\\n    `tenant_id`       varchar(255)           default null comment '业务方标识',\\r\\n    primary key (`id`),\\r\\n    key `idx_api_request_log_202510_created_at` (`created_at`),\\r\\n    key `idx_api_request_log_202510_is_error` (`is_success`)\\r\\n) comment ='api请求日志归档202510'\",\"name\":\"创建日志归档表\",\"positionX\":96,\"positionY\":80}},{\"key\":\"serviceTask_mgxgqm93or1gtt\",\"type\":5,\"incoming\":[\"SequenceFlow_mgxgy4t2xqtz2x\"],\"outgoing\":[\"SequenceFlow_mgxgy62ycwn9ca\"],\"properties\":{\"subType\":\"sql\",\"datasourceName\":\"system\",\"script\":\"INSERT INTO f_api_request_log_202510 (id, url, http_method, path, request_body, request_headers, status_code,\\r\\n                                      response_time, created_at, client_ip, is_success, error_message,\\r\\n                                      tenant_id)\\r\\nVALUES ('${id}','${url}', '${httpMethod}', '${path}', '{}', '{}',\\r\\n        ${statusCode}, '${responseTime}','${createdAt}', '${clientIp}', ${isSuccess}, '${errorMessage}', '${tenantId}')\",\"name\":\"写入归档数据\",\"positionX\":336,\"positionY\":80}},{\"key\":\"SequenceFlow_mgxfy945jnpgtk\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgxfv7fk1v40d9\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgxgy4t2xqtz2x\",\"type\":1,\"incoming\":[\"serviceTask_mgxfv7fk1v40d9\"],\"outgoing\":[\"serviceTask_mgxgqm93or1gtt\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgxgy62ycwn9ca\",\"type\":1,\"incoming\":[\"serviceTask_mgxgqm93or1gtt\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
+          "status": 2,
+          "create_time": "2025-10-19 19:51:42",
+          "modify_time": "2025-10-19 19:51:42",
+          "operator": "admin",
+          "remark": "通过sql执行日志归档",
+          "archive": 0,
+          "caller": "admin",
+          "is_deleted": false,
+          "tenant_id": null,
+          "created_by": null,
+          "updated_by": null,
+          "created_at": "2025-10-19 19:51:42",
+          "updated_at": "2025-10-19 19:51:42"
         }
       ]
     },
@@ -347,6 +389,26 @@
           "remark": "Groovy和Javascript脚本测试",
           "archive": 0,
           "caller": "admin"
+        },
+        {
+          "flow_deploy_id": "96933bb6-4e5a-43f2-9d0a-61b3fb7111fa",
+          "flow_module_id": "22203aa0-5f25-4b8a-974d-e4288c1bbd18",
+          "flow_name": "日志归档流程",
+          "flow_key": "log_archive_task",
+          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgxfy945jnpgtk\"],\"properties\":{\"positionX\":-112,\"positionY\":96}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgxgy62ycwn9ca\"],\"outgoing\":[],\"properties\":{\"positionX\":576,\"positionY\":80}},{\"key\":\"serviceTask_mgxfv7fk1v40d9\",\"type\":5,\"incoming\":[\"SequenceFlow_mgxfy945jnpgtk\"],\"outgoing\":[\"SequenceFlow_mgxgy4t2xqtz2x\"],\"properties\":{\"subType\":\"sql\",\"datasourceName\":\"system\",\"script\":\"create table if not exists `f_api_request_log_202510`\\r\\n(\\r\\n    `id`              varchar(255)  not null,\\r\\n    `url`             varchar(2000) not null comment '请求地址',\\r\\n    `http_method`     varchar(255)  not null comment '请求方法',\\r\\n    `path`            varchar(1000) not null comment '请求路径',\\r\\n    `request_body`    json          not null comment '请求参数',\\r\\n    `request_headers` json          not null comment '请求头',\\r\\n    `status_code`     int           not null,\\r\\n    `response_time`   int           not null,\\r\\n    `client_ip`       varchar(45)            default null comment 'ip地址',\\r\\n    `created_at`      datetime      null,\\r\\n    `is_success`      bit(1)        not null default false comment '是否成功',\\r\\n    `error_message`   json                   default null comment '异常信息',\\r\\n    `tenant_id`       varchar(255)           default null comment '业务方标识',\\r\\n    primary key (`id`),\\r\\n    key `idx_api_request_log_202510_created_at` (`created_at`),\\r\\n    key `idx_api_request_log_202510_is_error` (`is_success`)\\r\\n) comment ='api请求日志归档202510'\",\"name\":\"创建日志归档表\",\"positionX\":96,\"positionY\":80}},{\"key\":\"serviceTask_mgxgqm93or1gtt\",\"type\":5,\"incoming\":[\"SequenceFlow_mgxgy4t2xqtz2x\"],\"outgoing\":[\"SequenceFlow_mgxgy62ycwn9ca\"],\"properties\":{\"subType\":\"sql\",\"datasourceName\":\"system\",\"script\":\"INSERT INTO f_api_request_log_202510 (id, url, http_method, path, request_body, request_headers, status_code,\\r\\n                                      response_time, created_at, client_ip, is_success, error_message,\\r\\n                                      tenant_id)\\r\\nVALUES ('${id}','${url}', '${httpMethod}', '${path}', '{}', '{}',\\r\\n        ${statusCode}, '${responseTime}','${createdAt}', '${clientIp}', ${isSuccess}, '${errorMessage}', '${tenantId}')\",\"name\":\"写入归档数据\",\"positionX\":336,\"positionY\":80}},{\"key\":\"SequenceFlow_mgxfy945jnpgtk\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgxfv7fk1v40d9\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgxgy4t2xqtz2x\",\"type\":1,\"incoming\":[\"serviceTask_mgxfv7fk1v40d9\"],\"outgoing\":[\"serviceTask_mgxgqm93or1gtt\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgxgy62ycwn9ca\",\"type\":1,\"incoming\":[\"serviceTask_mgxgqm93or1gtt\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
+          "status": 1,
+          "create_time": "2025-10-19 19:51:42",
+          "modify_time": "2025-10-19 19:51:42",
+          "operator": "admin",
+          "remark": "通过sql执行日志归档",
+          "archive": 0,
+          "tenant": null,
+          "caller": "admin",
+          "tenant_id": null,
+          "created_by": null,
+          "updated_by": null,
+          "created_at": "2025-10-19 19:51:42",
+          "updated_at": "2025-10-19 19:51:42"
         }
       ]
     },
