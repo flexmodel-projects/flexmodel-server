@@ -43,7 +43,7 @@ public class ScheduledFlowExecutionJob implements Job {
       startProcessParam.setVariables(Map.of());
 
       // 启动流程实例
-      eventBus.publish("flow.start", startProcessParam);
+      eventBus.send("flow.start", startProcessParam);
 
       // 将执行结果存储到上下文中，供监听器使用
       context.setResult(Map.of(

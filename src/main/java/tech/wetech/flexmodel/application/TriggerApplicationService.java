@@ -197,7 +197,7 @@ public class TriggerApplicationService {
       startProcessParam.setVariables(Map.of());
 
       // 直接调用流程应用服务启动流程
-      eventBus.publish("flow.start", startProcessParam);
+      eventBus.send("flow.start", startProcessParam);
     } catch (TriggerException e) {
       log.error("立即执行触发器失败: {}", id, e);
       throw e;

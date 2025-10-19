@@ -84,6 +84,6 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
       apiLog.setErrorMessage(JsonUtils.getInstance().stringify(responseContext.getEntity()));
     }
     apiLog.setResponseTime((int) execTime);
-    CDI.current().select(EventBus.class).get().publish("request.logging", apiLog);
+    CDI.current().select(EventBus.class).get().send("request.logging", apiLog);
   }
 }

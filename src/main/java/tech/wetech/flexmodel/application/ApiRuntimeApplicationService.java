@@ -467,7 +467,7 @@ public class ApiRuntimeApplicationService {
     } finally {
       apiLog.setStatusCode(routingContext.response().getStatusCode());
       apiLog.setResponseTime((int) (System.currentTimeMillis() - beginTime));
-      eventBus.publish("request.logging", apiLog);
+      eventBus.send("request.logging", apiLog);
     }
 
   }
