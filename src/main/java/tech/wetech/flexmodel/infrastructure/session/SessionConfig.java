@@ -7,6 +7,7 @@ import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.application.TriggerDataChangedEventListener;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
@@ -42,7 +43,7 @@ public class SessionConfig {
 
   @Produces
   @ApplicationScoped
-  public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig) {
+  public SessionFactory sessionFactory(FlexmodelConfig flexmodelConfig, TriggerDataChangedEventListener triggerDataChangedEventListener) {
     FlexmodelConfig.DatasourceConfig datasourceConfig = flexmodelConfig.datasources().get(SYSTEM_DS_KEY);
     HikariDataSource defaultDs = new HikariDataSource();
     defaultDs.setMaxLifetime(30000); // 30s
@@ -63,7 +64,10 @@ public class SessionConfig {
       ds.setPassword(value.password().orElse(null));
       builder.addDataSourceProvider(new JdbcDataSourceProvider(key, ds));
     });
-    return builder.build();
+    SessionFactory sf = builder.build();
+    // 添加触发器监听器
+    sf.getEventPublisher().addListener(triggerDataChangedEventListener);
+    return sf;
   }
 
   /**

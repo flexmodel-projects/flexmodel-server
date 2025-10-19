@@ -24,6 +24,7 @@ public class ApiRequestLogService {
   ApiRequestLogRepository apiLogRepository;
 
   public ApiRequestLog create(ApiRequestLog apiRequestLog) {
+    apiRequestLog.setCreatedAt(LocalDateTime.now());
     return apiLogRepository.save(apiRequestLog);
   }
 

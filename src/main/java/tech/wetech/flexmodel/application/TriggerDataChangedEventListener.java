@@ -1,0 +1,114 @@
+package tech.wetech.flexmodel.application;
+
+import io.vertx.mutiny.core.eventbus.EventBus;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.codegen.entity.Trigger;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
+import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
+import tech.wetech.flexmodel.event.ChangedEvent;
+import tech.wetech.flexmodel.event.EventListener;
+import tech.wetech.flexmodel.event.PreChangeEvent;
+import tech.wetech.flexmodel.query.Expressions;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author cjbi
+ */
+@Slf4j
+@ApplicationScoped
+public class TriggerDataChangedEventListener implements EventListener {
+
+  @Inject
+  TriggerService triggerService;
+  @Inject
+  EventBus eventBus;
+
+  private final Map<String, String> beforeMutationTypeMap = Map.of(
+    "delete", "PRE_DELETE",
+    "update", "PRE_UPDATE",
+    "create", "PRE_INSERT"
+  );
+
+  private final Map<String, String> afterMutationTypeMap = Map.of(
+    "delete", "DELETED",
+    "update", "UPDATED",
+    "create", "INSERTED"
+  );
+
+  @Override
+  public void onPreChange(PreChangeEvent event) {
+    String groupName = event.getSchemaName() + "_" + event.getModelName();
+    // 最多支持触发100个事件
+    List<Trigger> triggers = triggerService.find(
+      Expressions.field(Trigger::getJobGroup).eq(groupName)
+        .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
+    for (Trigger trigger : triggers) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> config = (Map<String, Object>) trigger.getConfig();
+      String triggerTiming = (String) config.get("triggerTiming");
+      if (triggerTiming.equals("before")) {
+        @SuppressWarnings("unchecked")
+        List<String> mutationTypes = (List<String>) config.get("mutationTypes");
+        for (String mutationType : mutationTypes) {
+          String eventType = beforeMutationTypeMap.get(mutationType);
+          if (eventType.equals(event.getEventType())) {
+            log.info("触发前置定时任务: {}", trigger.getId());
+            // 构建启动流程参数
+            StartProcessParam startProcessParam = new StartProcessParam();
+            startProcessParam.setFlowModuleId(trigger.getJobId());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> variables = (Map<String, Object>) event.getNewData();
+            startProcessParam.setVariables(variables);
+            eventBus.publish("flow.start", startProcessParam);
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public void onChanged(ChangedEvent event) {
+    String groupName = event.getSchemaName() + "_" + event.getModelName();
+    // 最多支持触发100个事件
+    List<Trigger> triggers = triggerService.find(
+      Expressions.field(Trigger::getJobGroup).eq(groupName)
+        .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
+    for (Trigger trigger : triggers) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> config = (Map<String, Object>) trigger.getConfig();
+      String triggerTiming = (String) config.get("triggerTiming");
+      if (triggerTiming.equals("after")) {
+        @SuppressWarnings("unchecked")
+        List<String> mutationTypes = (List<String>) config.get("mutationTypes");
+        for (String mutationType : mutationTypes) {
+          String eventType = afterMutationTypeMap.get(mutationType);
+          if (eventType.equals(event.getEventType())) {
+            log.info("触发后置定时任务: {}", trigger.getId());
+            // 构建启动流程参数
+            StartProcessParam startProcessParam = new StartProcessParam();
+            startProcessParam.setFlowModuleId(trigger.getJobId());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> variables = JsonUtils.getInstance().convertValue(event.getNewData(), Map.class);
+            startProcessParam.setVariables(variables);
+            eventBus.publish("flow.start", startProcessParam);
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public boolean supports(String eventType) {
+    return true;
+  }
+
+  @Override
+  public int getOrder() {
+    return 0;
+  }
+}

@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.application;
 
+import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import tech.wetech.flexmodel.application.dto.TriggerPageRequest;
 import tech.wetech.flexmodel.application.job.ScheduledFlowExecutionJob;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
+import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
 import tech.wetech.flexmodel.domain.model.flow.service.FlowDeploymentService;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerException;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
@@ -20,6 +22,7 @@ import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author cjbi
@@ -34,6 +37,8 @@ public class TriggerApplicationService {
   FlowDeploymentService flowService;
   @Inject
   Scheduler scheduler;
+  @Inject
+  EventBus eventBus;
 
   private TriggerDTO toTriggerDTO(Trigger trigger) {
     if (trigger == null) {
@@ -110,12 +115,12 @@ public class TriggerApplicationService {
     triggerConfig.validate();
     req.setJobGroup(getJobGroup(req, triggerConfig));
     Trigger trigger = triggerService.save(req);
-    
+
     if (triggerConfig instanceof ScheduledTriggerConfig scheduledTriggerConfig) {
       try {
         // 先删除旧的定时任务
         unscheduleTrigger(req);
-        
+
         // 只有当 state=true 时才创建新的定时任务
         if (Boolean.TRUE.equals(req.getState())) {
           scheduleTrigger(req, scheduledTriggerConfig);
@@ -171,7 +176,35 @@ public class TriggerApplicationService {
   }
 
   public void executeNow(String id) {
+    try {
+      // 查找触发器
+      Trigger trigger = triggerService.findById(id);
+      if (trigger == null) {
+        throw new TriggerException("触发器不存在: " + id);
+      }
 
+      // 验证触发器状态
+      if (!Boolean.TRUE.equals(trigger.getState())) {
+        throw new TriggerException("触发器已禁用，无法执行: " + id);
+      }
+
+      log.info("开始立即执行触发器: triggerId={}, jobId={}, jobType={}",
+        trigger.getId(), trigger.getJobId(), trigger.getJobType());
+
+      // 构建启动流程参数
+      StartProcessParam startProcessParam = new StartProcessParam();
+      startProcessParam.setFlowModuleId(trigger.getJobId());
+      startProcessParam.setVariables(Map.of());
+
+      // 直接调用流程应用服务启动流程
+      eventBus.publish("flow.start", startProcessParam);
+    } catch (TriggerException e) {
+      log.error("立即执行触发器失败: {}", id, e);
+      throw e;
+    } catch (Exception e) {
+      log.error("立即执行触发器时发生未知错误: {}", id, e);
+      throw new TriggerException("立即执行触发器失败: " + e.getMessage(), e);
+    }
   }
 
   /**

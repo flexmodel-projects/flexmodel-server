@@ -1,5 +1,7 @@
 package tech.wetech.flexmodel.interfaces.rest.filter;
 
+import io.vertx.mutiny.core.eventbus.EventBus;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -8,7 +10,6 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
-import tech.wetech.flexmodel.domain.model.api.ApiRequestLogService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
@@ -23,9 +24,6 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Provider
 public class LogFilter implements ContainerRequestFilter, ContainerResponseFilter {
-
-  @Inject
-  ApiRequestLogService apiLogService;
 
   @Inject
   SettingsService settingsService;
@@ -72,6 +70,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     apiLog.setPath(apiLog.getHttpMethod() + " " + requestContext.getUriInfo().getPath());
     apiLog.setRequestHeaders(requestContext.getHeaders());
     apiLog.setRequestBody(requestContext.getProperty("requestBody"));
+    apiLog.setIsSuccess(true);
 //      apiData.setRemoteIp(null);
     int statusCode = responseContext.getStatus();
     apiLog.setStatusCode(statusCode);
@@ -85,6 +84,6 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
       apiLog.setErrorMessage(JsonUtils.getInstance().stringify(responseContext.getEntity()));
     }
     apiLog.setResponseTime((int) execTime);
-    apiLogService.create(apiLog);
+    CDI.current().select(EventBus.class).get().publish("request.logging", apiLog);
   }
 }

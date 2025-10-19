@@ -53,6 +53,7 @@ public class TriggerFmRepository implements TriggerRepository {
       .from(Trigger.class)
       .where(filter)
       .page(page, size)
+      .orderByDesc(Trigger::getCreatedAt)
       .execute();
   }
 
