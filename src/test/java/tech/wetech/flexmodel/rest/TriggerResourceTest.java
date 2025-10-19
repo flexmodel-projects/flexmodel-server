@@ -299,7 +299,7 @@ public class TriggerResourceTest {
       .when()
       .post(BASE_PATH + "/" + INTERVAL_TRIGGER_ID + "/execute")
       .then()
-      .statusCode(204);
+      .statusCode(400);
   }
 
   /**
