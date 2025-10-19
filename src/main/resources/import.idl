@@ -307,7 +307,7 @@ model f_ei_instance_data {
   flow_deploy_id: String @comment("流程模型部署id"),
   flow_module_id: String @comment("流程模型id"),
   node_key: String @comment("节点唯一标识"),
-  instance_data: String @comment("数据列表json"),
+  instance_data: String @length(5000) @comment("数据列表json"),
   type: Int @default(0) @comment("操作类型(1.实例初始化 2.系统执行 3.系统主动获取 4.上游更新 5.任务提交 6.任务撤回)"),
   create_time: DateTime @default(now()) @comment("流程创建时间"),
   archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
