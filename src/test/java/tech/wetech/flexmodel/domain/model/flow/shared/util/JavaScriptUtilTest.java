@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,7 +70,7 @@ class JavaScriptUtilTest {
     dataMap.put("discount", 0.2);
 
     Object result = JavaScriptUtil.execute("price * (1 - discount)", dataMap);
-    assertEquals(80, result);
+    assertEquals(80.0, result);
   }
 
   @Test
@@ -144,10 +145,10 @@ class JavaScriptUtilTest {
   void testExecuteScriptSimple() throws Exception {
     // 测试简单脚本
     String script = """
-      var a = 10;
-      var b = 20;
-      a + b;
-    """;
+        var a = 10;
+        var b = 20;
+        a + b;
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertEquals(30, result);
@@ -157,11 +158,11 @@ class JavaScriptUtilTest {
   void testExecuteScriptWithFunction() throws Exception {
     // 测试包含函数的脚本
     String script = """
-      function add(x, y) {
-        return x + y;
-      }
-      add(15, 25);
-    """;
+        function add(x, y) {
+          return x + y;
+        }
+        add(15, 25);
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertEquals(40, result);
@@ -171,12 +172,12 @@ class JavaScriptUtilTest {
   void testExecuteScriptWithLoop() throws Exception {
     // 测试包含循环的脚本
     String script = """
-      var sum = 0;
-      for (var i = 1; i <= 10; i++) {
-        sum += i;
-      }
-      sum;
-    """;
+        var sum = 0;
+        for (var i = 1; i <= 10; i++) {
+          sum += i;
+        }
+        sum;
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertEquals(55, result);
@@ -189,9 +190,9 @@ class JavaScriptUtilTest {
     dataMap.put("base", 100);
 
     String script = """
-      var multiplier = 2;
-      base * multiplier;
-    """;
+        var multiplier = 2;
+        base * multiplier;
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, dataMap);
     assertEquals(200, result);
@@ -201,13 +202,13 @@ class JavaScriptUtilTest {
   void testExecuteScriptWithArrayProcessing() throws Exception {
     // 测试数组处理脚本
     String script = """
-      var numbers = [1, 2, 3, 4, 5];
-      var sum = 0;
-      for (var i = 0; i < numbers.length; i++) {
-        sum += numbers[i];
-      }
-      sum;
-    """;
+        var numbers = [1, 2, 3, 4, 5];
+        var sum = 0;
+        for (var i = 0; i < numbers.length; i++) {
+          sum += numbers[i];
+        }
+        sum;
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertEquals(15, result);
@@ -220,16 +221,16 @@ class JavaScriptUtilTest {
     dataMap.put("temperature", 25);
 
     String script = """
-      var weather;
-      if (temperature > 30) {
-        weather = 'hot';
-      } else if (temperature > 20) {
-        weather = 'warm';
-      } else {
-        weather = 'cold';
-      }
-      weather;
-    """;
+        var weather;
+        if (temperature > 30) {
+          weather = 'hot';
+        } else if (temperature > 20) {
+          weather = 'warm';
+        } else {
+          weather = 'cold';
+        }
+        weather;
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, dataMap);
     assertEquals("warm", result);
@@ -239,12 +240,12 @@ class JavaScriptUtilTest {
   void testExecuteScriptWithObjectOperation() throws Exception {
     // 测试对象操作脚本
     String script = """
-      var person = {
-        name: 'Alice',
-        age: 30
-      };
-      person.name + ' is ' + person.age + ' years old';
-    """;
+        var person = {
+          name: 'Alice',
+          age: 30
+        };
+        person.name + ' is ' + person.age + ' years old';
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertEquals("Alice is 30 years old", result);
@@ -323,14 +324,14 @@ class JavaScriptUtilTest {
   void testExecuteScriptReturnObject() throws Exception {
     // 测试脚本返回对象
     String script = """
-      (function() {
-        return {
-          name: 'Alice',
-          age: 30,
-          city: 'Beijing'
-        };
-      })()
-    """;
+        (function() {
+          return {
+            name: 'Alice',
+            age: 30,
+            city: 'Beijing'
+          };
+        })()
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertNotNull(result);
@@ -351,14 +352,14 @@ class JavaScriptUtilTest {
     dataMap.put("userAge", 25);
 
     String script = """
-      (function() {
-        return {
-          name: userName,
-          age: userAge,
-          status: 'active'
-        };
-      })()
-    """;
+        (function() {
+          return {
+            name: userName,
+            age: userAge,
+            status: 'active'
+          };
+        })()
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, dataMap);
     assertNotNull(result);
@@ -375,20 +376,20 @@ class JavaScriptUtilTest {
   void testExecuteScriptReturnNestedObject() throws Exception {
     // 测试脚本返回嵌套对象
     String script = """
-      (function() {
-        return {
-          person: {
-            name: 'Charlie',
-            age: 35
-          },
-          address: {
-            street: '123 Main St',
-            city: 'Shanghai'
-          },
-          active: true
-        };
-      })()
-    """;
+        (function() {
+          return {
+            person: {
+              name: 'Charlie',
+              age: 35
+            },
+            address: {
+              street: '123 Main St',
+              city: 'Shanghai'
+            },
+            active: true
+          };
+        })()
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertNotNull(result);
@@ -417,14 +418,14 @@ class JavaScriptUtilTest {
   void testExecuteScriptReturnObjectWithArray() throws Exception {
     // 测试脚本返回包含数组的对象
     String script = """
-      (function() {
-        return {
-          name: 'David',
-          hobbies: ['reading', 'swimming', 'coding'],
-          scores: [85, 92, 78]
-        };
-      })()
-    """;
+        (function() {
+          return {
+            name: 'David',
+            hobbies: ['reading', 'swimming', 'coding'],
+            scores: [85, 92, 78]
+          };
+        })()
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
     assertNotNull(result);
@@ -436,20 +437,20 @@ class JavaScriptUtilTest {
 
     // 验证数组
     Object hobbies = resultMap.get("hobbies");
-    assertInstanceOf(Object[].class, hobbies);
-    Object[] hobbiesArray = (Object[]) hobbies;
-    assertEquals(3, hobbiesArray.length);
-    assertEquals("reading", hobbiesArray[0]);
-    assertEquals("swimming", hobbiesArray[1]);
-    assertEquals("coding", hobbiesArray[2]);
+    assertInstanceOf(List.class, hobbies);
+    List<?> hobbiesList = (List<?>) hobbies;
+    assertEquals(3, hobbiesList.size());
+    assertEquals("reading", hobbiesList.get(0));
+    assertEquals("swimming", hobbiesList.get(1));
+    assertEquals("coding", hobbiesList.get(2));
 
     Object scores = resultMap.get("scores");
-    assertInstanceOf(Object[].class, scores);
-    Object[] scoresArray = (Object[]) scores;
-    assertEquals(3, scoresArray.length);
-    assertEquals(85, scoresArray[0]);
-    assertEquals(92, scoresArray[1]);
-    assertEquals(78, scoresArray[2]);
+    assertInstanceOf(List.class, scores);
+    List<?> scoresList = (List<?>) scores;
+    assertEquals(3, scoresList.size());
+    assertEquals(85, scoresList.get(0));
+    assertEquals(92, scoresList.get(1));
+    assertEquals(78, scoresList.get(2));
   }
 
   @Test
@@ -460,16 +461,16 @@ class JavaScriptUtilTest {
     dataMap.put("tax", 0.1);
 
     String script = """
-      (function() {
-        return {
-          originalPrice: price,
-          taxAmount: price * tax,
-          totalPrice: price * (1 + tax),
-          discount: 0.05,
-          finalPrice: price * (1 + tax) * (1 - 0.05)
-        };
-      })()
-    """;
+        (function() {
+          return {
+            originalPrice: price,
+            taxAmount: price * tax,
+            totalPrice: price * (1 + tax),
+            discount: 0.05,
+            finalPrice: price * (1 + tax) * (1 - 0.05)
+          };
+        })()
+      """;
 
     Object result = JavaScriptUtil.executeScript(script, dataMap);
     assertNotNull(result);
@@ -478,7 +479,7 @@ class JavaScriptUtilTest {
     @SuppressWarnings("unchecked")
     Map<String, Object> resultMap = (Map<String, Object>) result;
     assertEquals(100, resultMap.get("originalPrice"));
-    assertEquals(10, resultMap.get("taxAmount"));
+    assertEquals(10.0, resultMap.get("taxAmount"));
     assertEquals(110.00000000000001, resultMap.get("totalPrice"));
     assertEquals(0.05, resultMap.get("discount"));
     assertEquals(104.50000000000001, resultMap.get("finalPrice"));
