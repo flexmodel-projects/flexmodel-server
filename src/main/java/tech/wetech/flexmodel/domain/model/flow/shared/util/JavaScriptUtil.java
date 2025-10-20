@@ -95,46 +95,6 @@ public class JavaScriptUtil {
     }
   }
 
-  /**
-   * 执行JavaScript脚本（支持多行代码）
-   *
-   * @param script JavaScript脚本
-   * @param dataMap 变量映射
-   * @return 执行结果
-   * @throws Exception 执行异常
-   */
-  public static Object executeScript(String script, Map<String, Object> dataMap) throws Exception {
-    if (StringUtils.isBlank(script)) {
-      LOGGER.warn("executeScript: script is empty");
-      return null;
-    }
-
-    try {
-      ScriptEngine engine = ENGINE_THREAD_LOCAL.get();
-      ScriptContext scriptContext = engine.getContext();
-      Bindings bindings = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
-
-      // 将数据映射注入到JavaScript上下文中
-      if (dataMap != null && !dataMap.isEmpty()) {
-        for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
-          bindings.put(entry.getKey(), entry.getValue());
-        }
-      }
-
-      // 执行JavaScript脚本
-      Object result = engine.eval(script);
-
-      LOGGER.info("executeScript.||script={}||resultObject={}", script, result);
-      return result;
-
-    } catch (ScriptException se) {
-      LOGGER.warn("executeScript ScriptException.||script={}||dataMap={}", script, dataMap, se);
-      throw new ProcessException(ErrorEnum.MISSING_DATA.getErrNo(), se.getMessage());
-    } catch (Exception e) {
-      LOGGER.error("executeScript Exception.||script={}||dataMap={}", script, dataMap, e);
-      throw e;
-    }
-  }
 
   /**
    * 清理当前线程的ScriptEngine

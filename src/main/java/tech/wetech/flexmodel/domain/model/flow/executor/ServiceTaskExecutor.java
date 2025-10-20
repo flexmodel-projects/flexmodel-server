@@ -157,7 +157,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
       }
       case "js" -> {
         LOGGER.debug("executeScript: executing JavaScript script.||script={}", script);
-        return JavaScriptUtil.executeScript(script, contextData);
+        return JavaScriptUtil.execute(script, contextData);
       }
       case "sql" -> {
         LOGGER.debug("executeScript: executing SQL script.||script={}", script);

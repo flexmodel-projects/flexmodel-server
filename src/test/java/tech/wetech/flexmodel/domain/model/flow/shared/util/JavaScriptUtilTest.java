@@ -142,7 +142,7 @@ class JavaScriptUtilTest {
   }
 
   @Test
-  void testExecuteScriptSimple() throws Exception {
+  void testexecuteSimple() throws Exception {
     // 测试简单脚本
     String script = """
         var a = 10;
@@ -150,12 +150,12 @@ class JavaScriptUtilTest {
         a + b;
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
+    Object result = JavaScriptUtil.execute(script, new HashMap<>());
     assertEquals(30, result);
   }
 
   @Test
-  void testExecuteScriptWithFunction() throws Exception {
+  void testexecuteWithFunction() throws Exception {
     // 测试包含函数的脚本
     String script = """
         function add(x, y) {
@@ -164,12 +164,12 @@ class JavaScriptUtilTest {
         add(15, 25);
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
+    Object result = JavaScriptUtil.execute(script, new HashMap<>());
     assertEquals(40, result);
   }
 
   @Test
-  void testExecuteScriptWithLoop() throws Exception {
+  void testexecuteWithLoop() throws Exception {
     // 测试包含循环的脚本
     String script = """
         var sum = 0;
@@ -179,12 +179,12 @@ class JavaScriptUtilTest {
         sum;
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
+    Object result = JavaScriptUtil.execute(script, new HashMap<>());
     assertEquals(55, result);
   }
 
   @Test
-  void testExecuteScriptWithVariable() throws Exception {
+  void testexecuteWithVariable() throws Exception {
     // 测试脚本中使用外部变量
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.put("base", 100);
@@ -194,12 +194,12 @@ class JavaScriptUtilTest {
         base * multiplier;
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, dataMap);
+    Object result = JavaScriptUtil.execute(script, dataMap);
     assertEquals(200, result);
   }
 
   @Test
-  void testExecuteScriptWithArrayProcessing() throws Exception {
+  void testexecuteWithArrayProcessing() throws Exception {
     // 测试数组处理脚本
     String script = """
         var numbers = [1, 2, 3, 4, 5];
@@ -210,12 +210,12 @@ class JavaScriptUtilTest {
         sum;
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
+    Object result = JavaScriptUtil.execute(script, new HashMap<>());
     assertEquals(15, result);
   }
 
   @Test
-  void testExecuteScriptWithConditional() throws Exception {
+  void testexecuteWithConditional() throws Exception {
     // 测试条件判断脚本
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.put("temperature", 25);
@@ -232,12 +232,12 @@ class JavaScriptUtilTest {
         weather;
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, dataMap);
+    Object result = JavaScriptUtil.execute(script, dataMap);
     assertEquals("warm", result);
   }
 
   @Test
-  void testExecuteScriptWithObjectOperation() throws Exception {
+  void testexecuteWithObjectOperation() throws Exception {
     // 测试对象操作脚本
     String script = """
         var person = {
@@ -247,21 +247,21 @@ class JavaScriptUtilTest {
         person.name + ' is ' + person.age + ' years old';
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
+    Object result = JavaScriptUtil.execute(script, new HashMap<>());
     assertEquals("Alice is 30 years old", result);
   }
 
   @Test
-  void testExecuteScriptEmpty() throws Exception {
+  void testexecuteEmpty() throws Exception {
     // 测试空脚本
-    Object result = JavaScriptUtil.executeScript("", new HashMap<>());
+    Object result = JavaScriptUtil.execute("", new HashMap<>());
     assertNull(result);
   }
 
   @Test
-  void testExecuteScriptNull() throws Exception {
+  void testexecuteNull() throws Exception {
     // 测试null脚本
-    Object result = JavaScriptUtil.executeScript(null, new HashMap<>());
+    Object result = JavaScriptUtil.execute(null, new HashMap<>());
     assertNull(result);
   }
 
@@ -321,7 +321,7 @@ class JavaScriptUtilTest {
   }
 
   @Test
-  void testExecuteScriptReturnObject() throws Exception {
+  void testexecuteReturnObject() throws Exception {
     // 测试脚本返回对象
     String script = """
         (function() {
@@ -333,7 +333,7 @@ class JavaScriptUtilTest {
         })()
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
+    Object result = JavaScriptUtil.execute(script, new HashMap<>());
     assertNotNull(result);
     assertInstanceOf(Map.class, result);
 
@@ -345,7 +345,7 @@ class JavaScriptUtilTest {
   }
 
   @Test
-  void testExecuteScriptReturnObjectWithVariables() throws Exception {
+  void testexecuteReturnObjectWithVariables() throws Exception {
     // 测试脚本使用变量返回对象
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.put("userName", "Bob");
@@ -361,7 +361,7 @@ class JavaScriptUtilTest {
         })()
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, dataMap);
+    Object result = JavaScriptUtil.execute(script, dataMap);
     assertNotNull(result);
     assertInstanceOf(Map.class, result);
 
@@ -373,7 +373,7 @@ class JavaScriptUtilTest {
   }
 
   @Test
-  void testExecuteScriptReturnNestedObject() throws Exception {
+  void testexecuteReturnNestedObject() throws Exception {
     // 测试脚本返回嵌套对象
     String script = """
         (function() {
@@ -391,7 +391,7 @@ class JavaScriptUtilTest {
         })()
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
+    Object result = JavaScriptUtil.execute(script, new HashMap<>());
     assertNotNull(result);
     assertInstanceOf(Map.class, result);
 
@@ -415,7 +415,7 @@ class JavaScriptUtilTest {
   }
 
   @Test
-  void testExecuteScriptReturnObjectWithArray() throws Exception {
+  void testexecuteReturnObjectWithArray() throws Exception {
     // 测试脚本返回包含数组的对象
     String script = """
         (function() {
@@ -427,7 +427,7 @@ class JavaScriptUtilTest {
         })()
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
+    Object result = JavaScriptUtil.execute(script, new HashMap<>());
     assertNotNull(result);
     assertInstanceOf(Map.class, result);
 
@@ -454,7 +454,7 @@ class JavaScriptUtilTest {
   }
 
   @Test
-  void testExecuteScriptReturnObjectWithCalculations() throws Exception {
+  void testexecuteReturnObjectWithCalculations() throws Exception {
     // 测试脚本返回包含计算结果的对象
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.put("price", 100);
@@ -472,7 +472,7 @@ class JavaScriptUtilTest {
         })()
       """;
 
-    Object result = JavaScriptUtil.executeScript(script, dataMap);
+    Object result = JavaScriptUtil.execute(script, dataMap);
     assertNotNull(result);
     assertInstanceOf(Map.class, result);
 
@@ -486,11 +486,11 @@ class JavaScriptUtilTest {
   }
 
   @Test
-  void testExecuteScriptReturnEmptyObject() throws Exception {
+  void testexecuteReturnEmptyObject() throws Exception {
     // 测试脚本返回空对象
     String script = "(function() { return {}; })()";
 
-    Object result = JavaScriptUtil.executeScript(script, new HashMap<>());
+    Object result = JavaScriptUtil.execute(script, new HashMap<>());
     assertNotNull(result);
     assertInstanceOf(Map.class, result);
 
@@ -498,4 +498,40 @@ class JavaScriptUtilTest {
     Map<String, Object> resultMap = (Map<String, Object>) result;
     assertTrue(resultMap.isEmpty());
   }
+
+  /**
+   * 测试身份验证脚本
+   */
+  @Test
+  void testAuthenticate() throws Exception {
+    String script = """
+      /**
+       * Identity Provider Script Template
+       * Implement authenticate(request) to return an object:
+       *   { success: boolean, user?: { id: string; name?: string; roles?: string[] }, message?: string }
+       * You can read headers via request.headers and query via request.query
+       */
+      function authenticate(request) {
+        // Example: simple token check from header
+        const auth = request.headers['authorization'] || request.headers['Authorization'];
+        if (!auth || !auth.startsWith('Bearer ')) {
+          return { success: false, message: 'Missing bearer token' };
+        }
+        const token = auth.substring('Bearer '.length);
+        // TODO: verify token, fetch user, etc.
+        if (token === 'demo-token') {
+          return { success: true, user: { id: 'demo', name: 'Demo User', roles: ['user'] } };
+        }
+        return { success: false, message: 'Invalid token' };
+      }
+      """;
+    script += "authenticate(request);";
+    Map<String, Object> dataMap = new HashMap<>();
+    dataMap.put("request", Map.of("headers", Map.of("authorization", "Bearer demo-token")));
+    Object result = JavaScriptUtil.execute(script, dataMap);
+    assertNotNull(result);
+    Map<?, ?> resultMap = assertInstanceOf(Map.class, result);
+    assertTrue((boolean) resultMap.get("success"));
+  }
+
 }

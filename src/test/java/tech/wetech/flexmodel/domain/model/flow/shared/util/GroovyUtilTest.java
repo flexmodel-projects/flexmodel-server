@@ -292,11 +292,11 @@ public class GroovyUtilTest {
 
     // 测试多行代码：计算税后工资
     String multiLineCode = """
-        def grossSalary = baseSalary + bonus
-        def tax = grossSalary * taxRate
-        def netSalary = grossSalary - tax
-        return netSalary
-        """;
+      def grossSalary = baseSalary + bonus
+      def tax = grossSalary * taxRate
+      def netSalary = grossSalary - tax
+      return netSalary
+      """;
 
     Object result = GroovyUtil.execute(multiLineCode, dataMap);
     Assertions.assertEquals(5400.0, result);
@@ -304,11 +304,11 @@ public class GroovyUtilTest {
     // 测试多行代码：字符串处理
     dataMap.put("text", "  Hello World  ");
     String stringProcessingCode = """
-        def trimmed = text.trim()
-        def upper = trimmed.toUpperCase()
-        def words = upper.split(' ')
-        return words.length
-        """;
+      def trimmed = text.trim()
+      def upper = trimmed.toUpperCase()
+      def words = upper.split(' ')
+      return words.length
+      """;
 
     Object wordCount = GroovyUtil.execute(stringProcessingCode, dataMap);
     Assertions.assertEquals(2, wordCount);
@@ -326,13 +326,13 @@ public class GroovyUtilTest {
 
     // 测试返回Map对象
     String mapReturnCode = """
-        def person = [:]
-        person.name = name
-        person.age = age
-        person.salary = salary
-        person.category = age > 25 ? 'senior' : 'junior'
-        return person
-        """;
+      def person = [:]
+      person.name = name
+      person.age = age
+      person.salary = salary
+      person.category = age > 25 ? 'senior' : 'junior'
+      return person
+      """;
 
     Object result = GroovyUtil.execute(mapReturnCode, dataMap);
     Assertions.assertNotNull(result);
@@ -347,10 +347,10 @@ public class GroovyUtilTest {
 
     // 测试返回List对象
     String listReturnCode = """
-        def numbers = [1, 2, 3, 4, 5]
-        def doubled = numbers.collect { it * 2 }
-        return doubled
-        """;
+      def numbers = [1, 2, 3, 4, 5]
+      def doubled = numbers.collect { it * 2 }
+      return doubled
+      """;
 
     Object listResult = GroovyUtil.execute(listReturnCode, dataMap);
     Assertions.assertNotNull(listResult);
@@ -373,19 +373,19 @@ public class GroovyUtilTest {
 
     // 测试函数定义和调用
     String functionCode = """
-        def calculateArea(r) {
-            return Math.PI * r * r
-        }
+      def calculateArea(r) {
+          return Math.PI * r * r
+      }
 
-        def calculateCircumference(r) {
-            return 2 * Math.PI * r
-        }
+      def calculateCircumference(r) {
+          return 2 * Math.PI * r
+      }
 
-        def area = calculateArea(radius)
-        def circumference = calculateCircumference(radius)
+      def area = calculateArea(radius)
+      def circumference = calculateCircumference(radius)
 
-        return [area: area, circumference: circumference]
-        """;
+      return [area: area, circumference: circumference]
+      """;
 
     Object result = GroovyUtil.execute(functionCode, dataMap);
     Assertions.assertNotNull(result);
@@ -413,26 +413,26 @@ public class GroovyUtilTest {
 
     // 测试for循环
     String forLoopCode = """
-        def sum = 0
-        for (int i = 1; i <= maxNumber; i++) {
-            sum += i
-        }
-        return sum
-        """;
+      def sum = 0
+      for (int i = 1; i <= maxNumber; i++) {
+          sum += i
+      }
+      return sum
+      """;
 
     Object sumResult = GroovyUtil.execute(forLoopCode, dataMap);
     Assertions.assertEquals(55, sumResult);
 
     // 测试while循环和条件判断
     String whileLoopCode = """
-        def number = 100
-        def count = 0
-        while (number > 1) {
-            number = number / 2
-            count++
-        }
-        return count
-        """;
+      def number = 100
+      def count = 0
+      while (number > 1) {
+          number = number / 2
+          count++
+      }
+      return count
+      """;
 
     Object countResult = GroovyUtil.execute(whileLoopCode, dataMap);
     Assertions.assertEquals(7, countResult);
@@ -440,22 +440,22 @@ public class GroovyUtilTest {
     // 测试switch语句
     dataMap.put("grade", "B");
     String switchCode = """
-        def score
-        switch (grade) {
-            case 'A':
-                score = 90
-                break
-            case 'B':
-                score = 80
-                break
-            case 'C':
-                score = 70
-                break
-            default:
-                score = 60
-        }
-        return score
-        """;
+      def score
+      switch (grade) {
+          case 'A':
+              score = 90
+              break
+          case 'B':
+              score = 80
+              break
+          case 'C':
+              score = 70
+              break
+          default:
+              score = 60
+      }
+      return score
+      """;
 
     Object scoreResult = GroovyUtil.execute(switchCode, dataMap);
     Assertions.assertEquals(80, scoreResult);
@@ -471,11 +471,11 @@ public class GroovyUtilTest {
 
     // 测试集合过滤和映射
     String filterMapCode = """
-        def evenNumbers = numbers.findAll { it % 2 == 0 }
-        def squaredEvens = evenNumbers.collect { it * it }
-        def sum = squaredEvens.sum()
-        return [evenNumbers: evenNumbers, squaredEvens: squaredEvens, sum: sum]
-        """;
+      def evenNumbers = numbers.findAll { it % 2 == 0 }
+      def squaredEvens = evenNumbers.collect { it * it }
+      def sum = squaredEvens.sum()
+      return [evenNumbers: evenNumbers, squaredEvens: squaredEvens, sum: sum]
+      """;
 
     Object result = GroovyUtil.execute(filterMapCode, dataMap);
     Assertions.assertNotNull(result);
@@ -496,28 +496,30 @@ public class GroovyUtilTest {
     Assertions.assertEquals(220, sum);
 
     // 测试Map操作
-    dataMap.put("scores", new HashMap<String, Integer>() {{
-      put("数学", 95);
-      put("语文", 88);
-      put("英语", 92);
-    }});
+    dataMap.put("scores", new HashMap<String, Integer>() {
+      {
+        put("数学", 95);
+        put("语文", 88);
+        put("英语", 92);
+      }
+    });
 
     String mapOperationCode = """
-        def totalScore = 0
-        def subjectCount = 0
-        def averageScore = 0
+      def totalScore = 0
+      def subjectCount = 0
+      def averageScore = 0
 
-        scores.each { subject, score ->
-            totalScore += score
-            subjectCount++
-        }
+      scores.each { subject, score ->
+          totalScore += score
+          subjectCount++
+      }
 
-        if (subjectCount > 0) {
-            averageScore = totalScore / subjectCount
-        }
+      if (subjectCount > 0) {
+          averageScore = totalScore / subjectCount
+      }
 
-        return [totalScore: totalScore, subjectCount: subjectCount, averageScore: averageScore]
-        """;
+      return [totalScore: totalScore, subjectCount: subjectCount, averageScore: averageScore]
+      """;
 
     Object mapResult = GroovyUtil.execute(mapOperationCode, dataMap);
     Assertions.assertNotNull(mapResult);
@@ -542,14 +544,14 @@ public class GroovyUtilTest {
 
     // 测试try-catch异常处理
     String exceptionHandlingCode = """
-        def result
-        try {
-            result = dividend / divisor
-        } catch (ArithmeticException e) {
-            result = "除零错误: " + e.getMessage()
-        }
-        return result
-        """;
+      def result
+      try {
+          result = dividend / divisor
+      } catch (ArithmeticException e) {
+          result = "除零错误: " + e.getMessage()
+      }
+      return result
+      """;
 
     Object result = GroovyUtil.execute(exceptionHandlingCode, dataMap);
     Assertions.assertNotNull(result);
@@ -558,10 +560,10 @@ public class GroovyUtilTest {
     // 测试空值安全处理
     dataMap.put("nullableValue", null);
     String nullSafetyCode = """
-        def safeValue = nullableValue ?: "默认值"
-        def length = safeValue.length()
-        return [safeValue: safeValue, length: length]
-        """;
+      def safeValue = nullableValue ?: "默认值"
+      def length = safeValue.length()
+      return [safeValue: safeValue, length: length]
+      """;
 
     Object nullResult = GroovyUtil.execute(nullSafetyCode, dataMap);
     Assertions.assertNotNull(nullResult);
@@ -583,15 +585,15 @@ public class GroovyUtilTest {
 
     // 测试大量计算
     String performanceCode = """
-        def startTime = System.currentTimeMillis()
-        def sum = 0
-        for (int i = 0; i < iterations; i++) {
-            sum += i * i
-        }
-        def endTime = System.currentTimeMillis()
-        def duration = endTime - startTime
-        return [sum: sum, duration: duration]
-        """;
+      def startTime = System.currentTimeMillis()
+      def sum = 0
+      for (int i = 0; i < iterations; i++) {
+          sum += i * i
+      }
+      def endTime = System.currentTimeMillis()
+      def duration = endTime - startTime
+      return [sum: sum, duration: duration]
+      """;
 
     Object result = GroovyUtil.execute(performanceCode, dataMap);
     Assertions.assertNotNull(result);
@@ -602,4 +604,39 @@ public class GroovyUtilTest {
     Assertions.assertTrue((Integer) perfData.get("sum") > 0);
     Assertions.assertTrue((Long) perfData.get("duration") >= 0);
   }
+
+  @Test
+  void testAuthenticate() throws Exception {
+    String script = """
+          /**
+       * Identity Provider Groovy Script Template
+       * Implement authenticate(request) to return an object:
+       *   [success: boolean, user: [id: string, name?: string, roles?: string[]], message?: string]
+       * You can read headers via request.headers and query via request.query
+       */
+      def authenticate(request) {
+          // Example: simple token check from header
+          def auth = request.headers['authorization'] ?: request.headers['Authorization']
+          if (!auth || !auth.startsWith('Bearer ')) {
+              return [success: false, message: 'Missing bearer token']
+          }
+          def token = auth.replace('Bearer ','')
+          // TODO: verify token, fetch user, etc.
+          if (token == 'demo-token') {
+              return [success: true, user: [id: 'demo', name: 'Demo User', roles: ['user']]]
+          }
+          return [success: false, message: 'Invalid token']
+      }
+      """;
+    script+="\nreturn authenticate(request)";
+    Map<String, Object> dataMap = new HashMap<>();
+    dataMap.put("request", Map.of("headers", Map.of("authorization", "Bearer demo-token")));
+
+    Object result = GroovyUtil.execute(script, dataMap);
+    Assertions.assertNotNull(result);
+    @SuppressWarnings("unchecked")
+    Map<String, Object> resultMap = Assertions.assertInstanceOf(Map.class, result);
+    Assertions.assertTrue((Boolean) resultMap.get("success"));
+  }
+
 }
