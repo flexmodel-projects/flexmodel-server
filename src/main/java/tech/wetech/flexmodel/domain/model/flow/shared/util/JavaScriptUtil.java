@@ -75,9 +75,7 @@ public class JavaScriptUtil {
 
       // 将数据映射注入到JavaScript上下文中
       if (dataMap != null && !dataMap.isEmpty()) {
-        for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
-          bindings.put(entry.getKey(), entry.getValue());
-        }
+        bindings.putAll(dataMap);
       }
 
       // 执行JavaScript表达式
