@@ -486,7 +486,7 @@ class JavaScriptUtilTest {
   }
 
   @Test
-  void testexecuteReturnEmptyObject() throws Exception {
+  void testExecuteReturnEmptyObject() throws Exception {
     // 测试脚本返回空对象
     String script = "(function() { return {}; })()";
 

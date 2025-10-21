@@ -7,6 +7,5 @@ public interface Provider {
 
   String getType();
 
-  boolean checkToken(String token);
-
+  ValidateResult validate(ValidateParam param);
 }

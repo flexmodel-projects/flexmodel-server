@@ -16,9 +16,13 @@ import tech.wetech.flexmodel.application.dto.LogStatResponse;
 import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
+import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
 import tech.wetech.flexmodel.domain.model.api.*;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
+import tech.wetech.flexmodel.domain.model.idp.provider.Provider;
+import tech.wetech.flexmodel.domain.model.idp.provider.ValidateParam;
+import tech.wetech.flexmodel.domain.model.idp.provider.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
@@ -215,13 +219,7 @@ public class ApiRuntimeApplicationService {
         boolean isAuth = (boolean) meta.get("auth");
         if (isAuth) {
           String identityProvider = (String) meta.get("identityProvider");
-          String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
-          String token = authorization.replace("Bearer", "").trim();
-          boolean active = identityProviderService.checkToken(identityProvider, token);
-          if (!active) {
-            sendAuthFail(routingContext);
-            return;
-          }
+          checkToken(routingContext, identityProvider);
         }
         Map execution = (Map) meta.get("execution");
         String operationName = (String) execution.get("operationName");
@@ -267,13 +265,7 @@ public class ApiRuntimeApplicationService {
         String identityProvider = settings.getSecurity().getGraphqlEndpointIdentityProvider();
         // 鉴权
         if (identityProvider != null) {
-          String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
-          String token = authorization.replace("Bearer", "").trim();
-          boolean active = identityProviderService.checkToken(identityProvider, token);
-          if (!active) {
-            sendAuthFail(routingContext);
-            return;
-          }
+          checkToken(routingContext, identityProvider);
         }
         String bodyString = routingContext.body().asString();
         Map body;
@@ -417,11 +409,11 @@ public class ApiRuntimeApplicationService {
     return false;
   }
 
-  private void sendAuthFail(RoutingContext routingContext) {
+  private void sendAuthFail(RoutingContext routingContext, ValidateResult validateResult) {
     Map<String, Object> result = new HashMap<>();
-    result.put("messasge", "Authentication failed.");
+    result.put("messasge", validateResult.getMessage());
     result.put("code", -1);
-    result.put("success", false);
+    result.put("success", validateResult.isSuccess());
     routingContext.response()
       .setStatusCode(HttpResponseStatus.UNAUTHORIZED.code())
       .putHeader("Content-Type", "application/json")
@@ -470,6 +462,29 @@ public class ApiRuntimeApplicationService {
       eventBus.send("request.logging", apiLog);
     }
 
+  }
+
+  public void checkToken(RoutingContext routingContext, String providerName) {
+    String authorization = Objects.toString(routingContext.request().getHeader("Authorization"), "");
+    String token = authorization.replace("Bearer", "").trim();
+    if (providerName == null || token == null) {
+      log.warn("Check token required parameters is null, providerName={}, token={}", providerName, token);
+    }
+    IdentityProvider identityProvider = identityProviderService.find(providerName);
+    if (identityProvider == null) {
+      log.warn("IdentityProvider is null, providerName={}, token={}", providerName, token);
+      sendAuthFail(routingContext, new ValidateResult(false, "IdentityProvider is null"));
+    }
+    Provider provider = JsonUtils.getInstance().convertValue(identityProvider.getProvider(), Provider.class);
+    ValidateParam param = new ValidateParam();
+    Map<String, Object> headers = new HashMap<>();
+    routingContext.request().headers().forEach(header -> headers.put(header.getKey(), header.getValue()));
+    param.setHeaders(headers);
+    param.setBody(routingContext.body().asJsonObject().getMap());
+    ValidateResult result = provider.validate(param);
+    if (!result.isSuccess()) {
+      sendAuthFail(routingContext, result);
+    }
   }
 
 }

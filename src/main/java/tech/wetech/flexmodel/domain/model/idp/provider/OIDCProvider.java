@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.domain.model.idp.provider;
 
+import com.cronutils.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Slf4j
-public class OIDC implements Provider {
+public class OIDCProvider implements Provider {
 
   private String issuer;
   private String clientId;
@@ -32,28 +33,15 @@ public class OIDC implements Provider {
     return "oidc";
   }
 
-  @Override
-  public boolean checkToken(String token) {
-    String paramString = Map.of(
-        "token", token,
-        "token_type_hint", "access_token",
-        "client_id", clientId,
-        "client_secret", clientSecret
-      ).entrySet()
-      .stream()
-      .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
-      .collect(Collectors.joining("&"));
+  private boolean checkToken(String token) {
+    String paramString = Map.of("token", token, "token_type_hint", "access_token", "client_id", clientId, "client_secret", clientSecret).entrySet().stream().map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8)).collect(Collectors.joining("&"));
 
     Map<String, Object> discovery = getDiscovery();
 
     String introspectionEndpoint = (String) discovery.get("introspection_endpoint");
     // todo 如果不存在introspection_endpoint，则通过userinfo_endpoint获取用户，来判断是否有权限
 
-    HttpRequest request = HttpRequest.newBuilder()
-      .uri(URI.create(introspectionEndpoint))
-      .headers("Content-Type", "application/x-www-form-urlencoded")
-      .POST(HttpRequest.BodyPublishers.ofString(paramString))
-      .build();
+    HttpRequest request = HttpRequest.newBuilder().uri(URI.create(introspectionEndpoint)).headers("Content-Type", "application/x-www-form-urlencoded").POST(HttpRequest.BodyPublishers.ofString(paramString)).build();
 
     try {
       HttpClient client = HttpClient.newHttpClient();
@@ -69,14 +57,25 @@ public class OIDC implements Provider {
     }
   }
 
+  @Override
+  public ValidateResult validate(ValidateParam param) {
+    String authorization;
+    boolean hasAuthorization = StringUtils.isEmpty(authorization = (String) param.getHeaders().get("Authorization")) || StringUtils.isEmpty(authorization = (String) param.getHeaders().get("authorization"));
+    if (hasAuthorization) {
+      return new ValidateResult(false, "Authorization is missing");
+    }
+    String token = authorization.replaceFirst("Bearer ", "");
+    if (!checkToken(token)) {
+      return new ValidateResult(false, "Token is invalid");
+    }
+    return new ValidateResult(true, "success");
+  }
+
   @SuppressWarnings("all")
   private Map<String, Object> getDiscovery() {
     try {
       HttpClient client = HttpClient.newHttpClient();
-      HttpResponse<String> response = client.send(HttpRequest.newBuilder()
-        .uri(URI.create(issuer + "/.well-known/openid-configuration"))
-        .GET()
-        .build(), HttpResponse.BodyHandlers.ofString());
+      HttpResponse<String> response = client.send(HttpRequest.newBuilder().uri(URI.create(issuer + "/.well-known/openid-configuration")).GET().build(), HttpResponse.BodyHandlers.ofString());
       String bodyString = response.body();
       return JsonUtils.getInstance().parseToObject(bodyString, Map.class);
     } catch (IOException | InterruptedException e) {
