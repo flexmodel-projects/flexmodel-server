@@ -492,8 +492,7 @@ public class RuntimeProcessor {
       LOGGER.warn("getFlowInfoByFlowDeployId failed.||flowDeployId={}", flowDeployId);
       throw new ProcessException(ErrorEnum.GET_FLOW_DEPLOYMENT_FAILED);
     }
-    FlowInfo flowInfo = JsonUtils.getInstance().convertValue(flowDeploymentPO, FlowInfo.class);
-    return flowInfo;
+    return JsonUtils.getInstance().convertValue(flowDeploymentPO, FlowInfo.class);
   }
 
   private FlowInfo getFlowInfoByFlowModuleId(String flowModuleId) throws ProcessException {
@@ -502,8 +501,7 @@ public class RuntimeProcessor {
       LOGGER.warn("getFlowInfoByFlowModuleId failed.||flowModuleId={}", flowModuleId);
       throw new ProcessException(ErrorEnum.GET_FLOW_DEPLOYMENT_FAILED);
     }
-    FlowInfo flowInfo = JsonUtils.getInstance().convertValue(flowDeploymentPO, FlowInfo.class);
-    return flowInfo;
+    return JsonUtils.getInstance().convertValue(flowDeploymentPO, FlowInfo.class);
   }
 
   private FlowInstanceBO getFlowInstanceBO(String flowInstanceId) throws ProcessException {

@@ -3,7 +3,7 @@ package tech.wetech.flexmodel.domain.model.flow.dto.bo;
 public class FlowBasicInfo {
   private String flowDeployId;
   private String flowModuleId;
-  private String tenant;
+  private String tenantId;
   private String caller;
 
   public String getFlowDeployId() {
@@ -22,12 +22,12 @@ public class FlowBasicInfo {
     this.flowModuleId = flowModuleId;
   }
 
-  public String getTenant() {
-    return tenant;
+  public String getTenantId() {
+    return tenantId;
   }
 
-  public void setTenant(String tenant) {
-    this.tenant = tenant;
+  public void setTenantId(String tenantId) {
+    this.tenantId = tenantId;
   }
 
   public String getCaller() {
@@ -43,7 +43,7 @@ public class FlowBasicInfo {
     return "FlowBasicInfo{" +
            "flowDeployId='" + flowDeployId + '\'' +
            ", flowModuleId='" + flowModuleId + '\'' +
-           ", tenant='" + tenant + '\'' +
+           ", tenant='" + tenantId + '\'' +
            ", caller='" + caller + '\'' +
            '}';
   }

@@ -602,7 +602,7 @@ public class FlowExecutor extends RuntimeExecutor {
     NodeInstance nodeInstancePO = JsonUtils.getInstance().convertValue(nodeInstanceBO, NodeInstance.class);
     nodeInstancePO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
     nodeInstancePO.setFlowDeployId(runtimeContext.getFlowDeployId());
-    nodeInstancePO.setTenantId(runtimeContext.getTenant());
+    nodeInstancePO.setTenantId(runtimeContext.getTenantId());
     nodeInstancePO.setCaller(runtimeContext.getCaller());
     LocalDateTime currentTime = LocalDateTime.now();
     nodeInstancePO.setCreateTime(currentTime);
@@ -614,6 +614,7 @@ public class FlowExecutor extends RuntimeExecutor {
     NodeInstanceLog nodeInstanceLogPO = JsonUtils.getInstance().convertValue(nodeInstancePO, NodeInstanceLog.class);
     nodeInstanceLogPO.setId(null);
     nodeInstanceLogPO.setType(nodeInstanceType);
+    nodeInstanceLogPO.setTenantId(nodeInstancePO.getTenantId());
     return nodeInstanceLogPO;
   }
 

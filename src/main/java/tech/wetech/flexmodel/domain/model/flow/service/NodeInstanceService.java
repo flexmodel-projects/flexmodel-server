@@ -19,16 +19,16 @@ import java.util.Map;
 public class NodeInstanceService {
 
   @Inject
-  private NodeInstanceRepository nodeInstanceRepository;
+  NodeInstanceRepository nodeInstanceRepository;
 
   @Inject
-  private FlowInstanceRepository processInstanceRepository;
+  FlowInstanceRepository processInstanceRepository;
 
   @Inject
-  private FlowDeploymentRepository flowDeploymentRepository;
+  FlowDeploymentRepository flowDeploymentRepository;
 
   @Inject
-  private FlowInstanceService flowInstanceService;
+  FlowInstanceService flowInstanceService;
 
   public NodeInstance selectByNodeInstanceId(String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance) {
     NodeInstance nodeInstance = nodeInstanceRepository.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);

@@ -15,11 +15,6 @@ public class NodeInstanceLogFmRepository implements NodeInstanceLogRepository {
   Session session;
 
   @Override
-  public int insert(NodeInstanceLog nodeInstanceLog) {
-    return session.dsl().insertInto(NodeInstanceLog.class).values(nodeInstanceLog).execute();
-  }
-
-  @Override
   public boolean insertList(List<NodeInstanceLog> nodeInstanceLogList) {
     boolean ok = true;
     for (NodeInstanceLog log : nodeInstanceLogList) {

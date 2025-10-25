@@ -8,7 +8,7 @@ import java.util.List;
  * @author cjbi
  */
 public interface NodeInstanceLogRepository {
-  int insert(NodeInstanceLog nodeInstanceLog);
 
   boolean insertList(List<NodeInstanceLog> nodeInstanceLogList);
+
 }
