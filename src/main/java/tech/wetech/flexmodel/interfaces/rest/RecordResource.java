@@ -16,6 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.DataApplicationService;
 import tech.wetech.flexmodel.application.dto.PageDTO;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.Map;
 
@@ -75,6 +76,7 @@ public class RecordResource {
     @QueryParam("nestedQuery") @DefaultValue("false") boolean nestedQuery,
     @QueryParam("sort") String sort
   ) {
+    SessionContextHolder.setTenantId(null);
     return dataApplicationService.findPagingRecords(datasourceName, modelName, page, size, filter, sort, nestedQuery);
   }
 
