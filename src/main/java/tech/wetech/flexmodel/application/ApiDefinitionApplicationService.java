@@ -13,6 +13,7 @@ import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.model.EntityDefinition;
 import tech.wetech.flexmodel.session.Session;
 import tech.wetech.flexmodel.session.SessionFactory;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class ApiDefinitionApplicationService {
   }
 
   public List<ApiDefinitionTreeDTO> findApiDefinitionTree() {
-    List<ApiDefinition> list = apiDefinitionService.findList();
+    List<ApiDefinition> list = apiDefinitionService.findList(SessionContextHolder.getTenantId());
     List<ApiDefinitionTreeDTO> root = list.stream()
       .filter(apiDefinition -> apiDefinition.getParentId() == null)
       .map(ApiDefinitionTreeDTO::new).toList();

@@ -73,14 +73,14 @@ public class AuditDataEventListener implements EventListener {
     if (query == null) {
       return;
     }
+    String tenantId = SessionContextHolder.getTenantId();
+    if (tenantId == null) {
+      return;
+    }
     SessionFactory sf = event.getSource();
     EntityDefinition entity = (EntityDefinition) sf.getModelRegistry().getRegistered(event.getSchemaName(), event.getModelName());
     TypedField<?, ?> tenantIdField = entity.getField("tenant_id");
     if (tenantIdField == null) {
-      return;
-    }
-    String tenantId = SessionContextHolder.getTenantId();
-    if (tenantId == null) {
       return;
     }
     List<Map<String, Object>> andList = new ArrayList<>();

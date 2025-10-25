@@ -18,6 +18,7 @@ import tech.wetech.flexmodel.domain.model.schedule.JobExecutionLogService;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
 import tech.wetech.flexmodel.model.SchemaObject;
 import tech.wetech.flexmodel.query.Expressions;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.io.File;
 import java.lang.management.*;
@@ -67,7 +68,8 @@ public class MetricsApplicationService {
 
     try {
       // 同步调用所有服务
-      List<ApiDefinition> defList = apiDefinitionService.findList();
+      String tenantId = SessionContextHolder.getTenantId();
+      List<ApiDefinition> defList = apiDefinitionService.findList(tenantId);
       List<Datasource> dsList = datasourceService.findAll();
 
       // 计算模型数量
@@ -941,7 +943,7 @@ public class MetricsApplicationService {
 
       // 等待所有任务完成，设置超时时间为30秒
       CompletableFuture<Void> allFutures = CompletableFuture.allOf(
-         jvmFuture, cpuFuture, memoryFuture, threadsFuture,
+        jvmFuture, cpuFuture, memoryFuture, threadsFuture,
         diskFuture, networkFuture, summaryFuture, prometheusFuture
       );
 

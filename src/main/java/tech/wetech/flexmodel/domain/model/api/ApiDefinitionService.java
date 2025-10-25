@@ -5,6 +5,7 @@ import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.List;
 
@@ -18,7 +19,13 @@ public class ApiDefinitionService {
   ApiDefinitionRepository apiDefinitionRepository;
 
   @CacheResult(cacheName = "apiDefinitionList")
-  public List<ApiDefinition> findList() {
+  public List<ApiDefinition> findList(String tenantId) {
+    return apiDefinitionRepository.findByTenantId(tenantId);
+  }
+
+  @CacheResult(cacheName = "apiDefinitionList")
+  public List<ApiDefinition> findAll() {
+    SessionContextHolder.setTenantId(null);
     return apiDefinitionRepository.findAll();
   }
 

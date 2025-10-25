@@ -43,6 +43,14 @@ public class ApiDefinitionFmRepository implements ApiDefinitionRepository {
   }
 
   @Override
+  public List<ApiDefinition> findByTenantId(String tenantId) {
+    return session.dsl()
+      .selectFrom(ApiDefinition.class)
+      .where(field(ApiDefinition::getTenantId).eq(tenantId))
+      .execute();
+  }
+
+  @Override
   public ApiDefinition save(ApiDefinition record) {
     session.dsl().mergeInto(ApiDefinition.class).values(record).execute();
     return record;

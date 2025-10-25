@@ -203,7 +203,7 @@ public class ApiRuntimeApplicationService {
   private void doRequest(RoutingContext routingContext) {
     boolean isMatching = false;
 
-    List<ApiDefinition> apis = apiDefinitionService.findList();
+    List<ApiDefinition> apis = apiDefinitionService.findAll();
     Settings settings = settingsService.getSettings();
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
