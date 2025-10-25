@@ -1,0 +1,52 @@
+model Teacher {
+  id : Long @id @default(autoIncrement()),
+  teacherName? : String @length("255"),
+  subject? : String @length("255"),
+  @index(name:"IDX_TEACHER_NAME", unique: "false", fields: [teacherName]),
+  @comment("教师")
+}
+model Student {
+  id : Long @id @default(autoIncrement()),
+  studentName? : String @length("255"),
+  gender? : UserGender,
+  interest? : user_interest[],
+  age? : Int,
+  classId? : Long,
+  studentClass? : Classes @comment("班级") @relation(localField: "classId", foreignField: "id", cascadeDelete: "false"),
+  studentDetail? : StudentDetail @relation(localField: "id", foreignField: "studentId", cascadeDelete: "true"),
+  @index(name: "IDX_STUDENT_NAME",unique: "false", fields: [studentName]),
+  @index(name:"IDX_CLASS_ID", unique: "false", fields: [classId]),
+  @comment("学生")
+}
+model StudentDetail {
+  id : Long @id @default(autoIncrement()),
+  studentId? : Long,
+  student? : Student @comment("学生") @relation(localField: "studentId", foreignField: "id", cascadeDelete: "false"),
+  description? : String @length("255"),
+  @comment("学生详情")
+}
+model Classes {
+  id : Long @id @default(autoIncrement()),
+  classCode? : String @length("255"),
+  className? : String @length("255"),
+  students? : Student[] @relation(localField: "id", foreignField: "classId", cascadeDelete: "true"),
+  @index(name:"IDX_CLASS_CODE", unique: "false", fields: [classCode]),
+  @comment("班级")
+}
+model Course {
+  courseNo : String @id @default(uuid()),
+  courseName? : String @length("255"),
+  @index(name:"IDX_COURSE_NO", unique: "false", fields: [courseNo]),
+  @comment("课程")
+}
+enum UserGender {
+  UNKNOWN,
+  MALE,
+  FEMALE
+}
+enum user_interest {
+  chang,
+  tiao,
+  rap,
+  daLanQiu
+}

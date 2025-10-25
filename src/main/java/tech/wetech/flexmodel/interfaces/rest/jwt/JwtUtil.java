@@ -72,6 +72,10 @@ public class JwtUtil {
       .sign(algorithm);
   }
 
+  public static String getAccount(String token) {
+    return getClaim(token, ACCOUNT);
+  }
+
   public static void main(String[] args) {
     String token = JwtUtil.sign("admin", Duration.ofDays(7));
     System.out.println(token);

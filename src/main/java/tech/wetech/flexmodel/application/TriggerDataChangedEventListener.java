@@ -10,6 +10,7 @@ import tech.wetech.flexmodel.domain.model.schedule.JobExecutionLogService;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
 import tech.wetech.flexmodel.event.ChangedEvent;
 import tech.wetech.flexmodel.event.EventListener;
+import tech.wetech.flexmodel.event.EventType;
 import tech.wetech.flexmodel.event.PreChangeEvent;
 import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
@@ -119,12 +120,7 @@ public class TriggerDataChangedEventListener implements EventListener {
 
   @Override
   public boolean supports(String eventType) {
-    return true;
-  }
-
-  @Override
-  public int getOrder() {
-    return 0;
+    return !eventType.equals(EventType.PRE_QUERY.getValue());
   }
 
   /**

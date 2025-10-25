@@ -71,6 +71,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     apiLog.setRequestHeaders(requestContext.getHeaders());
     apiLog.setRequestBody(requestContext.getProperty("requestBody"));
     apiLog.setIsSuccess(true);
+    apiLog.setTenantId(requestContext.getHeaderString("X-Tenant-Id"));
 //      apiData.setRemoteIp(null);
     int statusCode = responseContext.getStatus();
     apiLog.setStatusCode(statusCode);
