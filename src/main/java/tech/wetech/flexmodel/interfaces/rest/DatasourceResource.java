@@ -17,15 +17,14 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.ModelingApplicationService;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
-import tech.wetech.flexmodel.codegen.enumeration.DatasourceType;
 import tech.wetech.flexmodel.domain.model.connect.NativeQueryResult;
 import tech.wetech.flexmodel.domain.model.connect.ValidateResult;
-import tech.wetech.flexmodel.domain.model.connect.database.Database;
 import tech.wetech.flexmodel.model.SchemaObject;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
-import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author cjbi
@@ -167,23 +166,7 @@ public class DatasourceResource {
   @Operation(summary = "获取所有数据源")
   @GET
   public List<Datasource> findAll() {
-    List<Datasource> datasourceList = modelingApplicationService.findDatasourceList();
-    List<Datasource> allList = new ArrayList<>();
-
-    Map<String, Object> configMap = new HashMap<>();
-    config.datasources().forEach((k, v) -> {
-      Datasource system = new Datasource();
-      system.setName(k);
-      system.setType(DatasourceType.SYSTEM);
-      configMap.put("url", v.url());
-      configMap.put("dbKind", v.dbKind());
-      configMap.put("username", v.username());
-      configMap.put("password", v.password());
-      system.setConfig(JsonUtils.getInstance().convertValue(configMap, Database.class));
-      allList.add(system);
-    });
-    allList.addAll(datasourceList);
-    return allList;
+    return modelingApplicationService.findDatasourceList();
   }
 
   @RequestBody(

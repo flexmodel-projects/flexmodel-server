@@ -187,13 +187,14 @@
             <schemas>
               <schema>
                 <name>system</name>
-                <import-script>src/main/resources/import.idl,src/main/resources/data.json</import-script>
+                <import-script>src/main/resources/schema.idl,src/main/resources/data.json</import-script>
                 <packageName>tech.wetech.flexmodel.codegen</packageName>
                 <replaceString>^f_ei_|^f_em_|^f_</replaceString>
               </schema>
               <schema>
                 <name>dev_test</name>
-                <import-script>src/main/resources/dev_test.idl,src/main/resources/dev_test.json</import-script>
+                <import-script>src/main/resources/dev_test_schema.idl,src/main/resources/dev_test_data.json
+                </import-script>
                 <packageName>tech.wetech.flexmodel.test.codegen</packageName>
               </schema>
             </schemas>

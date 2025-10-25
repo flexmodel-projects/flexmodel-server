@@ -5,6 +5,9 @@
       "values": [
         {
           "id": "default"
+        },
+        {
+          "id": "dev_test"
         }
       ]
     },
@@ -20,118 +23,30 @@
       ]
     },
     {
-      "modelName": "f_api_definition",
-      "values": [
-        {
-          "createdAt": "2024-07-13T23:21:09",
-          "meta": {},
-          "name": "【示例】学生接口",
-          "updatedAt": "2024-07-13T23:21:09",
-          "id": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "type": "FOLDER"
-        },
-        {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:10",
-          "meta": {
-            "auth": false,
-            "execution": {
-              "query": "query MyQuery($order_by: system_Classes_order_by = { id: asc }, $size: Int = 10, $page: Int = 1) {\n  system_list_Classes(order_by: $order_by, size: $size, page: $page) {\n    classCode\n    className\n    id\n  }\n}",
-              "variables": {
-                "order_by": {
-                  "id": "desc"
-                }
-              },
-              "operationName": "MyQuery"
-            }
-          },
-          "name": "查询班级列表",
-          "path": "/system/Classes/list",
-          "updatedAt": "2024-07-13T23:21:10",
-          "id": "01J2PAY1M8T1R8HM979P4ASM9A",
-          "method": "GET",
-          "type": "API"
-        },
-        {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:10",
-          "meta": {
-            "auth": false,
-            "identityProvider": "demo",
-            "rateLimitingEnabled": true,
-            "maxRequestCount": 50,
-            "intervalInSeconds": 60,
-            "execution": {
-              "query": "query MyQuery($id: Int) {\n  system_find_one_Classes(where: { id: { _eq: $id } }) {\n    classCode\n    className\n    id\n  }\n}",
-              "variables": {
-                "id": 1
-              },
-              "operationName": "MyQuery"
-            }
-          },
-          "name": "查询单个班级",
-          "path": "/system/Classes/{id}",
-          "updatedAt": "2024-07-13T23:21:10",
-          "id": "01J2PAY1X3ZN529SQTKB8TG1Q5",
-          "method": "GET",
-          "type": "API"
-        },
-        {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:11",
-          "meta": {
-            "auth": false,
-            "execution": {
-              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  system_create_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
-              "operationName": "MyMutation"
-            }
-          },
-          "name": "创建班级",
-          "path": "/system/Classes",
-          "updatedAt": "2024-07-13T23:21:11",
-          "id": "01J2PAY2F3VK71GXV6BWXYEA5P",
-          "method": "POST",
-          "type": "API"
-        },
-        {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:11",
-          "meta": {
-            "auth": false,
-            "execution": {
-              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  system_update_Classes_by_id(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
-              "operationName": "MyMutation"
-            }
-          },
-          "name": "更新班级",
-          "path": "/system/Classes/{id}",
-          "updatedAt": "2024-07-13T23:21:11",
-          "id": "01J2PAY2RJ79JYB2GJP5K0AW5F",
-          "method": "PUT",
-          "type": "API"
-        },
-        {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:12",
-          "meta": {
-            "auth": false,
-            "execution": {
-              "query": "mutation MyMutation($id: ID!) {\n  system_delete_Classes_by_id(id: $id) {\n    classCode\n    className\n    id\n  }\n}",
-              "operationName": "MyMutation"
-            }
-          },
-          "name": "删除班级",
-          "path": "/system/Classes/{id}",
-          "updatedAt": "2024-07-13T23:21:12",
-          "id": "01J2PAY3W18T1BQJ5H5D8STGYT",
-          "method": "DELETE",
-          "type": "API"
-        }
-      ]
-    },
-    {
       "modelName": "f_datasource",
       "values": [
+        {
+          "name": "system",
+          "type": "SYSTEM",
+          "config": {
+            "url": "${flexmodel.datasource.url}",
+            "dbKind": "${flexmodel.datasource.db-kind}",
+            "password": "${flexmodel.datasource.password}",
+            "username": "${flexmodel.datasource.username}"
+          },
+          "tenant_id": "default"
+        },
+        {
+          "name": "dev_test",
+          "type": "USER",
+          "config": {
+            "url": "jdbc:sqlite:file:sqlite_dev_test.db",
+            "dbKind": "sqlite",
+            "password": "",
+            "username": ""
+          },
+          "tenant_id": "dev_test"
+        },
         {
           "name": "sqlite_test",
           "type": "USER",
@@ -140,115 +55,14 @@
             "dbKind": "sqlite",
             "password": "",
             "username": ""
-          }
-        },
-        {
-          "name": "mysql_test",
-          "type": "USER",
-          "config": {
-            "url": "${SQLITE_URL}",
-            "dbKind": "mysql",
-            "password": "${SQLITE_PASSWORD}",
-            "username": "${SQLITE_USERNAME}"
-          }
-        }
-      ]
-    },
-    {
-      "modelName": "f_identity_provider",
-      "values": [
-        {
-          "name": "demo",
-          "type": "oidc",
-          "issuer": "http://localhost/issuer",
-          "clientId": "test_client_id",
-          "clientSecret": "test_client_secret"
+          },
+          "tenant_id": "dev_test"
         }
       ]
     },
     {
       "modelName": "f_trigger",
       "values": [
-        {
-          "id": "bf492f37-1f01-4eb8-b76d-d319299b4d8e",
-          "name": "定时触发-间隔触发",
-          "description": "定时触发-间隔触发-备注",
-          "type": "SCHEDULED",
-          "config": {
-            "type": "interval",
-            "interval": 1,
-            "intervalUnit": "minute",
-            "repeatCount": 100
-          },
-          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "job_type": "FLOW",
-          "job_group": "testFlowName_1757909108656",
-          "state": false,
-          "created_at": "2025-09-15 12:05:09.000",
-          "updated_at": "2025-09-15 12:05:09.000"
-        },
-        {
-          "id": "d8c60d2a-19d8-4c3c-b370-96318733858f",
-          "name": "定时触发-Cron表达式",
-          "description": "定时触发-Cron表达式-备注",
-          "type": "SCHEDULED",
-          "config": {
-            "type": "cron",
-            "cronExpression": "0 0 * * * ? *"
-          },
-          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "job_type": "FLOW",
-          "job_group": "testFlowName_1757909108656",
-          "state": false,
-          "created_at": "2025-09-15 12:05:09.000",
-          "updated_at": "2025-09-15 12:05:09.000"
-        },
-        {
-          "id": "9434666d-6b3b-417a-80e3-3352f40ded71",
-          "name": "事件触发-之前",
-          "description": "事件触发-之前-描述",
-          "type": "EVENT",
-          "config": {
-            "type": "event",
-            "datasourceName": "system",
-            "modelName": "Student",
-            "mutationTypes": [
-              "delete",
-              "update",
-              "create"
-            ],
-            "triggerTiming": "after"
-          },
-          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "job_type": "FLOW",
-          "job_group": "system_Student",
-          "state": true,
-          "created_at": "2025-09-15 12:05:09.000",
-          "updated_at": "2025-09-15 12:05:09.000"
-        },
-        {
-          "id": "f351b8d9-a450-4f2c-8fff-cf862d690352",
-          "name": "事件触发-之后",
-          "description": "事件触发-之后-描述",
-          "type": "EVENT",
-          "config": {
-            "type": "event",
-            "datasourceName": "system",
-            "modelName": "Classes",
-            "mutationTypes": [
-              "create",
-              "update",
-              "delete"
-            ],
-            "triggerTiming": "after"
-          },
-          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "job_type": "FLOW",
-          "job_group": "system_Classes",
-          "state": true,
-          "created_at": "2025-09-15 12:05:09.000",
-          "updated_at": "2025-09-15 12:05:09.000"
-        },
         {
           "name": "请求日志归档任务",
           "description": "写入日志归档表进行数据归档",
@@ -278,48 +92,6 @@
       "modelName": "f_em_flow_definition",
       "values": [
         {
-          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "flow_name": "testFlowName_1757909108656",
-          "flow_key": "testFlowKey_1757909108656",
-          "tenant_id": "default",
-          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
-          "status": 2,
-          "create_time": "2025-09-15 12:05:09.000",
-          "modify_time": "2025-09-15 12:05:09.000",
-          "operator": "testOperator",
-          "remark": "testRemark",
-          "archive": 0,
-          "caller": "testCaller"
-        },
-        {
-          "flow_module_id": "9243be36-9ced-4413-acd5-5fc93a05c698",
-          "flow_name": "脚本测试",
-          "flow_key": "script_test",
-          "tenant_id": null,
-          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgiw9ru150u0eu\"],\"properties\":{\"positionX\":-96,\"positionY\":64,\"name\":\"Start\"}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgiwaxb3lsnf17\"],\"outgoing\":[],\"properties\":{\"positionX\":800,\"positionY\":48,\"name\":\"End\"}},{\"key\":\"serviceTask_mgiw9p5w4te9q1\",\"type\":5,\"incoming\":[\"SequenceFlow_mgiw9ru150u0eu\"],\"outgoing\":[\"SequenceFlow_mgiwav4s2wkj0d\"],\"properties\":{\"subType\":\"js\",\"script\":\"\\\"hello world\\\";\",\"name\":\"JS\",\"positionX\":160,\"positionY\":64}},{\"key\":\"serviceTask_mgiw9uk4zr7xys\",\"type\":5,\"incoming\":[\"SequenceFlow_mgiwav4s2wkj0d\"],\"outgoing\":[\"SequenceFlow_mgiwaxb3lsnf17\"],\"properties\":{\"subType\":\"groovy\",\"script\":\"def a = \\\"wew\\\";\\r\\nreturn \\\"你好\\\" + a;\",\"name\":\"Groovy\",\"positionX\":496,\"positionY\":48}},{\"key\":\"SequenceFlow_mgiw9ru150u0eu\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgiw9p5w4te9q1\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgiwav4s2wkj0d\",\"type\":1,\"incoming\":[\"serviceTask_mgiw9p5w4te9q1\"],\"outgoing\":[\"serviceTask_mgiw9uk4zr7xys\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgiwaxb3lsnf17\",\"type\":1,\"incoming\":[\"serviceTask_mgiw9uk4zr7xys\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
-          "status": 2,
-          "create_time": "2025-10-14T11:23:02.659",
-          "modify_time": "2025-10-14T11:23:02.660",
-          "operator": "admin",
-          "remark": "Groovy和Javascript脚本测试",
-          "archive": 0,
-          "tenant": "default",
-          "caller": "admin"
-        },
-        {
-          "flow_module_id": "da5835fe-e82a-447f-b614-c0ce9aaecb78",
-          "flow_name": "增删改查测试",
-          "flow_key": "crud_test",
-          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgoksf9skg7m1c\"],\"properties\":{\"positionX\":-496,\"positionY\":48}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgolxly85affbh\"],\"outgoing\":[],\"properties\":{\"positionX\":1408,\"positionY\":48}},{\"key\":\"serviceTask_mgokolh6ottxgz\",\"type\":5,\"incoming\":[\"SequenceFlow_mgoksf9skg7m1c\"],\"outgoing\":[\"SequenceFlow_mgokv2z5j6tju7\"],\"properties\":{\"subType\":\"insert_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"dataMapping\":[{\"field\":\"teacherName\",\"value\":\"张三丰\"},{\"field\":\"subject\",\"value\":\"太极\"}],\"resultPath\":\"teacherInsertAffectedRows\",\"name\":\"新增教师张三丰\",\"positionX\":-336,\"positionY\":32}},{\"key\":\"serviceTask_mgokspzb8h72r0\",\"type\":5,\"incoming\":[\"SequenceFlow_mgokv2z5j6tju7\"],\"outgoing\":[\"SequenceFlow_mgpv7i2gpvk0qg\"],\"properties\":{\"subType\":\"update_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"dataMapping\":[{\"field\":\"subject\",\"value\":\"太极张三丰\"}],\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teacherUpdateAffectedRows\",\"name\":\"更新教师张三丰\",\"positionX\":-112,\"positionY\":32}},{\"key\":\"serviceTask_mgokvj54kxi9pj\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpvhe0tlgy2hs\"],\"outgoing\":[\"SequenceFlow_mgokyc4xwquno6\"],\"properties\":{\"subType\":\"query_record\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"filter\":\"\",\"sort\":\"[{\\\"field\\\":\\\"id\\\",\\\"order\\\":\\\"desc\\\"}]\",\"page\":1,\"size\":1000,\"resultPath\":\"students\",\"name\":\"查询学生\",\"positionX\":544,\"positionY\":32}},{\"key\":\"serviceTask_mgoky18vc65fea\",\"type\":5,\"incoming\":[\"SequenceFlow_mgokyc4xwquno6\"],\"outgoing\":[\"SequenceFlow_mgolse1rjjms9t\"],\"properties\":{\"subType\":\"insert_record\",\"inputPath\":\"students\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"dataMapping\":[{\"field\":\"studentName\",\"value\":\"${studentName}2\"},{\"field\":\"gender\",\"value\":\"${gender}\"},{\"field\":\"interest\",\"value\":\"${interest}\"},{\"field\":\"age\",\"value\":\"${age}\"},{\"field\":\"classId\",\"value\":\"${classId}\"}],\"resultPath\":\"studentInsertAffectedRows\",\"name\":\"新增学生\",\"positionX\":752,\"positionY\":32}},{\"key\":\"serviceTask_mgoli5cpsdyy77\",\"type\":5,\"incoming\":[\"SequenceFlow_mgolse1rjjms9t\"],\"outgoing\":[\"SequenceFlow_mgolsrsrj4yfkj\"],\"properties\":{\"subType\":\"update_record\",\"inputPath\":\"students\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"dataMapping\":[{\"field\":\"classId\",\"value\":\"3\"}],\"filter\":\"{\\n   \\\"studentName\\\":{\\\"_ends_with\\\":\\\"2\\\"}\\n}\",\"resultPath\":\"studentUpdateAffectedRows\",\"name\":\"更新学生信息\",\"positionX\":960,\"positionY\":32}},{\"key\":\"serviceTask_mgolsqgfgrdmat\",\"type\":5,\"incoming\":[\"SequenceFlow_mgolsrsrj4yfkj\"],\"outgoing\":[\"SequenceFlow_mgolxly85affbh\"],\"properties\":{\"subType\":\"delete_record\",\"resultPath\":\"studentDeleteAffectedRows\",\"name\":\"删除学生信息\",\"positionX\":1200,\"positionY\":32,\"datasourceName\":\"system\",\"modelName\":\"Student\",\"filter\":\"{\\n   \\\"studentName\\\":{\\\"_ends_with\\\":\\\"2\\\"}\\n}\"}},{\"key\":\"serviceTask_mgpv6wp7oavt4f\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpv7i2gpvk0qg\"],\"outgoing\":[\"SequenceFlow_mgpvhb6p3dm76o\"],\"properties\":{\"subType\":\"query_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teachers\",\"name\":\"查询教师张三丰\",\"positionX\":96,\"positionY\":32}},{\"key\":\"serviceTask_mgpvgobas8eee4\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpvhb6p3dm76o\"],\"outgoing\":[\"SequenceFlow_mgpvhe0tlgy2hs\"],\"properties\":{\"subType\":\"delete_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teacherDeleteAffectedRows\",\"name\":\"删除教师张三丰\",\"positionX\":320,\"positionY\":32}},{\"key\":\"SequenceFlow_mgoksf9skg7m1c\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgokolh6ottxgz\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgokv2z5j6tju7\",\"type\":1,\"incoming\":[\"serviceTask_mgokolh6ottxgz\"],\"outgoing\":[\"serviceTask_mgokspzb8h72r0\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgokyc4xwquno6\",\"type\":1,\"incoming\":[\"serviceTask_mgokvj54kxi9pj\"],\"outgoing\":[\"serviceTask_mgoky18vc65fea\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolse1rjjms9t\",\"type\":1,\"incoming\":[\"serviceTask_mgoky18vc65fea\"],\"outgoing\":[\"serviceTask_mgoli5cpsdyy77\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolsrsrj4yfkj\",\"type\":1,\"incoming\":[\"serviceTask_mgoli5cpsdyy77\"],\"outgoing\":[\"serviceTask_mgolsqgfgrdmat\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolxly85affbh\",\"type\":1,\"incoming\":[\"serviceTask_mgolsqgfgrdmat\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpv7i2gpvk0qg\",\"type\":1,\"incoming\":[\"serviceTask_mgokspzb8h72r0\"],\"outgoing\":[\"serviceTask_mgpv6wp7oavt4f\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpvhb6p3dm76o\",\"type\":1,\"incoming\":[\"serviceTask_mgpv6wp7oavt4f\"],\"outgoing\":[\"serviceTask_mgpvgobas8eee4\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpvhe0tlgy2hs\",\"type\":1,\"incoming\":[\"serviceTask_mgpvgobas8eee4\"],\"outgoing\":[\"serviceTask_mgokvj54kxi9pj\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
-          "status": 2,
-          "create_time": "2025-09-15 12:05:09.000",
-          "modify_time": "2025-09-15 12:05:09.000",
-          "operator": "admin",
-          "remark": "增删改查测试",
-          "archive": 0,
-          "tenant_id": "default"
-        },
-        {
           "flow_module_id": "22203aa0-5f25-4b8a-974d-e4288c1bbd18",
           "flow_name": "日志归档流程",
           "flow_key": "log_archive_task",
@@ -332,64 +104,58 @@
           "archive": 0,
           "caller": "admin",
           "is_deleted": false,
-          "tenant_id": null,
+          "tenant_id": "default",
           "created_by": null,
           "updated_by": null,
           "created_at": "2025-10-19 19:51:42",
           "updated_at": "2025-10-19 19:51:42"
+        },
+        {
+          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "flow_name": "testFlowName_1757909108656",
+          "flow_key": "testFlowKey_1757909108656",
+          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
+          "status": 2,
+          "create_time": "2025-09-15 12:05:09.000",
+          "modify_time": "2025-09-15 12:05:09.000",
+          "operator": "testOperator",
+          "remark": "testRemark",
+          "archive": 0,
+          "caller": "testCaller",
+          "tenant_id": "dev_test"
+        },
+        {
+          "flow_module_id": "9243be36-9ced-4413-acd5-5fc93a05c698",
+          "flow_name": "脚本测试",
+          "flow_key": "script_test",
+          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgiw9ru150u0eu\"],\"properties\":{\"positionX\":-96,\"positionY\":64,\"name\":\"Start\"}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgiwaxb3lsnf17\"],\"outgoing\":[],\"properties\":{\"positionX\":800,\"positionY\":48,\"name\":\"End\"}},{\"key\":\"serviceTask_mgiw9p5w4te9q1\",\"type\":5,\"incoming\":[\"SequenceFlow_mgiw9ru150u0eu\"],\"outgoing\":[\"SequenceFlow_mgiwav4s2wkj0d\"],\"properties\":{\"subType\":\"js\",\"script\":\"\\\"hello world\\\";\",\"name\":\"JS\",\"positionX\":160,\"positionY\":64}},{\"key\":\"serviceTask_mgiw9uk4zr7xys\",\"type\":5,\"incoming\":[\"SequenceFlow_mgiwav4s2wkj0d\"],\"outgoing\":[\"SequenceFlow_mgiwaxb3lsnf17\"],\"properties\":{\"subType\":\"groovy\",\"script\":\"def a = \\\"wew\\\";\\r\\nreturn \\\"你好\\\" + a;\",\"name\":\"Groovy\",\"positionX\":496,\"positionY\":48}},{\"key\":\"SequenceFlow_mgiw9ru150u0eu\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgiw9p5w4te9q1\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgiwav4s2wkj0d\",\"type\":1,\"incoming\":[\"serviceTask_mgiw9p5w4te9q1\"],\"outgoing\":[\"serviceTask_mgiw9uk4zr7xys\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgiwaxb3lsnf17\",\"type\":1,\"incoming\":[\"serviceTask_mgiw9uk4zr7xys\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
+          "status": 2,
+          "create_time": "2025-10-14T11:23:02.659",
+          "modify_time": "2025-10-14T11:23:02.660",
+          "operator": "admin",
+          "remark": "Groovy和Javascript脚本测试",
+          "archive": 0,
+          "caller": "admin",
+          "tenant_id": "dev_test"
+        },
+        {
+          "flow_module_id": "da5835fe-e82a-447f-b614-c0ce9aaecb78",
+          "flow_name": "增删改查测试",
+          "flow_key": "crud_test",
+          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgoksf9skg7m1c\"],\"properties\":{\"positionX\":-496,\"positionY\":48}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgolxly85affbh\"],\"outgoing\":[],\"properties\":{\"positionX\":1408,\"positionY\":48}},{\"key\":\"serviceTask_mgokolh6ottxgz\",\"type\":5,\"incoming\":[\"SequenceFlow_mgoksf9skg7m1c\"],\"outgoing\":[\"SequenceFlow_mgokv2z5j6tju7\"],\"properties\":{\"subType\":\"insert_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"dataMapping\":[{\"field\":\"teacherName\",\"value\":\"张三丰\"},{\"field\":\"subject\",\"value\":\"太极\"}],\"resultPath\":\"teacherInsertAffectedRows\",\"name\":\"新增教师张三丰\",\"positionX\":-336,\"positionY\":32}},{\"key\":\"serviceTask_mgokspzb8h72r0\",\"type\":5,\"incoming\":[\"SequenceFlow_mgokv2z5j6tju7\"],\"outgoing\":[\"SequenceFlow_mgpv7i2gpvk0qg\"],\"properties\":{\"subType\":\"update_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"dataMapping\":[{\"field\":\"subject\",\"value\":\"太极张三丰\"}],\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teacherUpdateAffectedRows\",\"name\":\"更新教师张三丰\",\"positionX\":-112,\"positionY\":32}},{\"key\":\"serviceTask_mgokvj54kxi9pj\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpvhe0tlgy2hs\"],\"outgoing\":[\"SequenceFlow_mgokyc4xwquno6\"],\"properties\":{\"subType\":\"query_record\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"filter\":\"\",\"sort\":\"[{\\\"field\\\":\\\"id\\\",\\\"order\\\":\\\"desc\\\"}]\",\"page\":1,\"size\":1000,\"resultPath\":\"students\",\"name\":\"查询学生\",\"positionX\":544,\"positionY\":32}},{\"key\":\"serviceTask_mgoky18vc65fea\",\"type\":5,\"incoming\":[\"SequenceFlow_mgokyc4xwquno6\"],\"outgoing\":[\"SequenceFlow_mgolse1rjjms9t\"],\"properties\":{\"subType\":\"insert_record\",\"inputPath\":\"students\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"dataMapping\":[{\"field\":\"studentName\",\"value\":\"${studentName}2\"},{\"field\":\"gender\",\"value\":\"${gender}\"},{\"field\":\"interest\",\"value\":\"${interest}\"},{\"field\":\"age\",\"value\":\"${age}\"},{\"field\":\"classId\",\"value\":\"${classId}\"}],\"resultPath\":\"studentInsertAffectedRows\",\"name\":\"新增学生\",\"positionX\":752,\"positionY\":32}},{\"key\":\"serviceTask_mgoli5cpsdyy77\",\"type\":5,\"incoming\":[\"SequenceFlow_mgolse1rjjms9t\"],\"outgoing\":[\"SequenceFlow_mgolsrsrj4yfkj\"],\"properties\":{\"subType\":\"update_record\",\"inputPath\":\"students\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"dataMapping\":[{\"field\":\"classId\",\"value\":\"3\"}],\"filter\":\"{\\n   \\\"studentName\\\":{\\\"_ends_with\\\":\\\"2\\\"}\\n}\",\"resultPath\":\"studentUpdateAffectedRows\",\"name\":\"更新学生信息\",\"positionX\":960,\"positionY\":32}},{\"key\":\"serviceTask_mgolsqgfgrdmat\",\"type\":5,\"incoming\":[\"SequenceFlow_mgolsrsrj4yfkj\"],\"outgoing\":[\"SequenceFlow_mgolxly85affbh\"],\"properties\":{\"subType\":\"delete_record\",\"resultPath\":\"studentDeleteAffectedRows\",\"name\":\"删除学生信息\",\"positionX\":1200,\"positionY\":32,\"datasourceName\":\"system\",\"modelName\":\"Student\",\"filter\":\"{\\n   \\\"studentName\\\":{\\\"_ends_with\\\":\\\"2\\\"}\\n}\"}},{\"key\":\"serviceTask_mgpv6wp7oavt4f\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpv7i2gpvk0qg\"],\"outgoing\":[\"SequenceFlow_mgpvhb6p3dm76o\"],\"properties\":{\"subType\":\"query_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teachers\",\"name\":\"查询教师张三丰\",\"positionX\":96,\"positionY\":32}},{\"key\":\"serviceTask_mgpvgobas8eee4\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpvhb6p3dm76o\"],\"outgoing\":[\"SequenceFlow_mgpvhe0tlgy2hs\"],\"properties\":{\"subType\":\"delete_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teacherDeleteAffectedRows\",\"name\":\"删除教师张三丰\",\"positionX\":320,\"positionY\":32}},{\"key\":\"SequenceFlow_mgoksf9skg7m1c\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgokolh6ottxgz\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgokv2z5j6tju7\",\"type\":1,\"incoming\":[\"serviceTask_mgokolh6ottxgz\"],\"outgoing\":[\"serviceTask_mgokspzb8h72r0\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgokyc4xwquno6\",\"type\":1,\"incoming\":[\"serviceTask_mgokvj54kxi9pj\"],\"outgoing\":[\"serviceTask_mgoky18vc65fea\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolse1rjjms9t\",\"type\":1,\"incoming\":[\"serviceTask_mgoky18vc65fea\"],\"outgoing\":[\"serviceTask_mgoli5cpsdyy77\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolsrsrj4yfkj\",\"type\":1,\"incoming\":[\"serviceTask_mgoli5cpsdyy77\"],\"outgoing\":[\"serviceTask_mgolsqgfgrdmat\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolxly85affbh\",\"type\":1,\"incoming\":[\"serviceTask_mgolsqgfgrdmat\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpv7i2gpvk0qg\",\"type\":1,\"incoming\":[\"serviceTask_mgokspzb8h72r0\"],\"outgoing\":[\"serviceTask_mgpv6wp7oavt4f\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpvhb6p3dm76o\",\"type\":1,\"incoming\":[\"serviceTask_mgpv6wp7oavt4f\"],\"outgoing\":[\"serviceTask_mgpvgobas8eee4\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpvhe0tlgy2hs\",\"type\":1,\"incoming\":[\"serviceTask_mgpvgobas8eee4\"],\"outgoing\":[\"serviceTask_mgokvj54kxi9pj\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
+          "status": 2,
+          "create_time": "2025-09-15 12:05:09.000",
+          "modify_time": "2025-09-15 12:05:09.000",
+          "operator": "admin",
+          "remark": "增删改查测试",
+          "archive": 0,
+          "tenant_id": "dev_test"
         }
       ]
     },
     {
       "modelName": "f_em_flow_deployment",
       "values": [
-        {
-          "flow_deploy_id": "c2d6f2bb-0d7b-4eb0-81a6-5a72262740d4",
-          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
-          "flow_name": "testFlowName_1757909108656",
-          "flow_key": "testFlowKey_1757909108656",
-          "tenant_id": null,
-          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
-          "status": 1,
-          "create_time": "2025-09-15 12:05:09.000",
-          "modify_time": "2025-09-15 12:05:09.000",
-          "operator": "testOperator",
-          "remark": "testRemark",
-          "archive": 0,
-          "tenant": "testTenant",
-          "caller": "testCaller"
-        },
-        {
-          "flow_deploy_id": "fce9c1e9-57dd-483e-bba1-dd7cb5a53ca7",
-          "flow_module_id": "da5835fe-e82a-447f-b614-c0ce9aaecb78",
-          "flow_name": "增删改查测试",
-          "flow_key": "crud_test",
-          "tenant_id": "default",
-          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgoksf9skg7m1c\"],\"properties\":{\"positionX\":-496,\"positionY\":48}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgolxly85affbh\"],\"outgoing\":[],\"properties\":{\"positionX\":1408,\"positionY\":48}},{\"key\":\"serviceTask_mgokolh6ottxgz\",\"type\":5,\"incoming\":[\"SequenceFlow_mgoksf9skg7m1c\"],\"outgoing\":[\"SequenceFlow_mgokv2z5j6tju7\"],\"properties\":{\"subType\":\"insert_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"dataMapping\":[{\"field\":\"teacherName\",\"value\":\"张三丰\"},{\"field\":\"subject\",\"value\":\"太极\"}],\"resultPath\":\"teacherInsertAffectedRows\",\"name\":\"新增教师张三丰\",\"positionX\":-336,\"positionY\":32}},{\"key\":\"serviceTask_mgokspzb8h72r0\",\"type\":5,\"incoming\":[\"SequenceFlow_mgokv2z5j6tju7\"],\"outgoing\":[\"SequenceFlow_mgpv7i2gpvk0qg\"],\"properties\":{\"subType\":\"update_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"dataMapping\":[{\"field\":\"subject\",\"value\":\"太极张三丰\"}],\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teacherUpdateAffectedRows\",\"name\":\"更新教师张三丰\",\"positionX\":-112,\"positionY\":32}},{\"key\":\"serviceTask_mgokvj54kxi9pj\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpvhe0tlgy2hs\"],\"outgoing\":[\"SequenceFlow_mgokyc4xwquno6\"],\"properties\":{\"subType\":\"query_record\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"filter\":\"\",\"sort\":\"[{\\\"field\\\":\\\"id\\\",\\\"order\\\":\\\"desc\\\"}]\",\"page\":1,\"size\":1000,\"resultPath\":\"students\",\"name\":\"查询学生\",\"positionX\":544,\"positionY\":32}},{\"key\":\"serviceTask_mgoky18vc65fea\",\"type\":5,\"incoming\":[\"SequenceFlow_mgokyc4xwquno6\"],\"outgoing\":[\"SequenceFlow_mgolse1rjjms9t\"],\"properties\":{\"subType\":\"insert_record\",\"inputPath\":\"students\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"dataMapping\":[{\"field\":\"studentName\",\"value\":\"${studentName}2\"},{\"field\":\"gender\",\"value\":\"${gender}\"},{\"field\":\"interest\",\"value\":\"${interest}\"},{\"field\":\"age\",\"value\":\"${age}\"},{\"field\":\"classId\",\"value\":\"${classId}\"}],\"resultPath\":\"studentInsertAffectedRows\",\"name\":\"新增学生\",\"positionX\":752,\"positionY\":32}},{\"key\":\"serviceTask_mgoli5cpsdyy77\",\"type\":5,\"incoming\":[\"SequenceFlow_mgolse1rjjms9t\"],\"outgoing\":[\"SequenceFlow_mgolsrsrj4yfkj\"],\"properties\":{\"subType\":\"update_record\",\"inputPath\":\"students\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"dataMapping\":[{\"field\":\"classId\",\"value\":\"3\"}],\"filter\":\"{\\n   \\\"studentName\\\":{\\\"_ends_with\\\":\\\"2\\\"}\\n}\",\"resultPath\":\"studentUpdateAffectedRows\",\"name\":\"更新学生信息\",\"positionX\":960,\"positionY\":32}},{\"key\":\"serviceTask_mgolsqgfgrdmat\",\"type\":5,\"incoming\":[\"SequenceFlow_mgolsrsrj4yfkj\"],\"outgoing\":[\"SequenceFlow_mgolxly85affbh\"],\"properties\":{\"subType\":\"delete_record\",\"resultPath\":\"studentDeleteAffectedRows\",\"name\":\"删除学生信息\",\"positionX\":1200,\"positionY\":32,\"datasourceName\":\"system\",\"modelName\":\"Student\",\"filter\":\"{\\n   \\\"studentName\\\":{\\\"_ends_with\\\":\\\"2\\\"}\\n}\"}},{\"key\":\"serviceTask_mgpv6wp7oavt4f\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpv7i2gpvk0qg\"],\"outgoing\":[\"SequenceFlow_mgpvhb6p3dm76o\"],\"properties\":{\"subType\":\"query_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teachers\",\"name\":\"查询教师张三丰\",\"positionX\":96,\"positionY\":32}},{\"key\":\"serviceTask_mgpvgobas8eee4\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpvhb6p3dm76o\"],\"outgoing\":[\"SequenceFlow_mgpvhe0tlgy2hs\"],\"properties\":{\"subType\":\"delete_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teacherDeleteAffectedRows\",\"name\":\"删除教师张三丰\",\"positionX\":320,\"positionY\":32}},{\"key\":\"SequenceFlow_mgoksf9skg7m1c\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgokolh6ottxgz\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgokv2z5j6tju7\",\"type\":1,\"incoming\":[\"serviceTask_mgokolh6ottxgz\"],\"outgoing\":[\"serviceTask_mgokspzb8h72r0\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgokyc4xwquno6\",\"type\":1,\"incoming\":[\"serviceTask_mgokvj54kxi9pj\"],\"outgoing\":[\"serviceTask_mgoky18vc65fea\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolse1rjjms9t\",\"type\":1,\"incoming\":[\"serviceTask_mgoky18vc65fea\"],\"outgoing\":[\"serviceTask_mgoli5cpsdyy77\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolsrsrj4yfkj\",\"type\":1,\"incoming\":[\"serviceTask_mgoli5cpsdyy77\"],\"outgoing\":[\"serviceTask_mgolsqgfgrdmat\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolxly85affbh\",\"type\":1,\"incoming\":[\"serviceTask_mgolsqgfgrdmat\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpv7i2gpvk0qg\",\"type\":1,\"incoming\":[\"serviceTask_mgokspzb8h72r0\"],\"outgoing\":[\"serviceTask_mgpv6wp7oavt4f\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpvhb6p3dm76o\",\"type\":1,\"incoming\":[\"serviceTask_mgpv6wp7oavt4f\"],\"outgoing\":[\"serviceTask_mgpvgobas8eee4\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpvhe0tlgy2hs\",\"type\":1,\"incoming\":[\"serviceTask_mgpvgobas8eee4\"],\"outgoing\":[\"serviceTask_mgokvj54kxi9pj\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
-          "status": 1,
-          "create_time": "2025-09-15 12:05:09.000",
-          "modify_time": "2025-09-15 12:05:09.000",
-          "operator": "admin",
-          "remark": "增删改查测试",
-          "archive": 0,
-          "tenant": null,
-          "caller": "admin"
-        },
-        {
-          "flow_deploy_id": "1fe532ae-33c4-4f57-aabe-62640da4f185",
-          "flow_module_id": "9243be36-9ced-4413-acd5-5fc93a05c698",
-          "flow_name": "脚本测试",
-          "flow_key": "script_test",
-          "tenant_id": "default",
-          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgiw9ru150u0eu\"],\"properties\":{\"positionX\":-96,\"positionY\":64,\"name\":\"Start\"}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgiwaxb3lsnf17\"],\"outgoing\":[],\"properties\":{\"positionX\":800,\"positionY\":48,\"name\":\"End\"}},{\"key\":\"serviceTask_mgiw9p5w4te9q1\",\"type\":5,\"incoming\":[\"SequenceFlow_mgiw9ru150u0eu\"],\"outgoing\":[\"SequenceFlow_mgiwav4s2wkj0d\"],\"properties\":{\"subType\":\"js\",\"script\":\"\\\"hello world\\\";\",\"name\":\"JS\",\"positionX\":160,\"positionY\":64}},{\"key\":\"serviceTask_mgiw9uk4zr7xys\",\"type\":5,\"incoming\":[\"SequenceFlow_mgiwav4s2wkj0d\"],\"outgoing\":[\"SequenceFlow_mgiwaxb3lsnf17\"],\"properties\":{\"subType\":\"groovy\",\"script\":\"def a = \\\"wew\\\";\\r\\nreturn \\\"你好\\\" + a;\",\"name\":\"Groovy\",\"positionX\":496,\"positionY\":48}},{\"key\":\"SequenceFlow_mgiw9ru150u0eu\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgiw9p5w4te9q1\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgiwav4s2wkj0d\",\"type\":1,\"incoming\":[\"serviceTask_mgiw9p5w4te9q1\"],\"outgoing\":[\"serviceTask_mgiw9uk4zr7xys\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgiwaxb3lsnf17\",\"type\":1,\"incoming\":[\"serviceTask_mgiw9uk4zr7xys\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
-          "status": 1,
-          "create_time": "2025-10-14T11:23:02.659",
-          "modify_time": "2025-10-14T11:23:02.660",
-          "operator": "admin",
-          "remark": "Groovy和Javascript脚本测试",
-          "archive": 0,
-          "caller": "admin"
-        },
         {
           "flow_deploy_id": "96933bb6-4e5a-43f2-9d0a-61b3fb7111fa",
           "flow_module_id": "22203aa0-5f25-4b8a-974d-e4288c1bbd18",
@@ -402,13 +168,275 @@
           "operator": "admin",
           "remark": "通过sql执行日志归档",
           "archive": 0,
-          "tenant": null,
           "caller": "admin",
-          "tenant_id": null,
+          "tenant_id": "default",
           "created_by": null,
           "updated_by": null,
           "created_at": "2025-10-19 19:51:42",
           "updated_at": "2025-10-19 19:51:42"
+        },
+        {
+          "flow_deploy_id": "c2d6f2bb-0d7b-4eb0-81a6-5a72262740d4",
+          "flow_module_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "flow_name": "testFlowName_1757909108656",
+          "flow_key": "testFlowKey_1757909108656",
+          "flow_model": "{\"flowElementList\":[{\"key\":\"startEvent1\",\"type\":2,\"outgoing\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow1\",\"type\":1,\"outgoing\":[\"userTask1\"],\"incoming\":[\"startEvent1\"]},{\"key\":\"userTask1\",\"type\":4,\"outgoing\":[\"sequenceFlow2\"],\"incoming\":[\"sequenceFlow1\"]},{\"key\":\"sequenceFlow2\",\"type\":1,\"outgoing\":[\"exclusiveGateway1\"],\"incoming\":[\"userTask1\"]},{\"key\":\"exclusiveGateway1\",\"type\":6,\"outgoing\":[\"sequenceFlow3\",\"sequenceFlow4\"],\"properties\":{\"hookInfoIds\":\"[1,2]\"},\"incoming\":[\"sequenceFlow2\"]},{\"key\":\"sequenceFlow3\",\"type\":1,\"outgoing\":[\"userTask2\"],\"properties\":{\"conditionsequenceflow\":\"a>1&&b==1\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"sequenceFlow4\",\"type\":1,\"outgoing\":[\"userTask3\"],\"properties\":{\"defaultConditions\":\"true\"},\"incoming\":[\"exclusiveGateway1\"]},{\"key\":\"userTask2\",\"type\":4,\"outgoing\":[\"sequenceFlow5\"],\"incoming\":[\"sequenceFlow3\"]},{\"key\":\"userTask3\",\"type\":4,\"outgoing\":[\"sequenceFlow6\"],\"incoming\":[\"sequenceFlow4\"]},{\"key\":\"sequenceFlow5\",\"type\":1,\"outgoing\":[\"endEvent1\"],\"incoming\":[\"userTask2\"]},{\"key\":\"sequenceFlow6\",\"type\":1,\"outgoing\":[\"endEvent2\"],\"incoming\":[\"userTask3\"]},{\"key\":\"endEvent1\",\"type\":3,\"incoming\":[\"sequenceFlow5\"]},{\"key\":\"endEvent2\",\"type\":3,\"incoming\":[\"sequenceFlow6\"]}]}",
+          "status": 1,
+          "create_time": "2025-09-15 12:05:09.000",
+          "modify_time": "2025-09-15 12:05:09.000",
+          "operator": "testOperator",
+          "remark": "testRemark",
+          "archive": 0,
+          "caller": "testCaller",
+          "tenant_id": "dev_test"
+        },
+        {
+          "flow_deploy_id": "fce9c1e9-57dd-483e-bba1-dd7cb5a53ca7",
+          "flow_module_id": "da5835fe-e82a-447f-b614-c0ce9aaecb78",
+          "flow_name": "增删改查测试",
+          "flow_key": "crud_test",
+          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgoksf9skg7m1c\"],\"properties\":{\"positionX\":-496,\"positionY\":48}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgolxly85affbh\"],\"outgoing\":[],\"properties\":{\"positionX\":1408,\"positionY\":48}},{\"key\":\"serviceTask_mgokolh6ottxgz\",\"type\":5,\"incoming\":[\"SequenceFlow_mgoksf9skg7m1c\"],\"outgoing\":[\"SequenceFlow_mgokv2z5j6tju7\"],\"properties\":{\"subType\":\"insert_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"dataMapping\":[{\"field\":\"teacherName\",\"value\":\"张三丰\"},{\"field\":\"subject\",\"value\":\"太极\"}],\"resultPath\":\"teacherInsertAffectedRows\",\"name\":\"新增教师张三丰\",\"positionX\":-336,\"positionY\":32}},{\"key\":\"serviceTask_mgokspzb8h72r0\",\"type\":5,\"incoming\":[\"SequenceFlow_mgokv2z5j6tju7\"],\"outgoing\":[\"SequenceFlow_mgpv7i2gpvk0qg\"],\"properties\":{\"subType\":\"update_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"dataMapping\":[{\"field\":\"subject\",\"value\":\"太极张三丰\"}],\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teacherUpdateAffectedRows\",\"name\":\"更新教师张三丰\",\"positionX\":-112,\"positionY\":32}},{\"key\":\"serviceTask_mgokvj54kxi9pj\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpvhe0tlgy2hs\"],\"outgoing\":[\"SequenceFlow_mgokyc4xwquno6\"],\"properties\":{\"subType\":\"query_record\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"filter\":\"\",\"sort\":\"[{\\\"field\\\":\\\"id\\\",\\\"order\\\":\\\"desc\\\"}]\",\"page\":1,\"size\":1000,\"resultPath\":\"students\",\"name\":\"查询学生\",\"positionX\":544,\"positionY\":32}},{\"key\":\"serviceTask_mgoky18vc65fea\",\"type\":5,\"incoming\":[\"SequenceFlow_mgokyc4xwquno6\"],\"outgoing\":[\"SequenceFlow_mgolse1rjjms9t\"],\"properties\":{\"subType\":\"insert_record\",\"inputPath\":\"students\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"dataMapping\":[{\"field\":\"studentName\",\"value\":\"${studentName}2\"},{\"field\":\"gender\",\"value\":\"${gender}\"},{\"field\":\"interest\",\"value\":\"${interest}\"},{\"field\":\"age\",\"value\":\"${age}\"},{\"field\":\"classId\",\"value\":\"${classId}\"}],\"resultPath\":\"studentInsertAffectedRows\",\"name\":\"新增学生\",\"positionX\":752,\"positionY\":32}},{\"key\":\"serviceTask_mgoli5cpsdyy77\",\"type\":5,\"incoming\":[\"SequenceFlow_mgolse1rjjms9t\"],\"outgoing\":[\"SequenceFlow_mgolsrsrj4yfkj\"],\"properties\":{\"subType\":\"update_record\",\"inputPath\":\"students\",\"datasourceName\":\"system\",\"modelName\":\"Student\",\"dataMapping\":[{\"field\":\"classId\",\"value\":\"3\"}],\"filter\":\"{\\n   \\\"studentName\\\":{\\\"_ends_with\\\":\\\"2\\\"}\\n}\",\"resultPath\":\"studentUpdateAffectedRows\",\"name\":\"更新学生信息\",\"positionX\":960,\"positionY\":32}},{\"key\":\"serviceTask_mgolsqgfgrdmat\",\"type\":5,\"incoming\":[\"SequenceFlow_mgolsrsrj4yfkj\"],\"outgoing\":[\"SequenceFlow_mgolxly85affbh\"],\"properties\":{\"subType\":\"delete_record\",\"resultPath\":\"studentDeleteAffectedRows\",\"name\":\"删除学生信息\",\"positionX\":1200,\"positionY\":32,\"datasourceName\":\"system\",\"modelName\":\"Student\",\"filter\":\"{\\n   \\\"studentName\\\":{\\\"_ends_with\\\":\\\"2\\\"}\\n}\"}},{\"key\":\"serviceTask_mgpv6wp7oavt4f\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpv7i2gpvk0qg\"],\"outgoing\":[\"SequenceFlow_mgpvhb6p3dm76o\"],\"properties\":{\"subType\":\"query_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teachers\",\"name\":\"查询教师张三丰\",\"positionX\":96,\"positionY\":32}},{\"key\":\"serviceTask_mgpvgobas8eee4\",\"type\":5,\"incoming\":[\"SequenceFlow_mgpvhb6p3dm76o\"],\"outgoing\":[\"SequenceFlow_mgpvhe0tlgy2hs\"],\"properties\":{\"subType\":\"delete_record\",\"datasourceName\":\"system\",\"modelName\":\"Teacher\",\"filter\":\"{\\\"teacherName\\\":{\\\"_eq\\\":\\\"张三丰\\\"}}\",\"resultPath\":\"teacherDeleteAffectedRows\",\"name\":\"删除教师张三丰\",\"positionX\":320,\"positionY\":32}},{\"key\":\"SequenceFlow_mgoksf9skg7m1c\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgokolh6ottxgz\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgokv2z5j6tju7\",\"type\":1,\"incoming\":[\"serviceTask_mgokolh6ottxgz\"],\"outgoing\":[\"serviceTask_mgokspzb8h72r0\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgokyc4xwquno6\",\"type\":1,\"incoming\":[\"serviceTask_mgokvj54kxi9pj\"],\"outgoing\":[\"serviceTask_mgoky18vc65fea\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolse1rjjms9t\",\"type\":1,\"incoming\":[\"serviceTask_mgoky18vc65fea\"],\"outgoing\":[\"serviceTask_mgoli5cpsdyy77\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolsrsrj4yfkj\",\"type\":1,\"incoming\":[\"serviceTask_mgoli5cpsdyy77\"],\"outgoing\":[\"serviceTask_mgolsqgfgrdmat\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgolxly85affbh\",\"type\":1,\"incoming\":[\"serviceTask_mgolsqgfgrdmat\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpv7i2gpvk0qg\",\"type\":1,\"incoming\":[\"serviceTask_mgokspzb8h72r0\"],\"outgoing\":[\"serviceTask_mgpv6wp7oavt4f\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpvhb6p3dm76o\",\"type\":1,\"incoming\":[\"serviceTask_mgpv6wp7oavt4f\"],\"outgoing\":[\"serviceTask_mgpvgobas8eee4\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgpvhe0tlgy2hs\",\"type\":1,\"incoming\":[\"serviceTask_mgpvgobas8eee4\"],\"outgoing\":[\"serviceTask_mgokvj54kxi9pj\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
+          "status": 1,
+          "create_time": "2025-09-15 12:05:09.000",
+          "modify_time": "2025-09-15 12:05:09.000",
+          "operator": "admin",
+          "remark": "增删改查测试",
+          "archive": 0,
+          "caller": "admin",
+          "tenant_id": "dev_test"
+        },
+        {
+          "flow_deploy_id": "1fe532ae-33c4-4f57-aabe-62640da4f185",
+          "flow_module_id": "9243be36-9ced-4413-acd5-5fc93a05c698",
+          "flow_name": "脚本测试",
+          "flow_key": "script_test",
+          "flow_model": "{\"flowElementList\":[{\"key\":\"start-node\",\"type\":2,\"incoming\":[],\"outgoing\":[\"SequenceFlow_mgiw9ru150u0eu\"],\"properties\":{\"positionX\":-96,\"positionY\":64,\"name\":\"Start\"}},{\"key\":\"end-node\",\"type\":3,\"incoming\":[\"SequenceFlow_mgiwaxb3lsnf17\"],\"outgoing\":[],\"properties\":{\"positionX\":800,\"positionY\":48,\"name\":\"End\"}},{\"key\":\"serviceTask_mgiw9p5w4te9q1\",\"type\":5,\"incoming\":[\"SequenceFlow_mgiw9ru150u0eu\"],\"outgoing\":[\"SequenceFlow_mgiwav4s2wkj0d\"],\"properties\":{\"subType\":\"js\",\"script\":\"\\\"hello world\\\";\",\"name\":\"JS\",\"positionX\":160,\"positionY\":64}},{\"key\":\"serviceTask_mgiw9uk4zr7xys\",\"type\":5,\"incoming\":[\"SequenceFlow_mgiwav4s2wkj0d\"],\"outgoing\":[\"SequenceFlow_mgiwaxb3lsnf17\"],\"properties\":{\"subType\":\"groovy\",\"script\":\"def a = \\\"wew\\\";\\r\\nreturn \\\"你好\\\" + a;\",\"name\":\"Groovy\",\"positionX\":496,\"positionY\":48}},{\"key\":\"SequenceFlow_mgiw9ru150u0eu\",\"type\":1,\"incoming\":[\"start-node\"],\"outgoing\":[\"serviceTask_mgiw9p5w4te9q1\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgiwav4s2wkj0d\",\"type\":1,\"incoming\":[\"serviceTask_mgiw9p5w4te9q1\"],\"outgoing\":[\"serviceTask_mgiw9uk4zr7xys\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}},{\"key\":\"SequenceFlow_mgiwaxb3lsnf17\",\"type\":1,\"incoming\":[\"serviceTask_mgiw9uk4zr7xys\"],\"outgoing\":[\"end-node\"],\"properties\":{\"conditionsequenceflow\":\"\",\"defaultConditions\":\"false\"}}]}",
+          "status": 1,
+          "create_time": "2025-10-14T11:23:02.659",
+          "modify_time": "2025-10-14T11:23:02.660",
+          "operator": "admin",
+          "remark": "Groovy和Javascript脚本测试",
+          "archive": 0,
+          "caller": "admin",
+          "tenant_id": "dev_test"
+        }
+      ]
+    },
+    {
+      "modelName": "f_api_definition",
+      "values": [
+        {
+          "createdAt": "2024-07-13T23:21:09",
+          "meta": {},
+          "name": "【示例】学生接口",
+          "updatedAt": "2024-07-13T23:21:09",
+          "id": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "type": "FOLDER",
+          "tenant_id": "dev_test"
+        },
+        {
+          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "createdAt": "2024-07-13T23:21:10",
+          "meta": {
+            "auth": false,
+            "execution": {
+              "query": "query MyQuery($order_by: system_Classes_order_by = { id: asc }, $size: Int = 10, $page: Int = 1) {\n  system_list_Classes(order_by: $order_by, size: $size, page: $page) {\n    classCode\n    className\n    id\n  }\n}",
+              "variables": {
+                "order_by": {
+                  "id": "desc"
+                }
+              },
+              "operationName": "MyQuery"
+            }
+          },
+          "name": "查询班级列表",
+          "path": "/system/Classes/list",
+          "updatedAt": "2024-07-13T23:21:10",
+          "id": "01J2PAY1M8T1R8HM979P4ASM9A",
+          "method": "GET",
+          "type": "API",
+          "tenant_id": "dev_test"
+        },
+        {
+          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "createdAt": "2024-07-13T23:21:10",
+          "meta": {
+            "auth": false,
+            "identityProvider": "demo",
+            "rateLimitingEnabled": true,
+            "maxRequestCount": 50,
+            "intervalInSeconds": 60,
+            "execution": {
+              "query": "query MyQuery($id: Int) {\n  system_find_one_Classes(where: { id: { _eq: $id } }) {\n    classCode\n    className\n    id\n  }\n}",
+              "variables": {
+                "id": 1
+              },
+              "operationName": "MyQuery"
+            }
+          },
+          "name": "查询单个班级",
+          "path": "/system/Classes/{id}",
+          "updatedAt": "2024-07-13T23:21:10",
+          "id": "01J2PAY1X3ZN529SQTKB8TG1Q5",
+          "method": "GET",
+          "type": "API",
+          "tenant_id": "dev_test"
+        },
+        {
+          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "createdAt": "2024-07-13T23:21:11",
+          "meta": {
+            "auth": false,
+            "execution": {
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  system_create_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "operationName": "MyMutation"
+            }
+          },
+          "name": "创建班级",
+          "path": "/system/Classes",
+          "updatedAt": "2024-07-13T23:21:11",
+          "id": "01J2PAY2F3VK71GXV6BWXYEA5P",
+          "method": "POST",
+          "type": "API",
+          "tenant_id": "dev_test"
+        },
+        {
+          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "createdAt": "2024-07-13T23:21:11",
+          "meta": {
+            "auth": false,
+            "execution": {
+              "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  system_update_Classes_by_id(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
+              "operationName": "MyMutation"
+            }
+          },
+          "name": "更新班级",
+          "path": "/system/Classes/{id}",
+          "updatedAt": "2024-07-13T23:21:11",
+          "id": "01J2PAY2RJ79JYB2GJP5K0AW5F",
+          "method": "PUT",
+          "type": "API",
+          "tenant_id": "dev_test"
+        },
+        {
+          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "createdAt": "2024-07-13T23:21:12",
+          "meta": {
+            "auth": false,
+            "execution": {
+              "query": "mutation MyMutation($id: ID!) {\n  system_delete_Classes_by_id(id: $id) {\n    classCode\n    className\n    id\n  }\n}",
+              "operationName": "MyMutation"
+            }
+          },
+          "name": "删除班级",
+          "path": "/system/Classes/{id}",
+          "updatedAt": "2024-07-13T23:21:12",
+          "id": "01J2PAY3W18T1BQJ5H5D8STGYT",
+          "method": "DELETE",
+          "type": "API",
+          "tenant_id": "dev_test"
+        }
+      ]
+    },
+    {
+      "modelName": "f_identity_provider",
+      "values": [
+        {
+          "name": "demo",
+          "type": "oidc",
+          "issuer": "http://localhost/issuer",
+          "clientId": "test_client_id",
+          "clientSecret": "test_client_secret",
+          "tenant_id": "dev_test"
+        }
+      ]
+    },
+    {
+      "modelName": "f_trigger",
+      "values": [
+        {
+          "id": "bf492f37-1f01-4eb8-b76d-d319299b4d8e",
+          "name": "定时触发-间隔触发",
+          "description": "定时触发-间隔触发-备注",
+          "type": "SCHEDULED",
+          "config": {
+            "type": "interval",
+            "interval": 1,
+            "intervalUnit": "minute",
+            "repeatCount": 100
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "job_group": "testFlowName_1757909108656",
+          "state": false,
+          "created_at": "2025-09-15 12:05:09.000",
+          "updated_at": "2025-09-15 12:05:09.000",
+          "tenant_id": "dev_test"
+        },
+        {
+          "id": "d8c60d2a-19d8-4c3c-b370-96318733858f",
+          "name": "定时触发-Cron表达式",
+          "description": "定时触发-Cron表达式-备注",
+          "type": "SCHEDULED",
+          "config": {
+            "type": "cron",
+            "cronExpression": "0 0 * * * ? *"
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "job_group": "testFlowName_1757909108656",
+          "state": false,
+          "created_at": "2025-09-15 12:05:09.000",
+          "updated_at": "2025-09-15 12:05:09.000",
+          "tenant_id": "dev_test"
+        },
+        {
+          "id": "9434666d-6b3b-417a-80e3-3352f40ded71",
+          "name": "事件触发-之前",
+          "description": "事件触发-之前-描述",
+          "type": "EVENT",
+          "config": {
+            "type": "event",
+            "datasourceName": "system",
+            "modelName": "Student",
+            "mutationTypes": [
+              "delete",
+              "update",
+              "create"
+            ],
+            "triggerTiming": "after"
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "job_group": "system_Student",
+          "state": true,
+          "created_at": "2025-09-15 12:05:09.000",
+          "updated_at": "2025-09-15 12:05:09.000",
+          "tenant_id": "dev_test"
+        },
+        {
+          "id": "f351b8d9-a450-4f2c-8fff-cf862d690352",
+          "name": "事件触发-之后",
+          "description": "事件触发-之后-描述",
+          "type": "EVENT",
+          "config": {
+            "type": "event",
+            "datasourceName": "system",
+            "modelName": "Classes",
+            "mutationTypes": [
+              "create",
+              "update",
+              "delete"
+            ],
+            "triggerTiming": "after"
+          },
+          "job_id": "5c41f37a-87a9-47af-bdba-44d0c27eda89",
+          "job_type": "FLOW",
+          "job_group": "system_Classes",
+          "state": true,
+          "created_at": "2025-09-15 12:05:09.000",
+          "updated_at": "2025-09-15 12:05:09.000",
+          "tenant_id": "dev_test"
         }
       ]
     }
