@@ -5,7 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
-import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.StartProcessParamEvent;
 import tech.wetech.flexmodel.domain.model.schedule.JobExecutionLogService;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
 import tech.wetech.flexmodel.event.ChangedEvent;
@@ -13,6 +13,7 @@ import tech.wetech.flexmodel.event.EventListener;
 import tech.wetech.flexmodel.event.EventType;
 import tech.wetech.flexmodel.event.PreChangeEvent;
 import tech.wetech.flexmodel.query.Expressions;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.List;
@@ -69,10 +70,12 @@ public class TriggerDataChangedEventListener implements EventListener {
             recordEventTriggerLog(trigger, event, "PRE_CHANGE", mutationType);
 
             // 构建启动流程参数
-            StartProcessParam startProcessParam = new StartProcessParam();
+            StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
+            startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+            startProcessParam.setUserId(SessionContextHolder.getUserId());
             startProcessParam.setFlowModuleId(trigger.getJobId());
             @SuppressWarnings("unchecked")
-            Map<String, Object> variables = (Map<String, Object>) event.getNewData();
+            Map<String, Object> variables = event.getNewData();
             startProcessParam.setVariables(variables);
             eventBus.send("flow.start", startProcessParam);
           }
@@ -106,8 +109,11 @@ public class TriggerDataChangedEventListener implements EventListener {
             recordEventTriggerLog(trigger, event, "POST_CHANGE", mutationType);
 
             // 构建启动流程参数
-            StartProcessParam startProcessParam = new StartProcessParam();
+            StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
+            startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+            startProcessParam.setUserId(SessionContextHolder.getUserId());
             startProcessParam.setFlowModuleId(trigger.getJobId());
+
             @SuppressWarnings("unchecked")
             Map<String, Object> variables = JsonUtils.getInstance().convertValue(event.getNewData(), Map.class);
             startProcessParam.setVariables(variables);

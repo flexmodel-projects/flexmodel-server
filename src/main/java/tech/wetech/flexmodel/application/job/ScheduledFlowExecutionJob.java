@@ -6,7 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.StartProcessParamEvent;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.Map;
 
@@ -38,9 +39,11 @@ public class ScheduledFlowExecutionJob implements Job {
         triggerId, flowModuleId);
 
       // 构建启动流程参数
-      StartProcessParam startProcessParam = new StartProcessParam();
+      StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
       startProcessParam.setFlowModuleId(flowModuleId);
       startProcessParam.setVariables(Map.of());
+      startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+      startProcessParam.setUserId(SessionContextHolder.getUserId());
 
       // 启动流程实例
       eventBus.send("flow.start", startProcessParam);

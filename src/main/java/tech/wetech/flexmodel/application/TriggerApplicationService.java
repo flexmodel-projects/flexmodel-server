@@ -11,13 +11,14 @@ import tech.wetech.flexmodel.application.dto.TriggerPageRequest;
 import tech.wetech.flexmodel.application.job.ScheduledFlowExecutionJob;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
-import tech.wetech.flexmodel.domain.model.flow.dto.param.StartProcessParam;
+import tech.wetech.flexmodel.domain.model.flow.dto.StartProcessParamEvent;
 import tech.wetech.flexmodel.domain.model.flow.service.FlowDeploymentService;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerException;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
 import tech.wetech.flexmodel.domain.model.schedule.config.*;
 import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.query.Predicate;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.time.LocalDateTime;
@@ -192,7 +193,9 @@ public class TriggerApplicationService {
         trigger.getId(), trigger.getJobId(), trigger.getJobType());
 
       // 构建启动流程参数
-      StartProcessParam startProcessParam = new StartProcessParam();
+      StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
+      startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+      startProcessParam.setUserId(SessionContextHolder.getUserId());
       startProcessParam.setFlowModuleId(trigger.getJobId());
       startProcessParam.setVariables(Map.of());
 
