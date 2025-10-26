@@ -273,7 +273,7 @@ public class ApiRuntimeApplicationService {
           body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
           if (body.get("query") == null) {
             sendBadRequestFail(routingContext,
-              "query is required, e.g. { \"query\": \"query MyQuery { system_aggregate_Classes { _count } }\" }",
+              "query is required, e.g. { \"query\": \"query MyQuery { dev_test_aggregate_Classes { _count } }\" }",
               -1);
             return;
           }

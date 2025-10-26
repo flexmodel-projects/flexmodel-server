@@ -25,19 +25,19 @@ public class FlexmodelAPIResourceTest {
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
-      .get("/api/v1/system/Classes/list")
+      .get("/api/v1/dev_test/Classes/list")
       .then()
       .statusCode(200)
       .body("size()", greaterThanOrEqualTo(1))
-      .body("data.system_list_Classes[0].classCode", notNullValue());
+      .body("data.dev_test_list_Classes[0].classCode", notNullValue());
     // view
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
-      .get("/api/v1/system/Classes/1")
+      .get("/api/v1/dev_test/Classes/1")
       .then()
       .statusCode(200)
-      .body("data.system_find_one_Classes.classCode", notNullValue());
+      .body("data.dev_test_find_one_Classes.classCode", notNullValue());
   }
 
   @Test
@@ -54,7 +54,7 @@ public class FlexmodelAPIResourceTest {
             "className": "三年级2班"
           }
         """)
-      .post("/api/v1/system/Classes")
+      .post("/api/v1/dev_test/Classes")
       .then()
       .statusCode(200)
       .body("data", notNullValue());
@@ -74,7 +74,7 @@ public class FlexmodelAPIResourceTest {
             "className": "五年级3班"
           }
         """)
-      .put("/api/v1/system/Classes/1")
+      .put("/api/v1/dev_test/Classes/1")
       .then()
       .statusCode(200)
       .body("data", notNullValue());
@@ -86,7 +86,7 @@ public class FlexmodelAPIResourceTest {
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
-      .delete("/api/v1/system/Classes/1")
+      .delete("/api/v1/dev_test/Classes/1")
       .then()
       .statusCode(200)
       .body("data", notNullValue());
@@ -102,13 +102,13 @@ public class FlexmodelAPIResourceTest {
       .contentType(ContentType.JSON)
       .body("""
           {
-            "query": "query { system_list_Classes { classCode className } }"
+            "query": "query { dev_test_list_Classes { classCode className } }"
           }
         """)
       .post("/api/v1/graphql")
       .then()
       .statusCode(200)
-      .body("data.system_list_Classes", notNullValue());
+      .body("data.dev_test_list_Classes", notNullValue());
   }
 
 }

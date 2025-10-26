@@ -81,7 +81,7 @@ class ModelResourceTest {
           ]
         }
         """)
-      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "mysql_test")
+      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "sqlite_test")
       .then()
       .statusCode(200);
   }
@@ -143,14 +143,14 @@ class ModelResourceTest {
           ]
         }
         """)
-      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "mysql_test")
+      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "sqlite_test")
       .then()
       .statusCode(200);
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
-      .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}", "mysql_test", "testDropModel")
+      .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}", "sqlite_test", "testDropModel")
       .then()
       .statusCode(204);
   }
@@ -212,7 +212,7 @@ class ModelResourceTest {
           ]
         }
         """)
-      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "mysql_test")
+      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "sqlite_test")
       .then()
       .statusCode(200);
     given()
@@ -229,7 +229,7 @@ class ModelResourceTest {
           "length": 255
         }
         """)
-      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/fields", "mysql_test", "testCreateFieldStudent")
+      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/fields", "sqlite_test", "testCreateFieldStudent")
       .then()
       .statusCode(200);
   }
@@ -290,7 +290,7 @@ class ModelResourceTest {
           ]
         }
         """)
-      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "mysql_test")
+      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "sqlite_test")
       .then()
       .statusCode(200);
     given()
@@ -308,7 +308,7 @@ class ModelResourceTest {
         }
         """)
       .put(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/fields/{fieldName}",
-        "mysql_test",
+        "sqlite_test",
         "testModifyFieldStudent",
         "studentName")
       .then()
@@ -373,14 +373,14 @@ class ModelResourceTest {
           "indexes": []
         }
         """)
-      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "mysql_test")
+      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "sqlite_test")
       .then()
       .statusCode(200);
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/fields/{fieldName}",
-        "mysql_test",
+        "sqlite_test",
         "testDropFieldStudent",
         "studentName")
       .then()
@@ -444,7 +444,7 @@ class ModelResourceTest {
         }
         """)
       .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models",
-        "mysql_test"
+        "sqlite_test"
       )
       .then()
       .statusCode(200);
@@ -466,7 +466,7 @@ class ModelResourceTest {
         }
         """)
       .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/indexes",
-        "mysql_test",
+        "sqlite_test",
         "testCreateIndexStudent"
       )
       .then()
@@ -541,7 +541,7 @@ class ModelResourceTest {
         }
         """)
       .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models",
-        "mysql_test"
+        "sqlite_test"
       )
       .then()
       .statusCode(200);
@@ -563,7 +563,7 @@ class ModelResourceTest {
         }
         """)
       .put(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/indexes/{indexName}",
-        "mysql_test",
+        "sqlite_test",
         "testModifyIndexStudent",
         "IDX_gender_wedsd"
       )
@@ -639,7 +639,7 @@ class ModelResourceTest {
         }
         """)
       .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models",
-        "mysql_test"
+        "sqlite_test"
       )
       .then()
       .statusCode(200);
@@ -648,7 +648,7 @@ class ModelResourceTest {
       .when()
       .contentType(ContentType.JSON)
       .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/indexes/{indexName}",
-        "mysql_test",
+        "sqlite_test",
         "testModifyIndexStudent",
         "IDX_gender"
       )
