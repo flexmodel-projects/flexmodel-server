@@ -32,10 +32,10 @@ public class GeneratorResource {
   ZipService zipService;
 
   @GET
-  @Path("/{datasource}_{template}.zip")
+  @Path("/{template}.zip")
   @PermitAll
-  public Response generate(@PathParam("datasource") String datasource,
-                           @PathParam("template") String template,
+  public Response generate(@PathParam("template") String template,
+                           @QueryParam("datasource") String datasource,
                            @QueryParam("variables") String variablesString
   ) throws Exception {
     try {
