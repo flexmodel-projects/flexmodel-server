@@ -8,7 +8,7 @@ import tech.wetech.flexmodel.domain.model.connect.database.*;
  * @author cjbi
  */
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "dbKind")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "dbKind",defaultImpl = UnknownDatabase.class)
 @JsonSubTypes({
   @JsonSubTypes.Type(value = MySQL.class, name = "mysql"),
   @JsonSubTypes.Type(value = MariaDB.class, name = "mariadb"),

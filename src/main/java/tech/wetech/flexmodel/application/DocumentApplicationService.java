@@ -18,7 +18,6 @@ import tech.wetech.flexmodel.model.field.RelationField;
 import tech.wetech.flexmodel.model.field.ScalarType;
 import tech.wetech.flexmodel.model.field.TypedField;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
-import tech.wetech.flexmodel.shared.SessionContextHolder;
 import tech.wetech.flexmodel.shared.matchers.UriTemplate;
 
 import java.util.*;
@@ -62,8 +61,7 @@ public class DocumentApplicationService {
   }
 
   public Map<String, Object> getOpenApi() {
-    String tenantId = SessionContextHolder.getTenantId();
-    List<ApiDefinition> apis = apiDefinitionService.findList(tenantId);
+    List<ApiDefinition> apis = apiDefinitionService.findAll();
     Map<String, Object> openAPI = new HashMap<>();
     openAPI.put("openapi", "3.0.3");
     openAPI.put("info", buildInfo());

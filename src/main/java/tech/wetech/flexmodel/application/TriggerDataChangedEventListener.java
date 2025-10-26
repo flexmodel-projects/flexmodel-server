@@ -4,6 +4,7 @@ import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.codegen.entity.JobExecutionLog;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 import tech.wetech.flexmodel.domain.model.flow.dto.StartProcessParamEvent;
 import tech.wetech.flexmodel.domain.model.schedule.JobExecutionLogService;
@@ -67,7 +68,7 @@ public class TriggerDataChangedEventListener implements EventListener {
               trigger.getId(), eventType, event.getSchemaName(), event.getModelName());
 
             // 记录事件触发日志
-            recordEventTriggerLog(trigger, event, "PRE_CHANGE", mutationType);
+            String logId = recordEventTriggerLog(trigger, event, "PRE_CHANGE", mutationType);
 
             // 构建启动流程参数
             StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
@@ -77,6 +78,9 @@ public class TriggerDataChangedEventListener implements EventListener {
             @SuppressWarnings("unchecked")
             Map<String, Object> variables = event.getNewData();
             startProcessParam.setVariables(variables);
+            startProcessParam.setLogId(logId);
+            startProcessParam.setStartTime(System.currentTimeMillis());
+
             eventBus.send("flow.start", startProcessParam);
           }
         }
@@ -106,13 +110,15 @@ public class TriggerDataChangedEventListener implements EventListener {
               trigger.getId(), eventType, event.getSchemaName(), event.getModelName());
 
             // 记录事件触发日志
-            recordEventTriggerLog(trigger, event, "POST_CHANGE", mutationType);
+            String logId = recordEventTriggerLog(trigger, event, "POST_CHANGE", mutationType);
 
             // 构建启动流程参数
             StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
             startProcessParam.setTenantId(SessionContextHolder.getTenantId());
             startProcessParam.setUserId(SessionContextHolder.getUserId());
             startProcessParam.setFlowModuleId(trigger.getJobId());
+            startProcessParam.setLogId(logId);
+            startProcessParam.setStartTime(System.currentTimeMillis());
 
             @SuppressWarnings("unchecked")
             Map<String, Object> variables = JsonUtils.getInstance().convertValue(event.getNewData(), Map.class);
@@ -132,7 +138,7 @@ public class TriggerDataChangedEventListener implements EventListener {
   /**
    * 记录事件触发日志
    */
-  private void recordEventTriggerLog(Trigger trigger, Object event, String triggerPhase, String mutationType) {
+  private String recordEventTriggerLog(Trigger trigger, Object event, String triggerPhase, String mutationType) {
     try {
       // 构建输入数据
       Map<String, Object> inputData = Map.of(
@@ -145,7 +151,7 @@ public class TriggerDataChangedEventListener implements EventListener {
       );
 
       // 记录事件触发日志
-      jobExecutionLogService.recordJobStart(
+      JobExecutionLog jobExecutionLog = jobExecutionLogService.recordJobStart(
         trigger.getId(),
         trigger.getJobId(),
         trigger.getJobGroup(),
@@ -156,13 +162,15 @@ public class TriggerDataChangedEventListener implements EventListener {
         System.currentTimeMillis(),
         System.currentTimeMillis(),
         inputData,
-        null // tenantId
+        trigger.getTenantId()
       );
 
       log.debug("已记录事件触发日志: triggerId={}, phase={}, mutationType={}",
         trigger.getId(), triggerPhase, mutationType);
+      return jobExecutionLog.getId();
     } catch (Exception e) {
       log.error("记录事件触发日志失败: triggerId={}, phase={}", trigger.getId(), triggerPhase, e);
     }
+    return null;
   }
 }

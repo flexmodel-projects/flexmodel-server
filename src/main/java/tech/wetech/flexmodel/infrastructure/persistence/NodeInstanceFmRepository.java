@@ -18,11 +18,6 @@ public class NodeInstanceFmRepository implements NodeInstanceRepository {
   Session session;
 
   @Override
-  public int insert(NodeInstance nodeInstance) {
-    return session.dsl().insertInto(NodeInstance.class).values(nodeInstance).execute();
-  }
-
-  @Override
   public boolean insertOrUpdateList(List<NodeInstance> nodeInstanceList) {
     boolean ok = true;
     for (NodeInstance ni : nodeInstanceList) {

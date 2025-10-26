@@ -329,7 +329,7 @@
       "modelName": "f_trigger",
       "values": [
         {
-          "id": "uyr2f37-2343-6566-sd23-d31929wewed8e",
+          "id": "4e8be2da-8ae7-4571-b347-61af5fdd3e9b",
           "name": "请求日志归档任务",
           "description": "写入日志归档表进行数据归档",
           "type": "EVENT",

@@ -30,10 +30,6 @@ public class ScheduledFlowExecutionJobListener implements JobListener {
 
   private static final String EXECUTION_LOG_ID_KEY = "executionLogId";
 
-  // 默认构造函数，供 CDI 使用
-  public ScheduledFlowExecutionJobListener() {
-  }
-
   @Override
   public String getName() {
     return "ScheduledFlowExecutionJobListener";

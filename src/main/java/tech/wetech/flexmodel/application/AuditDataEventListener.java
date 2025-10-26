@@ -37,6 +37,8 @@ public class AuditDataEventListener implements EventListener {
 
   private void invokeData(PreChangeEvent event) {
     Map<String, Object> newData = event.getNewData();
+    String tenantId = SessionContextHolder.getTenantId();
+    String userId = SessionContextHolder.getUserId();
     if (newData == null) {
       return;
     }
@@ -47,20 +49,20 @@ public class AuditDataEventListener implements EventListener {
     TypedField<?, ?> updatedByField = entity.getField("updated_by");
     TypedField<?, ?> createdAtField = entity.getField("created_at");
     TypedField<?, ?> updatedAtField = entity.getField("updated_at");
-    if (tenantIdField != null && newData.get("tenant_id") == null) {
-      newData.put("tenant_id", SessionContextHolder.getTenantId());
+    if (tenantIdField != null && newData.get("tenant_id") == null && tenantId != null) {
+      newData.put("tenant_id", tenantId);
     }
     if (event instanceof PreInsertEvent) {
-      if (createdByField != null && newData.get("created_by") == null) {
-        newData.put("created_by", SessionContextHolder.getUserId());
+      if (createdByField != null && newData.get("created_by") == null && userId != null) {
+        newData.put("created_by", userId);
       }
       if (createdAtField != null && newData.get("created_at") == null) {
         newData.put("created_at", LocalDateTime.now());
       }
     }
     if (event instanceof PreUpdateEvent) {
-      if (updatedByField != null && newData.get("updated_by") == null) {
-        newData.put("updated_by", SessionContextHolder.getUserId());
+      if (updatedByField != null && newData.get("updated_by") == null && userId != null) {
+        newData.put("updated_by", userId);
       }
       if (updatedAtField != null && newData.get("updated_at") == null) {
         newData.put("updated_at", LocalDateTime.now());

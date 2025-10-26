@@ -77,27 +77,29 @@ public class FlowExecutor extends RuntimeExecutor {
   }
 
   private FlowInstance saveFlowInstance(RuntimeContext runtimeContext) throws ProcessException {
-    FlowInstance flowInstancePO = buildFlowInstancePO(runtimeContext);
-    int result = flowInstanceRepository.insert(flowInstancePO);
+    FlowInstance flowInstance = buildFlowInstance(runtimeContext);
+    int result = flowInstanceRepository.insert(flowInstance);
     if (result == 1) {
-      return flowInstancePO;
+      return flowInstance;
     }
-    LOGGER.warn("saveFlowInstancePO: insert failed.||flowInstancePO={}", flowInstancePO);
+    LOGGER.warn("saveFlowInstance: insert failed.||flowInstance={}", flowInstance);
     throw new ProcessException(ErrorEnum.SAVE_FLOW_INSTANCE_FAILED);
   }
 
-  private FlowInstance buildFlowInstancePO(RuntimeContext runtimeContext) {
-    FlowInstance flowInstancePO = JsonUtils.getInstance().convertValue(runtimeContext, FlowInstance.class);
+  private FlowInstance buildFlowInstance(RuntimeContext runtimeContext) {
+    FlowInstance flowInstance = JsonUtils.getInstance().convertValue(runtimeContext, FlowInstance.class);
     // generate flowInstanceId
-    flowInstancePO.setFlowInstanceId(genId());
+    flowInstance.setFlowInstanceId(genId());
     RuntimeContext parentRuntimeContext = runtimeContext.getParentRuntimeContext();
     if (parentRuntimeContext != null) {
-      flowInstancePO.setParentFlowInstanceId(parentRuntimeContext.getFlowInstanceId());
+      flowInstance.setParentFlowInstanceId(parentRuntimeContext.getFlowInstanceId());
     }
-    flowInstancePO.setStatus(FlowInstanceStatus.RUNNING);
-    flowInstancePO.setCreateTime(LocalDateTime.now());
-    flowInstancePO.setModifyTime(LocalDateTime.now());
-    return flowInstancePO;
+    flowInstance.setStatus(FlowInstanceStatus.RUNNING);
+    flowInstance.setCreateTime(LocalDateTime.now());
+    flowInstance.setModifyTime(LocalDateTime.now());
+    flowInstance.setTenantId(runtimeContext.getTenantId());
+    flowInstance.setCaller(runtimeContext.getCaller());
+    return flowInstance;
   }
 
   private String saveInstanceData(FlowInstance flowInstancePO, Map<String, Object> instanceDataMap) throws ProcessException {
@@ -572,21 +574,21 @@ public class FlowExecutor extends RuntimeExecutor {
       return;
     }
 
-    List<NodeInstance> nodeInstancePOList = new ArrayList<>();
-    List<NodeInstanceLog> nodeInstanceLogPOList = new ArrayList<>();
+    List<NodeInstance> nodeInstanceList = new ArrayList<>();
+    List<NodeInstanceLog> nodeInstanceLogList = new ArrayList<>();
 
     processNodeList.forEach(nodeInstanceBO -> {
-      NodeInstance nodeInstancePO = buildNodeInstance(runtimeContext, nodeInstanceBO);
-      if (nodeInstancePO != null) {
-        nodeInstancePOList.add(nodeInstancePO);
+      NodeInstance nodeInstance = buildNodeInstance(runtimeContext, nodeInstanceBO);
+      if (nodeInstance != null) {
+        nodeInstanceList.add(nodeInstance);
 
         //build nodeInstance log
-        NodeInstanceLog nodeInstanceLogPO = buildNodeInstanceLogPO(nodeInstancePO, nodeInstanceType);
-        nodeInstanceLogPOList.add(nodeInstanceLogPO);
+        NodeInstanceLog nodeInstanceLogPO = buildNodeInstanceLogPO(nodeInstance, nodeInstanceType);
+        nodeInstanceLogList.add(nodeInstanceLogPO);
       }
     });
-    nodeInstanceRepository.insertOrUpdateList(nodeInstancePOList);
-    nodeInstanceLogRepository.insertList(nodeInstanceLogPOList);
+    nodeInstanceRepository.insertOrUpdateList(nodeInstanceList);
+    nodeInstanceLogRepository.insertList(nodeInstanceLogList);
   }
 
   private NodeInstance buildNodeInstance(RuntimeContext runtimeContext, NodeInstanceBO nodeInstanceBO) {

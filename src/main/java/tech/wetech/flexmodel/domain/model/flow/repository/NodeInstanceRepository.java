@@ -8,7 +8,6 @@ import java.util.List;
  * @author cjbi
  */
 public interface NodeInstanceRepository {
-  int insert(NodeInstance nodeInstance);
 
   boolean insertOrUpdateList(List<NodeInstance> nodeInstanceList);
 

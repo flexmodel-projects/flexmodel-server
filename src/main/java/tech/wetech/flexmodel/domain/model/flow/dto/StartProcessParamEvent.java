@@ -14,4 +14,7 @@ public class StartProcessParamEvent extends StartProcessParam {
   private String tenantId;
   private String userId;
 
+  private String logId;
+  private Long startTime;
+
 }
