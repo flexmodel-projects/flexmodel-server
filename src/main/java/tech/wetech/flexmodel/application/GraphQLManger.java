@@ -1,11 +1,11 @@
 package tech.wetech.flexmodel.application;
 
+import com.cronutils.utils.StringUtils;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import tech.wetech.flexmodel.graphql.GraphQLProvider;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,13 +16,29 @@ import static graphql.ExecutionInput.newExecutionInput;
  * @author cjbi
  */
 @ApplicationScoped
-public class GraphQLApplicationService {
+public class GraphQLManger {
 
-  @Inject
-  GraphQLProvider graphQLProvider;
+  private GraphQL defaultGraphql;
+  private final Map<String, GraphQL> tenantGraphqlMap = new HashMap<>();
+
+  public GraphQL getGraphQL(String tenantId) {
+    if (StringUtils.isEmpty(tenantId)) {
+      return defaultGraphql;
+    }
+    return tenantGraphqlMap.get(tenantId);
+  }
+
+  public void addDefaultGraphQL(GraphQL graphQL) {
+    defaultGraphql = graphQL;
+  }
+
+  public void addGraphQL(String tenantId, GraphQL graphQL) {
+    tenantGraphqlMap.put(tenantId, graphQL);
+  }
 
   public ExecutionResult execute(String operationName, String query, Map<String, Object> variables) {
-    GraphQL graphQL = graphQLProvider.getGraphQL();
+    String tenantId = SessionContextHolder.getTenantId();
+    GraphQL graphQL = getGraphQL(tenantId);
     if (variables == null) {
       variables = new HashMap<>();
     }

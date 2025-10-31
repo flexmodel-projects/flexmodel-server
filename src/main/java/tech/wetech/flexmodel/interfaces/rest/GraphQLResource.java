@@ -7,7 +7,7 @@ import jakarta.ws.rs.Path;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import tech.wetech.flexmodel.application.GraphQLApplicationService;
+import tech.wetech.flexmodel.application.GraphQLManger;
 
 import java.util.Map;
 
@@ -19,7 +19,7 @@ import java.util.Map;
 public class GraphQLResource {
 
   @Inject
-  GraphQLApplicationService graphQLApplicationService;
+  GraphQLManger graphQLApplicationService;
 
   @Operation(summary = "执行GraphQL查询")
   @POST

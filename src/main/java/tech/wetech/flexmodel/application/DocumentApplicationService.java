@@ -12,12 +12,12 @@ import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
-import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.model.EntityDefinition;
 import tech.wetech.flexmodel.model.field.RelationField;
 import tech.wetech.flexmodel.model.field.ScalarType;
 import tech.wetech.flexmodel.model.field.TypedField;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 import tech.wetech.flexmodel.shared.matchers.UriTemplate;
 
 import java.util.*;
@@ -40,7 +40,7 @@ public class DocumentApplicationService {
   ModelService modelService;
 
   @Inject
-  GraphQLProvider graphQLProvider;
+  GraphQLManger graphQLManager;
 
   @Inject
   SettingsService settingsService;
@@ -96,7 +96,8 @@ public class DocumentApplicationService {
 
   private Map<String, Object> buildSchemas(List<ApiDefinition> apis) {
     Map<String, Object> definitions = new HashMap<>();
-    GraphQLSchema graphQLSchema = graphQLProvider.getGraphQL().getGraphQLSchema();
+    String tenantId = SessionContextHolder.getTenantId();
+    GraphQLSchema graphQLSchema = graphQLManager.getGraphQL(tenantId).getGraphQLSchema();
     for (ApiDefinition api : apis) {
       try {
         if (api.getType() != ApiType.API) {

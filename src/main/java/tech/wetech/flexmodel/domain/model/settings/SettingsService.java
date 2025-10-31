@@ -28,7 +28,7 @@ public class SettingsService {
     try {
       return settingsRepository.saveSettings(settings);
     } finally {
-      eventBus.publish("settings-changed", new SettingsChanged(settings));
+      eventBus.publish("settings.changed", new SettingsChanged(settings));
     }
   }
 

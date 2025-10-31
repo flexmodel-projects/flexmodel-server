@@ -26,11 +26,11 @@ import tech.wetech.flexmodel.domain.model.idp.provider.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
-import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.infrastructure.SettingsEventConsumer;
 import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 import tech.wetech.flexmodel.shared.matchers.UriTemplate;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import tech.wetech.flexmodel.shared.utils.PatternMatchUtils;
@@ -74,7 +74,7 @@ public class ApiRuntimeApplicationService {
   DataService dataService;
 
   @Inject
-  GraphQLProvider graphQLProvider;
+  GraphQLManger graphQLManger;
 
   @Inject
   SettingsService settingsService;
@@ -183,7 +183,8 @@ public class ApiRuntimeApplicationService {
 
 
   public ExecutionResult execute(String operationName, String query, Map<String, Object> variables) {
-    GraphQL graphQL = graphQLProvider.getGraphQL();
+    String tenantId = SessionContextHolder.getTenantId();
+    GraphQL graphQL = graphQLManger.getGraphQL(tenantId);
     if (variables == null) {
       variables = new HashMap<>();
     }

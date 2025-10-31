@@ -2,17 +2,18 @@ package tech.wetech.flexmodel.infrastructure.session;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.quarkus.runtime.StartupEvent;
+import io.vertx.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Singleton;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.application.AuditDataEventListener;
 import tech.wetech.flexmodel.application.TriggerDataChangedEventListener;
+import tech.wetech.flexmodel.application.dto.GraphQLRefreshEvent;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
-import tech.wetech.flexmodel.graphql.GraphQLProvider;
 import tech.wetech.flexmodel.session.SessionFactory;
 import tech.wetech.flexmodel.session.SessionManager;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
@@ -28,17 +29,18 @@ import java.util.List;
 public class SessionConfig {
 
   public static final String SYSTEM_DS_KEY = "system";
+  @Inject
+  EventBus eventBus;
 
   public void installDatasource(@Observes StartupEvent startupEvent,
                                 SessionDatasource sessionDatasource,
-                                DatasourceService datasourceService,
-                                GraphQLProvider graphQLProvider) {
+                                DatasourceService datasourceService) {
     long beginTime = System.currentTimeMillis();
     List<Datasource> datasourceList = datasourceService.findAll();
     for (Datasource datasource : datasourceList) {
       sessionDatasource.add(datasource);
     }
-    graphQLProvider.init();
+    eventBus.send("graphql.refresh", new GraphQLRefreshEvent());
     log.info("========== Engine init successful in {} ms!", System.currentTimeMillis() - beginTime);
   }
 
@@ -82,12 +84,6 @@ public class SessionConfig {
   @ApplicationScoped
   public SessionManager sessionManager(SessionFactory sessionFactory) {
     return new SessionManager(sessionFactory);
-  }
-
-  @Produces
-  @Singleton
-  public GraphQLProvider graphQLProvider(SessionFactory sessionFactory) {
-    return new GraphQLProvider(sessionFactory);
   }
 
 }
