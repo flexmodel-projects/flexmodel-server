@@ -1,5 +1,7 @@
 package tech.wetech.flexmodel.interfaces.rest;
 
+import io.smallrye.common.annotation.Blocking;
+import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -37,7 +39,8 @@ public class MetricsResource {
 
   @GET
   @Path("/fm")
-  public FmMetricsResponse getFmMetrics() {
+  @Blocking
+  public Uni<FmMetricsResponse> getFmMetrics() {
     return metricsApplicationService.getFmMetrics();
   }
 

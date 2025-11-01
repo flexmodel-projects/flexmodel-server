@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.application;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +31,9 @@ import java.nio.file.FileSystems;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static tech.wetech.flexmodel.query.Expressions.TRUE;
@@ -61,67 +63,132 @@ public class MetricsApplicationService {
   @Inject
   JobExecutionLogService jobExecutionLogService;
 
-  public FmMetricsResponse getFmMetrics() {
+  public Uni<FmMetricsResponse> getFmMetrics() {
+    String tenantId = SessionContextHolder.getTenantId();
+    ExecutorService executorService = Executors.newCachedThreadPool();
+
+    // 并行执行所有查询，使用 CompletableFuture 确保在后台线程执行
+    Uni<List<ApiDefinition>> defListUni = Uni.createFrom().completionStage(
+      CompletableFuture.supplyAsync(() -> apiDefinitionService.findList(tenantId), executorService)
+    );
+    Uni<List<Datasource>> dsListUni = Uni.createFrom().completionStage(
+      CompletableFuture.supplyAsync(() -> datasourceService.findAll(), executorService)
+    );
+    Uni<Long> reqLogCountUni = Uni.createFrom().completionStage(
+      CompletableFuture.supplyAsync(() -> apiLogService.count(TRUE), executorService)
+    );
+    Uni<Long> flowDefCountUni = Uni.createFrom().completionStage(
+      CompletableFuture.supplyAsync(() -> flowDefService.count(Expressions.field(FlowDefinition::getIsDeleted).eq(false)), executorService)
+    );
+    Uni<Long> flowInsCountUni = Uni.createFrom().completionStage(
+      CompletableFuture.supplyAsync(() -> flowInstanceService.count(TRUE), executorService)
+    );
+    Uni<Long> triggerCountUni = Uni.createFrom().completionStage(
+      CompletableFuture.supplyAsync(() -> triggerService.count(TRUE), executorService)
+    );
+    Uni<Long> jobSuccessCountUni = Uni.createFrom().completionStage(
+      CompletableFuture.supplyAsync(() -> jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("SUCCESS")), executorService)
+    );
+    Uni<Long> jobFailureCountUni = Uni.createFrom().completionStage(
+      CompletableFuture.supplyAsync(() -> jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("FAILED")), executorService)
+    );
+
+    // 并行执行所有基础查询
+    return Uni.combine().all().unis(
+        defListUni,
+        dsListUni,
+        reqLogCountUni,
+        flowDefCountUni,
+        flowInsCountUni,
+        triggerCountUni,
+        jobSuccessCountUni,
+        jobFailureCountUni
+      )
+      .asTuple()
+      .flatMap(tuple -> {
+        try {
+          List<ApiDefinition> defList = tuple.getItem1();
+          List<Datasource> dsList = tuple.getItem2();
+          Long reqLogCount = tuple.getItem3();
+          Long flowDefCount = tuple.getItem4();
+          Long flowInsCount = tuple.getItem5();
+          Long triggerCount = tuple.getItem6();
+          Long jobSuccessCount = tuple.getItem7();
+          Long jobFailureCount = tuple.getItem8();
+
+          // 如果没有数据源，直接返回结果
+          if (dsList.isEmpty()) {
+            return Uni.createFrom().item(buildResponse(
+              defList, dsList, reqLogCount, flowDefCount,
+              flowInsCount, triggerCount, jobSuccessCount, jobFailureCount, 0));
+          }
+
+          // 并行查询所有数据源的模型，使用 CompletableFuture 确保在后台线程执行
+          List<Uni<List<SchemaObject>>> modelUnis = dsList.stream()
+            .map(datasource -> Uni.createFrom().completionStage(
+              CompletableFuture.supplyAsync(() -> modelService.findAll(datasource.getName()), executorService)
+            ))
+            .collect(Collectors.toList());
+
+          return Uni.combine().all().unis(modelUnis).with(modelResults -> {
+            int modelCount = modelResults.stream()
+              .map(list -> ((List<SchemaObject>) list).size())
+              .mapToInt(Integer::intValue)
+              .sum();
+            return buildResponse(
+              defList, dsList, reqLogCount, flowDefCount,
+              flowInsCount, triggerCount, jobSuccessCount, jobFailureCount, modelCount);
+          });
+        } catch (Exception e) {
+          log.error("get api fm metrics error", e);
+          return Uni.createFrom().item(FmMetricsResponse.builder().build());
+        }
+      })
+      .onFailure().recoverWithItem(throwable -> {
+        log.error("get api fm metrics error", throwable);
+        return FmMetricsResponse.builder().build();
+      });
+  }
+
+  private FmMetricsResponse buildResponse(List<ApiDefinition> defList, List<Datasource> dsList,
+                                          Long reqLogCount, Long flowDefCount, Long flowInsCount,
+                                          Long triggerCount, Long jobSuccessCount, Long jobFailureCount,
+                                          int modelCount) {
     int queryCount = 0;
     int mutationCount = 0;
     int subscribeCount = 0;
 
-    try {
-      // 同步调用所有服务
-      String tenantId = SessionContextHolder.getTenantId();
-      List<ApiDefinition> defList = apiDefinitionService.findList(tenantId);
-      List<Datasource> dsList = datasourceService.findAll();
-
-      // 计算模型数量
-      AtomicInteger modelCount = new AtomicInteger();
-      for (Datasource datasource : dsList) {
-        List<SchemaObject> ds = modelService.findAll(datasource.getName());
-        modelCount.addAndGet(ds.size());
-      }
-
-      // 获取各种计数
-      int reqLogCount = (int) apiLogService.count(TRUE);
-      int flowDefCount = (int) flowDefService.count(Expressions.field(FlowDefinition::getIsDeleted).eq(false));
-      int flowInsCount = (int) flowInstanceService.count(TRUE);
-      int triggerCount = (int) triggerService.count(TRUE);
-      int jobSuccessCount = (int) jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("SUCCESS"));
-      int jobFailureCount = (int) jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("FAILED"));
-
-      // 分析API定义类型
-      for (ApiDefinition apiDefinition : defList) {
-        if (apiDefinition.getMeta() instanceof Map<?, ?> metaMap) {
-          if (metaMap.get("execution") instanceof Map<?, ?> executionMap) {
-            if (executionMap.get("query") instanceof String gql) {
-              if (gql.startsWith("query")) {
-                queryCount++;
-              } else if (gql.startsWith("mutation")) {
-                mutationCount++;
-              } else if (gql.startsWith("subscription")) {
-                subscribeCount++;
-              }
+    // 分析API定义类型
+    for (ApiDefinition apiDefinition : defList) {
+      if (apiDefinition.getMeta() instanceof Map<?, ?> metaMap) {
+        if (metaMap.get("execution") instanceof Map<?, ?> executionMap) {
+          if (executionMap.get("query") instanceof String gql) {
+            if (gql.startsWith("query")) {
+              queryCount++;
+            } else if (gql.startsWith("mutation")) {
+              mutationCount++;
+            } else if (gql.startsWith("subscription")) {
+              subscribeCount++;
             }
           }
         }
       }
-
-      return FmMetricsResponse.builder().queryCount(queryCount)
-        .mutationCount(mutationCount)
-        .subscribeCount(subscribeCount)
-        .dataSourceCount(dsList.size())
-        .customApiCount(defList.size())
-        .requestCount(reqLogCount)
-        .flowDefCount(flowDefCount)
-        .flowExecCount(flowInsCount)
-        .modelCount(modelCount.get())
-        .triggerTotalCount(triggerCount)
-        .jobSuccessCount(jobSuccessCount)
-        .jobFailureCount(jobFailureCount)
-        .build();
-
-    } catch (Exception e) {
-      log.error("get api fm metrics error", e);
-      return FmMetricsResponse.builder().build();
     }
+
+    return FmMetricsResponse.builder()
+      .queryCount(queryCount)
+      .mutationCount(mutationCount)
+      .subscribeCount(subscribeCount)
+      .dataSourceCount(dsList.size())
+      .customApiCount(defList.size())
+      .requestCount(reqLogCount.intValue())
+      .flowDefCount(flowDefCount.intValue())
+      .flowExecCount(flowInsCount.intValue())
+      .modelCount(modelCount)
+      .triggerTotalCount(triggerCount.intValue())
+      .jobSuccessCount(jobSuccessCount.intValue())
+      .jobFailureCount(jobFailureCount.intValue())
+      .build();
   }
 
   public JvmMetricsResponse getJvmMetrics() {
@@ -917,6 +984,9 @@ public class MetricsApplicationService {
     long startTime = System.currentTimeMillis();
     try {
       // 并行获取所有指标
+      CompletableFuture<FmMetricsResponse> fmFuture =
+        CompletableFuture.supplyAsync(() -> this.getFmMetrics().await().indefinitely());
+
       CompletableFuture<JvmMetricsResponse> jvmFuture =
         CompletableFuture.supplyAsync(this::getJvmMetrics);
 
@@ -943,7 +1013,7 @@ public class MetricsApplicationService {
 
       // 等待所有任务完成，设置超时时间为30秒
       CompletableFuture<Void> allFutures = CompletableFuture.allOf(
-        jvmFuture, cpuFuture, memoryFuture, threadsFuture,
+        fmFuture, jvmFuture, cpuFuture, memoryFuture, threadsFuture,
         diskFuture, networkFuture, summaryFuture, prometheusFuture
       );
 
@@ -951,7 +1021,7 @@ public class MetricsApplicationService {
       allFutures.get(30, TimeUnit.SECONDS);
 
       // 获取结果
-      FmMetricsResponse fm = this.getFmMetrics();
+      FmMetricsResponse fm = fmFuture.get();
       JvmMetricsResponse jvm = jvmFuture.get();
       CpuMetricsResponse cpu = cpuFuture.get();
       MemoryMetricsResponse memory = memoryFuture.get();
