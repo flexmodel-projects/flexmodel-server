@@ -84,7 +84,7 @@
     </dependency>
     <dependency>
       <groupId>tech.wetech.flexmodel</groupId>
-      <artifactId>flexmodel-core</artifactId>
+      <artifactId>flexmodel-quarkus</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

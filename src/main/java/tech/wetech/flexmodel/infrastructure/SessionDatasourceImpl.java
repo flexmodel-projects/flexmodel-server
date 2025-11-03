@@ -123,6 +123,7 @@ public class SessionDatasourceImpl implements SessionDatasource {
   public DataSource buildJdbcDataSource(Database database) {
     HikariDataSource dataSource = new HikariDataSource();
     dataSource.setMaxLifetime(30000); // 30s
+    dataSource.setMaximumPoolSize(100);
     dataSource.setJdbcUrl(getContent(database.getUrl()));
     dataSource.setUsername(getContent(database.getUsername()));
     dataSource.setPassword(getContent(database.getPassword()));

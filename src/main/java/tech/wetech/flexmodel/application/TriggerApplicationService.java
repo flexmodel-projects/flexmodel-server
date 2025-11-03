@@ -3,6 +3,7 @@ package tech.wetech.flexmodel.application;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import tech.wetech.flexmodel.application.dto.PageDTO;
@@ -82,6 +83,7 @@ public class TriggerApplicationService {
     return null;
   }
 
+  @Transactional
   public Trigger create(Trigger trigger) {
     TriggerConfig triggerConfig = JsonUtils.getInstance().convertValue(trigger.getConfig(), TriggerConfig.class);
     trigger.setJobGroup(getJobGroup(trigger, triggerConfig));
@@ -101,6 +103,7 @@ public class TriggerApplicationService {
     return trigger;
   }
 
+  @Transactional
   public Trigger update(Trigger req) {
     Trigger record = triggerService.findById(req.getId());
     if (record == null) {

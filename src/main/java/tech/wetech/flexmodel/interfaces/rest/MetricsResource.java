@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.interfaces.rest;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -37,7 +38,7 @@ public class MetricsResource {
 
   @GET
   @Path("/fm")
-  public FmMetricsResponse getFmMetrics() {
+  public Uni<FmMetricsResponse> getFmMetrics() {
     return metricsApplicationService.getFmMetrics();
   }
 

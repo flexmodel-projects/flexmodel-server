@@ -15,7 +15,6 @@ import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
 import tech.wetech.flexmodel.session.SessionFactory;
-import tech.wetech.flexmodel.session.SessionManager;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
 import tech.wetech.flexmodel.sql.JdbcDataSourceProvider;
 
@@ -75,15 +74,6 @@ public class SessionConfig {
     // 添加数据审计监听器
     sf.getEventPublisher().addListener(auditDataEventListener);
     return sf;
-  }
-
-  /**
-   * 配置通用的SessionManager
-   */
-  @Produces
-  @ApplicationScoped
-  public SessionManager sessionManager(SessionFactory sessionFactory) {
-    return new SessionManager(sessionFactory);
   }
 
 }

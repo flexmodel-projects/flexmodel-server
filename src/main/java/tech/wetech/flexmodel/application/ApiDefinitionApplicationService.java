@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.application.dto.ApiDefinitionTreeDTO;
 import tech.wetech.flexmodel.application.dto.GenerateAPIsDTO;
@@ -78,6 +79,7 @@ public class ApiDefinitionApplicationService {
     apiDefinitionService.delete(id);
   }
 
+  @Transactional
   public void generateAPIs(GenerateAPIsDTO dto) {
     List<String> generateAPIs = dto.getGenerateAPIs();
     try (Session session = sessionFactory.createSession(dto.getDatasourceName())) {
