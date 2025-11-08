@@ -48,85 +48,93 @@ public class TriggerDataChangedEventListener implements EventListener {
 
   @Override
   public void onPreChange(PreChangeEvent event) {
-    String groupName = event.getSchemaName() + "_" + event.getModelName();
-    // 最多支持触发100个事件
-    List<Trigger> triggers = triggerService.find(
-      Expressions.field(Trigger::getJobGroup).eq(groupName)
-        .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
+    try {
+      String groupName = event.getSchemaName() + "_" + event.getModelName();
+      // 最多支持触发100个事件
+      List<Trigger> triggers = triggerService.find(
+        Expressions.field(Trigger::getJobGroup).eq(groupName)
+          .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
 
-    for (Trigger trigger : triggers) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> config = (Map<String, Object>) trigger.getConfig();
-      String triggerTiming = (String) config.get("triggerTiming");
-      if (triggerTiming.equals("before")) {
+      for (Trigger trigger : triggers) {
         @SuppressWarnings("unchecked")
-        List<String> mutationTypes = (List<String>) config.get("mutationTypes");
-        for (String mutationType : mutationTypes) {
-          String eventType = beforeMutationTypeMap.get(mutationType);
-          if (eventType.equals(event.getEventType())) {
-            log.info("触发前置定时任务: triggerId={}, eventType={}, schemaName={}, modelName={}",
-              trigger.getId(), eventType, event.getSchemaName(), event.getModelName());
+        Map<String, Object> config = (Map<String, Object>) trigger.getConfig();
+        String triggerTiming = (String) config.get("triggerTiming");
+        if (triggerTiming.equals("before")) {
+          @SuppressWarnings("unchecked")
+          List<String> mutationTypes = (List<String>) config.get("mutationTypes");
+          for (String mutationType : mutationTypes) {
+            String eventType = beforeMutationTypeMap.get(mutationType);
+            if (eventType.equals(event.getEventType())) {
+              log.info("触发前置定时任务: triggerId={}, eventType={}, schemaName={}, modelName={}",
+                trigger.getId(), eventType, event.getSchemaName(), event.getModelName());
 
-            // 记录事件触发日志
-            String logId = recordEventTriggerLog(trigger, event, "PRE_CHANGE", mutationType);
+              // 记录事件触发日志
+              String logId = recordEventTriggerLog(trigger, event, "PRE_CHANGE", mutationType);
 
-            // 构建启动流程参数
-            StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
-            startProcessParam.setTenantId(SessionContextHolder.getTenantId());
-            startProcessParam.setUserId(SessionContextHolder.getUserId());
-            startProcessParam.setFlowModuleId(trigger.getJobId());
-            @SuppressWarnings("unchecked")
-            Map<String, Object> variables = event.getNewData();
-            startProcessParam.setVariables(variables);
-            startProcessParam.setLogId(logId);
-            startProcessParam.setStartTime(System.currentTimeMillis());
+              // 构建启动流程参数
+              StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
+              startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+              startProcessParam.setUserId(SessionContextHolder.getUserId());
+              startProcessParam.setFlowModuleId(trigger.getJobId());
+              @SuppressWarnings("unchecked")
+              Map<String, Object> variables = event.getNewData();
+              startProcessParam.setVariables(variables);
+              startProcessParam.setLogId(logId);
+              startProcessParam.setStartTime(System.currentTimeMillis());
 
-            eventBus.send("flow.start", startProcessParam);
+              eventBus.send("flow.start", startProcessParam);
+            }
           }
         }
       }
+    } catch (Exception e) {
+      log.error("处理前置数据变更事件异常", e);
     }
   }
 
   @Override
   public void onChanged(ChangedEvent event) {
-    String groupName = event.getSchemaName() + "_" + event.getModelName();
-    // 最多支持触发100个事件
-    List<Trigger> triggers = triggerService.find(
-      Expressions.field(Trigger::getJobGroup).eq(groupName)
-        .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
+    try {
+      String groupName = event.getSchemaName() + "_" + event.getModelName();
+      // 最多支持触发100个事件
+      List<Trigger> triggers = triggerService.find(
+        Expressions.field(Trigger::getJobGroup).eq(groupName)
+          .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
 
-    for (Trigger trigger : triggers) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> config = (Map<String, Object>) trigger.getConfig();
-      String triggerTiming = (String) config.get("triggerTiming");
-      if (triggerTiming.equals("after")) {
+      for (Trigger trigger : triggers) {
         @SuppressWarnings("unchecked")
-        List<String> mutationTypes = (List<String>) config.get("mutationTypes");
-        for (String mutationType : mutationTypes) {
-          String eventType = afterMutationTypeMap.get(mutationType);
-          if (eventType.equals(event.getEventType())) {
-            log.info("触发后置定时任务: triggerId={}, eventType={}, schemaName={}, modelName={}",
-              trigger.getId(), eventType, event.getSchemaName(), event.getModelName());
+        Map<String, Object> config = (Map<String, Object>) trigger.getConfig();
+        String triggerTiming = (String) config.get("triggerTiming");
+        if (triggerTiming.equals("after")) {
+          @SuppressWarnings("unchecked")
+          List<String> mutationTypes = (List<String>) config.get("mutationTypes");
+          for (String mutationType : mutationTypes) {
+            String eventType = afterMutationTypeMap.get(mutationType);
+            if (eventType.equals(event.getEventType())) {
+              log.info("触发后置定时任务: triggerId={}, eventType={}, schemaName={}, modelName={}",
+                trigger.getId(), eventType, event.getSchemaName(), event.getModelName());
 
-            // 记录事件触发日志
-            String logId = recordEventTriggerLog(trigger, event, "POST_CHANGE", mutationType);
+              // 记录事件触发日志
+              String logId = recordEventTriggerLog(trigger, event, "POST_CHANGE", mutationType);
 
-            // 构建启动流程参数
-            StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
-            startProcessParam.setTenantId(SessionContextHolder.getTenantId());
-            startProcessParam.setUserId(SessionContextHolder.getUserId());
-            startProcessParam.setFlowModuleId(trigger.getJobId());
-            startProcessParam.setLogId(logId);
-            startProcessParam.setStartTime(System.currentTimeMillis());
+              // 构建启动流程参数
+              StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
+              startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+              startProcessParam.setUserId(SessionContextHolder.getUserId());
+              startProcessParam.setFlowModuleId(trigger.getJobId());
+              startProcessParam.setLogId(logId);
+              startProcessParam.setStartTime(System.currentTimeMillis());
 
-            @SuppressWarnings("unchecked")
-            Map<String, Object> variables = JsonUtils.getInstance().convertValue(event.getNewData(), Map.class);
-            startProcessParam.setVariables(variables);
-            eventBus.send("flow.start", startProcessParam);
+              @SuppressWarnings("unchecked")
+              Map<String, Object> variables = JsonUtils.getInstance().convertValue(event.getNewData(), Map.class);
+              startProcessParam.setVariables(variables);
+              eventBus.send("flow.start", startProcessParam);
+            }
           }
         }
       }
+    } catch (Exception e) {
+      log.error("处理后置数据变更事件异常", e);
     }
   }
 
