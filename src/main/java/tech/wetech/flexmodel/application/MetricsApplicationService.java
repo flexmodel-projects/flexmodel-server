@@ -1,7 +1,5 @@
 package tech.wetech.flexmodel.application;
 
-import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.infrastructure.Infrastructure;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +29,6 @@ import java.net.NetworkInterface;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 import java.text.DecimalFormat;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -65,113 +62,66 @@ public class MetricsApplicationService {
   @Inject
   JobExecutionLogService jobExecutionLogService;
 
-  public Uni<FmMetricsResponse> getFmMetrics() {
+  public FmMetricsResponse getFmMetrics() {
     try {
       String tenantId = SessionContextHolder.getTenantId();
 
-      // 将同步调用封装为 Uni，并交给默认线程池执行以实现并发
-      Uni<List<ApiDefinition>> defUni = Uni.createFrom().item(() -> tenantId != null ? apiDefinitionService.findList(tenantId) : apiDefinitionService.findAll())
-        .runSubscriptionOn(Infrastructure.getDefaultExecutor());
+      apiDefinitionService.findList(tenantId);
 
-      Uni<List<Datasource>> dsUni = Uni.createFrom().item(() -> datasourceService.findAll())
-        .runSubscriptionOn(Infrastructure.getDefaultExecutor());
+      List<ApiDefinition> definitions = tenantId != null ? apiDefinitionService.findList(tenantId) : apiDefinitionService.findAll();
+      List<Datasource> datasources = datasourceService.findAll();
+      int modelCount = 0;
+      for (Datasource datasource : datasources) {
+        List<SchemaObject> list = modelService.findAll(datasource.getName());
+        if (list != null) {
+          modelCount += list.size();
+        }
+      }
+      long reqLogCount = apiLogService.count(TRUE);
+      long flowDefCount = flowDefService.count(Expressions.field(FlowDefinition::getIsDeleted).eq(false));
+      long flowInsCount = flowInstanceService.count(TRUE);
+      long triggerCount = triggerService.count(TRUE);
+      long jobSuccessCount = jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("SUCCESS"));
+      long jobFailureCount = jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("FAILED"));
 
-      // model count: 对每个 datasource 顺序计算模型数量，但整体与其它查询并行
-      Uni<Integer> modelCountUni = dsUni.onItem().transformToUni(dsList ->
-        Uni.createFrom().item(() -> {
-          int mc = 0;
-          for (Datasource datasource : dsList) {
-            List<SchemaObject> list = modelService.findAll(datasource.getName());
-            if (list != null) {
-              mc += list.size();
-            }
-          }
-          return mc;
-        }).runSubscriptionOn(Infrastructure.getDefaultExecutor())
-      );
+      int queryCount = 0;
+      int mutationCount = 0;
+      int subscribeCount = 0;
 
-      Uni<Integer> reqLogUni = Uni.createFrom().item(() -> (int) apiLogService.count(TRUE))
-        .runSubscriptionOn(Infrastructure.getDefaultExecutor());
-
-      Uni<Integer> flowDefCountUni = Uni.createFrom().item(() -> (int) flowDefService.count(Expressions.field(FlowDefinition::getIsDeleted).eq(false)))
-        .runSubscriptionOn(Infrastructure.getDefaultExecutor());
-
-      Uni<Integer> flowInsCountUni = Uni.createFrom().item(() -> (int) flowInstanceService.count(TRUE))
-        .runSubscriptionOn(Infrastructure.getDefaultExecutor());
-
-      Uni<Integer> triggerCountUni = Uni.createFrom().item(() -> (int) triggerService.count(TRUE))
-        .runSubscriptionOn(Infrastructure.getDefaultExecutor());
-
-      Uni<Integer> jobSuccessCountUni = Uni.createFrom().item(() -> (int) jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("SUCCESS")))
-        .runSubscriptionOn(Infrastructure.getDefaultExecutor());
-
-      Uni<Integer> jobFailureCountUni = Uni.createFrom().item(() -> (int) jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("FAILED")))
-        .runSubscriptionOn(Infrastructure.getDefaultExecutor());
-
-      // 合并所有 Uni，并在结果上构建最终响应
-
-      // 阻塞等待最终结果（短超时）
-      return Uni.combine().all().unis(
-        defUni, dsUni, modelCountUni, reqLogUni,
-        flowDefCountUni, flowInsCountUni, triggerCountUni,
-        jobSuccessCountUni, jobFailureCountUni
-      ).asTuple().map(tuple -> {
-        try {
-          List<ApiDefinition> defList = tuple.getItem1();
-          List<Datasource> dsList = tuple.getItem2();
-          int modelCount = tuple.getItem3();
-          int reqLogCount = tuple.getItem4();
-          int flowDefCount = tuple.getItem5();
-          int flowInsCount = tuple.getItem6();
-          int triggerCount = tuple.getItem7();
-          int jobSuccessCount = tuple.getItem8();
-          int jobFailureCount = tuple.getItem9();
-
-          int queryCount = 0;
-          int mutationCount = 0;
-          int subscribeCount = 0;
-
-          if (defList != null) {
-            for (ApiDefinition apiDefinition : defList) {
-              if (apiDefinition.getMeta() instanceof Map<?, ?> metaMap) {
-                if (metaMap.get("execution") instanceof Map<?, ?> executionMap) {
-                  if (executionMap.get("query") instanceof String gql) {
-                    if (gql.startsWith("query")) {
-                      queryCount++;
-                    } else if (gql.startsWith("mutation")) {
-                      mutationCount++;
-                    } else if (gql.startsWith("subscription")) {
-                      subscribeCount++;
-                    }
-                  }
-                }
+      for (ApiDefinition apiDefinition : definitions) {
+        if (apiDefinition.getMeta() instanceof Map<?, ?> metaMap) {
+          if (metaMap.get("execution") instanceof Map<?, ?> executionMap) {
+            if (executionMap.get("query") instanceof String gql) {
+              if (gql.startsWith("query")) {
+                queryCount++;
+              } else if (gql.startsWith("mutation")) {
+                mutationCount++;
+              } else if (gql.startsWith("subscription")) {
+                subscribeCount++;
               }
             }
           }
-
-          return FmMetricsResponse.builder()
-            .queryCount(queryCount)
-            .mutationCount(mutationCount)
-            .subscribeCount(subscribeCount)
-            .dataSourceCount(dsList == null ? 0 : dsList.size())
-            .customApiCount(defList == null ? 0 : defList.size())
-            .requestCount(reqLogCount)
-            .flowDefCount(flowDefCount)
-            .flowExecCount(flowInsCount)
-            .modelCount(modelCount)
-            .triggerTotalCount(triggerCount)
-            .jobSuccessCount(jobSuccessCount)
-            .jobFailureCount(jobFailureCount)
-            .build();
-        } catch (Exception ex) {
-          log.error("构建 fm metrics 结果时出错", ex);
-          return FmMetricsResponse.builder().build();
         }
-      });
+      }
+
+      return FmMetricsResponse.builder()
+        .queryCount(queryCount)
+        .mutationCount(mutationCount)
+        .subscribeCount(subscribeCount)
+        .dataSourceCount(datasources.size())
+        .customApiCount(definitions.size())
+        .requestCount((int) reqLogCount)
+        .flowDefCount((int) flowDefCount)
+        .flowExecCount((int) flowInsCount)
+        .modelCount(modelCount)
+        .triggerTotalCount((int) triggerCount)
+        .jobSuccessCount((int) jobSuccessCount)
+        .jobFailureCount((int) jobFailureCount)
+        .build();
 
     } catch (Exception e) {
       log.error("get api fm metrics error", e);
-      return Uni.createFrom().failure(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -1002,7 +952,7 @@ public class MetricsApplicationService {
       allFutures.get(30, TimeUnit.SECONDS);
 
       // 获取结果
-      FmMetricsResponse fm = this.getFmMetrics().await().atMost(Duration.ofSeconds(15));
+      FmMetricsResponse fm = this.getFmMetrics();
       JvmMetricsResponse jvm = jvmFuture.get();
       CpuMetricsResponse cpu = cpuFuture.get();
       MemoryMetricsResponse memory = memoryFuture.get();

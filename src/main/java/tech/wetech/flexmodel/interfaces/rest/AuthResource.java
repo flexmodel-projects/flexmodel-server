@@ -34,9 +34,9 @@ public class AuthResource {
   public Response login(LoginRequest req) {
     User user = authApplicationService.login(req.username, req.password);
     // 签发 accessToken
-    String accessToken = JwtUtil.sign(user.getId(), Duration.ofMinutes(5));
+    String accessToken = JwtUtil.sign(user.getId(), Duration.ofDays(7));
     // 签发 refreshToken
-    String refreshToken = JwtUtil.sign(user.getId(), Duration.ofDays(7));
+    String refreshToken = JwtUtil.sign(user.getId(), Duration.ofDays(30));
 
     NewCookie cookie = new NewCookie
       .Builder("refreshToken")
