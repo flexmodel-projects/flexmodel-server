@@ -19,6 +19,7 @@ import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.schedule.JobExecutionLogService;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
 import tech.wetech.flexmodel.model.SchemaObject;
+import tech.wetech.flexmodel.quarkus.session.SessionManaged;
 import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.shared.SessionContextHolder;
 
@@ -43,6 +44,7 @@ import static tech.wetech.flexmodel.query.Expressions.TRUE;
  */
 @Slf4j
 @ApplicationScoped
+@SessionManaged
 public class MetricsApplicationService {
 
   private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
