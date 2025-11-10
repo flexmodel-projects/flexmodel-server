@@ -27,8 +27,10 @@ public class ApiDefinitionTreeDTO extends ApiDefinition {
     this.setMethod(apiDefinition.getMethod());
     this.setPath(apiDefinition.getPath());
     this.setMeta(apiDefinition.getMeta());
-    this.setCreatedAt(apiDefinition.getCreatedAt());
     this.setEnabled(apiDefinition.getEnabled());
+    this.setCreatedBy(apiDefinition.getCreatedBy());
+    this.setUpdatedBy(apiDefinition.getUpdatedBy());
+    this.setCreatedAt(apiDefinition.getCreatedAt());
     this.setUpdatedAt(apiDefinition.getUpdatedAt());
   }
 
