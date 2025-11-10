@@ -200,17 +200,17 @@
       "modelName": "f_api_definition",
       "values": [
         {
-          "createdAt": "2024-07-13T23:21:09",
+          "created_at": "2024-07-13T23:21:09",
           "meta": {},
           "name": "【示例】学生接口",
-          "updatedAt": "2024-07-13T23:21:09",
+          "updated_at": "2024-07-13T23:21:09",
           "id": "01J2PAY0XJV4MHW0TDNEMSG03C",
           "type": "FOLDER",
           "tenant_id": "dev_test"
         },
         {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:10",
+          "parent_id": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "created_at": "2024-07-13T23:21:10",
           "meta": {
             "auth": false,
             "execution": {
@@ -225,15 +225,15 @@
           },
           "name": "查询班级列表",
           "path": "/dev_test/Classes/list",
-          "updatedAt": "2024-07-13T23:21:10",
+          "updated_at": "2024-07-13T23:21:10",
           "id": "01J2PAY1M8T1R8HM979P4ASM9A",
           "method": "GET",
           "type": "API",
           "tenant_id": "dev_test"
         },
         {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:10",
+          "parent_id": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "created_at": "2024-07-13T23:21:10",
           "meta": {
             "auth": false,
             "identityProvider": "demo",
@@ -250,15 +250,15 @@
           },
           "name": "查询单个班级",
           "path": "/dev_test/Classes/{id}",
-          "updatedAt": "2024-07-13T23:21:10",
+          "updated_at": "2024-07-13T23:21:10",
           "id": "01J2PAY1X3ZN529SQTKB8TG1Q5",
           "method": "GET",
           "type": "API",
           "tenant_id": "dev_test"
         },
         {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:11",
+          "parent_id": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "created_at": "2024-07-13T23:21:11",
           "meta": {
             "auth": false,
             "execution": {
@@ -268,15 +268,15 @@
           },
           "name": "创建班级",
           "path": "/dev_test/Classes",
-          "updatedAt": "2024-07-13T23:21:11",
+          "updated_at": "2024-07-13T23:21:11",
           "id": "01J2PAY2F3VK71GXV6BWXYEA5P",
           "method": "POST",
           "type": "API",
           "tenant_id": "dev_test"
         },
         {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:11",
+          "parent_id": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "created_at": "2024-07-13T23:21:11",
           "meta": {
             "auth": false,
             "execution": {
@@ -286,15 +286,15 @@
           },
           "name": "更新班级",
           "path": "/dev_test/Classes/{id}",
-          "updatedAt": "2024-07-13T23:21:11",
+          "updated_at": "2024-07-13T23:21:11",
           "id": "01J2PAY2RJ79JYB2GJP5K0AW5F",
           "method": "PUT",
           "type": "API",
           "tenant_id": "dev_test"
         },
         {
-          "parentId": "01J2PAY0XJV4MHW0TDNEMSG03C",
-          "createdAt": "2024-07-13T23:21:12",
+          "parent_id": "01J2PAY0XJV4MHW0TDNEMSG03C",
+          "created_at": "2024-07-13T23:21:12",
           "meta": {
             "auth": false,
             "execution": {
@@ -304,7 +304,7 @@
           },
           "name": "删除班级",
           "path": "/dev_test/Classes/{id}",
-          "updatedAt": "2024-07-13T23:21:12",
+          "updated_at": "2024-07-13T23:21:12",
           "id": "01J2PAY3W18T1BQJ5H5D8STGYT",
           "method": "DELETE",
           "type": "API",
@@ -317,11 +317,13 @@
       "values": [
         {
           "name": "demo",
-          "type": "oidc",
-          "issuer": "http://localhost/issuer",
-          "clientId": "test_client_id",
-          "clientSecret": "test_client_secret",
-          "tenant_id": "dev_test"
+          "tenant_id": "dev_test",
+          "provider": {
+            "type": "oidc",
+            "issuer": "http://localhost/issuer",
+            "client_id": "test_client_id",
+            "client_secret": "test_client_secret"
+          }
         }
       ]
     },
