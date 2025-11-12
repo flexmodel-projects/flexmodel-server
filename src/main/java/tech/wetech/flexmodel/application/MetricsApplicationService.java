@@ -65,9 +65,6 @@ public class MetricsApplicationService {
   public FmMetricsResponse getFmMetrics() {
     try {
       String tenantId = SessionContextHolder.getTenantId();
-
-      apiDefinitionService.findList(tenantId);
-
       List<ApiDefinition> definitions = tenantId != null ? apiDefinitionService.findList(tenantId) : apiDefinitionService.findAll();
       List<Datasource> datasources = datasourceService.findAll();
       int modelCount = 0;
@@ -917,7 +914,13 @@ public class MetricsApplicationService {
   public AllMetricsResponse getAllMetrics() {
     long startTime = System.currentTimeMillis();
     try {
+      String tenantId = SessionContextHolder.getTenantId();
       // 并行获取所有指标
+      CompletableFuture<FmMetricsResponse> fmFuture = CompletableFuture.supplyAsync(()->{
+        SessionContextHolder.setTenantId(tenantId);
+        return getFmMetrics();
+      });
+
       CompletableFuture<JvmMetricsResponse> jvmFuture =
         CompletableFuture.supplyAsync(this::getJvmMetrics);
 
@@ -944,7 +947,7 @@ public class MetricsApplicationService {
 
       // 等待所有任务完成，设置超时时间为30秒
       CompletableFuture<Void> allFutures = CompletableFuture.allOf(
-        jvmFuture, cpuFuture, memoryFuture, threadsFuture,
+        fmFuture, jvmFuture, cpuFuture, memoryFuture, threadsFuture,
         diskFuture, networkFuture, summaryFuture, prometheusFuture
       );
 
@@ -952,7 +955,7 @@ public class MetricsApplicationService {
       allFutures.get(30, TimeUnit.SECONDS);
 
       // 获取结果
-      FmMetricsResponse fm = this.getFmMetrics();
+      FmMetricsResponse fm = fmFuture.get();
       JvmMetricsResponse jvm = jvmFuture.get();
       CpuMetricsResponse cpu = cpuFuture.get();
       MemoryMetricsResponse memory = memoryFuture.get();
