@@ -84,6 +84,7 @@ public class ApiDefinitionService {
     return apiDefinitionHistoryRepository.findById(historyId);
   }
 
+  @CacheInvalidateAll(cacheName = "apiDefinitionList")
   public ApiDefinitionHistory restoreApiDefinition(String historyId) {
     ApiDefinitionHistory apiDefinitionHistory = apiDefinitionHistoryRepository.findById(historyId);
     if (apiDefinitionHistory != null) {
