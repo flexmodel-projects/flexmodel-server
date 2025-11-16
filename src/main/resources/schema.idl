@@ -58,6 +58,24 @@ model f_api_definition {
   @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("API定义")
 }
+model f_api_definition_history {
+  id : String @id @default(uuid()),
+  api_definition_id: String @length("100"),
+  name : String @length("255"),
+  parent_id? : String @length("255"),
+  type : ApiType,
+  method? : String @length("255"),
+  path? : String @length("255"),
+  meta? : JSON,
+  enabled : Boolean @comment("是否开启") @default("true"),
+  tenant_id?: String @comment("业务方标识"),
+  created_by?: String @comment("创建人"),
+  updated_by?: String @comment("更新人"),
+  created_at?: DateTime @default(now()) @comment("创建时间"),
+  updated_at?: DateTime @default(now()) @comment("更新时间"),
+  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @comment("API定义")
+}
 model f_api_request_log {
   id : String @id @default(uuid()),
   url : String @length("2000") @comment("请求地址"),

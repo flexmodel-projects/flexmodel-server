@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.infrastructure;
+package tech.wetech.flexmodel.application.consumer;
 
 import io.quarkus.vertx.ConsumeEvent;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,7 +15,7 @@ import tech.wetech.flexmodel.shared.SessionContextHolder;
  */
 @Slf4j
 @ApplicationScoped
-public class TriggerFlowConsumer {
+public class TriggerFlowEventConsumer {
 
   @Inject
   FlowApplicationService flowApplicationService;

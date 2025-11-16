@@ -9,6 +9,7 @@ import tech.wetech.flexmodel.application.dto.GenerateAPIsDTO;
 import tech.wetech.flexmodel.codegen.GenerationContext;
 import tech.wetech.flexmodel.codegen.ModelClass;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
+import tech.wetech.flexmodel.codegen.entity.ApiDefinitionHistory;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.model.EntityDefinition;
@@ -53,6 +54,16 @@ public class ApiDefinitionApplicationService {
       treeDTO.setChildren(getChildren(treeDTO, list));
     }
     return root;
+  }
+
+  /**
+   * 查询API定义历史
+   *
+   * @param appDefinitionId
+   * @return
+   */
+  public List<ApiDefinitionHistory> findApiDefinitionHistories(String appDefinitionId) {
+    return apiDefinitionService.findApiDefinitionHistories(appDefinitionId);
   }
 
   private List<ApiDefinitionTreeDTO> getChildren(ApiDefinitionTreeDTO treeDTO, List<ApiDefinition> list) {
@@ -113,5 +124,15 @@ public class ApiDefinitionApplicationService {
 
   public ApiDefinition findApiDefinition(String id) {
     return apiDefinitionService.findApiDefinition(id);
+  }
+
+  public ApiDefinitionHistory restoreApiDefinition(String historyId) {
+    ApiDefinitionHistory apiDefinitionHistory = apiDefinitionService.findApiDefinitionHistory(historyId);
+    if (apiDefinitionHistory != null) {
+      ApiDefinition apiDefinition = JsonUtils.convertValue(apiDefinitionHistory, ApiDefinition.class);
+      apiDefinition.setId(apiDefinitionHistory.getApiDefinitionId());
+      apiDefinitionService.update(apiDefinition);
+    }
+    return apiDefinitionHistory;
   }
 }

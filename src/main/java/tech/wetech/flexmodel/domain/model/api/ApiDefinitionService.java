@@ -2,9 +2,11 @@ package tech.wetech.flexmodel.domain.model.api;
 
 import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheResult;
+import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
+import tech.wetech.flexmodel.codegen.entity.ApiDefinitionHistory;
 import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.List;
@@ -18,6 +20,12 @@ public class ApiDefinitionService {
   @Inject
   ApiDefinitionRepository apiDefinitionRepository;
 
+  @Inject
+  ApiDefinitionHistoryRepository apiDefinitionHistoryRepository;
+
+  @Inject
+  EventBus eventBus;
+
   @CacheResult(cacheName = "apiDefinitionList")
   public List<ApiDefinition> findList(String tenantId) {
     return apiDefinitionRepository.findByTenantId(tenantId);
@@ -29,12 +37,22 @@ public class ApiDefinitionService {
     return apiDefinitionRepository.findAll();
   }
 
+  public List<ApiDefinitionHistory> findApiDefinitionHistories(String apiDefinitionId) {
+    return apiDefinitionHistoryRepository.findByApiDefinitionId(apiDefinitionId);
+  }
+
+  public ApiDefinitionHistory saveApiDefinitionHistory(ApiDefinitionHistory apiDefinitionHistory) {
+    return apiDefinitionHistoryRepository.save(apiDefinitionHistory);
+  }
+
   @CacheInvalidateAll(cacheName = "apiDefinitionList")
   public ApiDefinition create(ApiDefinition apiDefinition) {
     if (apiDefinition.getName() == null || apiDefinition.getName().isEmpty()) {
       throw new ApiDefinitionException("API name must not be null");
     }
-    return apiDefinitionRepository.save(apiDefinition);
+    ApiDefinition definition = apiDefinitionRepository.save(apiDefinition);
+    eventBus.publish("api.changed", new ApiDefinitionChangedEvent(definition));
+    return definition;
   }
 
   @CacheInvalidateAll(cacheName = "apiDefinitionList")
@@ -46,7 +64,9 @@ public class ApiDefinitionService {
     apiDefinition.setCreatedAt(older.getCreatedAt());
     apiDefinition.setEnabled(older.getEnabled());
     ApiRateLimiterHolder.removeApiRateLimiter(apiDefinition.getMethod() + ":" + apiDefinition.getPath());
-    return apiDefinitionRepository.save(apiDefinition);
+    ApiDefinition definition = apiDefinitionRepository.save(apiDefinition);
+    eventBus.publish("api.changed", new ApiDefinitionChangedEvent(definition));
+    return definition;
   }
 
   @CacheInvalidateAll(cacheName = "apiDefinitionList")
@@ -57,5 +77,9 @@ public class ApiDefinitionService {
 
   public ApiDefinition findApiDefinition(String id) {
     return apiDefinitionRepository.findById(id);
+  }
+
+  public ApiDefinitionHistory findApiDefinitionHistory(String historyId) {
+    return apiDefinitionHistoryRepository.findById(historyId);
   }
 }

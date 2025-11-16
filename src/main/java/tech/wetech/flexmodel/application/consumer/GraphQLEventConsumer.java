@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.infrastructure;
+package tech.wetech.flexmodel.application.consumer;
 
 import io.quarkus.vertx.ConsumeEvent;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -29,7 +29,7 @@ public class GraphQLEventConsumer {
   @Inject
   DatasourceService datasourceService;
   @Inject
-  GraphQLManger graphQLApplicationService;
+  GraphQLManger graphQLManger;
 
   @ConsumeEvent("graphql.refresh")
   public void consume(GraphQLRefreshEvent event) {
@@ -39,8 +39,8 @@ public class GraphQLEventConsumer {
     Map<String, List<String>> dsMap = datasourceList.stream()
       .collect(groupingBy(Datasource::getTenantId, mapping(Datasource::getName, toList())));
     FlexmodelGraphQL fg = new FlexmodelGraphQL();
-    graphQLApplicationService.addDefaultGraphQL(fg.generateGraphQLWithSchemaObject(sf, sf.getSchemaNames()));
-    dsMap.forEach((tenantId, datasourceNames) -> graphQLApplicationService.addGraphQL(tenantId, fg.generateGraphQLWithSchemaObject(sf, datasourceNames)));
+    graphQLManger.addDefaultGraphQL(fg.generateGraphQLWithSchemaObject(sf, sf.getSchemaNames()));
+    dsMap.forEach((tenantId, datasourceNames) -> graphQLManger.addGraphQL(tenantId, fg.generateGraphQLWithSchemaObject(sf, datasourceNames)));
     log.info("========== GraphQL init successful in {} ms!", System.currentTimeMillis() - beginTime);
   }
 

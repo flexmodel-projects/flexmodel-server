@@ -15,6 +15,7 @@ import tech.wetech.flexmodel.application.ApiDefinitionApplicationService;
 import tech.wetech.flexmodel.application.dto.ApiDefinitionTreeDTO;
 import tech.wetech.flexmodel.application.dto.GenerateAPIsDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
+import tech.wetech.flexmodel.codegen.entity.ApiDefinitionHistory;
 
 import java.util.List;
 
@@ -45,6 +46,19 @@ public class ApiDefinitionResource {
   @GET
   public List<ApiDefinitionTreeDTO> findApiList() {
     return apiDesignApplicationService.findApiDefinitionTree();
+  }
+
+  @GET
+  @Path("/{apiDefinitionId}/histories")
+  public List<ApiDefinitionHistory> findApiDefinitionHistories(@PathParam("apiDefinitionId") String apiDefinitionId) {
+    return apiDesignApplicationService.findApiDefinitionHistories(apiDefinitionId);
+  }
+
+  @Operation(summary = "恢复接口定义")
+  @POST
+  @Path("/{apiDefinitionId}/histories/{historyId}/restore")
+  public ApiDefinitionHistory restoreApiDefinition( @PathParam("historyId") String historyId, @PathParam("apiDefinitionId") String apiDefinitionId) {
+    return apiDesignApplicationService.restoreApiDefinition(historyId);
   }
 
   @Operation(summary = "创建接口定义")
@@ -124,7 +138,7 @@ public class ApiDefinitionResource {
   public ApiDefinition updateIgnoreNull(@PathParam("id") String id, ApiDefinition request) {
     request.setId(id);
     ApiDefinition record = apiDesignApplicationService.findApiDefinition(id);
-    if(request.getName()!=null) {
+    if (request.getName() != null) {
       record.setName(request.getName());
     }
     apiDesignApplicationService.updateApiDefinition(record);
