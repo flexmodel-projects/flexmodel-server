@@ -6,8 +6,10 @@ import graphql.schema.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.JsonUtils;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
+import tech.wetech.flexmodel.domain.model.api.ApiDefinitionMeta;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
@@ -97,107 +99,23 @@ public class DocumentApplicationService {
   private Map<String, Object> buildSchemas(List<ApiDefinition> apis) {
     Map<String, Object> definitions = new HashMap<>();
     String tenantId = SessionContextHolder.getTenantId();
-    GraphQLSchema graphQLSchema = graphQLManager.getGraphQL(tenantId).getGraphQLSchema();
+
     for (ApiDefinition api : apis) {
       try {
         if (api.getType() != ApiType.API) {
           continue;
         }
         String sanitizeName = getSanitizeName(api);
-        Map<String, Object> meta = (Map<String, Object>) api.getMeta();
-        if (meta == null || meta.isEmpty()) {
+        ApiDefinitionMeta meta = JsonUtils.convertValue(api.getMeta(), ApiDefinitionMeta.class);
+        if (meta == null) {
           continue;
         }
-        Map<String, Object> execution = (Map<String, Object>) meta.get("execution");
-        String operationName = (String) execution.get("operationName");
-        String query = (String) execution.get("query");
-        Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
-        Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
-
-        Parser parser = new Parser();
-        Document document = parser.parse(query);
-
-        // 3. 提取变量
-        List<VariableDefinition> variableDefinitions = getVariableDefinitions(document);
-
-        Map<String, Object> requestType = new HashMap<>();
-        Map<String, Object> properties = new HashMap<>();
-        requestType.put("type", "object");
-        requestType.put("properties", properties);
-        for (VariableDefinition variableDefinition : variableDefinitions) {
-          String variableName = variableDefinition.getName();
-          String variableType = variableDefinition.getType().toString();
-          Map<String, Object> propertyMap = new HashMap<>();
-          properties.put(variableName, TYPE_MAPPING.getOrDefault(variableType, Map.of("type", "string")));
-        }
-        definitions.put(sanitizeName + "Request", requestType);
-
-        // 3. 提取返回参数
-        List<Field> returnFields = document.getDefinitions().stream()
-          .filter(def -> def instanceof OperationDefinition)
-          .flatMap(def -> ((OperationDefinition) def).getSelectionSet().getSelections().stream())
-          .filter(selection -> selection instanceof Field)
-          .map(selection -> (Field) selection)
-          .collect(Collectors.toList());
-
-        // 4. 输出返回参数信息
-        for (Field field : returnFields) {
-          GraphQLFieldDefinition fieldDefinition = getGraphQLFieldDefinition(graphQLSchema, field);
-          if (fieldDefinition == null) {
-            continue;
-          }
-          GraphQLType originType = fieldDefinition.getType();
-          boolean isList = false;
-          if (originType instanceof GraphQLNonNull graphQLNonNull) {
-            originType = graphQLNonNull.getOriginalWrappedType();
-          }
-          if (originType instanceof GraphQLList graphQLList) {
-            isList = true;
-            originType = graphQLList.getOriginalWrappedType();
-          }
-          if (originType instanceof GraphQLNonNull graphQLNonNull) {
-            originType = graphQLNonNull.getOriginalWrappedType();
-          }
-
-          Map<String, Object> responseType = new HashMap<>();
-          Map<String, Object> wrapperProperties = new HashMap<>();
-          Map<String, Object> typeProperties = new HashMap<>();
-
-          // 如果有子字段，可以进一步提取
-          SelectionSet selectionSet = field.getSelectionSet();
-          if (selectionSet != null) {
-            List<Field> subFields = selectionSet.getSelections().stream()
-              .filter(selection -> selection instanceof Field)
-              .map(selection -> (Field) selection)
-              .collect(Collectors.toList());
-            for (Field subField : subFields) {
-              if (originType instanceof GraphQLObjectType) {
-                GraphQLObjectType objectType = (GraphQLObjectType) originType;
-                GraphQLFieldDefinition subFieldDefinition = objectType.getFieldDefinition(subField.getName());
-                if (subFieldDefinition != null) {
-                  GraphQLOutputType definitionType = subFieldDefinition.getType();
-                  if (definitionType instanceof GraphQLScalarType graphQLScalarType) {
-                    typeProperties.put(subField.getName(), TYPE_MAPPING.get(graphQLScalarType.getName()));
-                  } else {
-                    log.error("Unkown definitionType: {}, sanitizeName={}", definitionType, sanitizeName);
-                  }
-                }
-              }
-            }
-          }
-
-          Map<String, Object> returnDataTypeMap = new HashMap<>();
-          if (isList) {
-            returnDataTypeMap.put("type", "array");
-            returnDataTypeMap.put("items", Map.of("type", "object", "properties", typeProperties));
-          } else {
-            returnDataTypeMap.put("type", "object");
-            returnDataTypeMap.put("properties", typeProperties);
-          }
-          wrapperProperties.put("data", returnDataTypeMap);
-          responseType.put("type", "object");
-          responseType.put("properties", wrapperProperties);
-          definitions.put(sanitizeName + "Response", responseType);
+        ApiDefinitionMeta.DataMapping dataMapping = meta.getDataMapping();
+        if (meta.getDataMapping() != null) {
+          parseByJsonSchema(meta, definitions, sanitizeName);
+        } else {
+          GraphQLSchema graphQLSchema = graphQLManager.getGraphQL(tenantId).getGraphQLSchema();
+          parseByGrapQLSchema(meta, definitions, sanitizeName, graphQLSchema);
         }
       } catch (Exception e) {
         log.error("Build api doc error: {}", e.getMessage(), e);
@@ -205,6 +123,142 @@ public class DocumentApplicationService {
 
     }
     return definitions;
+  }
+
+  /**
+   * 解析JsonSchema
+   *
+   * @param meta
+   * @param definitions
+   * @param sanitizeName
+   */
+  private void parseByJsonSchema(ApiDefinitionMeta meta, Map<String, Object> definitions, String sanitizeName) {
+    ApiDefinitionMeta.DataMappingIO input = meta.getDataMapping().getInput();
+    if (input != null) {
+      Map<String, Object> requestSchema = normalizeJsonSchema(input != null ? input.getSchema() : null);
+      if (requestSchema != null && !requestSchema.isEmpty()) {
+        definitions.put(sanitizeName + "Request", requestSchema);
+      }
+    }
+    ApiDefinitionMeta.DataMappingIO output = meta.getDataMapping().getOutput();
+    if (output != null) {
+      Map<String, Object> dataSchema = normalizeJsonSchema(output != null ? output.getSchema() : null);
+      if (dataSchema != null && !dataSchema.isEmpty()) {
+        Map<String, Object> responseWrapper = new HashMap<>();
+        responseWrapper.put("type", "object");
+        Map<String, Object> wrapperProps = new HashMap<>();
+        wrapperProps.put("data", dataSchema);
+        responseWrapper.put("properties", wrapperProps);
+        definitions.put(sanitizeName + "Response", responseWrapper);
+      }
+    }
+  }
+
+  /**
+   * 将 JSON Schema 做最小规范化，移除不被 OpenAPI 使用的元数据字段（例如 $schema），
+   * 其余结构（type/properties/required/items 等）保持透传。
+   */
+  private Map<String, Object> normalizeJsonSchema(Map<String, Object> schema) {
+    if (schema == null) {
+      return null;
+    }
+    Map<String, Object> normalized = new HashMap<>(schema);
+    normalized.remove("$schema");
+    return normalized;
+  }
+
+  private void parseByGrapQLSchema(ApiDefinitionMeta meta, Map<String, Object> definitions, String sanitizeName, GraphQLSchema graphQLSchema) {
+    ApiDefinitionMeta.Execution execution = meta.getExecution();
+    String operationName = execution.getOperationName();
+    String query = execution.getQuery();
+    Map<String, Object> variables = execution.getVariables();
+    Map<String, Object> headers = execution.getHeaders();
+
+    Parser parser = new Parser();
+    Document document = parser.parse(query);
+
+    // 3. 提取变量
+    List<VariableDefinition> variableDefinitions = getVariableDefinitions(document);
+
+    Map<String, Object> requestType = new HashMap<>();
+    Map<String, Object> properties = new HashMap<>();
+    requestType.put("type", "object");
+    requestType.put("properties", properties);
+    for (VariableDefinition variableDefinition : variableDefinitions) {
+      String variableName = variableDefinition.getName();
+      String variableType = variableDefinition.getType().toString();
+      Map<String, Object> propertyMap = new HashMap<>();
+      properties.put(variableName, TYPE_MAPPING.getOrDefault(variableType, Map.of("type", "string")));
+    }
+    definitions.put(sanitizeName + "Request", requestType);
+
+    // 3. 提取返回参数
+    List<Field> returnFields = document.getDefinitions().stream()
+      .filter(def -> def instanceof OperationDefinition)
+      .flatMap(def -> ((OperationDefinition) def).getSelectionSet().getSelections().stream())
+      .filter(selection -> selection instanceof Field)
+      .map(selection -> (Field) selection)
+      .collect(Collectors.toList());
+
+    // 4. 输出返回参数信息
+    for (Field field : returnFields) {
+      GraphQLFieldDefinition fieldDefinition = getGraphQLFieldDefinition(graphQLSchema, field);
+      if (fieldDefinition == null) {
+        continue;
+      }
+      GraphQLType originType = fieldDefinition.getType();
+      boolean isList = false;
+      if (originType instanceof GraphQLNonNull graphQLNonNull) {
+        originType = graphQLNonNull.getOriginalWrappedType();
+      }
+      if (originType instanceof GraphQLList graphQLList) {
+        isList = true;
+        originType = graphQLList.getOriginalWrappedType();
+      }
+      if (originType instanceof GraphQLNonNull graphQLNonNull) {
+        originType = graphQLNonNull.getOriginalWrappedType();
+      }
+
+      Map<String, Object> responseType = new HashMap<>();
+      Map<String, Object> wrapperProperties = new HashMap<>();
+      Map<String, Object> typeProperties = new HashMap<>();
+
+      // 如果有子字段，可以进一步提取
+      SelectionSet selectionSet = field.getSelectionSet();
+      if (selectionSet != null) {
+        List<Field> subFields = selectionSet.getSelections().stream()
+          .filter(selection -> selection instanceof Field)
+          .map(selection -> (Field) selection)
+          .collect(Collectors.toList());
+        for (Field subField : subFields) {
+          if (originType instanceof GraphQLObjectType) {
+            GraphQLObjectType objectType = (GraphQLObjectType) originType;
+            GraphQLFieldDefinition subFieldDefinition = objectType.getFieldDefinition(subField.getName());
+            if (subFieldDefinition != null) {
+              GraphQLOutputType definitionType = subFieldDefinition.getType();
+              if (definitionType instanceof GraphQLScalarType graphQLScalarType) {
+                typeProperties.put(subField.getName(), TYPE_MAPPING.get(graphQLScalarType.getName()));
+              } else {
+                log.error("Unkown definitionType: {}, sanitizeName={}", definitionType, sanitizeName);
+              }
+            }
+          }
+        }
+      }
+
+      Map<String, Object> returnDataTypeMap = new HashMap<>();
+      if (isList) {
+        returnDataTypeMap.put("type", "array");
+        returnDataTypeMap.put("items", Map.of("type", "object", "properties", typeProperties));
+      } else {
+        returnDataTypeMap.put("type", "object");
+        returnDataTypeMap.put("properties", typeProperties);
+      }
+      wrapperProperties.put("data", returnDataTypeMap);
+      responseType.put("type", "object");
+      responseType.put("properties", wrapperProperties);
+      definitions.put(sanitizeName + "Response", responseType);
+    }
   }
 
   /**
@@ -448,3 +502,4 @@ public class DocumentApplicationService {
   }
 
 }
+

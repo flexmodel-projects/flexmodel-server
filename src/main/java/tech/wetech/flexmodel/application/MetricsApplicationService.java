@@ -3,11 +3,13 @@ package tech.wetech.flexmodel.application;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.JsonUtils;
 import tech.wetech.flexmodel.application.dto.*;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.codegen.entity.FlowDefinition;
 import tech.wetech.flexmodel.codegen.entity.JobExecutionLog;
+import tech.wetech.flexmodel.domain.model.api.ApiDefinitionMeta;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.domain.model.api.ApiRequestLogService;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
@@ -86,17 +88,19 @@ public class MetricsApplicationService {
       int subscribeCount = 0;
 
       for (ApiDefinition apiDefinition : definitions) {
-        if (apiDefinition.getMeta() instanceof Map<?, ?> metaMap) {
-          if (metaMap.get("execution") instanceof Map<?, ?> executionMap) {
-            if (executionMap.get("query") instanceof String gql) {
-              if (gql.startsWith("query")) {
-                queryCount++;
-              } else if (gql.startsWith("mutation")) {
-                mutationCount++;
-              } else if (gql.startsWith("subscription")) {
-                subscribeCount++;
-              }
-            }
+        if (apiDefinition.getMeta() instanceof Map<?, ?>) {
+          ApiDefinitionMeta meta = JsonUtils.convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
+          ApiDefinitionMeta.Execution execution = meta.getExecution();
+          if(execution == null) {
+            continue;
+          }
+          String query = execution.getQuery();
+          if (query.startsWith("query")) {
+            queryCount++;
+          } else if (query.startsWith("mutation")) {
+            mutationCount++;
+          } else if (query.startsWith("subscription")) {
+            subscribeCount++;
           }
         }
       }

@@ -208,7 +208,7 @@ public class ApiRuntimeApplicationService {
     Settings settings = settingsService.getSettings();
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
-      Map<String, Object> meta = (Map<String, Object>) apiDefinition.getMeta();
+      ApiDefinitionMeta meta = tech.wetech.flexmodel.JsonUtils.convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
       UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + apiDefinition.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
@@ -217,15 +217,16 @@ public class ApiRuntimeApplicationService {
         isMatching = true;
         log.debug("Matched request for api: {}", apiDefinition);
         if (isRateLimiting(routingContext, apiDefinition, meta)) return;
-        boolean isAuth = (boolean) meta.get("auth");
+        boolean isAuth = meta.isAuth();
         if (isAuth) {
-          String identityProvider = (String) meta.get("identityProvider");
+          String identityProvider = meta.getIdentityProvider();
           checkToken(routingContext, identityProvider);
         }
-        Map execution = (Map) meta.get("execution");
-        String operationName = (String) execution.get("operationName");
-        String query = (String) execution.get("query");
-        Map<String, Object> defaultVariables = (Map<String, Object>) execution.get("variables");
+
+        ApiDefinitionMeta.Execution execution = meta.getExecution();
+        String operationName = execution.getOperationName();
+        String query = execution.getQuery();
+        Map<String, Object> defaultVariables = execution.getVariables();
         Map<String, Object> variables = new HashMap<>();
         if (defaultVariables != null) {
           variables.putAll(defaultVariables);
@@ -363,7 +364,7 @@ public class ApiRuntimeApplicationService {
     });
   }
 
-  private boolean isRateLimiting(RoutingContext routingContext, ApiDefinition apiDefinition, Map<String, Object> meta) {
+  private boolean isRateLimiting(RoutingContext routingContext, ApiDefinition apiDefinition, ApiDefinitionMeta meta) {
     try {
       Settings settings = settingsService.getSettings();
       if (settings.getSecurity().isRateLimitingEnabled()) {
@@ -382,13 +383,13 @@ public class ApiRuntimeApplicationService {
           return true;
         }
       }
-      Boolean rateLimitingEnabled = (Boolean) meta.getOrDefault("rateLimitingEnabled", false);
+      boolean rateLimitingEnabled = meta.isRateLimitingEnabled();
       if (rateLimitingEnabled) {
         log.debug("Rate limiting enabled for api: {}", apiDefinition);
         int maxRequestCount = settings.getSecurity().getMaxRequestCount();
         int intervalInSeconds = settings.getSecurity().getIntervalInSeconds();
-        maxRequestCount = (int) meta.get("maxRequestCount");
-        intervalInSeconds = (int) meta.get("intervalInSeconds");
+        maxRequestCount = meta.getMaxRequestCount();
+        intervalInSeconds = meta.getIntervalInSeconds();
         ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(
           apiDefinition.getMethod() + ":" + apiDefinition.getPath(),
           maxRequestCount,
