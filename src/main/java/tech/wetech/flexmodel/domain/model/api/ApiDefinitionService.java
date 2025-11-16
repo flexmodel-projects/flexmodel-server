@@ -5,6 +5,7 @@ import io.quarkus.cache.CacheResult;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.JsonUtils;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinitionHistory;
 import tech.wetech.flexmodel.shared.SessionContextHolder;
@@ -82,4 +83,15 @@ public class ApiDefinitionService {
   public ApiDefinitionHistory findApiDefinitionHistory(String historyId) {
     return apiDefinitionHistoryRepository.findById(historyId);
   }
+
+  public ApiDefinitionHistory restoreApiDefinition(String historyId) {
+    ApiDefinitionHistory apiDefinitionHistory = apiDefinitionHistoryRepository.findById(historyId);
+    if (apiDefinitionHistory != null) {
+      ApiDefinition apiDefinition = JsonUtils.convertValue(apiDefinitionHistory, ApiDefinition.class);
+      apiDefinition.setId(apiDefinitionHistory.getApiDefinitionId());
+      apiDefinitionRepository.save(apiDefinition);
+    }
+    return apiDefinitionHistory;
+  }
+
 }

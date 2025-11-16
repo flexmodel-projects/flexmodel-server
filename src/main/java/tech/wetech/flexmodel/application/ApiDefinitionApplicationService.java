@@ -127,12 +127,6 @@ public class ApiDefinitionApplicationService {
   }
 
   public ApiDefinitionHistory restoreApiDefinition(String historyId) {
-    ApiDefinitionHistory apiDefinitionHistory = apiDefinitionService.findApiDefinitionHistory(historyId);
-    if (apiDefinitionHistory != null) {
-      ApiDefinition apiDefinition = JsonUtils.convertValue(apiDefinitionHistory, ApiDefinition.class);
-      apiDefinition.setId(apiDefinitionHistory.getApiDefinitionId());
-      apiDefinitionService.update(apiDefinition);
-    }
-    return apiDefinitionHistory;
+    return apiDefinitionService.restoreApiDefinition(historyId);
   }
 }

@@ -8,6 +8,9 @@ import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinitionHistory;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionChangedEvent;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
+
+import java.time.LocalDateTime;
 
 /**
  * @author cjbi
@@ -37,7 +40,10 @@ public class ApiDefinitionChangedEventConsumer {
     history.setPath(apiDefinition.getPath());
     history.setMeta(apiDefinition.getMeta());
     history.setEnabled(apiDefinition.getEnabled());
+    history.setCreatedAt(apiDefinition.getCreatedAt());
+    history.setUpdatedAt(LocalDateTime.now());
     history.setCreatedBy(apiDefinition.getCreatedBy());
+    history.setUpdatedBy(SessionContextHolder.getUserId());
     history.setTenantId(apiDefinition.getTenantId());
     history.setMeta(apiDefinition.getMeta());
     history.setEnabled(apiDefinition.getEnabled());
