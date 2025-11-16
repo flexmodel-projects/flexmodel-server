@@ -8,9 +8,7 @@ import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinitionHistory;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionChangedEvent;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
-import tech.wetech.flexmodel.shared.SessionContextHolder;
-
-import java.time.LocalDateTime;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 /**
  * @author cjbi
@@ -26,28 +24,11 @@ public class ApiDefinitionChangedEventConsumer {
   public void consume(ApiDefinitionChangedEvent event) {
     log.info("ApiDefinitionChangedEvent: {}", event);
     ApiDefinition apiDefinition = event.apiDefinition();
-    ApiDefinitionHistory history = buildApiDefinitionHistory(apiDefinition);
+    ApiDefinitionHistory history = JsonUtils.getInstance().convertValue(apiDefinition, ApiDefinitionHistory.class);
+    history.setId(null);
+    history.setApiDefinitionId(apiDefinition.getId());
     apiDefinitionService.saveApiDefinitionHistory(history);
   }
 
-  private ApiDefinitionHistory buildApiDefinitionHistory(ApiDefinition apiDefinition) {
-    ApiDefinitionHistory history = new ApiDefinitionHistory();
-    history.setApiDefinitionId(apiDefinition.getId());
-    history.setName(apiDefinition.getName());
-    history.setParentId(apiDefinition.getParentId());
-    history.setType(apiDefinition.getType());
-    history.setMethod(apiDefinition.getMethod());
-    history.setPath(apiDefinition.getPath());
-    history.setMeta(apiDefinition.getMeta());
-    history.setEnabled(apiDefinition.getEnabled());
-    history.setCreatedAt(apiDefinition.getCreatedAt());
-    history.setUpdatedAt(LocalDateTime.now());
-    history.setCreatedBy(apiDefinition.getCreatedBy());
-    history.setUpdatedBy(SessionContextHolder.getUserId());
-    history.setTenantId(apiDefinition.getTenantId());
-    history.setMeta(apiDefinition.getMeta());
-    history.setEnabled(apiDefinition.getEnabled());
-    return history;
-  }
 
 }
