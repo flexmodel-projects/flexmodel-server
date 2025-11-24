@@ -2,8 +2,7 @@ package tech.wetech.flexmodel.interfaces.rest.json.jackson.mixin;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import tech.wetech.flexmodel.domain.model.idp.provider.GroovyProvider;
-import tech.wetech.flexmodel.domain.model.idp.provider.JsProvider;
+import tech.wetech.flexmodel.domain.model.idp.provider.ScriptProvider;
 import tech.wetech.flexmodel.domain.model.idp.provider.OIDCProvider;
 
 /**
@@ -12,8 +11,7 @@ import tech.wetech.flexmodel.domain.model.idp.provider.OIDCProvider;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
   @JsonSubTypes.Type(value = OIDCProvider.class, name = "oidc"),
-  @JsonSubTypes.Type(value = JsProvider.class, name = "js"),
-  @JsonSubTypes.Type(value = GroovyProvider.class, name = "groovy"),
+  @JsonSubTypes.Type(value = ScriptProvider.class, name = "script"),
 })
 public class IdentityProviderProviderMixIn {
 }

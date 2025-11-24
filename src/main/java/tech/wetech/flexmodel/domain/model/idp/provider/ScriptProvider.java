@@ -15,13 +15,13 @@ import java.util.Map;
 @Getter
 @Setter
 @Slf4j
-public class JsProvider implements Provider {
+public class ScriptProvider implements Provider {
 
   private String script;
 
   @Override
   public String getType() {
-    return "js";
+    return "script";
   }
 
   @Override
