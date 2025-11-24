@@ -32,4 +32,7 @@ public class IdentityProviderApplicationService {
     identityProviderService.delete(id);
   }
 
+  public IdentityProvider find(String identityProvider) {
+    return identityProviderService.find(identityProvider);
+  }
 }

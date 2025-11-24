@@ -11,6 +11,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class ValidateParam {
-  private Map<String, Object> headers;
-  private Map<String, Object> body;
+  private Map<String, Object> query;
+  private Map<String, String> headers;
 }

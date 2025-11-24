@@ -4,6 +4,7 @@ import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
@@ -11,6 +12,7 @@ import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Request;
 import org.slf4j.Logger;
 import tech.wetech.flexmodel.application.consumer.SettingsEventConsumer;
 import tech.wetech.flexmodel.application.dto.LogStatResponse;
@@ -84,6 +86,8 @@ public class ApiRuntimeApplicationService {
 
   @Inject
   FlexmodelConfig config;
+  @Inject
+  Request request;
 
   public PageDTO<ApiRequestLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
     List<ApiRequestLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, isSuccess), current, pageSize);
@@ -479,10 +483,14 @@ public class ApiRuntimeApplicationService {
     }
     Provider provider = JsonUtils.getInstance().convertValue(identityProvider.getProvider(), Provider.class);
     ValidateParam param = new ValidateParam();
-    Map<String, Object> headers = new HashMap<>();
+    Map<String,Object> query = new HashMap<>();
+    MultiMap params = routingContext.request().params();
+    params.forEach(p -> query.put(p.getKey(), p.getValue()));
+
+    Map<String, String> headers = new HashMap<>();
     routingContext.request().headers().forEach(header -> headers.put(header.getKey(), header.getValue()));
+    param.setQuery(query);
     param.setHeaders(headers);
-    param.setBody(routingContext.body().asJsonObject().getMap());
     ValidateResult result = provider.validate(param);
     if (!result.isSuccess()) {
       sendAuthFail(routingContext, result);

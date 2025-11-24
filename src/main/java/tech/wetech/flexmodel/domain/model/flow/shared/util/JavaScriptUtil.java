@@ -67,7 +67,7 @@ public class JavaScriptUtil {
       LOGGER.warn("execute: expression is empty");
       return null;
     }
-
+    long startTime = System.currentTimeMillis();
     try {
       ScriptEngine engine = ENGINE_THREAD_LOCAL.get();
       ScriptContext scriptContext = engine.getContext();
@@ -90,6 +90,10 @@ public class JavaScriptUtil {
     } catch (Exception e) {
       LOGGER.error("execute Exception.||expression={}||dataMap={}", expression, dataMap, e);
       throw e;
+    }finally {
+      if(LOGGER.isDebugEnabled()) {
+        LOGGER.debug("execute javascript, time: {} ms", System.currentTimeMillis() - startTime);
+      }
     }
   }
 

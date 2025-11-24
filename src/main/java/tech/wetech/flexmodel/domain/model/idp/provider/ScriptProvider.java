@@ -29,7 +29,7 @@ public class ScriptProvider implements Provider {
     String vScript = script + "\nauthenticate(request);";
     try {
       Map<String, Object> dataMap = new HashMap<>();
-      dataMap.put("request", param);
+      dataMap.put("request", JsonUtils.getInstance().convertValue(param, Map.class));
       Object result = JavaScriptUtil.execute(vScript, dataMap);
       return JsonUtils.getInstance().convertValue(result, ValidateResult.class);
     } catch (Exception e) {

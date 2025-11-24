@@ -9,9 +9,9 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
+import tech.wetech.flexmodel.application.SettingsApplicationService;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
-import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.io.ByteArrayInputStream;
@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 public class LogFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
   @Inject
-  SettingsService settingsService;
+  SettingsApplicationService settingsApplicationService;
 
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -54,7 +54,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
       execTime = -1L;
     }
     CompletableFuture.runAsync(() -> {
-      Settings settings = settingsService.getSettings();
+      Settings settings = settingsApplicationService.getSettings();
       boolean isLoggingEnabled = settings.getLog().isConsoleLoggingEnabled();
       boolean isLogRequest = requestContext.getUriInfo().getPath().startsWith("/f/logs");
       if (isLoggingEnabled && !isLogRequest) {

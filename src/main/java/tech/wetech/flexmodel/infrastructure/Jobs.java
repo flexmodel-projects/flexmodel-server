@@ -2,10 +2,10 @@ package tech.wetech.flexmodel.infrastructure;
 
 import io.quarkus.scheduler.Scheduled;
 import jakarta.inject.Inject;
+import tech.wetech.flexmodel.application.SettingsApplicationService;
 import tech.wetech.flexmodel.domain.model.api.ApiRequestLogService;
 import tech.wetech.flexmodel.domain.model.schedule.JobExecutionLogService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
-import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 
 /**
  * @author cjbi
@@ -13,7 +13,7 @@ import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 public class Jobs {
 
   @Inject
-  SettingsService settingsService;
+  SettingsApplicationService settingsApplicationService;
   @Inject
   ApiRequestLogService apiLogService;
   @Inject
@@ -21,7 +21,7 @@ public class Jobs {
 
   @Scheduled(cron = "0 0 1 * * ?")
   void purgeOldLogs() {
-    Settings settings = settingsService.getSettings();
+    Settings settings = settingsApplicationService.getSettings();
     apiLogService.purgeOldLogs(settings.getLog().getMaxDays());
     jobExecutionLogService.purgeOldLogs(settings.getLog().getMaxDays());
   }
