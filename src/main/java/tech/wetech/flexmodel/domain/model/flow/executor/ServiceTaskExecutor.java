@@ -40,9 +40,6 @@ public class ServiceTaskExecutor extends ElementExecutor {
   @Inject
   SessionFactory sessionFactory;
 
-  @Inject
-  SessionDatasource sessionDatasource;
-
   @Override
   protected void doExecute(RuntimeContext runtimeContext) throws ProcessException {
     NodeInstanceBO nodeInstance = runtimeContext.getCurrentNodeInstance();
@@ -151,11 +148,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
    */
   private Object executeAction(String subType, String script, NodeInstanceBO nodeInstance, Map<String, Object> contextData) throws Exception {
     switch (subType.toLowerCase()) {
-      case "groovy" -> {
-        LOGGER.debug("executeScript: executing Groovy script.||script={}", script);
-        return GroovyUtil.execute(script, contextData);
-      }
-      case "js" -> {
+      case "script" -> {
         LOGGER.debug("executeScript: executing JavaScript script.||script={}", script);
         return JavaScriptUtil.execute(script, contextData);
       }
