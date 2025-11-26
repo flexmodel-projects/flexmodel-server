@@ -83,9 +83,8 @@ public class TriggerResource {
   @Operation(summary = "立即执行触发器")
   @POST
   @Path("/{id}/execute")
-  public void executeNow(@PathParam("id") String id) {
-    // TODO: 实现立即执行逻辑
-    scheduleApplicationService.executeNow(id);
+  public Trigger executeNow(@PathParam("id") String id) {
+    return scheduleApplicationService.executeNow(id);
   }
 
 }

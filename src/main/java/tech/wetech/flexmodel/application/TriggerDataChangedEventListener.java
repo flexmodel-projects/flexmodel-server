@@ -79,7 +79,7 @@ public class TriggerDataChangedEventListener implements EventListener {
               @SuppressWarnings("unchecked")
               Map<String, Object> variables = event.getNewData();
               startProcessParam.setVariables(variables);
-              startProcessParam.setLogId(logId);
+              startProcessParam.setEventId(logId);
               startProcessParam.setStartTime(System.currentTimeMillis());
 
               eventBus.send("flow.start", startProcessParam);
@@ -122,7 +122,7 @@ public class TriggerDataChangedEventListener implements EventListener {
               startProcessParam.setTenantId(SessionContextHolder.getTenantId());
               startProcessParam.setUserId(SessionContextHolder.getUserId());
               startProcessParam.setFlowModuleId(trigger.getJobId());
-              startProcessParam.setLogId(logId);
+              startProcessParam.setEventId(logId);
               startProcessParam.setStartTime(System.currentTimeMillis());
 
               @SuppressWarnings("unchecked")

@@ -27,11 +27,20 @@ public class TriggerFlowEventConsumer {
   public void consume(StartProcessParamEvent param) {
     SessionContextHolder.setTenantId(param.getTenantId());
     SessionContextHolder.setUserId(param.getUserId());
-    StartProcessResult result = flowApplicationService.startProcess(param);
-    if (param.getLogId() != null) {
-      jobExecutionLogService.recordJobSuccess(param.getLogId(), result.getVariables(), System.currentTimeMillis() - param.getStartTime());
+    StartProcessResult result = null;
+    try {
+      result = flowApplicationService.startProcess(param);
+      log.info("flow.start.||startProcessParam={}||result={}", param, result);
+    } catch (Exception e) {
+      if (param.getEventId() != null) {
+        jobExecutionLogService.recordJobFailure(param.getEventId(), e.getMessage(), e.getStackTrace(), System.currentTimeMillis() - param.getStartTime());
+      }
+    } finally {
+      if (param.getEventId() != null) {
+        jobExecutionLogService.recordJobSuccess(param.getEventId(), result, System.currentTimeMillis() - param.getStartTime());
+      }
     }
-    log.info("flow.start.||startProcessParam={}||result={}", param, result);
+
   }
 
 }

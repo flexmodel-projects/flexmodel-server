@@ -10,9 +10,11 @@ import tech.wetech.flexmodel.application.dto.TriggerDTO;
 import tech.wetech.flexmodel.application.dto.TriggerPageRequest;
 import tech.wetech.flexmodel.application.job.ScheduledFlowExecutionJob;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
+import tech.wetech.flexmodel.codegen.entity.JobExecutionLog;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 import tech.wetech.flexmodel.domain.model.flow.dto.StartProcessParamEvent;
 import tech.wetech.flexmodel.domain.model.flow.service.FlowDeploymentService;
+import tech.wetech.flexmodel.domain.model.schedule.JobExecutionLogService;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerException;
 import tech.wetech.flexmodel.domain.model.schedule.TriggerService;
 import tech.wetech.flexmodel.domain.model.schedule.config.*;
@@ -40,6 +42,8 @@ public class TriggerApplicationService {
   Scheduler scheduler;
   @Inject
   EventBus eventBus;
+  @Inject
+  JobExecutionLogService jobExecutionLogService;
 
   private TriggerDTO toTriggerDTO(Trigger trigger) {
     if (trigger == null) {
@@ -82,7 +86,7 @@ public class TriggerApplicationService {
     return null;
   }
 
-//  @Transactional
+  //  @Transactional
   public Trigger create(Trigger trigger) {
     TriggerConfig triggerConfig = JsonUtils.getInstance().convertValue(trigger.getConfig(), TriggerConfig.class);
     trigger.setJobGroup(getJobGroup(trigger, triggerConfig));
@@ -102,7 +106,7 @@ public class TriggerApplicationService {
     return trigger;
   }
 
-//  @Transactional
+  //  @Transactional
   public Trigger update(Trigger req) {
     Trigger record = triggerService.findById(req.getId());
     if (record == null) {
@@ -178,7 +182,7 @@ public class TriggerApplicationService {
     return new PageDTO<>(triggers, total);
   }
 
-  public void executeNow(String id) {
+  public Trigger executeNow(String id) {
     try {
       // 查找触发器
       Trigger trigger = triggerService.findById(id);
@@ -194,15 +198,25 @@ public class TriggerApplicationService {
       log.info("开始立即执行触发器: triggerId={}, jobId={}, jobType={}",
         trigger.getId(), trigger.getJobId(), trigger.getJobType());
 
+      String tenantId = SessionContextHolder.getTenantId();
+
       // 构建启动流程参数
       StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
-      startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+      startProcessParam.setTenantId(tenantId);
       startProcessParam.setUserId(SessionContextHolder.getUserId());
       startProcessParam.setFlowModuleId(trigger.getJobId());
       startProcessParam.setVariables(Map.of());
+      startProcessParam.setStartTime(System.currentTimeMillis());
+
+      JobExecutionLog jobExecutionLog = jobExecutionLogService.recordJobStart(trigger.getId(), trigger.getJobId(), trigger.getJobGroup(),
+        trigger.getJobType(), trigger.getName(), trigger.getName(), trigger.getName(), System.currentTimeMillis(),
+        System.currentTimeMillis(), startProcessParam, tenantId);
+
+      startProcessParam.setEventId(jobExecutionLog.getId());
 
       // 直接调用流程应用服务启动流程
       eventBus.send("flow.start", startProcessParam);
+      return trigger;
     } catch (TriggerException e) {
       log.error("立即执行触发器失败: {}", id, e);
       throw e;
