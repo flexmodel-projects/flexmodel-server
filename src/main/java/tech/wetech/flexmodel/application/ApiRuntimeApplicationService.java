@@ -213,13 +213,15 @@ public class ApiRuntimeApplicationService {
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
       ApiDefinitionMeta meta = tech.wetech.flexmodel.JsonUtils.convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
-      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + apiDefinition.getPath());
+      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/" + apiDefinition.getTenantId() + apiDefinition.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiDefinition.getMethod())) {
         // 匹配成功
         isMatching = true;
         log.debug("Matched request for api: {}", apiDefinition);
+        String tenantId = pathParameters.get("tenantId");
+        SessionContextHolder.setTenantId(tenantId);
         if (isRateLimiting(routingContext, apiDefinition, meta)) return;
         boolean isAuth = meta.isAuth();
         if (isAuth) {
@@ -260,7 +262,7 @@ public class ApiRuntimeApplicationService {
 
     // 从设置中的GraphQL端点处理请求
     if (!isMatching) {
-      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + settings.getSecurity().getGraphqlEndpointPath());
+      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{tenantId}" + settings.getSecurity().getGraphqlEndpointPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals("POST")) {
@@ -319,7 +321,6 @@ public class ApiRuntimeApplicationService {
       routingContext.next();
     }
   }
-
 
   private void forwardRequest(String targetUri, HttpServerRequest request) {
     // 解析请求 URL 和目标地址
@@ -483,7 +484,7 @@ public class ApiRuntimeApplicationService {
     }
     Provider provider = JsonUtils.getInstance().convertValue(identityProvider.getProvider(), Provider.class);
     ValidateParam param = new ValidateParam();
-    Map<String,Object> query = new HashMap<>();
+    Map<String, Object> query = new HashMap<>();
     MultiMap params = routingContext.request().params();
     params.forEach(p -> query.put(p.getKey(), p.getValue()));
 

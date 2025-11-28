@@ -225,7 +225,7 @@
             }
           },
           "name": "查询班级列表",
-          "path": "/dev_test/Classes/list",
+          "path": "/Classes/list",
           "id": "01J2PAY1M8T1R8HM979P4ASM9A",
           "method": "GET",
           "type": "API",
@@ -252,7 +252,7 @@
             }
           },
           "name": "查询单个班级",
-          "path": "/dev_test/Classes/{id}",
+          "path": "/Classes/{id}",
           "id": "01J2PAY1X3ZN529SQTKB8TG1Q5",
           "method": "GET",
           "type": "API",
@@ -272,7 +272,7 @@
             }
           },
           "name": "创建班级",
-          "path": "/dev_test/Classes",
+          "path": "/Classes",
           "id": "01J2PAY2F3VK71GXV6BWXYEA5P",
           "method": "POST",
           "type": "API",
@@ -292,7 +292,7 @@
             }
           },
           "name": "更新班级",
-          "path": "/dev_test/Classes/{id}",
+          "path": "/Classes/{id}",
           "id": "01J2PAY2RJ79JYB2GJP5K0AW5F",
           "method": "PUT",
           "type": "API",
@@ -312,7 +312,7 @@
             }
           },
           "name": "删除班级",
-          "path": "/dev_test/Classes/{id}",
+          "path": "/Classes/{id}",
           "id": "01J2PAY3W18T1BQJ5H5D8STGYT",
           "method": "DELETE",
           "type": "API",

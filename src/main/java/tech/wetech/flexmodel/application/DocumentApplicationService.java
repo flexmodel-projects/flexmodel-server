@@ -62,13 +62,13 @@ public class DocumentApplicationService {
     TYPE_MAPPING.put("JSON", Map.of("type", "object"));
   }
 
-  public Map<String, Object> getOpenApi() {
-    List<ApiDefinition> apis = apiDefinitionService.findAll();
+  public Map<String, Object> getOpenApi(String tenantId) {
+    List<ApiDefinition> apis = apiDefinitionService.findList(tenantId);
     Map<String, Object> openAPI = new HashMap<>();
     openAPI.put("openapi", "3.0.3");
     openAPI.put("info", buildInfo());
     openAPI.put("components", buildComponents(apis));
-    openAPI.put("servers", List.of(Map.of("url", config.apiRootPath())));
+    openAPI.put("servers", List.of(Map.of("url", config.apiRootPath() + "/" + tenantId)));
     openAPI.put("schemas", List.of("https", "http"));
     openAPI.put("tags", buildTags(apis));
     openAPI.put("paths", buildPaths(apis));

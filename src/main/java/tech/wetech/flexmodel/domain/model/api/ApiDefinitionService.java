@@ -33,7 +33,6 @@ public class ApiDefinitionService {
 
   @CacheResult(cacheName = "apiDefinitionList")
   public List<ApiDefinition> findAll() {
-    SessionContextHolder.setTenantId(null);
     return apiDefinitionRepository.findAll();
   }
 

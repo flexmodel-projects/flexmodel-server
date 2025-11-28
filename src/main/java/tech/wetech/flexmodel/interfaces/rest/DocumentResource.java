@@ -2,14 +2,12 @@ package tech.wetech.flexmodel.interfaces.rest;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.DocumentApplicationService;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.Map;
 
@@ -27,10 +25,11 @@ public class DocumentResource {
 
   @Operation(summary = "获取接口文档")
   @GET
-  @Path("/openapi.json")
+  @Path("/{tenantId}/openapi.json")
   @PermitAll
-  public Map<String, Object> getOpenApi() {
-    return documentApplicationService.getOpenApi();
+  public Map<String, Object> getOpenApi(@PathParam("tenantId") String tenantId) {
+    SessionContextHolder.setTenantId(tenantId);
+    return documentApplicationService.getOpenApi(tenantId);
   }
 
 }

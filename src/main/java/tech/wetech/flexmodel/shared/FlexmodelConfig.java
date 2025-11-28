@@ -19,7 +19,7 @@ public interface FlexmodelConfig extends Serializable {
   @WithUnnamedKey("system")
   Map<String, DatasourceConfig> datasources();
 
-  @WithDefault("/api/v1")
+  @WithDefault("${quarkus.rest.path}")
   String apiRootPath();
 
   interface DatasourceConfig {

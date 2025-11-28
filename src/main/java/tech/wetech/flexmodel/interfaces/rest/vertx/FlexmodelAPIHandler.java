@@ -10,9 +10,13 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
+import tech.wetech.flexmodel.application.AuthApplicationService;
 import tech.wetech.flexmodel.application.dto.GraphQLRefreshEvent;
+import tech.wetech.flexmodel.codegen.entity.Tenant;
+import tech.wetech.flexmodel.domain.model.auth.TenantService;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
 
+import java.util.List;
 
 
 /**
@@ -28,13 +32,18 @@ public class FlexmodelAPIHandler {
   EventBus eventBus;
   @Inject
   FlexmodelConfig config;
+  @Inject
+  AuthApplicationService authApplicationService;
 
   void handle(@Observes StartupEvent startupEvent, Router router) {
-    // 处理所有以"/api/v1"开头的请求
-    router.route()
-      .handler(BodyHandler.create())
-      .pathRegex(config.apiRootPath() + "/.*")
-      .blockingHandler(apiRuntimeApplicationService::accept);
+
+    List<Tenant> tenants = authApplicationService.findTenants();
+    for (Tenant tenant : tenants) {
+      router.route()
+        .pathRegex(config.apiRootPath() + "/" + tenant.getId() + "/.*")
+        .handler(BodyHandler.create())
+        .blockingHandler(apiRuntimeApplicationService::accept);
+    }
 
     router.route().pathRegex("/f/datasources.*")
       .handler(handle -> {
