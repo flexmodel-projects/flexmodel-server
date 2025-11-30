@@ -13,10 +13,10 @@ class CreateApiDefinitionGenerator extends ApiDefinitionGenerator {
   @Override
   void write(PrintWriter out, GenerationContext context) {
     def schemaName = context.getModelClass().getSchemaName()
-    def modelName = context.getModelClass().getModelName()
+    def modelName = context.getModelClass().getName()
     out.println "mutation MyCreateMutation("
     context.getModelClass().getBasicFields().each {
-      out.print "\$${it.variableName}: ${typeMapping[((TypedField) it.originalField).type]}"
+      out.print "\$${it.variableName}: ${typeMapping[((TypedField) it.original).type]}"
       if (context.modelClass.basicFields.last() != it) {
         out.print(", ")
       }
@@ -43,16 +43,16 @@ class CreateApiDefinitionGenerator extends ApiDefinitionGenerator {
   ApiDefinition createApiDefinition(GenerationContext context) {
     ApiDefinition apiDefinition = new ApiDefinition()
     apiDefinition.setParentId(context.getVariable("apiParentId"))
-    apiDefinition.setName("Create ${context.getModelClass().getModelName()} record")
+    apiDefinition.setName("Create ${context.getModelClass().getName()} record")
     apiDefinition.setType("API" as ApiType)
     apiDefinition.setMethod("POST")
-    apiDefinition.setPath("/${context.getModelClass().getModelName()}")
+    apiDefinition.setPath("/${context.getModelClass().getName()}")
 
     Map<String, Object> meta = [
       "auth"     : false,
       "execution": [
         "operationName": "MyCreateMutation",
-        "query"        : generate(context)
+        "query"        : generate(context).getFirst()
       ]
     ]
     apiDefinition.setMeta(meta)

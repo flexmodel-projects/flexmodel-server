@@ -13,10 +13,10 @@ class UpdateApiDefinitionGenerator extends ApiDefinitionGenerator {
   @Override
   void write(PrintWriter out, GenerationContext context) {
     def schemaName = context.getModelClass().getSchemaName()
-    def modelName = context.getModelClass().getModelName()
+    def modelName = context.getModelClass().getName()
     out.println "mutation MyUpdateMutation("
     context.getModelClass().getBasicFields().each {
-      out.print "\$${it.variableName}: ${typeMapping[((TypedField) it.originalField).type]}, "
+      out.print "\$${it.variableName}: ${typeMapping[((TypedField) it.original).type]}, "
     }
     out.println "\$id: ID!) {"
     out.println "  ${schemaName}_update_${modelName}_by_id("
@@ -43,16 +43,16 @@ class UpdateApiDefinitionGenerator extends ApiDefinitionGenerator {
   ApiDefinition createApiDefinition(GenerationContext context) {
     ApiDefinition apiDefinition = new ApiDefinition()
     apiDefinition.setParentId(context.getVariable("apiParentId"))
-    apiDefinition.setName("Update ${context.getModelClass().getModelName()} record")
+    apiDefinition.setName("Update ${context.getModelClass().getName()} record")
     apiDefinition.setType("API" as ApiType)
     apiDefinition.setMethod("PUT")
-    apiDefinition.setPath("/${context.getModelClass().getModelName()}/{id}")
+    apiDefinition.setPath("/${context.getModelClass().getName()}/{id}")
 
     Map<String, Object> meta = [
       "auth"     : false,
       "execution": [
         "operationName": "MyUpdateMutation",
-        "query"        : generate(context),
+        "query"        : generate(context).getFirst(),
       ]
     ]
     apiDefinition.setMeta(meta)

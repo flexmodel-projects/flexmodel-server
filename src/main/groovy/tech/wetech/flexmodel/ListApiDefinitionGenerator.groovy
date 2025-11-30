@@ -12,7 +12,7 @@ class ListApiDefinitionGenerator extends ApiDefinitionGenerator {
   @Override
   void write(PrintWriter out, GenerationContext context) {
     def schemaName = context.getModelClass().getSchemaName()
-    def modelName = context.getModelClass().getModelName()
+    def modelName = context.getModelClass().getName()
     out.println "query MyListQuery( \$where: ${schemaName}_${modelName}_bool_exp) {"
     out.println "  ${schemaName}_list_${modelName}(where: \$where) {"
     context.getModelClass().getAllFields().each {
@@ -28,16 +28,16 @@ class ListApiDefinitionGenerator extends ApiDefinitionGenerator {
   ApiDefinition createApiDefinition(GenerationContext context) {
     ApiDefinition apiDefinition = new ApiDefinition()
     apiDefinition.setParentId(context.getVariable("apiParentId"))
-    apiDefinition.setName("Fetch ${context.getModelClass().getModelName()} records list")
+    apiDefinition.setName("Fetch ${context.getModelClass().getName()} records list")
     apiDefinition.setType("API" as ApiType)
     apiDefinition.setMethod("GET")
-    apiDefinition.setPath("/${context.getModelClass().getModelName()}/list")
+    apiDefinition.setPath("/${context.getModelClass().getName()}/list")
 
     Map<String, Object> meta = [
       "auth"     : false,
       "execution": [
         "operationName": "MyListQuery",
-        "query"        : generate(context),
+        "query"        : generate(context).getFirst(),
       ]
     ]
     apiDefinition.setMeta(meta)

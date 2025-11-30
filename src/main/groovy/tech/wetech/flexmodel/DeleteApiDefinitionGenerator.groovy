@@ -12,7 +12,7 @@ class DeleteApiDefinitionGenerator extends ApiDefinitionGenerator {
   @Override
   void write(PrintWriter out, GenerationContext context) {
     def schemaName = context.getModelClass().getSchemaName()
-    def modelName = context.getModelClass().getModelName()
+    def modelName = context.getModelClass().getName()
     out.println "mutation MyDeleteMutation( \$id: ID!) {"
     out.println "  ${schemaName}_delete_${modelName}_by_id(where: {id: {_eq: \$id}}) {"
     out.println "    affected_rows"
@@ -24,16 +24,16 @@ class DeleteApiDefinitionGenerator extends ApiDefinitionGenerator {
   ApiDefinition createApiDefinition(GenerationContext context) {
     ApiDefinition apiDefinition = new ApiDefinition()
     apiDefinition.setParentId(context.getVariable("apiParentId"))
-    apiDefinition.setName("Delete ${context.getModelClass().getModelName()} record")
+    apiDefinition.setName("Delete ${context.getModelClass().getName()} record")
     apiDefinition.setType("API" as ApiType)
     apiDefinition.setMethod("DELETE")
-    apiDefinition.setPath("/${context.getModelClass().getModelName()}/{id}")
+    apiDefinition.setPath("/${context.getModelClass().getName()}/{id}")
 
     Map<String, Object> meta = [
       "auth"     : false,
       "execution": [
         "operationName": "MyDeleteMutation",
-        "query"        : generate(context),
+        "query"        : generate(context).getFirst(),
       ]
     ]
     apiDefinition.setMeta(meta)

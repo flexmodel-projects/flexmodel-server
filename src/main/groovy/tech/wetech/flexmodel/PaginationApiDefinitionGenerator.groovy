@@ -12,7 +12,7 @@ class PaginationApiDefinitionGenerator extends ApiDefinitionGenerator {
   @Override
   void write(PrintWriter out, GenerationContext context) {
     def schemaName = context.getModelClass().getSchemaName()
-    def modelName = context.getModelClass().getModelName()
+    def modelName = context.getModelClass().getName()
     out.println "query MyPaginationQuery( \$where: ${schemaName}_${modelName}_bool_exp, \$page: Int = 1, \$size: Int = 10) {"
     out.println "  list: ${schemaName}_list_${modelName}(where: \$where, page: \$page, size: \$size) {"
     context.getModelClass().getAllFields().each {
@@ -31,16 +31,16 @@ class PaginationApiDefinitionGenerator extends ApiDefinitionGenerator {
   ApiDefinition createApiDefinition(GenerationContext context) {
     ApiDefinition apiDefinition = new ApiDefinition()
     apiDefinition.setParentId(context.getVariable("apiParentId"))
-    apiDefinition.setName("Fetch a paginated ${context.getModelClass().getModelName()} records list")
+    apiDefinition.setName("Fetch a paginated ${context.getModelClass().getName()} records list")
     apiDefinition.setType("API" as ApiType)
     apiDefinition.setMethod("GET")
-    apiDefinition.setPath("/${context.getModelClass().getModelName()}/page")
+    apiDefinition.setPath("/${context.getModelClass().getName()}/page")
 
     Map<String, Object> meta = [
       "auth"     : false,
       "execution": [
         "operationName": "MyPaginationQuery",
-        "query"        : generate(context),
+        "query"        : generate(context).getFirst(),
       ]
     ]
     apiDefinition.setMeta(meta)
