@@ -1,11 +1,13 @@
 package tech.wetech.flexmodel.application;
 
+import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import tech.wetech.flexmodel.*;
 import tech.wetech.flexmodel.application.dto.ApiDefinitionTreeDTO;
 import tech.wetech.flexmodel.application.dto.GenerateAPIsDTO;
+import tech.wetech.flexmodel.application.dto.GraphQLRefreshEvent;
 import tech.wetech.flexmodel.codegen.GenerationContext;
 import tech.wetech.flexmodel.codegen.ModelClass;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
@@ -34,15 +36,19 @@ public class ApiDefinitionApplicationService {
   @Inject
   SessionFactory sessionFactory;
 
+  @Inject
+  EventBus eventBus;
+
   private static final Map<String, ApiDefinitionGenerator> templateMap = new HashMap<>();
 
   static {
     templateMap.put("list", new ListApiDefinitionGenerator());
+    templateMap.put("pagination", new PaginationApiDefinitionGenerator());
     templateMap.put("view", new ViewApiDefinitionGenerator());
     templateMap.put("create", new CreateApiDefinitionGenerator());
     templateMap.put("update", new UpdateApiDefinitionGenerator());
     templateMap.put("delete", new DeleteApiDefinitionGenerator());
-    templateMap.put("pagination", new PaginationApiDefinitionGenerator());
+
   }
 
   public List<ApiDefinitionTreeDTO> findApiDefinitionTree() {
@@ -109,6 +115,7 @@ public class ApiDefinitionApplicationService {
         }
       }
     }
+    eventBus.publish("graphql.refresh", new GraphQLRefreshEvent());
   }
 
   private ApiDefinition createApiFolder(GenerateAPIsDTO dto) {

@@ -8,6 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.GraphQLManger;
+import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class GraphQLResource {
   @Operation(summary = "执行GraphQL查询")
   @POST
   public ExecutionResult execute(GraphQLRequest request) {
-    return graphQLApplicationService.execute(request.operationName(), request.query(), request.variables());
+    return graphQLApplicationService.execute(SessionContextHolder.getTenantId(), request.operationName(), request.query(), request.variables());
   }
 
   public record GraphQLRequest(@Schema(description = "操作名称") String operationName,

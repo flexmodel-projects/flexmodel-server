@@ -3,6 +3,7 @@ package tech.wetech.flexmodel
 import tech.wetech.flexmodel.codegen.GenerationContext
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition
 import tech.wetech.flexmodel.codegen.enumeration.ApiType
+import tech.wetech.flexmodel.model.field.TypedField
 
 /**
  * @author cjbi
@@ -13,11 +14,13 @@ class ViewApiDefinitionGenerator extends ApiDefinitionGenerator {
   void write(PrintWriter out, GenerationContext context) {
     def schemaName = context.getModelClass().getSchemaName()
     def modelName = context.getModelClass().getName()
-    out.println "query MyViewQuery( \$where: ${schemaName}_${modelName}_bool_exp) {"
-    out.println "  ${schemaName}_find_one_${modelName}(where: \$where) {"
+    def id = context.getVariable("idFieldOfPath")
+    def idField = context.getModelClass().getField(id as String)
+    out.println "query MyViewQuery( \$${id}: ${typeMapping[((TypedField) idField.original).type]} ) {"
+    out.println "  ${schemaName}_find_one_${modelName}(where: {${id}: {_eq: \$${id}} }) {"
     context.getModelClass().getAllFields().each {
       if(!it.isRelationField()) {
-        out.println "    ${it.variableName}"
+        out.println "    ${it.name}"
       }
     }
     out.println "  }"

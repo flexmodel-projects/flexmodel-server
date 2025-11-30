@@ -13,6 +13,7 @@ import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.graphql.FlexmodelGraphQL;
 import tech.wetech.flexmodel.session.SessionFactory;
+import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class GraphQLEventConsumer {
     log.info("Received graphql message");
     List<Datasource> datasourceList = datasourceService.findAll();
     Map<String, List<String>> dsMap = datasourceList.stream()
+      .filter(f -> f.getTenantId() != null)
       .collect(groupingBy(Datasource::getTenantId, mapping(Datasource::getName, toList())));
     FlexmodelGraphQL fg = new FlexmodelGraphQL();
     graphQLManger.addDefaultGraphQL(fg.generateGraphQLWithSchemaObject(sf, sf.getSchemaNames()));

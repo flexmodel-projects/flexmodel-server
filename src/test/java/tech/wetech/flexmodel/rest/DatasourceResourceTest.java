@@ -52,8 +52,6 @@ class DatasourceResourceTest {
       model testImportModelsStudent {
         id : Long @id @default(autoIncrement()),
         student_name? : String @length("255"),
-        gender? : UserGender,
-        interest? : user_interest[],
         age? : Int,
         class_id? : Long,
         @index(name: "IDX_STUDENT_NAME",unique: "false", fields: [student_name]),

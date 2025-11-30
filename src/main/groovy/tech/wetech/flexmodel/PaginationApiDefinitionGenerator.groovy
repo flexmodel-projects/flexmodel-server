@@ -17,7 +17,7 @@ class PaginationApiDefinitionGenerator extends ApiDefinitionGenerator {
     out.println "  list: ${schemaName}_list_${modelName}(where: \$where, page: \$page, size: \$size) {"
     context.getModelClass().getAllFields().each {
       if(!it.isRelationField()) {
-        out.println "    ${it.variableName}"
+        out.println "    ${it.name}"
       }
     }
     out.println "  }"

@@ -4,8 +4,9 @@ import com.cronutils.utils.StringUtils;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
+import graphql.execution.values.InputInterceptor;
+import graphql.schema.GraphQLScalarType;
 import jakarta.enterprise.context.ApplicationScoped;
-import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +37,7 @@ public class GraphQLManger {
     tenantGraphqlMap.put(tenantId, graphQL);
   }
 
-  public ExecutionResult execute(String operationName, String query, Map<String, Object> variables) {
-    String tenantId = SessionContextHolder.getTenantId();
+  public ExecutionResult execute(String tenantId, String operationName, String query, Map<String, Object> variables) {
     GraphQL graphQL = getGraphQL(tenantId);
     if (variables == null) {
       variables = new HashMap<>();
@@ -46,6 +46,17 @@ public class GraphQLManger {
       .operationName(operationName)
       .query(query)
       .variables(variables)
+      .graphQLContext(Map.of(InputInterceptor.class, (InputInterceptor) (value, graphQLType, graphqlContext, locale) -> {
+        boolean isNumeric = graphQLType instanceof GraphQLScalarType graphQLScalarType
+                            && (graphQLScalarType.getName().equals("Int") ||
+                                graphQLScalarType.getName().equals("Float") ||
+                                graphQLScalarType.getName().equals("Long")
+                            );
+        if (isNumeric && value instanceof String valueString) {
+          return Double.valueOf(valueString);
+        }
+        return value;
+      }))
       .build();
     return graphQL.execute(executionInput);
   }

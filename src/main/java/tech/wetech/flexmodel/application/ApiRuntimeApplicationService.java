@@ -3,6 +3,10 @@ package tech.wetech.flexmodel.application;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
+import graphql.GraphQLContext;
+import graphql.execution.values.InputInterceptor;
+import graphql.schema.GraphQLInputType;
+import graphql.schema.GraphQLScalarType;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
@@ -186,21 +190,6 @@ public class ApiRuntimeApplicationService {
     return condition;
   }
 
-
-  public ExecutionResult execute(String operationName, String query, Map<String, Object> variables) {
-    String tenantId = SessionContextHolder.getTenantId();
-    GraphQL graphQL = graphQLManger.getGraphQL(tenantId);
-    if (variables == null) {
-      variables = new HashMap<>();
-    }
-    ExecutionInput executionInput = newExecutionInput()
-      .operationName(operationName)
-      .query(query)
-      .variables(variables)
-      .build();
-    return graphQL.execute(executionInput);
-  }
-
   @SuppressWarnings("all")
   public void accept(RoutingContext routingContext) {
     log(routingContext, () -> doRequest(routingContext));
@@ -213,7 +202,7 @@ public class ApiRuntimeApplicationService {
     Settings settings = settingsService.getSettings();
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
-      if( apiDefinition.getType() != ApiType.API) {
+      if (apiDefinition.getType() != ApiType.API) {
         continue;
       }
       ApiDefinitionMeta meta = JsonUtils.getInstance().convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
@@ -237,12 +226,14 @@ public class ApiRuntimeApplicationService {
         String operationName = execution.getOperationName();
         String query = execution.getQuery();
         Map<String, Object> defaultVariables = execution.getVariables();
-        Map<String, Object> variables = new HashMap<>();
+        Map<String, Object> variables = new HashMap<>(pathParameters);
         if (defaultVariables != null) {
           variables.putAll(defaultVariables);
         }
         if (method.equals("GET")) {
-          ExecutionResult result = execute(operationName, query, defaultVariables);
+          MultiMap queryParams = routingContext.queryParams();
+          queryParams.forEach((key, value) -> variables.put(key, value));
+          ExecutionResult result = graphQLManger.execute(tenantId, operationName, query, variables);
           routingContext.response()
             .putHeader("Content-Type", "application/json")
             .end(JsonUtils.getInstance().stringify(result));
@@ -255,7 +246,7 @@ public class ApiRuntimeApplicationService {
           }
           // 路径参数
           variables.putAll(pathParameters);
-          ExecutionResult result = execute(operationName, query, variables);
+          ExecutionResult result = graphQLManger.execute(tenantId, operationName, query, variables);
           routingContext.response()
             .putHeader("Content-Type", "application/json")
             .end(JsonUtils.getInstance().stringify(result));
@@ -297,7 +288,7 @@ public class ApiRuntimeApplicationService {
             -1);
           return;
         }
-        ExecutionResult result = execute((String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
+        ExecutionResult result = graphQLManger.execute(SessionContextHolder.getTenantId(), (String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
         routingContext.response()
           .putHeader("Content-Type", "application/json")
           .end(JsonUtils.getInstance().stringify(result));
