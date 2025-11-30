@@ -7,6 +7,8 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.SQLiteTestResource;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -16,7 +18,7 @@ import static org.hamcrest.Matchers.notNullValue;
  */
 @QuarkusTest
 @QuarkusTestResource(SQLiteTestResource.class)
-public class FlexmodelAPIResourceTest {
+public class FlexmodelRestAPIResourceTest {
 
   @Test
   void testGET() {
@@ -25,7 +27,7 @@ public class FlexmodelAPIResourceTest {
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
-      .get("/api/v1/dev_test/Classes/list")
+      .get("/api/dev_test/Classes/list")
       .then()
       .statusCode(200)
       .body("size()", greaterThanOrEqualTo(1))
@@ -34,7 +36,7 @@ public class FlexmodelAPIResourceTest {
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
-      .get("/api/v1/dev_test/Classes/1")
+      .get("/api/dev_test/Classes/1")
       .then()
       .statusCode(200)
       .body("data.dev_test_find_one_Classes.classCode", notNullValue());
@@ -54,7 +56,7 @@ public class FlexmodelAPIResourceTest {
             "className": "三年级2班"
           }
         """)
-      .post("/api/v1/dev_test/Classes")
+      .post("/api/dev_test/Classes")
       .then()
       .statusCode(200)
       .body("data", notNullValue());
@@ -74,7 +76,7 @@ public class FlexmodelAPIResourceTest {
             "className": "五年级3班"
           }
         """)
-      .put("/api/v1/dev_test/Classes/1")
+      .put("/api/dev_test/Classes/1")
       .then()
       .statusCode(200)
       .body("data", notNullValue());
@@ -86,7 +88,7 @@ public class FlexmodelAPIResourceTest {
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
-      .delete("/api/v1/dev_test/Classes/1")
+      .delete("/api/dev_test/Classes/1")
       .then()
       .statusCode(200)
       .body("data", notNullValue());
@@ -105,10 +107,51 @@ public class FlexmodelAPIResourceTest {
             "query": "query { dev_test_list_Classes { classCode className } }"
           }
         """)
-      .post("/api/v1/graphql")
+      .post("/api/dev_test/graphql")
       .then()
       .statusCode(200)
       .body("data.dev_test_list_Classes", notNullValue());
+  }
+
+  @Test
+  void testGenerate() {
+
+    String script = """
+      model testGenerateStudent {
+        id : Long @id @default(autoIncrement()),
+        student_name? : String @length("255"),
+        gender? : UserGender,
+        interest? : user_interest[],
+        age? : Int,
+        class_id? : Long,
+        @index(name: "IDX_STUDENT_NAME",unique: "false", fields: [student_name]),
+        @index(name:"IDX_CLASS_ID", unique: "false", fields: [class_id]),
+        @comment("学生")
+      }
+      """;
+    Map<String, Object> body = Map.of("type", "IDL", "script", script);
+
+    given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
+      .when()
+      .contentType(ContentType.JSON)
+      .body(body)
+      .post(Resources.ROOT_PATH + "/datasources/system/import")
+      .then()
+      .statusCode(204);
+
+    given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
+      .header("X-Tenant-Id", "system")
+      .when()
+      .contentType(ContentType.JSON)
+      .body("""
+         {"datasourceName":"system","modelName":"testGenerateStudent","apiFolder":"testGenerateStudent","idFieldOfPath":"id","generateAPIs":["list","view","create","update","delete","pagination"]}
+        """)
+      .post(Resources.ROOT_PATH + "/apis/generate")
+      .then()
+      .statusCode(204);
+
   }
 
 }

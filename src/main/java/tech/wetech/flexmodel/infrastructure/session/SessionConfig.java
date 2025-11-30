@@ -28,8 +28,6 @@ import java.util.List;
 public class SessionConfig {
 
   public static final String SYSTEM_DS_KEY = "system";
-  @Inject
-  EventBus eventBus;
 
   public void installDatasource(@Observes StartupEvent startupEvent,
                                 SessionDatasource sessionDatasource,
@@ -39,7 +37,6 @@ public class SessionConfig {
     for (Datasource datasource : datasourceList) {
       sessionDatasource.add(datasource);
     }
-    eventBus.send("graphql.refresh", new GraphQLRefreshEvent());
     log.info("========== Engine init successful in {} ms!", System.currentTimeMillis() - beginTime);
   }
 

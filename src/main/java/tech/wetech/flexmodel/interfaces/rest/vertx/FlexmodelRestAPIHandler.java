@@ -13,7 +13,6 @@ import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
 import tech.wetech.flexmodel.application.AuthApplicationService;
 import tech.wetech.flexmodel.application.dto.GraphQLRefreshEvent;
 import tech.wetech.flexmodel.codegen.entity.Tenant;
-import tech.wetech.flexmodel.domain.model.auth.TenantService;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
 
 import java.util.List;
@@ -24,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @ApplicationScoped
-public class FlexmodelAPIHandler {
+public class FlexmodelRestAPIHandler {
 
   @Inject
   ApiRuntimeApplicationService apiRuntimeApplicationService;

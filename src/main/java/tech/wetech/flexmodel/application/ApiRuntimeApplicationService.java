@@ -20,6 +20,7 @@ import tech.wetech.flexmodel.application.dto.PageDTO;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
+import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.*;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
@@ -212,8 +213,11 @@ public class ApiRuntimeApplicationService {
     Settings settings = settingsService.getSettings();
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
-      ApiDefinitionMeta meta = tech.wetech.flexmodel.JsonUtils.convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
-      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/" + apiDefinition.getTenantId() + apiDefinition.getPath());
+      if( apiDefinition.getType() != ApiType.API) {
+        continue;
+      }
+      ApiDefinitionMeta meta = JsonUtils.getInstance().convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
+      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{tenantId}" + apiDefinition.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiDefinition.getMethod())) {

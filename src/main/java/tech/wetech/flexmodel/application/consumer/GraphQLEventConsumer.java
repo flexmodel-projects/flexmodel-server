@@ -1,7 +1,10 @@
 package tech.wetech.flexmodel.application.consumer;
 
+import io.quarkus.runtime.StartupEvent;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.ext.web.Router;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.application.GraphQLManger;
@@ -30,6 +33,10 @@ public class GraphQLEventConsumer {
   DatasourceService datasourceService;
   @Inject
   GraphQLManger graphQLManger;
+
+  public void handle(@Observes StartupEvent startupEvent) {
+    consume(new GraphQLRefreshEvent());
+  }
 
   @ConsumeEvent("graphql.refresh")
   public void consume(GraphQLRefreshEvent event) {

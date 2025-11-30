@@ -6,6 +6,8 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.SQLiteTestResource;
 
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
@@ -44,21 +46,31 @@ class DatasourceResourceTest {
       .body("success", is(true));
   }
 
-  /*@Test
-  void testSync() {
+  @Test
+  void testImportModels() {
+    String script = """
+      model testImportModelsStudent {
+        id : Long @id @default(autoIncrement()),
+        student_name? : String @length("255"),
+        gender? : UserGender,
+        interest? : user_interest[],
+        age? : Int,
+        class_id? : Long,
+        @index(name: "IDX_STUDENT_NAME",unique: "false", fields: [student_name]),
+        @index(name:"IDX_CLASS_ID", unique: "false", fields: [class_id]),
+        @comment("学生")
+      }
+      """;
+    Map<String,Object> body = Map.of("type", "IDL", "script", script);
     given()
+      .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
-      .body("""
-        [
-          "system_Teacher", "system_Student", "system_Classes"
-        ]
-        """)
-      .post(Resources.BASE_PATH + "/datasources/system/sync")
+      .body(body)
+      .post(Resources.ROOT_PATH + "/datasources/system/import")
       .then()
-      .statusCode(200)
-      .body("size()", greaterThanOrEqualTo(1));
-  }*/
+      .statusCode(204);
+  }
 
   @Test
   void testFindAll() {

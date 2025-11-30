@@ -39,44 +39,34 @@ class ModelResourceTest {
               "name": "id",
               "type": "Long",
               "identity": true,
-              "modelName": "Student",
               "unique": false,
-              "nullable": true,
-              "validators": []
+              "nullable": true
             },
             {
               "name": "studentName",
               "type": "String",
-              "modelName": "Student",
               "unique": false,
               "nullable": true,
-              "validators": [],
               "length": 255
             },
             {
               "name": "gender",
               "type": "String",
-              "modelName": "Student",
               "unique": false,
               "nullable": true,
-              "validators": [],
               "length": 255
             },
             {
               "name": "age",
               "type": "Int",
-              "modelName": "Student",
               "unique": false,
-              "nullable": true,
-              "validators": []
+              "nullable": true
             },
             {
               "name": "classId",
               "type": "Int",
-              "modelName": "Student",
               "unique": false,
-              "nullable": true,
-              "validators": []
+              "nullable": true
             }
           ]
         }
