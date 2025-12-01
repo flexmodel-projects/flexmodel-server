@@ -14,7 +14,7 @@ class ListApiDefinitionGenerator extends ApiDefinitionGenerator {
     def schemaName = context.getModelClass().getSchemaName()
     def modelName = context.getModelClass().getName()
     out.println "query MyListQuery( \$where: ${schemaName}_${modelName}_bool_exp) {"
-    out.println "  ${schemaName}_list_${modelName}(where: \$where) {"
+    out.println "  list: ${schemaName}_list_${modelName}(where: \$where) {"
     context.getModelClass().getAllFields().each {
       if (!it.isRelationField()) {
         out.println "    ${it.name}"

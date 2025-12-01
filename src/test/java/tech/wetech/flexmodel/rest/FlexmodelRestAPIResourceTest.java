@@ -118,11 +118,6 @@ public class FlexmodelRestAPIResourceTest {
   }
 
   @Test
-
-  void testGenerate0() throws InterruptedException {
-  }
-
-  @Test
   @SuppressWarnings("all")
   void testGenerate() throws InterruptedException {
 
@@ -204,7 +199,7 @@ public class FlexmodelRestAPIResourceTest {
       .get("/api/dev_test/testGenerateStudent/list")
       .then()
       .statusCode(200)
-      .body("data.dev_test_list_testGenerateStudent", notNullValue());
+      .body("data.list.size()", greaterThanOrEqualTo(1));
 
     // page
     given()
