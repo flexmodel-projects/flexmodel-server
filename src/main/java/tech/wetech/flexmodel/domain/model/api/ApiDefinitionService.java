@@ -9,6 +9,7 @@ import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinitionHistory;
 import tech.wetech.flexmodel.shared.SessionContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -62,7 +63,7 @@ public class ApiDefinitionService {
       return apiDefinition;
     }
     apiDefinition.setCreatedAt(older.getCreatedAt());
-    apiDefinition.setEnabled(older.getEnabled());
+    apiDefinition.setUpdatedAt(LocalDateTime.now());
     ApiRateLimiterHolder.removeApiRateLimiter(apiDefinition.getMethod() + ":" + apiDefinition.getPath());
     ApiDefinition definition = apiDefinitionRepository.save(apiDefinition);
     eventBus.publish("api.changed", new ApiDefinitionChangedEvent(definition));

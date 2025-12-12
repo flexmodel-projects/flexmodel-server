@@ -355,11 +355,11 @@ public class DocumentApplicationService {
         if (tag != null) {
           content.put("tags", List.of(tag));
         }
-        Map<String, Object> meta = (Map<String, Object>) api.getMeta();
-        if (meta == null || meta.isEmpty()) {
+        Map<String, Object> metaMap = (Map<String, Object>) api.getMeta();
+        if (metaMap == null || metaMap.isEmpty()) {
           continue;
         }
-        String restAPIType = (String) meta.get("type");
+        ApiDefinitionMeta meta = JsonUtils.convertValue(metaMap, ApiDefinitionMeta.class);
         content.put("summary", api.getName());
         content.put("operationId", api.getId());
 
@@ -369,18 +369,11 @@ public class DocumentApplicationService {
         responses.put("404", Map.of("description", "not found"));
         content.put("responses", responses);
 
-        Map<String, Object> execution = (Map<String, Object>) meta.get("execution");
-        String operationName = (String) execution.get("operationName");
-        String query = (String) execution.get("query");
-        Map<String, Object> variables = (Map<String, Object>) execution.get("variables");
-        Map<String, Object> headers = (Map<String, Object>) execution.get("headers");
-
-//        content.put("description",
-//          String.format("""
-//            ```graphql
-//            %s
-//            ```
-//            """, query));
+        ApiDefinitionMeta.Execution execution = meta.getExecution();
+        String operationName = execution.getOperationName();
+        String query = execution.getQuery();
+        Map<String, Object> variables = execution.getVariables();
+        Map<String, Object> headers = execution.getHeaders();
 
         UriTemplate uriTemplate = new UriTemplate(api.getPath());
         Map<String, String> pathParamters = uriTemplate.match(new UriTemplate(api.getPath()));
@@ -402,7 +395,7 @@ public class DocumentApplicationService {
         }
 
         // 接口是否鉴权
-        boolean isAuth = (boolean) meta.get("auth");
+        boolean isAuth = meta.isAuth();
         if (isAuth) {
           content.put("security", List.of(Map.of("bearerAuth", List.of())));
         }
@@ -474,15 +467,7 @@ public class DocumentApplicationService {
         parameter.put("in", "query");
         parameter.put("description", "");
         parameter.put("required", variableDefinition.getType() instanceof NonNullType);
-        if (variableDefinition.getType() instanceof NonNullType nonNullType) {
-          String typeName = ((TypeName) nonNullType.getType()).getName();
-          Map type = TYPE_MAPPING.getOrDefault(typeName, Map.of("type", "string"));
-          parameter.putAll(type);
-        } else {
-          String typeName = ((TypeName) variableDefinition.getType()).getName();
-          Map type = TYPE_MAPPING.getOrDefault(typeName, Map.of("type", "string"));
-          parameter.putAll(type);
-        }
+        parameter.put("schema", Map.of("type", "string"));
         parameters.add(parameter);
       }
     }

@@ -141,6 +141,9 @@ public class ApiDefinitionResource {
     if (request.getName() != null) {
       record.setName(request.getName());
     }
+    if(request.getEnabled()!=null) {
+      record.setEnabled(request.getEnabled());
+    }
     apiDesignApplicationService.updateApiDefinition(record);
     return record;
   }
