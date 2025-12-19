@@ -346,7 +346,7 @@
           "tenant_id": "default",
           "provider": {
             "type": "script",
-            "script": "const request = context.request;\nconst response = context.response;\nconst log = context.log;\nconst jwtVerify = context.utils.jwtVerify;\n// Example: simple token check from header\nlog.info('identify context：{}', context);\nconst auth = request.headers['authorization'] || request.headers['Authorization'];\nif (!auth || !auth.startsWith('Bearer ')) {\n  response.body = { success: false, message: 'Missing bearer token' };\n} else {\n  const token = auth.substring('Bearer '.length);\n  try {\n    // verify jwt token\n    jwtVerify(token);\n    response.body = {success: true, message: 'ok'};\n  } catch(e) {\n    log.error('identify verify error: {}', e.message);\n    context.response.body = {success: false, message:  e.message };\n  }\n}"
+            "script": "const request = context.request;\nconst response = context.response;\nconst log = context.log;\nconst jwtVerify = context.utils.jwtVerify;\n// Example: simple token check from header\nlog.info('identify context: {}', context);\nconst auth = request.headers['authorization'] || request.headers['Authorization'];\nif (!auth || !auth.startsWith('Bearer ')) {\n  response.body = { success: false, message: 'Missing bearer token' };\n} else {\n  const token = auth.substring('Bearer '.length);\n  try {\n    // verify jwt token\n    jwtVerify(token);\n    response.body = {success: true, message: 'ok'};\n  } catch(e) {\n    log.error('identify verify error: {}', e.message);\n    context.response.body = {success: false, message:  e.message };\n  }\n}"
           }
         }
       ]
