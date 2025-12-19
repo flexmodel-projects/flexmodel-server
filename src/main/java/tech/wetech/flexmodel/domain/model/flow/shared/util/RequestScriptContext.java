@@ -73,7 +73,7 @@ public class RequestScriptContext {
       return JwtUtil.sign(account, Duration.ofDays(7));
     }
 
-    public boolean jwtVarify(String token) {
+    public boolean jwtVerify(String token) {
       return JwtUtil.verify(token);
     }
 

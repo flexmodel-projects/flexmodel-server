@@ -38,7 +38,7 @@ public class JavaScriptUtil {
         bindings.put("polyglot.js.ecmascript-version", "2023");
         // 允许主机访问
         bindings.put("polyglot.js.allowHostAccess", true);
-        bindings.put("polyglot.js.allowHostClassLookup", true);
+        bindings.put("polyglot.js.allowHostClassLookup", false);
         // 兼容性设置
         bindings.put("polyglot.js.nashorn-compat", false);
       }
