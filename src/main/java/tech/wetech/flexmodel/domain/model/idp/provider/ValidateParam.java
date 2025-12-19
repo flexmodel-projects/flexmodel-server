@@ -11,6 +11,8 @@ import java.util.Map;
 @Getter
 @Setter
 public class ValidateParam {
+  private String method;
+  private String url;
   private Map<String, Object> query;
   private Map<String, String> headers;
 }

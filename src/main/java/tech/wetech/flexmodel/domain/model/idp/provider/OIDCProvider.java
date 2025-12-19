@@ -14,6 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +61,7 @@ public class OIDCProvider implements Provider {
   @Override
   public ValidateResult validate(ValidateParam param) {
     String authorization;
-    boolean hasAuthorization = StringUtils.isEmpty(authorization = param.getHeaders().get("Authorization")) || StringUtils.isEmpty(authorization = (String) param.getHeaders().get("authorization"));
+    boolean hasAuthorization = StringUtils.isEmpty(authorization = Objects.toString(param.getHeaders().get("Authorization")))|| StringUtils.isEmpty(authorization = (String) param.getHeaders().get("authorization"));
     if (hasAuthorization) {
       return new ValidateResult(false, "Authorization is missing");
     }

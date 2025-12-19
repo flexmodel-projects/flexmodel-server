@@ -485,6 +485,8 @@ public class ApiRuntimeApplicationService {
 
     Map<String, String> headers = new HashMap<>();
     routingContext.request().headers().forEach(header -> headers.put(header.getKey(), header.getValue()));
+    param.setMethod(routingContext.request().method().name());
+    param.setUrl(routingContext.request().path());
     param.setQuery(query);
     param.setHeaders(headers);
     ValidateResult result = provider.validate(param);

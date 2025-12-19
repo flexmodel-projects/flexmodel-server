@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.JavaScriptUtil;
-import tech.wetech.flexmodel.shared.utils.JsonUtils;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.RequestScriptContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,14 +26,20 @@ public class ScriptProvider implements Provider {
 
   @Override
   public ValidateResult validate(ValidateParam param) {
-    String vScript = script + "\nauthenticate(request);";
     try {
-      Map<String, Object> dataMap = new HashMap<>();
-      dataMap.put("request", JsonUtils.getInstance().convertValue(param, Map.class));
-      Object result = JavaScriptUtil.execute(vScript, dataMap);
-      return JsonUtils.getInstance().convertValue(result, ValidateResult.class);
+      RequestScriptContext scriptContext = new RequestScriptContext();
+      scriptContext.setRequest(new RequestScriptContext.Request(param.getMethod(), param.getUrl(), param.getHeaders(), null, param.getQuery()));
+      scriptContext.setResponse(new RequestScriptContext.Response(200, "success",null, null));
+      Map<String, Object> contextMap = scriptContext.toMap();
+      JavaScriptUtil.execute(script, contextMap);
+      scriptContext.syncFromMap(contextMap);
+      String message = (String) scriptContext.getResponse().body().get("message");
+      boolean succcess = (boolean) scriptContext.getResponse().body().get("success");
+      return new ValidateResult(succcess, message);
     } catch (Exception e) {
       return new ValidateResult(false, e.getMessage());
+    } finally {
+      JavaScriptUtil.cleanup();
     }
   }
 }

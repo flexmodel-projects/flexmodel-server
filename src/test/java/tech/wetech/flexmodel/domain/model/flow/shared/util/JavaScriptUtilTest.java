@@ -1,6 +1,7 @@
 package tech.wetech.flexmodel.domain.model.flow.shared.util;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tech.wetech.flexmodel.domain.model.flow.exception.ProcessException;
 
@@ -532,6 +533,49 @@ class JavaScriptUtilTest {
     assertNotNull(result);
     Map<?, ?> resultMap = assertInstanceOf(Map.class, result);
     assertTrue((boolean) resultMap.get("success"));
+  }
+
+
+  @Test
+  void testRequestScriptContext() throws Exception {
+    //todo
+    RequestScriptContext scriptContext = new RequestScriptContext();
+    scriptContext.setRequest(new RequestScriptContext.Request("GET", "https://api.metacode.ai/v1/md_app_deployment_history", new HashMap<>(), new HashMap<>(), new HashMap<>()));
+    Map<String, Object> body = new HashMap<>();
+    Map<String,Object> data = new HashMap<>();
+    data.put("metacode_list_md_app_deployment_history", "[]");
+    body.put("data", data);
+    body.put("success", false);
+    scriptContext.setResponse(new RequestScriptContext.Response(200, "OK", new HashMap<>(), body));
+    Map<String, Object> contextMap = scriptContext.toMap();
+    JavaScriptUtil.execute("""
+      context.response.body = {
+        "data": context.response.body.data.metacode_list_md_app_deployment_history,
+        "success": true
+      };
+      """, contextMap);
+    scriptContext.syncFromMap(contextMap);
+    Assertions.assertEquals(scriptContext.getResponse().body().get("success"), true);
+  }
+
+  @Test
+  void testUtils() throws Exception {
+    //todo
+    RequestScriptContext scriptContext = new RequestScriptContext();
+    scriptContext.setRequest(new RequestScriptContext.Request("GET", "https://api.metacode.ai/v1/md_app_deployment_history", new HashMap<>(), new HashMap<>(), new HashMap<>()));
+    Map<String, Object> body = new HashMap<>();
+    body.put("success", false);
+    scriptContext.setResponse(new RequestScriptContext.Response(200, "OK", new HashMap<>(), body));
+    Map<String, Object> contextMap = scriptContext.toMap();
+    JavaScriptUtil.execute("""
+      context.response.body = {
+        "data": context.utils.uuid(),
+        "success": true
+      };
+      """, contextMap);
+    scriptContext.syncFromMap(contextMap);
+    Assertions.assertEquals(scriptContext.getResponse().body().get("success"), true);
+    Assertions.assertNotNull(scriptContext.getResponse().body().get("data"));
   }
 
 }

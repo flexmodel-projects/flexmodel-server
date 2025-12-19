@@ -81,6 +81,11 @@ public class JavaScriptUtil {
       // 执行JavaScript表达式
       Object result = engine.eval(expression);
 
+      // 同步 bindings 中的修改回 dataMap（如果 dataMap 是可变的）
+      if (dataMap instanceof java.util.HashMap) {
+        syncBindingsToMap(bindings, dataMap);
+      }
+
       LOGGER.info("execute.||expression={}||resultObject={}", expression, result);
       return result;
 
@@ -93,6 +98,59 @@ public class JavaScriptUtil {
     }finally {
       if(LOGGER.isDebugEnabled()) {
         LOGGER.debug("execute javascript, time: {} ms", System.currentTimeMillis() - startTime);
+      }
+    }
+  }
+
+  /**
+   * 将 bindings 中的修改同步回 dataMap
+   * 递归同步嵌套的 Map 结构
+   */
+  @SuppressWarnings("unchecked")
+  private static void syncBindingsToMap(Bindings bindings, Map<String, Object> dataMap) {
+    for (String key : bindings.keySet()) {
+      // 跳过引擎配置键
+      if (key.startsWith("polyglot.")) {
+        continue;
+      }
+      Object value = bindings.get(key);
+      Object existingValue = dataMap.get(key);
+
+      if (value instanceof Map) {
+        if (existingValue instanceof Map) {
+          // 递归同步嵌套的 Map
+          syncMapToMap((Map<String, Object>) value, (Map<String, Object>) existingValue);
+        } else {
+          // 如果类型不匹配，直接替换
+          dataMap.put(key, value);
+        }
+      } else {
+        // 对于非 Map 类型，直接更新
+        dataMap.put(key, value);
+      }
+    }
+  }
+
+  /**
+   * 递归同步源 Map 到目标 Map
+   */
+  @SuppressWarnings("unchecked")
+  private static void syncMapToMap(Map<String, Object> source, Map<String, Object> target) {
+    for (String key : source.keySet()) {
+      Object sourceValue = source.get(key);
+      Object targetValue = target.get(key);
+
+      if (sourceValue instanceof Map) {
+        if (targetValue instanceof Map) {
+          // 递归同步嵌套的 Map
+          syncMapToMap((Map<String, Object>) sourceValue, (Map<String, Object>) targetValue);
+        } else {
+          // 如果类型不匹配，直接替换
+          target.put(key, sourceValue);
+        }
+      } else {
+        // 对于非 Map 类型，直接更新
+        target.put(key, sourceValue);
       }
     }
   }
