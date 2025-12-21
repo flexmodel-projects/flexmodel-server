@@ -95,8 +95,8 @@ public class JavaScriptUtil {
     } catch (Exception e) {
       LOGGER.error("execute Exception.||expression={}||dataMap={}", expression, dataMap, e);
       throw e;
-    }finally {
-      if(LOGGER.isDebugEnabled()) {
+    } finally {
+      if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("execute javascript, time: {} ms", System.currentTimeMillis() - startTime);
       }
     }
@@ -136,23 +136,28 @@ public class JavaScriptUtil {
    */
   @SuppressWarnings("unchecked")
   private static void syncMapToMap(Map<String, Object> source, Map<String, Object> target) {
-    for (String key : source.keySet()) {
-      Object sourceValue = source.get(key);
-      Object targetValue = target.get(key);
+    try {
+      for (String key : source.keySet()) {
+        Object sourceValue = source.get(key);
+        Object targetValue = target.get(key);
 
-      if (sourceValue instanceof Map) {
-        if (targetValue instanceof Map) {
-          // 递归同步嵌套的 Map
-          syncMapToMap((Map<String, Object>) sourceValue, (Map<String, Object>) targetValue);
+        if (sourceValue instanceof Map) {
+          if (targetValue instanceof Map) {
+            // 递归同步嵌套的 Map
+            syncMapToMap((Map<String, Object>) sourceValue, (Map<String, Object>) targetValue);
+          } else {
+            // 如果类型不匹配，直接替换
+            target.put(key, sourceValue);
+          }
         } else {
-          // 如果类型不匹配，直接替换
+          // 对于非 Map 类型，直接更新
           target.put(key, sourceValue);
         }
-      } else {
-        // 对于非 Map 类型，直接更新
-        target.put(key, sourceValue);
       }
+    } catch (Exception e) {
+      LOGGER.error("syncMapToMap error.||source={}||target={}", source, target, e);
     }
+
   }
 
 
