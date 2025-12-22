@@ -346,10 +346,11 @@ public class ApiRuntimeApplicationService {
   private HttpScriptContext buildHttpScriptContext(RoutingContext routingContext) {
     HttpScriptContext requestScriptContext = new HttpScriptContext();
 
-    new HttpScriptContext.Request(routingContext.request().method().name(),
+    HttpScriptContext.Request request = new HttpScriptContext.Request(routingContext.request().method().name(),
       routingContext.normalizedPath(), multiMapToMap(routingContext.request().headers()),
       routingContext.body().asPojo(Map.class),
       multiMapToMap(routingContext.queryParams()));
+    requestScriptContext.setRequest(request);
     return requestScriptContext;
   }
 

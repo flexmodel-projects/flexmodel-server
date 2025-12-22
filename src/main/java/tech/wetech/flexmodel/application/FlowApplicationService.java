@@ -116,8 +116,10 @@ public class FlowApplicationService {
       .map(entity -> {
         FlowInstanceResponse response = JsonUtils.getInstance().convertValue(entity, FlowInstanceResponse.class);
         FlowDeployment flowDeployment = flowDeploymentService.findByFlowDeployId(entity.getFlowDeployId());
-        response.setFlowName(flowDeployment.getFlowName());
-        response.setFlowKey(flowDeployment.getFlowKey());
+        if (flowDeployment != null) {
+          response.setFlowName(flowDeployment.getFlowName());
+          response.setFlowKey(flowDeployment.getFlowKey());
+        }
         return response;
       }).toList();
     return new PageDTO<>(list, count);
