@@ -4,9 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.JavaScriptUtil;
-import tech.wetech.flexmodel.domain.model.flow.shared.util.RequestScriptContext;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.HttpScriptContext;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -27,9 +26,9 @@ public class ScriptProvider implements Provider {
   @Override
   public ValidateResult validate(ValidateParam param) {
     try {
-      RequestScriptContext scriptContext = new RequestScriptContext();
-      scriptContext.setRequest(new RequestScriptContext.Request(param.getMethod(), param.getUrl(), param.getHeaders(), null, param.getQuery()));
-      scriptContext.setResponse(new RequestScriptContext.Response(200, "success",null, null));
+      HttpScriptContext scriptContext = new HttpScriptContext();
+      scriptContext.setRequest(new HttpScriptContext.Request(param.getMethod(), param.getUrl(), param.getHeaders(), null, param.getQuery()));
+      scriptContext.setResponse(new HttpScriptContext.Response(200, "success",null, null));
       Map<String, Object> contextMap = scriptContext.toMap();
       JavaScriptUtil.execute(script, contextMap);
       scriptContext.syncFromMap(contextMap);

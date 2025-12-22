@@ -37,7 +37,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-public class RequestScriptContext {
+public class HttpScriptContext {
   /** 原始请求参数（用户输入） */
   private Request request;
 
@@ -53,7 +53,7 @@ public class RequestScriptContext {
                         String url,
                         Map<String, String> headers,
                         Map<String, Object> body,
-                        Map<String, Object> query
+                        Map<String, String> query
   ) {
   }
 
@@ -99,7 +99,7 @@ public class RequestScriptContext {
   }
 
 
-  public RequestScriptContext() {
+  public HttpScriptContext() {
   }
 
   @SuppressWarnings("all")

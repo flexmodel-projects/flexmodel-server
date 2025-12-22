@@ -1,12 +1,6 @@
 package tech.wetech.flexmodel.application;
 
-import graphql.ExecutionInput;
 import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.GraphQLContext;
-import graphql.execution.values.InputInterceptor;
-import graphql.schema.GraphQLInputType;
-import graphql.schema.GraphQLScalarType;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
@@ -27,6 +21,8 @@ import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.*;
 import tech.wetech.flexmodel.domain.model.data.DataService;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.HttpScriptContext;
+import tech.wetech.flexmodel.domain.model.flow.shared.util.JavaScriptUtil;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.domain.model.idp.provider.Provider;
 import tech.wetech.flexmodel.domain.model.idp.provider.ValidateParam;
@@ -39,6 +35,7 @@ import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
 import tech.wetech.flexmodel.shared.SessionContextHolder;
 import tech.wetech.flexmodel.shared.matchers.UriTemplate;
+import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import tech.wetech.flexmodel.shared.utils.PatternMatchUtils;
 
@@ -53,7 +50,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static graphql.ExecutionInput.newExecutionInput;
 import static tech.wetech.flexmodel.query.Expressions.field;
 
 /**
@@ -101,7 +97,6 @@ public class ApiRuntimeApplicationService {
   }
 
   public LogStatResponse stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
-
 
     LogStatResponse.ApiChart statDTO = null;
     List<String> dateList = new ArrayList<>();
@@ -169,11 +164,7 @@ public class ApiRuntimeApplicationService {
 
     List<LogApiRank> apiRankList = apiLogService.ranking(condition);
 
-    return LogStatResponse.builder()
-      .apiStatList(stat)
-      .apiRankingList(apiRankList)
-      .apiChart(statDTO)
-      .build();
+    return LogStatResponse.builder().apiStatList(stat).apiRankingList(apiRankList).apiChart(statDTO).build();
   }
 
   private static Predicate getCondition(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
@@ -223,34 +214,75 @@ public class ApiRuntimeApplicationService {
         }
 
         ApiDefinitionMeta.Execution execution = meta.getExecution();
+
+        HttpScriptContext httpScriptContext = buildHttpScriptContext(routingContext);
+
+        // 执行前置脚本
+        String preScript = meta.getExecution().getPreScript();
+        if (preScript != null) {
+          try {
+            Map<String, Object> contextMap = httpScriptContext.toMap();
+            JavaScriptUtil.execute(preScript, contextMap);
+            httpScriptContext.syncFromMap(contextMap);
+          } catch (Exception e) {
+            log.error("Execute pre script error: {}", e.getMessage());
+            routingContext.fail(500);
+            return;
+          } finally {
+            JavaScriptUtil.cleanup();
+          }
+        }
+
+        // 执行GraphQL
+
         String operationName = execution.getOperationName();
         String query = execution.getQuery();
         Map<String, Object> defaultVariables = execution.getVariables();
-        Map<String, Object> variables = new HashMap<>(pathParameters);
+
+
+        Map<String, Object> executionData = new HashMap<>();
         if (defaultVariables != null) {
-          variables.putAll(defaultVariables);
+          executionData.putAll(defaultVariables);
         }
         if (method.equals("GET")) {
-          MultiMap queryParams = routingContext.queryParams();
-          queryParams.forEach((key, value) -> variables.put(key, value));
-          ExecutionResult result = graphQLManger.execute(tenantId, operationName, query, variables);
-          routingContext.response()
-            .putHeader("Content-Type", "application/json")
-            .end(JsonUtils.getInstance().stringify(result));
-        } else {
-          String bodyString = routingContext.body().asString();
-          Map body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
-          // 请求体
-          if (body != null) {
-            variables.putAll(body);
+          if (!CollectionUtils.isEmpty(httpScriptContext.getRequest().query())) {
+            executionData.putAll(httpScriptContext.getRequest().query());
           }
+        } else {
           // 路径参数
-          variables.putAll(pathParameters);
-          ExecutionResult result = graphQLManger.execute(tenantId, operationName, query, variables);
-          routingContext.response()
-            .putHeader("Content-Type", "application/json")
-            .end(JsonUtils.getInstance().stringify(result));
+          executionData.putAll(pathParameters);
+          // 请求体
+          if (!CollectionUtils.isEmpty(httpScriptContext.getRequest().body())) {
+            executionData.putAll(httpScriptContext.getRequest().body());
+          }
         }
+        ExecutionResult result = graphQLManger.execute(tenantId, operationName, query, executionData);
+
+        Map<String, Object> resMap = new HashMap<>();
+        resMap.put("data", result.getData());
+
+        // 执行后置脚本
+        String postScript = meta.getExecution().getPostScript();
+        if (postScript != null) {
+
+          HttpScriptContext.Response response = new HttpScriptContext.Response(routingContext.response().getStatusCode(),
+            routingContext.response().getStatusMessage(), multiMapToMap(routingContext.response().headers()), resMap);
+          httpScriptContext.setResponse(response);
+          try {
+            Map<String, Object> contextMap = httpScriptContext.toMap();
+            JavaScriptUtil.execute(postScript, contextMap);
+            httpScriptContext.syncFromMap(contextMap);
+            resMap = httpScriptContext.getResponse().body();
+          } catch (Exception e) {
+            log.error("Execute post script error: {}", e.getMessage());
+            routingContext.fail(500);
+            return;
+          } finally {
+            JavaScriptUtil.cleanup();
+          }
+        }
+        routingContext.response().putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(resMap));
+
         break;
       }
     }
@@ -275,23 +307,17 @@ public class ApiRuntimeApplicationService {
         try {
           body = (Map) JsonUtils.getInstance().parseToObject(bodyString, Map.class);
           if (body.get("query") == null) {
-            sendBadRequestFail(routingContext,
-              "query is required, e.g. { \"query\": \"query MyQuery { dev_test_aggregate_Classes { _count } }\" }",
-              -1);
+            sendBadRequestFail(routingContext, "query is required, e.g. { \"query\": \"query MyQuery { dev_test_aggregate_Classes { _count } }\" }", -1);
             return;
           }
         } catch (Exception e) {
           log.error("Parse body error: {}", e.getMessage(), e);
           routingContext.fail(400);
-          sendBadRequestFail(routingContext,
-            "Parse body error:" + e.getMessage(),
-            -1);
+          sendBadRequestFail(routingContext, "Parse body error:" + e.getMessage(), -1);
           return;
         }
         ExecutionResult result = graphQLManger.execute(SessionContextHolder.getTenantId(), (String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
-        routingContext.response()
-          .putHeader("Content-Type", "application/json")
-          .end(JsonUtils.getInstance().stringify(result));
+        routingContext.response().putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(result));
       }
     }
 
@@ -317,16 +343,34 @@ public class ApiRuntimeApplicationService {
     }
   }
 
+  private HttpScriptContext buildHttpScriptContext(RoutingContext routingContext) {
+    HttpScriptContext requestScriptContext = new HttpScriptContext();
+
+    new HttpScriptContext.Request(routingContext.request().method().name(),
+      routingContext.normalizedPath(), multiMapToMap(routingContext.request().headers()),
+      routingContext.body().asPojo(Map.class),
+      multiMapToMap(routingContext.queryParams()));
+    return requestScriptContext;
+  }
+
+
+  private Map<String, String> multiMapToMap(MultiMap multiMap) {
+    Map<String, String> map = new HashMap<>();
+    multiMap.forEach((key, value) -> {
+      map.put(key, value);
+    });
+    return map;
+  }
+
+
   private void forwardRequest(String targetUri, HttpServerRequest request) {
     // 解析请求 URL 和目标地址
 
     // 使用 JDK HttpClient 构建请求
     HttpClient client = HttpClient.newHttpClient();
 
-// 构建 HttpRequest 请求
-    HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-      .uri(URI.create(targetUri))
-      .method(request.method().toString(), HttpRequest.BodyPublishers.noBody());
+    // 构建 HttpRequest 请求
+    HttpRequest.Builder requestBuilder = HttpRequest.newBuilder().uri(URI.create(targetUri)).method(request.method().toString(), HttpRequest.BodyPublishers.noBody());
 
 
     // 转发请求的 headers
@@ -345,22 +389,20 @@ public class ApiRuntimeApplicationService {
       HttpRequest httpRequest = requestBuilder.build();
 
       // 发送请求并获取响应
-      client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
-        .thenApply(response -> {
-          // 处理目标服务器的响应并转发回客户端
-          HttpServerResponse responseToClient = request.response();
-          responseToClient.setStatusCode(response.statusCode());
-          HttpHeaders headers = response.headers();
-          // 设置 headers
-          headers.map().forEach((k, v) -> responseToClient.putHeader(k, v));
-          // 设置body
-          responseToClient.end(response.body());
-          return null;
-        })
-        .exceptionally(e -> {
-          request.response().setStatusCode(500).end("Error forwarding request: " + e.getMessage());
-          return null;
-        });
+      client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString()).thenApply(response -> {
+        // 处理目标服务器的响应并转发回客户端
+        HttpServerResponse responseToClient = request.response();
+        responseToClient.setStatusCode(response.statusCode());
+        HttpHeaders headers = response.headers();
+        // 设置 headers
+        headers.map().forEach((k, v) -> responseToClient.putHeader(k, v));
+        // 设置body
+        responseToClient.end(response.body());
+        return null;
+      }).exceptionally(e -> {
+        request.response().setStatusCode(500).end("Error forwarding request: " + e.getMessage());
+        return null;
+      });
     });
   }
 
@@ -369,17 +411,13 @@ public class ApiRuntimeApplicationService {
       Settings settings = settingsService.getSettings();
       if (settings.getSecurity().isRateLimitingEnabled()) {
         log.debug("Global Rate limiting enabled.");
-        ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(SettingsEventConsumer.GLOBAL_RATE_LIMIT_KEY,
-          settings.getSecurity().getMaxRequestCount(),
-          settings.getSecurity().getIntervalInSeconds());
+        ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(SettingsEventConsumer.GLOBAL_RATE_LIMIT_KEY, settings.getSecurity().getMaxRequestCount(), settings.getSecurity().getIntervalInSeconds());
         if (!apiRateLimiter.tryAcquire()) {
           Map<String, Object> result = new HashMap<>();
           result.put("messasge", "Too many requests.");
           result.put("code", -1);
           result.put("success", false);
-          routingContext.response()
-            .putHeader("Content-Type", "application/json")
-            .end(JsonUtils.getInstance().stringify(result));
+          routingContext.response().putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(result));
           return true;
         }
       }
@@ -390,18 +428,13 @@ public class ApiRuntimeApplicationService {
         int intervalInSeconds = settings.getSecurity().getIntervalInSeconds();
         maxRequestCount = meta.getMaxRequestCount();
         intervalInSeconds = meta.getIntervalInSeconds();
-        ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(
-          apiDefinition.getMethod() + ":" + apiDefinition.getPath(),
-          maxRequestCount,
-          intervalInSeconds);
+        ApiRateLimiterHolder.ApiRateLimiter apiRateLimiter = ApiRateLimiterHolder.getApiRateLimiter(apiDefinition.getMethod() + ":" + apiDefinition.getPath(), maxRequestCount, intervalInSeconds);
         if (!apiRateLimiter.tryAcquire()) {
           Map<String, Object> result = new HashMap<>();
           result.put("messasge", "Too many requests.");
           result.put("code", -1);
           result.put("success", false);
-          routingContext.response()
-            .putHeader("Content-Type", "application/json")
-            .end(JsonUtils.getInstance().stringify(result));
+          routingContext.response().putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(result));
           return true;
         }
       }
@@ -416,10 +449,7 @@ public class ApiRuntimeApplicationService {
     result.put("messasge", validateResult.getMessage());
     result.put("code", -1);
     result.put("success", validateResult.isSuccess());
-    routingContext.response()
-      .setStatusCode(HttpResponseStatus.UNAUTHORIZED.code())
-      .putHeader("Content-Type", "application/json")
-      .end(JsonUtils.getInstance().stringify(result));
+    routingContext.response().setStatusCode(HttpResponseStatus.UNAUTHORIZED.code()).putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(result));
   }
 
   private void sendNotFoundError(RoutingContext routingContext) {
@@ -427,10 +457,7 @@ public class ApiRuntimeApplicationService {
     result.put("messasge", "not found");
     result.put("code", -1);
     result.put("success", false);
-    routingContext.response()
-      .setStatusCode(HttpResponseStatus.NOT_FOUND.code())
-      .putHeader("Content-Type", "application/json")
-      .end(JsonUtils.getInstance().stringify(result));
+    routingContext.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code()).putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(result));
   }
 
   private void sendBadRequestFail(RoutingContext routingContext, String msg, Integer code) {
@@ -438,10 +465,7 @@ public class ApiRuntimeApplicationService {
     result.put("messasge", msg);
     result.put("code", code);
     result.put("success", false);
-    routingContext.response()
-      .setStatusCode(HttpResponseStatus.BAD_REQUEST.code())
-      .putHeader("Content-Type", "application/json")
-      .end(JsonUtils.getInstance().stringify(result));
+    routingContext.response().setStatusCode(HttpResponseStatus.BAD_REQUEST.code()).putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(result));
   }
 
   public void log(RoutingContext routingContext, Runnable runnable) {
@@ -479,16 +503,11 @@ public class ApiRuntimeApplicationService {
     }
     Provider provider = JsonUtils.getInstance().convertValue(identityProvider.getProvider(), Provider.class);
     ValidateParam param = new ValidateParam();
-    Map<String, Object> query = new HashMap<>();
-    MultiMap params = routingContext.request().params();
-    params.forEach(p -> query.put(p.getKey(), p.getValue()));
 
-    Map<String, String> headers = new HashMap<>();
-    routingContext.request().headers().forEach(header -> headers.put(header.getKey(), header.getValue()));
     param.setMethod(routingContext.request().method().name());
     param.setUrl(routingContext.request().path());
-    param.setQuery(query);
-    param.setHeaders(headers);
+    param.setQuery(multiMapToMap(routingContext.request().params()));
+    param.setHeaders(multiMapToMap(routingContext.request().headers()));
     ValidateResult result = provider.validate(param);
     if (!result.isSuccess()) {
       sendAuthFail(routingContext, result);

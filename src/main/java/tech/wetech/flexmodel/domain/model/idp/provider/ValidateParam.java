@@ -13,6 +13,6 @@ import java.util.Map;
 public class ValidateParam {
   private String method;
   private String url;
-  private Map<String, Object> query;
+  private Map<String, String> query;
   private Map<String, String> headers;
 }

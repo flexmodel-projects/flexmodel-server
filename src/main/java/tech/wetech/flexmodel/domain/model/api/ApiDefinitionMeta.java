@@ -24,6 +24,9 @@ public class ApiDefinitionMeta {
   @Getter
   @Setter
   public static class Execution {
+    private String preScript;
+    private String postScript;
+    private String executionType = "graphql";
     private String query;
     private Map<String, Object> variables;
     private String operationName;
@@ -44,7 +47,6 @@ public class ApiDefinitionMeta {
      * json schema 格式的数据
      */
     private Map<String, Object> schema;
-    private String script;
   }
 
 }

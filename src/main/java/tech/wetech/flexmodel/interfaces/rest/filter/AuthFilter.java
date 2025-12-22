@@ -79,8 +79,8 @@ public class AuthFilter implements ContainerRequestFilter {
     Map<String, String> headers = new HashMap<>();
     requestContext.getHeaders().forEach((k, v) -> headers.put(k, v.getFirst()));
     Collection<String> propertyNames = requestContext.getPropertyNames();
-    Map<String, Object> query = new HashMap<>();
-    propertyNames.forEach(propertyName -> query.put(propertyName, requestContext.getProperty(propertyName)));
+    Map<String, String> query = new HashMap<>();
+    propertyNames.forEach(propertyName -> query.put(propertyName, Objects.toString(requestContext.getProperty(propertyName), null)));
     param.setQuery(query);
     param.setHeaders(headers);
     ValidateResult result = provider.validate(param);
