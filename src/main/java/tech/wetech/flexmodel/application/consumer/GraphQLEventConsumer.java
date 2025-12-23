@@ -2,18 +2,16 @@ package tech.wetech.flexmodel.application.consumer;
 
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.vertx.ConsumeEvent;
-import io.vertx.ext.web.Router;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import tech.wetech.flexmodel.application.GraphQLManger;
+import tech.wetech.flexmodel.domain.model.api.GraphQLManger;
 import tech.wetech.flexmodel.application.dto.GraphQLRefreshEvent;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.graphql.FlexmodelGraphQL;
 import tech.wetech.flexmodel.session.SessionFactory;
-import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.List;
 import java.util.Map;

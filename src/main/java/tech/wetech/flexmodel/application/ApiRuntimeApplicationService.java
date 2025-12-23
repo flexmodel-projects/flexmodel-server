@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import tech.wetech.flexmodel.application.consumer.SettingsEventConsumer;
 import tech.wetech.flexmodel.application.dto.LogStatResponse;
 import tech.wetech.flexmodel.application.dto.PageDTO;
+import tech.wetech.flexmodel.domain.model.api.execution.ExecutionStrategy;
+import tech.wetech.flexmodel.domain.model.api.execution.ExecutionStrategyFactory;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.entity.ApiRequestLog;
 import tech.wetech.flexmodel.codegen.entity.IdentityProvider;
@@ -22,7 +24,6 @@ import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.*;
 import tech.wetech.flexmodel.domain.model.data.DataService;
 import tech.wetech.flexmodel.domain.model.flow.shared.util.HttpScriptContext;
-import tech.wetech.flexmodel.domain.model.flow.shared.util.JavaScriptUtil;
 import tech.wetech.flexmodel.domain.model.idp.IdentityProviderService;
 import tech.wetech.flexmodel.domain.model.idp.provider.Provider;
 import tech.wetech.flexmodel.domain.model.idp.provider.ValidateParam;
@@ -35,7 +36,6 @@ import tech.wetech.flexmodel.query.Predicate;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
 import tech.wetech.flexmodel.shared.SessionContextHolder;
 import tech.wetech.flexmodel.shared.matchers.UriTemplate;
-import tech.wetech.flexmodel.shared.utils.CollectionUtils;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 import tech.wetech.flexmodel.shared.utils.PatternMatchUtils;
 
@@ -87,6 +87,10 @@ public class ApiRuntimeApplicationService {
 
   @Inject
   FlexmodelConfig config;
+
+  @Inject
+  ExecutionStrategyFactory executionStrategyFactory;
+
   @Inject
   Request request;
 
@@ -216,73 +220,29 @@ public class ApiRuntimeApplicationService {
         ApiDefinitionMeta.Execution execution = meta.getExecution();
 
         HttpScriptContext httpScriptContext = buildHttpScriptContext(routingContext);
+        try {
+          // 执行具体类型的请求
+          ExecutionStrategy strategy = executionStrategyFactory.getStrategy(execution.getExecutionType());
+          strategy.execute(apiDefinition, execution, pathParameters, httpScriptContext);
 
-        // 执行前置脚本
-        String preScript = meta.getExecution().getPreScript();
-        if (preScript != null) {
-          try {
-            Map<String, Object> contextMap = httpScriptContext.toMap();
-            JavaScriptUtil.execute(preScript, contextMap);
-            httpScriptContext.syncFromMap(contextMap);
-          } catch (Exception e) {
-            log.error("Execute pre script error: {}", e.getMessage());
-            routingContext.fail(500);
-            return;
-          } finally {
-            JavaScriptUtil.cleanup();
-          }
+          int resStatus = httpScriptContext.getResponse().status();
+          String resMessage = httpScriptContext.getResponse().message();
+          Map<String, String> resHeaders = httpScriptContext.getResponse().headers();
+          Map<String, Object> resBody = httpScriptContext.getResponse().body();
+
+          // 添加headers
+          resHeaders.forEach((key, value) -> routingContext.response().putHeader(key, value));
+
+          routingContext.response()
+            .setStatusCode(resStatus)
+            .setStatusMessage(resMessage)
+            .putHeader("Content-Type", "application/json")
+            .end(JsonUtils.getInstance().stringify(resBody));
+        } catch (Exception e) {
+          log.error("Execute executionStrategy error: {}", e.getMessage(), e);
+          sendBadRequestFail(routingContext, e.getMessage(), 500);
+          return;
         }
-
-        // 执行GraphQL
-
-        String operationName = execution.getOperationName();
-        String query = execution.getQuery();
-        Map<String, Object> defaultVariables = execution.getVariables();
-
-
-        Map<String, Object> executionData = new HashMap<>();
-        if (defaultVariables != null) {
-          executionData.putAll(defaultVariables);
-        }
-        if (method.equals("GET")) {
-          if (!CollectionUtils.isEmpty(httpScriptContext.getRequest().query())) {
-            executionData.putAll(httpScriptContext.getRequest().query());
-          }
-        } else {
-          // 请求体
-          if (!CollectionUtils.isEmpty(httpScriptContext.getRequest().body())) {
-            executionData.putAll(httpScriptContext.getRequest().body());
-          }
-        }
-        // 路径参数
-        executionData.putAll(pathParameters);
-        ExecutionResult result = graphQLManger.execute(tenantId, operationName, query, executionData);
-
-        Map<String, Object> resMap = new HashMap<>();
-        resMap.put("data", result.getData());
-
-        // 执行后置脚本
-        String postScript = meta.getExecution().getPostScript();
-        if (postScript != null) {
-
-          HttpScriptContext.Response response = new HttpScriptContext.Response(routingContext.response().getStatusCode(),
-            routingContext.response().getStatusMessage(), multiMapToMap(routingContext.response().headers()), resMap);
-          httpScriptContext.setResponse(response);
-          try {
-            Map<String, Object> contextMap = httpScriptContext.toMap();
-            JavaScriptUtil.execute(postScript, contextMap);
-            httpScriptContext.syncFromMap(contextMap);
-            resMap = httpScriptContext.getResponse().body();
-          } catch (Exception e) {
-            log.error("Execute post script error: {}", e.getMessage());
-            routingContext.fail(500);
-            return;
-          } finally {
-            JavaScriptUtil.cleanup();
-          }
-        }
-        routingContext.response().putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(resMap));
-
         break;
       }
     }

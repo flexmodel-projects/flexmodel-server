@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.application;
+package tech.wetech.flexmodel.domain.model.api;
 
 import com.cronutils.utils.StringUtils;
 import graphql.ExecutionInput;

@@ -11,6 +11,7 @@ import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionMeta;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
+import tech.wetech.flexmodel.domain.model.api.GraphQLManger;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;

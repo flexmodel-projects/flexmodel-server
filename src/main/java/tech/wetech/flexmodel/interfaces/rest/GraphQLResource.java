@@ -7,7 +7,7 @@ import jakarta.ws.rs.Path;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import tech.wetech.flexmodel.application.GraphQLManger;
+import tech.wetech.flexmodel.domain.model.api.GraphQLManger;
 import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.Map;
