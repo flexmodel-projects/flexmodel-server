@@ -249,13 +249,13 @@ public class ApiRuntimeApplicationService {
             executionData.putAll(httpScriptContext.getRequest().query());
           }
         } else {
-          // 路径参数
-          executionData.putAll(pathParameters);
           // 请求体
           if (!CollectionUtils.isEmpty(httpScriptContext.getRequest().body())) {
             executionData.putAll(httpScriptContext.getRequest().body());
           }
         }
+        // 路径参数
+        executionData.putAll(pathParameters);
         ExecutionResult result = graphQLManger.execute(tenantId, operationName, query, executionData);
 
         Map<String, Object> resMap = new HashMap<>();
