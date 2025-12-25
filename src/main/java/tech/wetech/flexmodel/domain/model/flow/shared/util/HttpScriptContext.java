@@ -6,6 +6,7 @@ import lombok.ToString;
 import org.slf4j.LoggerFactory;
 import tech.wetech.flexmodel.JsonUtils;
 import tech.wetech.flexmodel.interfaces.rest.jwt.JwtUtil;
+import tech.wetech.flexmodel.shared.Constants;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -81,19 +82,19 @@ public class HttpScriptContext {
 
   public static class Logger {
     public void info(String msg, Object... args) {
-      LoggerFactory.getLogger(Logger.class).info(msg, args);
+      LoggerFactory.getLogger(Constants.APP_LOG_CATEGORY_NAME).info(msg, args);
     }
 
     public void error(String msg, Object... args) {
-      LoggerFactory.getLogger(Logger.class).error(msg, args);
+      LoggerFactory.getLogger(Constants.APP_LOG_CATEGORY_NAME).error(msg, args);
     }
 
     public void debug(String msg, Object... args) {
-      LoggerFactory.getLogger(Logger.class).debug(msg, args);
+      LoggerFactory.getLogger(Constants.APP_LOG_CATEGORY_NAME).debug(msg, args);
     }
 
     public void warn(String msg, Object... args) {
-      LoggerFactory.getLogger(Logger.class).warn(msg, args);
+      LoggerFactory.getLogger(Constants.APP_LOG_CATEGORY_NAME).warn(msg, args);
     }
 
   }

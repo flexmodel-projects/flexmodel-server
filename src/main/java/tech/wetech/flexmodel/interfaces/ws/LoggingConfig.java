@@ -3,6 +3,7 @@ package tech.wetech.flexmodel.interfaces.ws;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import tech.wetech.flexmodel.shared.Constants;
 
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -13,9 +14,9 @@ import java.util.logging.SimpleFormatter;
 @ApplicationScoped
 public class LoggingConfig {
   void onStart(@Observes StartupEvent ev) {
-    Logger root = Logger.getLogger("");
+    Logger appLog = Logger.getLogger(Constants.APP_LOG_CATEGORY_NAME);
     WebSocketLogHandler handler = new WebSocketLogHandler();
     handler.setFormatter(new SimpleFormatter());
-    root.addHandler(handler);
+    appLog.addHandler(handler);
   }
 }
