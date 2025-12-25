@@ -215,6 +215,7 @@
           "meta": {
             "auth": false,
             "execution": {
+              "executionType": "graphql",
               "query": "query MyQuery($order_by: dev_test_Classes_order_by = { id: asc }, $size: Int = 10, $page: Int = 1) {\n  dev_test_list_Classes(order_by: $order_by, size: $size, page: $page) {\n    classCode\n    className\n    id\n  }\n}",
               "variables": {
                 "order_by": {
@@ -244,6 +245,7 @@
             "maxRequestCount": 50,
             "intervalInSeconds": 60,
             "execution": {
+              "executionType": "graphql",
               "query": "query MyQuery($id: Int) {\n  dev_test_find_one_Classes(where: { id: { _eq: $id } }) {\n    classCode\n    className\n    id\n  }\n}",
               "variables": {
                 "id": 1
@@ -267,6 +269,7 @@
           "meta": {
             "auth": false,
             "execution": {
+              "executionType": "graphql",
               "query": "mutation MyMutation($classCode: String, $className: String, $id: ID = \"\") {\n  dev_test_create_Classes(\n    data: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
@@ -287,6 +290,7 @@
           "meta": {
             "auth": false,
             "execution": {
+              "executionType": "graphql",
               "query": "mutation MyMutation($classCode: String, $className: String, $id: ID) {\n  dev_test_update_Classes_by_id(\n    id: \"1\"\n    _set: { classCode: $classCode, className: $className, id: $id }\n  ) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }
@@ -307,6 +311,7 @@
           "meta": {
             "auth": false,
             "execution": {
+              "executionType": "graphql",
               "query": "mutation MyMutation($id: ID!) {\n  dev_test_delete_Classes_by_id(id: $id) {\n    classCode\n    className\n    id\n  }\n}",
               "operationName": "MyMutation"
             }

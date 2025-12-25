@@ -27,6 +27,7 @@ public class ApiDefinitionMeta {
     private String preScript;
     private String postScript;
     private String executionType = "graphql";
+    private String executionScript;
     private String query;
     private Map<String, Object> variables;
     private String operationName;
