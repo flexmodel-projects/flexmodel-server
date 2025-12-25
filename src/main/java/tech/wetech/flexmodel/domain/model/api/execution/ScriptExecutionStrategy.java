@@ -38,7 +38,7 @@ public class ScriptExecutionStrategy extends AbstractExecutionStrategy {
         dbs.put(datasource.getName(), new ScriptExecutionDB(datasource.getName(), sessionFactory));
       }
       data.put("dbs", dbs);
-      JavaScriptUtil.execute(execution.getExecutionScript(), data);
+      JavaScriptUtil.execute(execution.getExecutionScript(), Map.of(HttpScriptContext.SCRIPT_CONTEXT_KEY, data));
       httpScriptContext.syncFromMap(contextMap);
       return httpScriptContext.getResponse().body();
     } catch (Exception e) {

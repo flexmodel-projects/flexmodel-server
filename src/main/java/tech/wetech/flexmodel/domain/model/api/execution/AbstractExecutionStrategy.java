@@ -37,7 +37,7 @@ public abstract class AbstractExecutionStrategy implements ExecutionStrategy {
     if (preScript != null) {
       try {
         Map<String, Object> contextMap = httpScriptContext.toMap();
-        JavaScriptUtil.execute(preScript, contextMap);
+        JavaScriptUtil.execute(preScript, Map.of(HttpScriptContext.SCRIPT_CONTEXT_KEY, contextMap));
         httpScriptContext.syncFromMap(contextMap);
       } catch (Exception e) {
         log.error("Execute pre script error: {}", e.getMessage());
@@ -54,7 +54,7 @@ public abstract class AbstractExecutionStrategy implements ExecutionStrategy {
     if (postScript != null) {
       try {
         Map<String, Object> contextMap = httpScriptContext.toMap();
-        JavaScriptUtil.execute(postScript, contextMap);
+        JavaScriptUtil.execute(postScript, Map.of(HttpScriptContext.SCRIPT_CONTEXT_KEY, contextMap));
         httpScriptContext.syncFromMap(contextMap);
       } catch (Exception e) {
         log.error("Execute post script error: {}", e.getMessage());

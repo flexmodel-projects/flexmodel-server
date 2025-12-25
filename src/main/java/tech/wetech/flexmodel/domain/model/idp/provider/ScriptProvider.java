@@ -28,9 +28,9 @@ public class ScriptProvider implements Provider {
     try {
       HttpScriptContext scriptContext = new HttpScriptContext();
       scriptContext.setRequest(new HttpScriptContext.Request(param.getMethod(), param.getUrl(), param.getHeaders(), null, param.getQuery()));
-      scriptContext.setResponse(new HttpScriptContext.Response(200, "success",null, null));
+      scriptContext.setResponse(new HttpScriptContext.Response(200, "success", null, null));
       Map<String, Object> contextMap = scriptContext.toMap();
-      JavaScriptUtil.execute(script, contextMap);
+      JavaScriptUtil.execute(script, Map.of(HttpScriptContext.SCRIPT_CONTEXT_KEY, contextMap));
       scriptContext.syncFromMap(contextMap);
       String message = (String) scriptContext.getResponse().body().get("message");
       boolean succcess = (boolean) scriptContext.getResponse().body().get("success");

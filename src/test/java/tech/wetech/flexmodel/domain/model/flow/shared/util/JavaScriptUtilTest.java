@@ -542,7 +542,7 @@ class JavaScriptUtilTest {
     HttpScriptContext scriptContext = new HttpScriptContext();
     scriptContext.setRequest(new HttpScriptContext.Request("GET", "https://api.metacode.ai/v1/md_app_deployment_history", new HashMap<>(), new HashMap<>(), new HashMap<>()));
     Map<String, Object> body = new HashMap<>();
-    Map<String,Object> data = new HashMap<>();
+    Map<String, Object> data = new HashMap<>();
     data.put("metacode_list_md_app_deployment_history", "[]");
     body.put("data", data);
     body.put("success", false);
@@ -553,7 +553,7 @@ class JavaScriptUtilTest {
         "data": context.response.body.data.metacode_list_md_app_deployment_history,
         "success": true
       };
-      """, contextMap);
+      """, Map.of(HttpScriptContext.SCRIPT_CONTEXT_KEY, contextMap));
     scriptContext.syncFromMap(contextMap);
     Assertions.assertEquals(scriptContext.getResponse().body().get("success"), true);
   }
@@ -572,7 +572,7 @@ class JavaScriptUtilTest {
         "data": context.utils.uuid(),
         "success": true
       };
-      """, contextMap);
+      """, Map.of(HttpScriptContext.SCRIPT_CONTEXT_KEY, contextMap));
     scriptContext.syncFromMap(contextMap);
     Assertions.assertEquals(scriptContext.getResponse().body().get("success"), true);
     Assertions.assertNotNull(scriptContext.getResponse().body().get("data"));

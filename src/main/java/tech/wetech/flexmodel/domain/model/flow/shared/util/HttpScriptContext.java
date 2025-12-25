@@ -39,6 +39,8 @@ import java.util.UUID;
 @Setter
 @ToString
 public class HttpScriptContext {
+
+  public static final String SCRIPT_CONTEXT_KEY = "context";
   /** 原始请求参数（用户输入） */
   private Request request;
 
@@ -130,7 +132,7 @@ public class HttpScriptContext {
 
     context.put("utils", utils);
     context.put("log", log);
-    return new HashMap<>(Map.of("context", context));
+    return context;
   }
 
   /**
@@ -141,7 +143,6 @@ public class HttpScriptContext {
    */
   @SuppressWarnings("all")
   public void syncFromMap(Map<String, Object> contextMap) {
-    Object contextObj = contextMap.get("context");
-    JsonUtils.updateValue(this, contextObj);
+    JsonUtils.updateValue(this, contextMap);
   }
 }
