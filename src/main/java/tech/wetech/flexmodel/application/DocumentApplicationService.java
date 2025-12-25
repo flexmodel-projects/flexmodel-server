@@ -111,8 +111,8 @@ public class DocumentApplicationService {
         if (meta == null) {
           continue;
         }
-        ApiDefinitionMeta.DataMapping dataMapping = meta.getDataMapping();
-        if (meta.getDataMapping() != null) {
+        ApiDefinitionMeta.Document document = meta.getDocument();
+        if (meta.getDocument() != null) {
           parseByJsonSchema(meta, definitions, sanitizeName);
         } else {
           GraphQLSchema graphQLSchema = graphQLManager.getGraphQL(tenantId).getGraphQLSchema();
@@ -134,14 +134,14 @@ public class DocumentApplicationService {
    * @param sanitizeName
    */
   private void parseByJsonSchema(ApiDefinitionMeta meta, Map<String, Object> definitions, String sanitizeName) {
-    ApiDefinitionMeta.DataMappingIO input = meta.getDataMapping().getInput();
+    ApiDefinitionMeta.DocumentIO input = meta.getDocument().getInput();
     if (input != null) {
       Map<String, Object> requestSchema = normalizeJsonSchema(input != null ? input.getSchema() : null);
       if (requestSchema != null && !requestSchema.isEmpty()) {
         definitions.put(sanitizeName + "Request", requestSchema);
       }
     }
-    ApiDefinitionMeta.DataMappingIO output = meta.getDataMapping().getOutput();
+    ApiDefinitionMeta.DocumentIO output = meta.getDocument().getOutput();
     if (output != null) {
       Map<String, Object> dataSchema = normalizeJsonSchema(output != null ? output.getSchema() : null);
       if (dataSchema != null && !dataSchema.isEmpty()) {
