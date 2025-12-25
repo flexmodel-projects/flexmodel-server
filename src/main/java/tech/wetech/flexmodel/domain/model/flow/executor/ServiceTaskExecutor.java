@@ -212,7 +212,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
   private Object executeInsertRecord(NodeInstanceBO nodeInstance, Map<String, Object> contextData) throws Exception {
     String datasourceName = getRequiredProperty(nodeInstance, "datasourceName");
     String modelName = getRequiredProperty(nodeInstance, "modelName");
-    Object dataMappingObj = nodeInstance.get("dataMapping");
+    Object documentObj = nodeInstance.get("document");
     String inputPath = getOptionalProperty(nodeInstance, "inputPath");
     LOGGER.debug("executeInsertRecord: datasource={}, model={}, inputPath={}",
       datasourceName, modelName, inputPath);
@@ -226,16 +226,16 @@ public class ServiceTaskExecutor extends ElementExecutor {
       if (inputData instanceof List<?> dataList) {
         // 批量插入
         for (Object item : dataList) {
-          Map<String, Object> recordData = applyDataMapping(dataMappingObj, (Map<String, Object>) item);
+          Map<String, Object> recordData = applyDocument(documentObj, (Map<String, Object>) item);
           affectedRows += session.dsl().insertInto(modelName).values(recordData).execute();
         }
       } else if (inputData instanceof Map) {
         // 单条插入
-        Map<String, Object> recordData = applyDataMapping(dataMappingObj, (Map<String, Object>) inputData);
+        Map<String, Object> recordData = applyDocument(documentObj, (Map<String, Object>) inputData);
         affectedRows += session.dsl().insertInto(modelName).values(recordData).execute();
       } else {
-        // 没有 inputPath，直接使用 dataMapping
-        Map<String, Object> recordData = applyDataMapping(dataMappingObj, contextData);
+        // 没有 inputPath，直接使用 document
+        Map<String, Object> recordData = applyDocument(documentObj, contextData);
         affectedRows += session.dsl().insertInto(modelName).values(recordData).execute();
       }
     }
@@ -250,7 +250,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
   private Object executeUpdateRecord(NodeInstanceBO nodeInstance, Map<String, Object> contextData) {
     String datasourceName = getRequiredProperty(nodeInstance, "datasourceName");
     String modelName = getRequiredProperty(nodeInstance, "modelName");
-    Object dataMappingObj = nodeInstance.get("dataMapping");
+    Object documentObj = nodeInstance.get("document");
     String inputPath = getOptionalProperty(nodeInstance, "inputPath");
     String filter = getOptionalProperty(nodeInstance, "filter");
 
@@ -266,7 +266,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
       if (inputData instanceof List<?> dataList) {
         // 批量更新
         for (Object item : dataList) {
-          Map<String, Object> recordData = applyDataMapping(dataMappingObj, (Map<String, Object>) item);
+          Map<String, Object> recordData = applyDocument(documentObj, (Map<String, Object>) item);
           String processedFilter = StringUtils.simpleRenderTemplate(filter, contextData);
 
           var updateBuilder = session.dsl().update(modelName).values(recordData);
@@ -277,7 +277,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
         }
       } else if (inputData instanceof Map) {
         // 单条更新
-        Map<String, Object> recordData = applyDataMapping(dataMappingObj, (Map<String, Object>) inputData);
+        Map<String, Object> recordData = applyDocument(documentObj, (Map<String, Object>) inputData);
         String processedFilter = StringUtils.simpleRenderTemplate(filter, contextData);
 
         var updateBuilder = session.dsl().update(modelName).values(recordData);
@@ -286,8 +286,8 @@ public class ServiceTaskExecutor extends ElementExecutor {
         }
         affectedRows += updateBuilder.execute();
       } else {
-        // 没有 inputPath，直接使用 dataMapping 和 filter
-        Map<String, Object> recordData = applyDataMapping(dataMappingObj, contextData);
+        // 没有 inputPath，直接使用 document 和 filter
+        Map<String, Object> recordData = applyDocument(documentObj, contextData);
         String processedFilter = StringUtils.simpleRenderTemplate(filter, contextData);
 
         var updateBuilder = session.dsl().update(modelName).values(recordData);
@@ -385,16 +385,16 @@ public class ServiceTaskExecutor extends ElementExecutor {
   }
 
   /**
-   * 应用 dataMapping 配置
+   * 应用 document 配置
    */
-  private Map<String, Object> applyDataMapping(Object dataMappingObj, Map<String, Object> contextData) {
+  private Map<String, Object> applyDocument(Object documentObj, Map<String, Object> contextData) {
     Map<String, Object> result = new HashMap<>();
 
-    if (dataMappingObj == null) {
+    if (documentObj == null) {
       return result;
     }
 
-    if (dataMappingObj instanceof List<?> mappingList) {
+    if (documentObj instanceof List<?> mappingList) {
       for (Object item : mappingList) {
         if (item instanceof Map<?, ?> mapping) {
           String field = (String) mapping.get("field");

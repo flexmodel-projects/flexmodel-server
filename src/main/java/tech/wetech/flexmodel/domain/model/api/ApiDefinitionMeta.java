@@ -19,7 +19,7 @@ public class ApiDefinitionMeta {
   private int maxRequestCount;
   private int intervalInSeconds;
   private Execution execution;
-  private DataMapping dataMapping;
+  private Document document;
 
   @Getter
   @Setter
@@ -36,14 +36,14 @@ public class ApiDefinitionMeta {
 
   @Getter
   @Setter
-  public static class DataMapping {
-    private DataMappingIO input;
-    private DataMappingIO output;
+  public static class Document {
+    private DocumentIO input;
+    private DocumentIO output;
   }
 
   @Getter
   @Setter
-  public static class DataMappingIO {
+  public static class DocumentIO {
     /**
      * json schema 格式的数据
      */

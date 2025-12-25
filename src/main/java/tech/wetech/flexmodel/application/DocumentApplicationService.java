@@ -111,8 +111,8 @@ public class DocumentApplicationService {
         if (meta == null) {
           continue;
         }
-        ApiDefinitionMeta.DataMapping dataMapping = meta.getDataMapping();
-        if (meta.getDataMapping() != null) {
+        ApiDefinitionMeta.Document document = meta.getDocument();
+        if (meta.getDocument() != null) {
           parseByJsonSchema(meta, definitions, sanitizeName);
         } else {
           GraphQLSchema graphQLSchema = graphQLManager.getGraphQL(tenantId).getGraphQLSchema();
@@ -134,14 +134,14 @@ public class DocumentApplicationService {
    * @param sanitizeName
    */
   private void parseByJsonSchema(ApiDefinitionMeta meta, Map<String, Object> definitions, String sanitizeName) {
-    ApiDefinitionMeta.DataMappingIO input = meta.getDataMapping().getInput();
+    ApiDefinitionMeta.DocumentIO input = meta.getDocument().getInput();
     if (input != null) {
       Map<String, Object> requestSchema = normalizeJsonSchema(input != null ? input.getSchema() : null);
       if (requestSchema != null && !requestSchema.isEmpty()) {
         definitions.put(sanitizeName + "Request", requestSchema);
       }
     }
-    ApiDefinitionMeta.DataMappingIO output = meta.getDataMapping().getOutput();
+    ApiDefinitionMeta.DocumentIO output = meta.getDocument().getOutput();
     if (output != null) {
       Map<String, Object> dataSchema = normalizeJsonSchema(output != null ? output.getSchema() : null);
       if (dataSchema != null && !dataSchema.isEmpty()) {
@@ -383,7 +383,7 @@ public class DocumentApplicationService {
         Document document = parser.parse(query);
 
         boolean supportsBody = !(api.getMethod().equals("GET") || api.getMethod().equals("DELETE"));
-        content.put("parameters", buildParameters(api, document, supportsBody));
+        content.put("parameters", buildParameters(api, meta, document, supportsBody));
         if (supportsBody) {
           content.put("requestBody",
             Map.of(
@@ -435,7 +435,7 @@ public class DocumentApplicationService {
     return paths;
   }
 
-  private List<Map<String, Object>> buildParameters(ApiDefinition apiDefinition, Document document, boolean supportsBody) {
+  private List<Map<String, Object>> buildParameters(ApiDefinition apiDefinition, ApiDefinitionMeta meta, Document document, boolean supportsBody) {
     // 遍历每一个操作定义，提取其中的变量定义
     List<Map<String, Object>> parameters = new ArrayList<>();
 
@@ -452,7 +452,7 @@ public class DocumentApplicationService {
       );
     }
 
-    if (!supportsBody) {
+    if (!supportsBody && meta.getExecution().getExecutionType().equals("graphql")) {
       // 3. 提取变量
       List<VariableDefinition> variableDefinitions = getVariableDefinitions(document);
 
