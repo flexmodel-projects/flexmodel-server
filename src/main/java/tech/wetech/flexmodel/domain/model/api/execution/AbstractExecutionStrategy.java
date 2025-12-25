@@ -18,6 +18,7 @@ public abstract class AbstractExecutionStrategy implements ExecutionStrategy {
 
   protected abstract Map<String, Object> doExecute(ApiDefinition apiDefinition, ApiDefinitionMeta.Execution execution,
                                                    Map<String, String> pathParameters, HttpScriptContext httpScriptContext);
+
   @Override
   public void execute(ApiDefinition apiDefinition, ApiDefinitionMeta.Execution execution, Map<String, String> pathParameters, HttpScriptContext httpScriptContext) {
     // 前置脚本
@@ -40,7 +41,7 @@ public abstract class AbstractExecutionStrategy implements ExecutionStrategy {
         httpScriptContext.syncFromMap(contextMap);
       } catch (Exception e) {
         log.error("Execute pre script error: {}", e.getMessage());
-        throw new IllegalArgumentException("Execute pre script error");
+        throw new IllegalArgumentException("Execute pre script error: " + e.getMessage());
       } finally {
         JavaScriptUtil.cleanup();
       }
@@ -57,7 +58,7 @@ public abstract class AbstractExecutionStrategy implements ExecutionStrategy {
         httpScriptContext.syncFromMap(contextMap);
       } catch (Exception e) {
         log.error("Execute post script error: {}", e.getMessage());
-        throw new IllegalArgumentException("Execute post script error");
+        throw new IllegalArgumentException("Execute post script error: " + e.getMessage());
       } finally {
         JavaScriptUtil.cleanup();
       }
