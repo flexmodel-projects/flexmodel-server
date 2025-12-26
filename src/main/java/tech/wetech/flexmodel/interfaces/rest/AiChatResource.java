@@ -151,6 +151,10 @@ public class AiChatResource {
       eventSink.send(event);
     } catch (Exception e) {
       log.error("发送错误事件失败", e);
+    } finally {
+      if (!eventSink.isClosed()) {
+        eventSink.close();
+      }
     }
   }
 
