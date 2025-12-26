@@ -108,6 +108,15 @@ model f_identity_provider {
   @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("身份源")
 }
+
+model f_ai_chat_memory {
+  id : String @id @default(uuid()),
+  messages : String @length("10000") @comment("消息"),
+  created_at?: DateTime @default(now()) @comment("创建时间"),
+  updated_at?: DateTime @default(now()) @comment("更新时间"),
+  @comment("AI聊天记忆")
+}
+
 model f_ai_chat_conversation {
   id : String @id @default(uuid()),
   title : String @length("255") @comment("标题"),

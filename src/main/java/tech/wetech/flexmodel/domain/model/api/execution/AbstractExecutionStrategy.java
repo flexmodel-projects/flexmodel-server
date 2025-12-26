@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author chengjinbao
+ * @author cjbi
  */
 @Slf4j
 public abstract class AbstractExecutionStrategy implements ExecutionStrategy {
