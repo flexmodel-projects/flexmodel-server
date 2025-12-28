@@ -1,5 +1,6 @@
 package tech.wetech.flexmodel.interfaces.rest;
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -104,13 +105,15 @@ public class AiChatResource {
         .onCompleteResponse(chatResponse -> {
           log.info("完成响应: {}", chatResponse.id());
           // Append assistant message to conversation on completion
-          AiChatMessage aiMsg = new AiChatMessage();
-          aiMsg.setId(requestId);
-          aiMsg.setRole("assistant");
-          aiMsg.setContent(chatResponse.aiMessage().text());
-          aiMsg.setConversationId(conversationId);
-          aiMsg.setTenantId(tenantId);
-          aiApplicationService.saveMessage(aiMsg);
+          if (chatResponse.aiMessage().text() != null) {
+            AiChatMessage aiMsg = new AiChatMessage();
+            aiMsg.setId(requestId);
+            aiMsg.setRole("assistant");
+            aiMsg.setContent(chatResponse.aiMessage().text());
+            aiMsg.setConversationId(conversationId);
+            aiMsg.setTenantId(tenantId);
+            aiApplicationService.saveMessage(aiMsg);
+          }
           sendDoneEvent(eventSink);
         })
         .onError(throwable -> {

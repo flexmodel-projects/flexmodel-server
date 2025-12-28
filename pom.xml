@@ -27,6 +27,13 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>io.quarkus.platform</groupId>
+        <artifactId>quarkus-langchain4j-bom</artifactId>
+        <version>${quarkus.platform.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>com.graphql-java</groupId>
         <artifactId>graphql-java</artifactId>
         <version>22.3</version>
@@ -152,12 +159,10 @@
     <dependency>
       <groupId>io.quarkiverse.langchain4j</groupId>
       <artifactId>quarkus-langchain4j-openai</artifactId>
-      <version>1.4.2</version>
     </dependency>
     <dependency>
       <groupId>io.quarkiverse.langchain4j</groupId>
       <artifactId>quarkus-langchain4j-easy-rag</artifactId>
-      <version>1.4.2</version>
     </dependency>
     <!-- GraalVM JavaScript -->
     <dependency>
@@ -219,26 +224,6 @@
               <goal>generate-code-tests</goal>
               <goal>native-image-agent</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.6.0</version>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/generated-sources/flexmodel</source>
-                <source>${project.build.directory}/generated-sources/groovy-stubs</source>
-              </sources>
-            </configuration>
           </execution>
         </executions>
       </plugin>
