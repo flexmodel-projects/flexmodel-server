@@ -1,8 +1,8 @@
 package tech.wetech.flexmodel.interfaces.rest;
 
-import io.smallrye.common.annotation.Blocking;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -29,9 +29,9 @@ import java.util.UUID;
 
 
 @Slf4j
-@Path("/f/ai/chat")
+@Path("/f/ai")
 @ApplicationScoped
-public class AiChatResource {
+public class AiResource {
 
   @Inject
   Sse sse;
@@ -43,7 +43,7 @@ public class AiChatResource {
   FlexmodelChatService flexmodelChatService;
 
   @POST
-  @Path("/conversations")
+  @Path("/chat/conversations")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public AiChatConversation createConversation(CreateConversationRequest request) {
@@ -52,35 +52,27 @@ public class AiChatResource {
   }
 
   @GET
-  @Path("/conversations")
+  @Path("/chat/conversations")
   @Produces(MediaType.APPLICATION_JSON)
-  public List<AiChatConversation> listConversations() {
+  public List<AiChatConversation> getAllConversations() {
     return aiApplicationService.getAllConversations();
   }
 
   @GET
-  @Path("/conversations/{id}")
+  @Path("/chat/conversations/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public AiChatConversation getConversation(@PathParam("id") String id) {
     return aiApplicationService.getConversationById(id);
   }
 
   @DELETE
-  @Path("/conversations/{id}")
+  @Path("/chat/conversations/{id}")
   public void deleteConversation(@PathParam("id") String id) {
     aiApplicationService.deleteConversation(id);
   }
 
-  // Conversation messages
-  @GET
-  @Path("/conversations/{id}/messages")
-  @Produces(MediaType.APPLICATION_JSON)
-  public List<AiChatMessage> listMessages(@PathParam("id") String id) {
-    return aiApplicationService.getMessagesByConversationId(id);
-  }
-
   @POST
-  @Path("/messages")
+  @Path("/chat/completions")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response sendMessage(SendMessageRequest request, @Context SseEventSink eventSink) {
     if (request.content == null || request.content.isBlank()) {
@@ -121,12 +113,12 @@ public class AiChatResource {
           sendErrorEvent(eventSink, throwable.getMessage());
         }).start();
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("流式聊天出错", e);
       sendErrorEvent(eventSink, e.getMessage());
       return Response.serverError().entity(e.getMessage()).build();
     }
 
-    return Response.ok().build();
+    return Response.accepted().build();
   }
 
   private void sendDoneEvent(SseEventSink eventSink) {
@@ -192,6 +184,7 @@ public class AiChatResource {
 
   public static class SendMessageRequest {
     public String conversationId;
+    @NotBlank
     public String content;
   }
 
