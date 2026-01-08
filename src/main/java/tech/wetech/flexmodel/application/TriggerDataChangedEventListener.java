@@ -73,7 +73,7 @@ public class TriggerDataChangedEventListener implements EventListener {
 
               // 构建启动流程参数
               StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
-              startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+              startProcessParam.setProjectId(SessionContextHolder.getProjectId());
               startProcessParam.setUserId(SessionContextHolder.getUserId());
               startProcessParam.setFlowModuleId(trigger.getJobId());
               @SuppressWarnings("unchecked")
@@ -119,7 +119,7 @@ public class TriggerDataChangedEventListener implements EventListener {
 
               // 构建启动流程参数
               StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
-              startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+              startProcessParam.setProjectId(SessionContextHolder.getProjectId());
               startProcessParam.setUserId(SessionContextHolder.getUserId());
               startProcessParam.setFlowModuleId(trigger.getJobId());
               startProcessParam.setEventId(logId);
@@ -170,7 +170,7 @@ public class TriggerDataChangedEventListener implements EventListener {
         System.currentTimeMillis(),
         System.currentTimeMillis(),
         inputData,
-        trigger.getTenantId()
+        trigger.getProjectId()
       );
 
       log.debug("已记录事件触发日志: triggerId={}, phase={}, mutationType={}",

@@ -25,7 +25,7 @@ public class GraphQLResource {
   @Operation(summary = "执行GraphQL查询")
   @POST
   public ExecutionResult execute(GraphQLRequest request) {
-    return graphQLApplicationService.execute(SessionContextHolder.getTenantId(), request.operationName(), request.query(), request.variables());
+    return graphQLApplicationService.execute(SessionContextHolder.getProjectId(), request.operationName(), request.query(), request.variables());
   }
 
   public record GraphQLRequest(@Schema(description = "操作名称") String operationName,

@@ -169,7 +169,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     flowInstanceMapping.setNodeInstanceId(currentNodeInstance.getNodeInstanceId());
     flowInstanceMapping.setSubFlowInstanceId(subFlowInstanceId);
     flowInstanceMapping.setType(FlowInstanceMappingType.EXECUTE);
-    flowInstanceMapping.setTenantId(runtimeContext.getTenantId());
+    flowInstanceMapping.setProjectId(runtimeContext.getProjectId());
     flowInstanceMapping.setCaller(runtimeContext.getCaller());
     flowInstanceMapping.setCreateTime(LocalDateTime.now());
     flowInstanceMapping.setModifyTime(LocalDateTime.now());

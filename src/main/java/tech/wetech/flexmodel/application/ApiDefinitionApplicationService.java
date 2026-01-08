@@ -52,7 +52,7 @@ public class ApiDefinitionApplicationService {
   }
 
   public List<ApiDefinitionTreeDTO> findApiDefinitionTree() {
-    List<ApiDefinition> list = apiDefinitionService.findList(SessionContextHolder.getTenantId());
+    List<ApiDefinition> list = apiDefinitionService.findList(SessionContextHolder.getProjectId());
     List<ApiDefinitionTreeDTO> root = list.stream()
       .filter(apiDefinition -> apiDefinition.getParentId() == null)
       .map(ApiDefinitionTreeDTO::new).toList();

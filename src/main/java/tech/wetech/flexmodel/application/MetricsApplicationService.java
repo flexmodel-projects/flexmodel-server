@@ -66,8 +66,8 @@ public class MetricsApplicationService {
 
   public FmMetricsResponse getFmMetrics() {
     try {
-      String tenantId = SessionContextHolder.getTenantId();
-      List<ApiDefinition> definitions = tenantId != null ? apiDefinitionService.findList(tenantId) : apiDefinitionService.findAll();
+      String projectId = SessionContextHolder.getProjectId();
+      List<ApiDefinition> definitions = projectId != null ? apiDefinitionService.findList(projectId) : apiDefinitionService.findAll();
       List<Datasource> datasources = datasourceService.findAll();
       int modelCount = 0;
       for (Datasource datasource : datasources) {
@@ -918,10 +918,10 @@ public class MetricsApplicationService {
   public AllMetricsResponse getAllMetrics() {
     long startTime = System.currentTimeMillis();
     try {
-      String tenantId = SessionContextHolder.getTenantId();
+      String projectId = SessionContextHolder.getProjectId();
       // 并行获取所有指标
       CompletableFuture<FmMetricsResponse> fmFuture = CompletableFuture.supplyAsync(()->{
-        SessionContextHolder.setTenantId(tenantId);
+        SessionContextHolder.setProjectId(projectId);
         return getFmMetrics();
       });
 

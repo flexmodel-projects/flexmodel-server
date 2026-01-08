@@ -198,11 +198,11 @@ public class TriggerApplicationService {
       log.info("开始立即执行触发器: triggerId={}, jobId={}, jobType={}",
         trigger.getId(), trigger.getJobId(), trigger.getJobType());
 
-      String tenantId = SessionContextHolder.getTenantId();
+      String projectId = SessionContextHolder.getProjectId();
 
       // 构建启动流程参数
       StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
-      startProcessParam.setTenantId(tenantId);
+      startProcessParam.setProjectId(projectId);
       startProcessParam.setUserId(SessionContextHolder.getUserId());
       startProcessParam.setFlowModuleId(trigger.getJobId());
       startProcessParam.setVariables(Map.of());
@@ -210,7 +210,7 @@ public class TriggerApplicationService {
 
       JobExecutionLog jobExecutionLog = jobExecutionLogService.recordJobStart(trigger.getId(), trigger.getJobId(), trigger.getJobGroup(),
         trigger.getJobType(), trigger.getName(), trigger.getName(), trigger.getName(), System.currentTimeMillis(),
-        System.currentTimeMillis(), startProcessParam, tenantId);
+        System.currentTimeMillis(), startProcessParam, projectId);
 
       startProcessParam.setEventId(jobExecutionLog.getId());
 

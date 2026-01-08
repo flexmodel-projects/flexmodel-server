@@ -201,15 +201,15 @@ public class ApiRuntimeApplicationService {
         continue;
       }
       ApiDefinitionMeta meta = JsonUtils.getInstance().convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
-      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{tenantId}" + apiDefinition.getPath());
+      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{projectId}" + apiDefinition.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiDefinition.getMethod())) {
         // 匹配成功
         isMatching = true;
         log.debug("Matched request for api: {}", apiDefinition);
-        String tenantId = pathParameters.get("tenantId");
-        SessionContextHolder.setTenantId(tenantId);
+        String projectId = pathParameters.get("projectId");
+        SessionContextHolder.setProjectId(projectId);
         if (isRateLimiting(routingContext, apiDefinition, meta)) return;
         boolean isAuth = meta.isAuth();
         if (isAuth) {
@@ -249,7 +249,7 @@ public class ApiRuntimeApplicationService {
 
     // 从设置中的GraphQL端点处理请求
     if (!isMatching) {
-      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{tenantId}" + settings.getSecurity().getGraphqlEndpointPath());
+      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{projectId}" + settings.getSecurity().getGraphqlEndpointPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals("POST")) {
@@ -276,7 +276,7 @@ public class ApiRuntimeApplicationService {
           sendBadRequestFail(routingContext, "Parse body error:" + e.getMessage(), -1);
           return;
         }
-        ExecutionResult result = graphQLManger.execute(SessionContextHolder.getTenantId(), (String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
+        ExecutionResult result = graphQLManger.execute(SessionContextHolder.getProjectId(), (String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
         routingContext.response().putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(result));
       }
     }

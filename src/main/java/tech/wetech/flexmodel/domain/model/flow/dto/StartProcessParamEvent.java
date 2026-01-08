@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 public class StartProcessParamEvent extends StartProcessParam {
 
-  private String tenantId;
+  private String projectId;
   private String userId;
   private String eventId;
   private Long startTime;

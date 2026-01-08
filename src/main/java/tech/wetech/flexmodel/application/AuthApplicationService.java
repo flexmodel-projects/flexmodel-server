@@ -3,9 +3,9 @@ package tech.wetech.flexmodel.application;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import tech.wetech.flexmodel.codegen.entity.Tenant;
+import tech.wetech.flexmodel.codegen.entity.Project;
 import tech.wetech.flexmodel.codegen.entity.User;
-import tech.wetech.flexmodel.domain.model.auth.TenantService;
+import tech.wetech.flexmodel.domain.model.auth.ProjectService;
 import tech.wetech.flexmodel.domain.model.auth.UserService;
 
 import java.util.List;
@@ -18,13 +18,13 @@ import java.util.List;
 public class AuthApplicationService {
 
   @Inject
-  TenantService tenantService;
+  ProjectService tenantService;
 
   @Inject
   UserService userService;
 
-  public List<Tenant> findTenants() {
-    return tenantService.findTenants();
+  public List<Project> findProjects() {
+    return tenantService.findProjects();
   }
 
   public User login(String username, String password) {

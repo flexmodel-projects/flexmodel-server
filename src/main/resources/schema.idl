@@ -1,9 +1,8 @@
-model f_tenant {
+model f_project {
   id : String @id @default(uuid()),
   enabled : Boolean @comment("是否启用") @default("true"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("租户")
 }
 model f_user {
@@ -15,7 +14,6 @@ model f_user {
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name : "IDX_USERNAME", unique: "true", fields: [username]),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
   @comment("用户")
 }
 model f_config {
@@ -33,12 +31,12 @@ model f_datasource {
   type? : DatasourceType,
   config? : JSON,
   enabled : Boolean @comment("数据源") @default("true"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("数据源")
 }
 model f_api_definition {
@@ -50,12 +48,12 @@ model f_api_definition {
   path? : String @length("255"),
   meta? : JSON,
   enabled : Boolean @comment("是否开启") @default("true"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("API定义")
 }
 model f_api_definition_history {
@@ -68,12 +66,12 @@ model f_api_definition_history {
   path? : String @length("255"),
   meta? : JSON,
   enabled : Boolean @comment("是否开启") @default("true"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("API定义")
 }
 model f_api_request_log {
@@ -89,23 +87,23 @@ model f_api_request_log {
   created_at : DateTime @default(now()),
   is_success: Boolean @comment("是否成功") @default("true"),
   error_message? : JSON @comment("异常信息"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   @index(name: "IDX_API_REQUEST_LOG_CREATED_AT", fields: [created_at]),
   @index(name: "IDX_API_REQUEST_LOG_IS_ERROR", fields: [is_success]),
   @index(name: "IDX_API_REQUEST_LOG_PATH_CREATED_AT", fields: [path, created_at]),
   @index(name: "IDX_API_REQUEST_LOG_STATUS_CREATED_AT", fields: [status_code, created_at]),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("API请求日志")
 }
 model f_identity_provider {
   name : String @id,
   provider? : JSON,
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("身份源")
 }
 
@@ -121,12 +119,12 @@ model f_ai_chat_conversation {
   id : String @id @default(uuid()),
   title : String @length("255") @comment("标题"),
   messages? : f_ai_chat_message[] @relation(localField: "id", foreignField: "conversation_id", cascadeDelete: "true"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("AI聊天会话")
 }
 
@@ -136,13 +134,13 @@ model f_ai_chat_message {
 //  conversation? : f_ai_chat_conversation @comment("会话") @relation(localField: "conversation_id", foreignField: "id", cascadeDelete: false),
   role: String @length("255") @comment("角色"),
   content : String @length("4000") @comment("内容"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name:"IDX_CONVERSATION_ID", unique: false, fields: [conversation_id]),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("AI聊天消息")
 }
 
@@ -160,13 +158,13 @@ model f_em_flow_definition {
   archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
   caller?: String @comment("调用方"),
   is_deleted: Boolean @default(0) @comment("删除状态(0未删除，1已删除)"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name: "IDX_flow_define_module", fields: [flow_module_id]),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("流程定义")
 }
 
@@ -183,16 +181,15 @@ model f_em_flow_deployment {
   operator: String @comment("操作人"),
   remark: String @length(512) @comment("备注"),
   archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
-  tenant?: String @comment("租户"),
   caller?: String @comment("调用方"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name: "IDX_flow_deploy", fields: [flow_deploy_id]),
   @index(name: "IDX_flow_module", fields: [flow_module_id]),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("流程部署")
 }
 
@@ -207,13 +204,13 @@ model f_ei_flow_instance {
   modify_time: DateTime @default(now()) @comment("流程修改时间"),
   archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
   caller?: String @comment("调用方"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name: "IDX_flow_instance", fields: [flow_instance_id]),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("流程执行实例")
 }
 
@@ -228,13 +225,13 @@ model f_ei_flow_instance_mapping {
   modify_time: DateTime @default(now()) @comment("流程修改时间"),
   archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
   caller?: String @default("optimus-prime") @comment("调用方"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name: "IDX_ei_flow_node", fields: [flow_instance_id]),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("父子流程实例映射")
 }
 
@@ -253,14 +250,14 @@ model f_ei_node_instance {
   modify_time: DateTime @default(now()) @comment("流程修改时间"),
   archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
   caller?: String @comment("调用方"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name: "IDX_node_instance_id", fields: [node_instance_id]),
   @index(name: "IDX_fiid_sniid_nk", fields: [flow_instance_id, source_node_instance_id, node_key]),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("节点执行实例")
 }
 
@@ -275,12 +272,12 @@ model f_ei_node_instance_log {
   create_time: DateTime @default(now()) @comment("流程创建时间"),
   archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
   caller?: String @comment("调用方"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("节点执行记录")
 }
 
@@ -297,14 +294,14 @@ model f_ei_instance_data {
   create_time: DateTime @default(now()) @comment("流程创建时间"),
   archive: Int @default(0) @comment("归档状态(0未删除，1删除)"),
   caller?: String @comment("调用方"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @index(name: "IDX_instance_data_id", fields: [instance_data_id]),
   @index(name: "IDX_flow_instance", fields: [flow_instance_id]),
-  @index(name: "IDX_TENANT", fields: [tenant_id]),
+  @index(name: "IDX_PROJECT", fields: [project_id]),
   @comment("实例数据")
 }
 
@@ -495,7 +492,7 @@ model f_trigger {
   updated_at? : DateTime @default(now()),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   @index(name:"IDX_TENANT", unique: false, fields: [tenant_id]),
   @comment("触发器配置")
 }
@@ -522,7 +519,7 @@ model f_job_execution_log {
   instance_name : String @length("190") @comment("调度实例名称"),
   fired_time : Long @comment("实际触发时间(毫秒)"),
   scheduled_time : Long @comment("计划执行时间(毫秒)"),
-  tenant_id?: String @comment("业务方标识"),
+  project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),

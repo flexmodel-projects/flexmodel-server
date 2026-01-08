@@ -42,7 +42,7 @@ public class ScheduledFlowExecutionJob implements Job {
       StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
       startProcessParam.setFlowModuleId(flowModuleId);
       startProcessParam.setVariables(Map.of());
-      startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+      startProcessParam.setProjectId(SessionContextHolder.getProjectId());
       startProcessParam.setUserId(SessionContextHolder.getUserId());
 
       // 启动流程实例

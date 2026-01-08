@@ -2,7 +2,7 @@ package tech.wetech.flexmodel.domain.model.auth;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.codegen.entity.Tenant;
+import tech.wetech.flexmodel.codegen.entity.Project;
 
 import java.util.List;
 
@@ -10,13 +10,13 @@ import java.util.List;
  * @author cjbi
  */
 @ApplicationScoped
-public class TenantService {
+public class ProjectService {
 
   @Inject
-  TenantRepository tenantRepository;
+  ProjectRepository tenantRepository;
 
-  public List<Tenant> findTenants() {
-    return tenantRepository.findTenants();
+  public List<Project> findProjects() {
+    return tenantRepository.findProjects();
   }
 
 }

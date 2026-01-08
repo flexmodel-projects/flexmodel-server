@@ -25,11 +25,11 @@ public class DocumentResource {
 
   @Operation(summary = "获取接口文档")
   @GET
-  @Path("/{tenantId}/openapi.json")
+  @Path("/{projectId}/openapi.json")
   @PermitAll
-  public Map<String, Object> getOpenApi(@PathParam("tenantId") String tenantId) {
-    SessionContextHolder.setTenantId(tenantId);
-    return documentApplicationService.getOpenApi(tenantId);
+  public Map<String, Object> getOpenApi(@PathParam("projectId") String projectId) {
+    SessionContextHolder.setProjectId(projectId);
+    return documentApplicationService.getOpenApi(projectId);
   }
 
 }

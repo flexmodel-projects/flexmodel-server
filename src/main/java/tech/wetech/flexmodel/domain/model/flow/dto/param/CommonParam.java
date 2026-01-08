@@ -1,20 +1,20 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
 public class CommonParam {
-  private String tenant;
+  private String projectId;
   private String caller;
 
-  public CommonParam(String tenant, String caller) {
-    this.tenant = tenant;
+  public CommonParam(String projectId, String caller) {
+    this.projectId = projectId;
     this.caller = caller;
   }
 
   public String getTenant() {
-    return tenant;
+    return projectId;
   }
 
   public void setTenant(String tenant) {
-    this.tenant = tenant;
+    this.projectId = tenant;
   }
 
   public String getCaller() {
@@ -28,7 +28,7 @@ public class CommonParam {
   @Override
   public String toString() {
     return "CommonParam{" +
-           "tenant='" + tenant + '\'' +
+           "tenant='" + projectId + '\'' +
            ", caller='" + caller + '\'' +
            '}';
   }

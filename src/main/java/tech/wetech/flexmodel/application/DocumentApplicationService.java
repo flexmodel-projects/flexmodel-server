@@ -63,13 +63,13 @@ public class DocumentApplicationService {
     TYPE_MAPPING.put("JSON", Map.of("type", "object"));
   }
 
-  public Map<String, Object> getOpenApi(String tenantId) {
-    List<ApiDefinition> apis = apiDefinitionService.findList(tenantId);
+  public Map<String, Object> getOpenApi(String projectId) {
+    List<ApiDefinition> apis = apiDefinitionService.findList(projectId);
     Map<String, Object> openAPI = new HashMap<>();
     openAPI.put("openapi", "3.0.3");
     openAPI.put("info", buildInfo());
     openAPI.put("components", buildComponents(apis));
-    openAPI.put("servers", List.of(Map.of("url", config.apiRootPath() + "/" + tenantId)));
+    openAPI.put("servers", List.of(Map.of("url", config.apiRootPath() + "/" + projectId)));
     openAPI.put("schemas", List.of("https", "http"));
     openAPI.put("tags", buildTags(apis));
     openAPI.put("paths", buildPaths(apis));
@@ -99,7 +99,7 @@ public class DocumentApplicationService {
 
   private Map<String, Object> buildSchemas(List<ApiDefinition> apis) {
     Map<String, Object> definitions = new HashMap<>();
-    String tenantId = SessionContextHolder.getTenantId();
+    String projectId = SessionContextHolder.getProjectId();
 
     for (ApiDefinition api : apis) {
       try {
@@ -115,7 +115,7 @@ public class DocumentApplicationService {
         if (meta.getDocument() != null) {
           parseByJsonSchema(meta, definitions, sanitizeName);
         } else {
-          GraphQLSchema graphQLSchema = graphQLManager.getGraphQL(tenantId).getGraphQLSchema();
+          GraphQLSchema graphQLSchema = graphQLManager.getGraphQL(projectId).getGraphQLSchema();
           parseByGrapQLSchema(meta, definitions, sanitizeName, graphQLSchema);
         }
       } catch (Exception e) {

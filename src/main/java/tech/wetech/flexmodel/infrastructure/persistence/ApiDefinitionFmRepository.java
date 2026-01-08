@@ -43,10 +43,10 @@ public class ApiDefinitionFmRepository implements ApiDefinitionRepository {
   }
 
   @Override
-  public List<ApiDefinition> findByTenantId(String tenantId) {
+  public List<ApiDefinition> findByProjectId(String projectId) {
     return session.dsl()
       .selectFrom(ApiDefinition.class)
-      .where(field(ApiDefinition::getTenantId).eq(tenantId))
+      .where(field(ApiDefinition::getProjectId).eq(projectId))
       .execute();
   }
 

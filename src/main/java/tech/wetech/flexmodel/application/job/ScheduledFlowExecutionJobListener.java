@@ -50,7 +50,7 @@ public class ScheduledFlowExecutionJobListener implements JobListener {
       String instanceName = context.getScheduler().getSchedulerInstanceId();
       Long firedTime = context.getFireTime().getTime();
       Long scheduledTime = context.getScheduledFireTime().getTime();
-      String tenantId = context.getJobDetail().getJobDataMap().getString("tenantId");
+      String projectId = context.getJobDetail().getJobDataMap().getString("projectId");
 
       // 获取输入数据
       Object inputData = extractInputData(context);
@@ -59,7 +59,7 @@ public class ScheduledFlowExecutionJobListener implements JobListener {
       JobExecutionLog executionLog = jobExecutionLogService.recordJobStart(
         triggerId, jobId, jobGroup, jobType, jobName,
         schedulerName, instanceName, firedTime, scheduledTime,
-        inputData, tenantId
+        inputData, projectId
       );
 
       // 将执行日志ID存储到上下文中，供后续使用

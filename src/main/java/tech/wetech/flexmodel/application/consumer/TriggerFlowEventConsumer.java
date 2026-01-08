@@ -25,7 +25,7 @@ public class TriggerFlowEventConsumer {
 
   @ConsumeEvent("flow.start") // 监听特定地址的事件
   public void consume(StartProcessParamEvent param) {
-    SessionContextHolder.setTenantId(param.getTenantId());
+    SessionContextHolder.setProjectId(param.getProjectId());
     SessionContextHolder.setUserId(param.getUserId());
     StartProcessResult result = null;
     try {

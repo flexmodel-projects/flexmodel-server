@@ -414,7 +414,7 @@ public class FlowResource {
       @SchemaProperty(name = "flowKey", examples = {"order_process"}, description = "流程键"),
       @SchemaProperty(name = "flowName", examples = {"订单处理流程"}, description = "流程名称"),
       @SchemaProperty(name = "remark", examples = {"处理订单的完整业务流程"}, description = "备注"),
-      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "projectId", examples = {"default"}, description = "项目ID"),
       @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
       @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
     }
@@ -438,7 +438,7 @@ public class FlowResource {
   @Schema(
     properties = {
       @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID"),
-      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "projectId", examples = {"default"}, description = "项目ID"),
       @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
       @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
     }
@@ -452,7 +452,7 @@ public class FlowResource {
   @Schema(
     properties = {
       @SchemaProperty(name = "flowModuleId", examples = {"flow_module_001"}, description = "流程模块ID"),
-      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "projectId", examples = {"default"}, description = "项目ID"),
       @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
       @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
     }
@@ -523,7 +523,7 @@ public class FlowResource {
       @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
       @SchemaProperty(name = "nodeInstanceId", examples = {"node_inst_001"}, description = "节点实例ID"),
       @SchemaProperty(name = "variables", description = "流程变量", type = SchemaType.ARRAY),
-      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "projectId", examples = {"default"}, description = "项目ID"),
       @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
       @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
     }
@@ -546,7 +546,7 @@ public class FlowResource {
     properties = {
       @SchemaProperty(name = "flowInstanceId", examples = {"flow_inst_001"}, description = "流程实例ID"),
       @SchemaProperty(name = "nodeInstanceId", examples = {"node_inst_001"}, description = "节点实例ID"),
-      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "projectId", examples = {"default"}, description = "项目ID"),
       @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
       @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者")
     }
@@ -599,7 +599,7 @@ public class FlowResource {
       @SchemaProperty(name = "flowKey", examples = {"order_process"}, description = "流程键"),
       @SchemaProperty(name = "status", examples = {"4"}, description = "状态：1-草稿，2-设计，3-测试，4-已发布"),
       @SchemaProperty(name = "remark", examples = {"处理订单的完整业务流程"}, description = "备注"),
-      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "projectId", examples = {"default"}, description = "项目ID"),
       @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
       @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者"),
       @SchemaProperty(name = "modifyTime", description = "修改时间", readOnly = true)
@@ -632,7 +632,7 @@ public class FlowResource {
       @SchemaProperty(name = "flowDeployId", examples = {"flow_deploy_001"}, description = "流程部署ID"),
       @SchemaProperty(name = "status", examples = {"1"}, description = "流程实例状态：1-运行中，2-已完成，3-已终止，4-已暂停"),
       @SchemaProperty(name = "parentFlowInstanceId", examples = {"parent_inst_001"}, description = "父流程实例ID"),
-      @SchemaProperty(name = "tenant", examples = {"default"}, description = "租户"),
+      @SchemaProperty(name = "projectId", examples = {"default"}, description = "项目ID"),
       @SchemaProperty(name = "caller", examples = {"admin"}, description = "调用者"),
       @SchemaProperty(name = "operator", examples = {"admin"}, description = "操作者"),
       @SchemaProperty(name = "createTime", description = "创建时间", readOnly = true),

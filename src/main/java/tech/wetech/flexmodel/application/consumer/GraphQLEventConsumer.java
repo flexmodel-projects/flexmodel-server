@@ -43,11 +43,11 @@ public class GraphQLEventConsumer {
     log.info("Received graphql message");
     List<Datasource> datasourceList = datasourceService.findAll();
     Map<String, List<String>> dsMap = datasourceList.stream()
-      .filter(f -> f.getTenantId() != null)
-      .collect(groupingBy(Datasource::getTenantId, mapping(Datasource::getName, toList())));
+      .filter(f -> f.getProjectId() != null)
+      .collect(groupingBy(Datasource::getProjectId, mapping(Datasource::getName, toList())));
     FlexmodelGraphQL fg = new FlexmodelGraphQL();
     graphQLManger.addDefaultGraphQL(fg.generateGraphQLWithSchemaObject(sf, sf.getSchemaNames()));
-    dsMap.forEach((tenantId, datasourceNames) -> graphQLManger.addGraphQL(tenantId, fg.generateGraphQLWithSchemaObject(sf, datasourceNames)));
+    dsMap.forEach((projectId, datasourceNames) -> graphQLManger.addGraphQL(projectId, fg.generateGraphQLWithSchemaObject(sf, datasourceNames)));
     log.info("========== GraphQL init successful in {} ms!", System.currentTimeMillis() - beginTime);
   }
 

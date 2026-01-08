@@ -76,7 +76,7 @@ public class RecordResource {
     @QueryParam("nestedQuery") @DefaultValue("false") boolean nestedQuery,
     @QueryParam("sort") String sort
   ) {
-    SessionContextHolder.setTenantId(null);
+    SessionContextHolder.setProjectId(null);
     return dataApplicationService.findPagingRecords(datasourceName, modelName, page, size, filter, sort, nestedQuery);
   }
 

@@ -28,13 +28,13 @@ public class ApiDefinitionService {
   EventBus eventBus;
 
   @CacheResult(cacheName = "apiDefinitionList")
-  public List<ApiDefinition> findList(String tenantId) {
-    return apiDefinitionRepository.findByTenantId(tenantId);
+  public List<ApiDefinition> findList(String projectId) {
+    return apiDefinitionRepository.findByProjectId(projectId);
   }
 
   @CacheResult(cacheName = "apiDefinitionList")
   public List<ApiDefinition> findAll() {
-    SessionContextHolder.setTenantId(null);
+    SessionContextHolder.setProjectId(null);
     return apiDefinitionRepository.findAll();
   }
 

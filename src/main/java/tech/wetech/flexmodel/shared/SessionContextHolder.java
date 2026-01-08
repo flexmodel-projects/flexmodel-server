@@ -10,12 +10,12 @@ public class SessionContextHolder {
 
   private static final ThreadLocal<SessionContext> CONTEXT_HOLDER = ThreadLocal.withInitial(SessionContext::new);
 
-  public static void setTenantId(String tenantId) {
-    CONTEXT_HOLDER.get().setTenantId(tenantId);
+  public static void setProjectId(String projectId) {
+    CONTEXT_HOLDER.get().setProjectId(projectId);
   }
 
-  public static String getTenantId() {
-    return CONTEXT_HOLDER.get().getTenantId();
+  public static String getProjectId() {
+    return CONTEXT_HOLDER.get().getProjectId();
   }
 
   public static void setUserId(String userId) {
@@ -30,7 +30,7 @@ public class SessionContextHolder {
   @Getter
   @Setter
   static class SessionContext {
-    private String tenantId;
+    private String projectId;
     private String userId;
   }
 

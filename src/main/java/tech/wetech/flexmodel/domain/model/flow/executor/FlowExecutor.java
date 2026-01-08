@@ -97,7 +97,7 @@ public class FlowExecutor extends RuntimeExecutor {
     flowInstance.setStatus(FlowInstanceStatus.RUNNING);
     flowInstance.setCreateTime(LocalDateTime.now());
     flowInstance.setModifyTime(LocalDateTime.now());
-    flowInstance.setTenantId(runtimeContext.getTenantId());
+    flowInstance.setProjectId(runtimeContext.getProjectId());
     flowInstance.setCaller(runtimeContext.getCaller());
     return flowInstance;
   }
@@ -604,7 +604,7 @@ public class FlowExecutor extends RuntimeExecutor {
     NodeInstance nodeInstancePO = JsonUtils.getInstance().convertValue(nodeInstanceBO, NodeInstance.class);
     nodeInstancePO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
     nodeInstancePO.setFlowDeployId(runtimeContext.getFlowDeployId());
-    nodeInstancePO.setTenantId(runtimeContext.getTenantId());
+    nodeInstancePO.setProjectId(runtimeContext.getProjectId());
     nodeInstancePO.setCaller(runtimeContext.getCaller());
     LocalDateTime currentTime = LocalDateTime.now();
     nodeInstancePO.setCreateTime(currentTime);
@@ -616,7 +616,7 @@ public class FlowExecutor extends RuntimeExecutor {
     NodeInstanceLog nodeInstanceLogPO = JsonUtils.getInstance().convertValue(nodeInstancePO, NodeInstanceLog.class);
     nodeInstanceLogPO.setId(null);
     nodeInstanceLogPO.setType(nodeInstanceType);
-    nodeInstanceLogPO.setTenantId(nodeInstancePO.getTenantId());
+    nodeInstanceLogPO.setProjectId(nodeInstancePO.getProjectId());
     return nodeInstanceLogPO;
   }
 

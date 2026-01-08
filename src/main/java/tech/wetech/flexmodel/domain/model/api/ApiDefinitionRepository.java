@@ -15,7 +15,7 @@ public interface ApiDefinitionRepository {
 
   List<ApiDefinition> findAll();
 
-  List<ApiDefinition> findByTenantId(String tenantId);
+  List<ApiDefinition> findByProjectId(String projectId);
 
   ApiDefinition save(ApiDefinition record);
 

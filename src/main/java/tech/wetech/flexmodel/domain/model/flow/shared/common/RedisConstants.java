@@ -4,7 +4,7 @@ public class RedisConstants {
 
   public static final String REDIS_PREFIX = "ior:"; //basic
 
-  //k=flowDeployId; v=deployId+flowModuleId+tenantId+flowModel
+  //k=flowDeployId; v=deployId+flowModuleId+projectId+flowModel
   public static final String FLOW_INFO = REDIS_PREFIX + "flow_info_";
 
   //k=flowInstanceId; v=flowInstanceId+deployId+status

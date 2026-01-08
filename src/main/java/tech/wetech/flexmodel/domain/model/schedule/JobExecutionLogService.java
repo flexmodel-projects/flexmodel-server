@@ -95,12 +95,12 @@ public class JobExecutionLogService {
      * @param firedTime 实际触发时间
      * @param scheduledTime 计划执行时间
      * @param inputData 输入数据
-     * @param tenantId 租户ID
+     * @param projectId 租户ID
      * @return 创建的作业执行日志
      */
     public JobExecutionLog recordJobStart(String triggerId, String jobId, String jobGroup, String jobType,
                                          String jobName, String schedulerName, String instanceName,
-                                         Long firedTime, Long scheduledTime, Object inputData, String tenantId) {
+                                         Long firedTime, Long scheduledTime, Object inputData, String projectId) {
         JobExecutionLog log = new JobExecutionLog();
         log.setTriggerId(triggerId);
         log.setJobId(jobId);
@@ -115,7 +115,7 @@ public class JobExecutionLogService {
         log.setFiredTime(firedTime);
         log.setScheduledTime(scheduledTime);
         log.setInputData(inputData);
-        log.setTenantId(tenantId);
+        log.setProjectId(projectId);
         log.setRetryCount(0);
         log.setMaxRetryCount(0);
 
