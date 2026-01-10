@@ -17,7 +17,6 @@ import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.model.EntityDefinition;
 import tech.wetech.flexmodel.session.Session;
 import tech.wetech.flexmodel.session.SessionFactory;
-import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,8 +50,8 @@ public class ApiDefinitionApplicationService {
 
   }
 
-  public List<ApiDefinitionTreeDTO> findApiDefinitionTree() {
-    List<ApiDefinition> list = apiDefinitionService.findList(SessionContextHolder.getProjectId());
+  public List<ApiDefinitionTreeDTO> findApiDefinitionTree(String projectId) {
+    List<ApiDefinition> list = apiDefinitionService.findList(projectId);
     List<ApiDefinitionTreeDTO> root = list.stream()
       .filter(apiDefinition -> apiDefinition.getParentId() == null)
       .map(ApiDefinitionTreeDTO::new).toList();
@@ -66,9 +65,10 @@ public class ApiDefinitionApplicationService {
    * 查询API定义历史
    *
    * @param appDefinitionId
+   * @param apiDefinitionId
    * @return
    */
-  public List<ApiDefinitionHistory> findApiDefinitionHistories(String appDefinitionId) {
+  public List<ApiDefinitionHistory> findApiDefinitionHistories(String appDefinitionId, String apiDefinitionId) {
     return apiDefinitionService.findApiDefinitionHistories(appDefinitionId);
   }
 
@@ -84,20 +84,20 @@ public class ApiDefinitionApplicationService {
     return result;
   }
 
-  public ApiDefinition createApiDefinition(ApiDefinition apiDefinition) {
+  public ApiDefinition createApiDefinition(String projectId, ApiDefinition apiDefinition) {
     return apiDefinitionService.create(apiDefinition);
   }
 
-  public ApiDefinition updateApiDefinition(ApiDefinition apiDefinition) {
+  public ApiDefinition updateApiDefinition(String projectId, ApiDefinition apiDefinition) {
     return apiDefinitionService.update(apiDefinition);
   }
 
-  public void deleteApiDefinition(String id) {
+  public void deleteApiDefinition(String projectId, String id) {
     apiDefinitionService.delete(id);
   }
 
   @Transactional
-  public void generateAPIs(GenerateAPIsDTO dto) {
+  public void generateAPIs(String projectId, GenerateAPIsDTO dto) {
     List<String> generateAPIs = dto.getGenerateAPIs();
     try (Session session = sessionFactory.createSession(dto.getDatasourceName())) {
       EntityDefinition entity = (EntityDefinition) session.schema().getModel(dto.getModelName());
@@ -133,7 +133,7 @@ public class ApiDefinitionApplicationService {
     return apiDefinitionService.findApiDefinition(id);
   }
 
-  public ApiDefinitionHistory restoreApiDefinition(String historyId) {
+  public ApiDefinitionHistory restoreApiDefinition(String projectId, String historyId) {
     ApiDefinitionHistory apiDefinitionHistory = apiDefinitionService.findApiDefinitionHistory(historyId);
     if (apiDefinitionHistory != null) {
       ApiDefinition apiDefinition = JsonUtils.convertValue(apiDefinitionHistory, ApiDefinition.class);

@@ -1,8 +1,17 @@
 package tech.wetech.flexmodel.domain.model.flow.dto.param;
 
 public class GetFlowModuleParam {
+  private String projectId;
   private String flowModuleId;
   private String flowDeployId;
+
+  public String getProjectId() {
+    return projectId;
+  }
+
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
 
   public String getFlowModuleId() {
     return flowModuleId;

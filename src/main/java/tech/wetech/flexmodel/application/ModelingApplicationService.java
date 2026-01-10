@@ -27,7 +27,7 @@ public class ModelingApplicationService {
   @Inject
   ModelService modelService;
 
-  public List<Datasource> findDatasourceList() {
+  public List<Datasource> findDatasourceList(String projectId) {
     return datasourceService.findAll();
   }
 
@@ -35,71 +35,71 @@ public class ModelingApplicationService {
     return datasourceService.createDatasource(datasource);
   }
 
-  public Datasource updateDatasource(Datasource record) {
+  public Datasource updateDatasource(String projectId, Datasource record) {
     return datasourceService.updateDatasource(record);
   }
 
-  public void deleteDatasource(String datasourceName) {
+  public void deleteDatasource(String datasourceName, String name) {
     datasourceService.deleteDatasource(datasourceName);
   }
 
-  public List<SchemaObject> findModels(String datasourceName) {
+  public List<SchemaObject> findModels(String projectId, String datasourceName) {
     return modelService.findAll(datasourceName);
   }
 
-  public SchemaObject createModel(String datasourceName, SchemaObject model) {
+  public SchemaObject createModel(String projectId, String datasourceName, SchemaObject model) {
     return modelService.createModel(datasourceName, model);
   }
 
-  public void dropModel(String datasourceName, String modelName) {
+  public void dropModel(String projectId, String datasourceName, String modelName) {
     modelService.dropModel(datasourceName, modelName);
   }
 
-  public TypedField<?, ?> createField(String datasourceName, TypedField<?, ?> field) {
+  public TypedField<?, ?> createField(String projectId, String datasourceName, TypedField<?, ?> field) {
     return modelService.createField(datasourceName, field);
   }
 
-  public TypedField<?, ?> modifyField(String datasourceName, TypedField<?, ?> field) {
+  public TypedField<?, ?> modifyField(String projectId, String datasourceName, TypedField<?, ?> field) {
     return modelService.modifyField(datasourceName, field);
   }
 
-  public void dropField(String datasourceName, String modelName, String fieldName) {
+  public void dropField(String projectId, String datasourceName, String modelName, String fieldName) {
     modelService.dropField(datasourceName, modelName, fieldName);
   }
 
-  public IndexDefinition createIndex(String datasourceName, IndexDefinition index) {
+  public IndexDefinition createIndex(String projectId, String datasourceName, IndexDefinition index) {
     return modelService.createIndex(datasourceName, index);
   }
 
-  public IndexDefinition modifyIndex(String datasourceName, IndexDefinition index) {
+  public IndexDefinition modifyIndex(String projectId, String datasourceName, IndexDefinition index) {
     return modelService.modifyIndex(datasourceName, index);
   }
 
-  public void dropIndex(String datasourceName, String modelName, String indexName) {
+  public void dropIndex(String projectId, String datasourceName, String modelName, String indexName) {
     modelService.dropIndex(datasourceName, modelName, indexName);
   }
 
-  public ValidateResult validateConnection(Datasource datasource) {
+  public ValidateResult validateConnection(String projectId, Datasource datasource) {
     return datasourceService.validate(datasource);
   }
 
-  public List<String> getPhysicsModelNames(Datasource datasource) {
+  public List<String> getPhysicsModelNames(String projectId, Datasource datasource) {
     return datasourceService.getPhysicsModelNames(datasource);
   }
 
-  public List<SchemaObject> syncModels(String datasourceName, Set<String> models) {
+  public List<SchemaObject> syncModels(String projectId, String datasourceName, Set<String> models) {
     return modelService.syncModels(datasourceName, models);
   }
 
-  public void importModels(String datasourceName, String script, String type) {
+  public void importModels(String projectId, String datasourceName, String script, String type) {
     modelService.importModels(datasourceName, script, type);
   }
 
-  public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
+  public NativeQueryResult executeNativeQuery(String projectId, String datasourceName, String statement, Map<String, Object> parameters) {
     return datasourceService.executeNativeQuery(datasourceName, statement, parameters);
   }
 
-  public SchemaObject modifyModel(String datasourceName, String modelName, SchemaObject model) {
+  public SchemaObject modifyModel(String projectId, String datasourceName, String modelName, SchemaObject model) {
     if (model instanceof EntityDefinition) {
       throw new RuntimeException("Unsupported model type");
     }
@@ -114,11 +114,11 @@ public class ModelingApplicationService {
     return model;
   }
 
-  public SchemaObject findModel(String datasourceName, String modelName) {
+  public SchemaObject findModel(String projectId, String datasourceName, String modelName) {
     return modelService.findModel(datasourceName, modelName).orElseThrow(() -> new RuntimeException("Model not found"));
   }
 
-  public List<SchemaObject> executeIdl(String datasourceName, String idl) throws ParseException {
+  public List<SchemaObject> executeIdl(String projectId, String datasourceName, String idl) throws ParseException {
     return modelService.executeIdl(datasourceName, idl);
   }
 }

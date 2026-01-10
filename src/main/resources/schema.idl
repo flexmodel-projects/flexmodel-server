@@ -1,6 +1,11 @@
 model f_project {
   id : String @id @default(uuid()),
+  name: String,
+  description?: String,
   enabled : Boolean @comment("是否启用") @default("true"),
+  owner_id?: String @comment("所有者 ID"),
+  created_by?: String @comment("创建人"),
+  updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
   @comment("租户")
@@ -493,7 +498,7 @@ model f_trigger {
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   project_id?: String @comment("项目ID"),
-  @index(name:"IDX_TENANT", unique: false, fields: [tenant_id]),
+  @index(name:"IDX_PROJECT", unique: false, fields: [project_id]),
   @comment("触发器配置")
 }
 
@@ -531,7 +536,7 @@ model f_job_execution_log {
   @index(name:"IDX_JOB_EXEC_STATUS", unique: false, fields: [execution_status]),
   @index(name:"IDX_JOB_EXEC_START_TIME", unique: false, fields: [start_time]),
   @index(name:"IDX_JOB_EXEC_SUCCESS", unique: false, fields: [is_success]),
-  @index(name:"IDX_TENANT", unique: false, fields: [tenant_id]),
+  @index(name:"IDX_TENANT", unique: false, fields: [project_id]),
   @index(name:"IDX_JOB_EXEC_COMPOSITE", unique: false, fields: [trigger_id, start_time]),
   @comment("作业执行日志")
 }

@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FlowInstanceListRequest {
+  private String projectId;
   private String flowInstanceId;
   private String flowModuleId;
   private String flowDeployId;

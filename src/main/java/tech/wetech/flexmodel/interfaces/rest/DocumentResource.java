@@ -14,8 +14,8 @@ import java.util.Map;
 /**
  * @author cjbi
  */
-@Tag(name = "【Flexmodel】接口文档", description = "接口文档管理")
-@Path("/f/docs")
+@Tag(name = "接口文档", description = "接口文档管理")
+@Path("/f/projects/{projectId}/docs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DocumentResource {
@@ -25,10 +25,9 @@ public class DocumentResource {
 
   @Operation(summary = "获取接口文档")
   @GET
-  @Path("/{projectId}/openapi.json")
+  @Path("/openapi.json")
   @PermitAll
   public Map<String, Object> getOpenApi(@PathParam("projectId") String projectId) {
-    SessionContextHolder.setProjectId(projectId);
     return documentApplicationService.getOpenApi(projectId);
   }
 

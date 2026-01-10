@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TriggerPageRequest {
+  private String projectId;
   private String name;
   private String jobType;
   private String jobId;

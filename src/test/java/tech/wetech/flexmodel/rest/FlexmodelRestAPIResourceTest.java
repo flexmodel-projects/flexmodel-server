@@ -140,7 +140,6 @@ public class FlexmodelRestAPIResourceTest {
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
-      .header("X-Tenant-Id", "dev_test")
       .body(body)
       .post(Resources.ROOT_PATH + "/datasources/dev_test/import")
       .then()

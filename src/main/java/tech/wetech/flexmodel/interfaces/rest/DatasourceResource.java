@@ -29,17 +29,14 @@ import java.util.Set;
 /**
  * @author cjbi
  */
-@Tag(name = "【Flexmodel】数据源", description = "数据源管理")
-@Path("/f/datasources")
+@Tag(name = "数据源", description = "数据源管理")
+@Path("/f/projects/{projectId}/datasources")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DatasourceResource {
 
   @Inject
   ModelingApplicationService modelingApplicationService;
-
-  @Inject
-  FlexmodelConfig config;
 
   @RequestBody(
     name = "请求体",
@@ -68,8 +65,8 @@ public class DatasourceResource {
   @Operation(summary = "验证数据源连接")
   @POST
   @Path("/validate")
-  public ValidateResult validateConnection(Datasource datasource) {
-    return modelingApplicationService.validateConnection(datasource);
+  public ValidateResult validateConnection(@PathParam("projectId") String projectId, Datasource datasource) {
+    return modelingApplicationService.validateConnection(projectId, datasource);
   }
 
   @APIResponse(
@@ -97,20 +94,20 @@ public class DatasourceResource {
   @Operation(summary = "从数据源同步物理表到建模")
   @POST
   @Path("/{datasourceName}/sync")
-  public List<SchemaObject> syncModels(@PathParam("datasourceName") String datasourceName, Set<String> models) {
-    return modelingApplicationService.syncModels(datasourceName, models);
+  public List<SchemaObject> syncModels(@PathParam("projectId") String projectId, @PathParam("datasourceName") String datasourceName, Set<String> models) {
+    return modelingApplicationService.syncModels(projectId, datasourceName, models);
   }
 
   @Parameter(name = "datasourceName", description = "数据源名称", in = ParameterIn.PATH)
   @Operation(summary = "导入模型到数据源")
   @POST
   @Path("/{datasourceName}/import")
-  public void importModels(@PathParam("datasourceName") String datasourceName, ImportScriptRequest request) {
+  public void importModels(@PathParam("projectId") String projectId, @PathParam("datasourceName") String datasourceName, ImportScriptRequest request) {
     ImportScriptType type = request.type();
     if (type == null) {
       type = ImportScriptType.JSON;
     }
-    modelingApplicationService.importModels(datasourceName, request.script(), type.name());
+    modelingApplicationService.importModels(projectId, datasourceName, request.script(), type.name());
   }
 
   @RequestBody(
@@ -125,8 +122,8 @@ public class DatasourceResource {
   @Operation(summary = "获取物理数据库表名称")
   @POST
   @Path("/physics/names")
-  public List<String> getPhysicsModelNames(Datasource datasource) {
-    return modelingApplicationService.getPhysicsModelNames(datasource);
+  public List<String> getPhysicsModelNames(@PathParam("projectId") String projectId, Datasource datasource) {
+    return modelingApplicationService.getPhysicsModelNames(projectId, datasource);
   }
 
   @APIResponse(
@@ -147,8 +144,8 @@ public class DatasourceResource {
   @Operation(summary = "执行原生查询")
   @POST
   @Path("/{datasourceName}/native-query")
-  public NativeQueryResult executeNativeQuery(@PathParam("datasourceName") String datasourceName, ExecuteNativeQueryRequest request) {
-    return modelingApplicationService.executeNativeQuery(datasourceName, request.statement(), request.parameters());
+  public NativeQueryResult executeNativeQuery(@PathParam("projectId") String projectId, @PathParam("datasourceName") String datasourceName, ExecuteNativeQueryRequest request) {
+    return modelingApplicationService.executeNativeQuery(projectId, datasourceName, request.statement(), request.parameters());
   }
 
   @APIResponse(
@@ -165,8 +162,8 @@ public class DatasourceResource {
     })
   @Operation(summary = "获取所有数据源")
   @GET
-  public List<Datasource> findAll() {
-    return modelingApplicationService.findDatasourceList();
+  public List<Datasource> findAll(@PathParam("projectId") String projectId) {
+    return modelingApplicationService.findDatasourceList(projectId);
   }
 
   @RequestBody(
@@ -219,17 +216,18 @@ public class DatasourceResource {
   @Operation(summary = "更新数据源")
   @PUT
   @Path("/{datasourceName}")
-  public Datasource updateDatasource(@PathParam("datasourceName") String datasourceName, Datasource datasource) {
+  public Datasource updateDatasource(@PathParam("projectId") String projectId, @PathParam("datasourceName") String datasourceName, Datasource datasource) {
     datasource.setName(datasourceName);
-    return modelingApplicationService.updateDatasource(datasource);
+    datasource.setProjectId(projectId);
+    return modelingApplicationService.updateDatasource(projectId, datasource);
   }
 
   @Parameter(name = "datasourceName", description = "数据源名称", in = ParameterIn.PATH)
   @Operation(summary = "删除数据源")
   @DELETE
   @Path("/{datasourceName}")
-  public void deleteDatasource(@PathParam("datasourceName") String datasourceName) {
-    modelingApplicationService.deleteDatasource(datasourceName);
+  public void deleteDatasource(@PathParam("projectId") String projectId, @PathParam("datasourceName") String datasourceName) {
+    modelingApplicationService.deleteDatasource(projectId, datasourceName);
   }
 
   public record ImportScriptRequest(@NotBlank @Schema(description = "脚本") String script,

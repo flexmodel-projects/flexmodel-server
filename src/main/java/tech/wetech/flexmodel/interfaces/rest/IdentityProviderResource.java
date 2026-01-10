@@ -2,6 +2,7 @@ package tech.wetech.flexmodel.interfaces.rest;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -20,8 +21,10 @@ import java.util.List;
 /**
  * @author cjbi
  */
-@Tag(name = "【Flexmodel】身份源", description = "身份源管理")
-@Path("/f/identity-providers")
+@Tag(name = "身份源", description = "身份源管理")
+@Path("/f/projects/{projectId}/identity-providers")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class IdentityProviderResource {
 
   @Inject
@@ -41,8 +44,8 @@ public class IdentityProviderResource {
     })
   @Operation(summary = "获取身份源列表")
   @GET
-  public List<IdentityProvider> findProviders() {
-    return identityProviderApplicationService.findAll();
+  public List<IdentityProvider> findProviders(@PathParam("projectId") String projectId) {
+    return identityProviderApplicationService.findAll(projectId);
   }
 
   @RequestBody(
@@ -67,8 +70,8 @@ public class IdentityProviderResource {
     })
   @Operation(summary = "创建身份源")
   @POST
-  public IdentityProvider createProvider(IdentityProvider identityProvider) {
-    return identityProviderApplicationService.createProvider(identityProvider);
+  public IdentityProvider createProvider(@PathParam("projectId") String projectId, IdentityProvider identityProvider) {
+    return identityProviderApplicationService.createProvider(projectId, identityProvider);
   }
 
   @RequestBody(
@@ -95,16 +98,16 @@ public class IdentityProviderResource {
   @Operation(summary = "更新身份源")
   @PUT
   @Path("/{name}")
-  public IdentityProvider updateProvider(@PathParam("name") String name, IdentityProvider identityProvider) {
-    return identityProviderApplicationService.updateProvider(identityProvider);
+  public IdentityProvider updateProvider(@PathParam("projectId") String projectId, @PathParam("name") String name, IdentityProvider identityProvider) {
+    return identityProviderApplicationService.updateProvider(projectId, identityProvider);
   }
 
   @Parameter(name = "name", description = "名称", in = ParameterIn.PATH)
   @Operation(summary = "删除身份源")
   @DELETE
   @Path("/{name}")
-  public void deleteProvider(@PathParam("name") String name) {
-    identityProviderApplicationService.deleteProvider(name);
+  public void deleteProvider(@PathParam("projectId") String projectId, @PathParam("name") String name) {
+    identityProviderApplicationService.deleteProvider(projectId, name);
   }
 
   @Schema(

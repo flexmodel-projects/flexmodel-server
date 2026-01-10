@@ -11,14 +11,12 @@ import tech.wetech.flexmodel.application.dto.TriggerDTO;
 import tech.wetech.flexmodel.application.dto.TriggerPageRequest;
 import tech.wetech.flexmodel.codegen.entity.Trigger;
 
-import java.time.LocalDateTime;
-
 /**
  * @author cjbi
  */
 @ApplicationScoped
-@Tag(name = "【Flexmodel】触发器", description = "触发器管理")
-@Path("/f/triggers")
+@Tag(name = "触发器", description = "触发器管理")
+@Path("/f/projects/{projectId}/triggers")
 public class TriggerResource {
   @Inject
   TriggerApplicationService scheduleApplicationService;
@@ -26,19 +24,22 @@ public class TriggerResource {
   @Operation(summary = "获取单个触发器")
   @GET
   @Path("/{id}")
-  public TriggerDTO findById(@PathParam("id") String id) {
-    return scheduleApplicationService.findById(id);
+  public TriggerDTO findById(@PathParam("projectId") String projectId,
+                             @PathParam("id") String id) {
+    return scheduleApplicationService.findById(projectId, id);
   }
 
   @Operation(summary = "获取触发器列表")
   @GET
-  public PageDTO<TriggerDTO> findPage(@QueryParam("name") String name,
+  public PageDTO<TriggerDTO> findPage(@PathParam("projectId") String projectId,
+                                      @QueryParam("name") String name,
                                       @QueryParam("jobType") String jobType,
                                       @QueryParam("jobId") String jobId,
                                       @QueryParam("jobGroup") String jobGroup,
                                       @QueryParam("page") @DefaultValue("1") Integer page,
                                       @QueryParam("size") @DefaultValue("15") Integer size) {
     TriggerPageRequest request = new TriggerPageRequest();
+    request.setProjectId(projectId);
     request.setName(name);
     request.setJobType(jobType);
     request.setJobId(jobId);
@@ -50,40 +51,42 @@ public class TriggerResource {
 
   @Operation(summary = "创建触发器")
   @POST
-  public Trigger create(Trigger trigger) {
-    return scheduleApplicationService.create(trigger);
+  public Trigger create(@PathParam("projectId") String projectId, Trigger trigger) {
+    return scheduleApplicationService.create(projectId, trigger);
   }
 
   @Operation(summary = "更新触发器")
   @PUT
   @Path("/{id}")
-  public Trigger update(@PathParam("id") String id, Trigger req) {
+  public Trigger update(@PathParam("projectId") String projectId, @PathParam("id") String id, Trigger req) {
     req.setId(id);
-    return scheduleApplicationService.update(req);
+    req.setProjectId(projectId);
+    return scheduleApplicationService.update(projectId, req);
   }
 
   @Operation(summary = "部分更新触发器")
   @PATCH
   @Path("/{id}")
-  public Trigger patch(@PathParam("id") String id, Trigger req) {
-    TriggerDTO dto = scheduleApplicationService.findById(id);
+  public Trigger patch(@PathParam("projectId") String projectId, @PathParam("id") String id, Trigger req) {
+    TriggerDTO dto = scheduleApplicationService.findById(projectId, id);
     if (req.getState() != null) {
       dto.setState(req.getState());
     }
-    return scheduleApplicationService.update(dto);
+    dto.setProjectId(projectId);
+    return scheduleApplicationService.update(projectId, dto);
   }
 
   @Operation(summary = "删除触发器")
   @DELETE
   @Path("/{id}")
-  public void deleteById(@PathParam("id") String id) {
+  public void deleteById(@PathParam("projectId") String projectId, @PathParam("id") String id) {
     scheduleApplicationService.deleteById(id);
   }
 
   @Operation(summary = "立即执行触发器")
   @POST
   @Path("/{id}/execute")
-  public Trigger executeNow(@PathParam("id") String id) {
+  public Trigger executeNow(@PathParam("projectId") String projectId, @PathParam("id") String id) {
     return scheduleApplicationService.executeNow(id);
   }
 

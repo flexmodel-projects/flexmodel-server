@@ -16,30 +16,19 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.DataApplicationService;
 import tech.wetech.flexmodel.application.dto.PageDTO;
-import tech.wetech.flexmodel.shared.SessionContextHolder;
-
 import java.util.Map;
 
 /**
  * @author cjbi
  */
-@Tag(name = "【Flexmodel】记录", description = "模型数据记录管理")
-@Path("/f/datasources/{datasourceName}/models/{modelName}/records")
+@Tag(name = "记录", description = "模型数据记录管理")
+@Path("/f/projects/{projectId}/datasources/{datasourceName}/models/{modelName}/records")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RecordResource {
 
-  @Parameter(name = "datasourceName", description = "数据源名称", in = ParameterIn.PATH)
-  @PathParam("datasourceName")
-  String datasourceName;
-
-  @Parameter(name = "datasourceName", description = "模型名称", in = ParameterIn.PATH)
-  @PathParam("modelName")
-  String modelName;
-
   @Inject
   DataApplicationService dataApplicationService;
-
 
   @APIResponse(
     name = "200",
@@ -70,22 +59,30 @@ public class RecordResource {
   @Operation(summary = "获取模型数据记录列表")
   @GET
   public PageDTO<Map<String, Object>> findPagingRecords(
+    @PathParam("projectId") String projectId,
+    @PathParam("datasourceName") String datasourceName,
+    @PathParam("modelName") String modelName,
     @QueryParam("page") @DefaultValue("1") int page,
     @QueryParam("size") @DefaultValue("15") int size,
     @QueryParam("filter") String filter,
     @QueryParam("nestedQuery") @DefaultValue("false") boolean nestedQuery,
     @QueryParam("sort") String sort
   ) {
-    SessionContextHolder.setProjectId(null);
-    return dataApplicationService.findPagingRecords(datasourceName, modelName, page, size, filter, sort, nestedQuery);
+    return dataApplicationService.findPagingRecords(projectId, datasourceName, modelName, page, size, filter, sort, nestedQuery);
   }
 
   @Parameter(name = "id", description = "ID", examples = {@ExampleObject(value = "1")}, in = ParameterIn.PATH)
   @Operation(summary = "获取单条模型数据记录")
   @GET
   @Path("/{id}")
-  public Map<String, Object> findOneRecord(@PathParam("id") String id, @QueryParam("nestedQuery") @DefaultValue("false") boolean nestedQuery) {
-    return dataApplicationService.findOneRecord(datasourceName, modelName, id, nestedQuery);
+  public Map<String, Object> findOneRecord(
+    @PathParam("projectId") String projectId,
+    @PathParam("datasourceName") String datasourceName,
+    @PathParam("modelName") String modelName,
+    @PathParam("id") String id,
+    @QueryParam("nestedQuery") @DefaultValue("false") boolean nestedQuery
+  ) {
+    return dataApplicationService.findOneRecord(projectId, datasourceName, modelName, id, nestedQuery);
   }
 
 
@@ -125,8 +122,13 @@ public class RecordResource {
   )
   @Operation(summary = "创建模型数据记录")
   @POST
-  public Map<String, Object> createRecord(Map<String, Object> record) {
-    return dataApplicationService.createRecord(datasourceName, modelName, record);
+  public Map<String, Object> createRecord(
+    @PathParam("projectId") String projectId,
+    @PathParam("datasourceName") String datasourceName,
+    @PathParam("modelName") String modelName,
+    Map<String, Object> record
+  ) {
+    return dataApplicationService.createRecord(projectId, datasourceName, modelName, record);
   }
 
   @RequestBody(
@@ -168,8 +170,14 @@ public class RecordResource {
   @Operation(summary = "更新模型数据记录")
   @PUT
   @Path("/{id}")
-  public Map<String, Object> updateRecord(@PathParam("id") String id, Map<String, Object> record) {
-    return dataApplicationService.updateRecord(datasourceName, modelName, id, record);
+  public Map<String, Object> updateRecord(
+    @PathParam("projectId") String projectId,
+    @PathParam("datasourceName") String datasourceName,
+    @PathParam("modelName") String modelName,
+    @PathParam("id") String id,
+    Map<String, Object> record
+  ) {
+    return dataApplicationService.updateRecord(projectId, datasourceName, modelName, id, record);
   }
 
   @RequestBody(
@@ -210,16 +218,27 @@ public class RecordResource {
   @Operation(summary = "更新模型数据记录(局部更新)")
   @PATCH
   @Path("/{id}")
-  public Map<String, Object> updateRecordIgnoreNull(@PathParam("id") String id, Map<String, Object> record) {
-    return dataApplicationService.updateRecordIgnoreNull(datasourceName, modelName, id, record);
+  public Map<String, Object> updateRecordIgnoreNull(
+    @PathParam("projectId") String projectId,
+    @PathParam("datasourceName") String datasourceName,
+    @PathParam("modelName") String modelName,
+    @PathParam("id") String id,
+    Map<String, Object> record
+  ) {
+    return dataApplicationService.updateRecordIgnoreNull(projectId, datasourceName, modelName, id, record);
   }
 
   @Parameter(name = "id", description = "ID", examples = {@ExampleObject(value = "1")}, in = ParameterIn.PATH)
   @Operation(summary = "删除模型数据记录")
   @DELETE
   @Path("/{id}")
-  public void deleteRecord(@PathParam("id") String id) {
-    dataApplicationService.deleteRecord(datasourceName, modelName, id);
+  public void deleteRecord(
+    @PathParam("projectId") String projectId,
+    @PathParam("datasourceName") String datasourceName,
+    @PathParam("modelName") String modelName,
+    @PathParam("id") String id
+  ) {
+    dataApplicationService.deleteRecord(projectId, datasourceName, modelName, id);
   }
 
 }

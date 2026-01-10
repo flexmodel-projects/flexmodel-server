@@ -18,7 +18,8 @@ public class DataApplicationService {
   @Inject
   DataService dataService;
 
-  public PageDTO<Map<String, Object>> findPagingRecords(String datasourceName,
+  public PageDTO<Map<String, Object>> findPagingRecords(String projectId,
+                                                        String datasourceName,
                                                         String modelName,
                                                         int page,
                                                         int size,
@@ -30,23 +31,23 @@ public class DataApplicationService {
     return new PageDTO<>(list, total);
   }
 
-  public Map<String, Object> findOneRecord(String datasourceName, String modelName, String id, boolean nestedQuery) {
+  public Map<String, Object> findOneRecord(String projectId, String datasourceName, String modelName, String id, boolean nestedQuery) {
     return dataService.findOneRecord(datasourceName, modelName, id, nestedQuery);
   }
 
-  public Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data) {
+  public Map<String, Object> createRecord(String projectId, String datasourceName, String modelName, Map<String, Object> data) {
     return dataService.createRecord(datasourceName, modelName, data);
   }
 
-  public Map<String, Object> updateRecord(String datasourceName, String modelName, Object id, Map<String, Object> data) {
+  public Map<String, Object> updateRecord(String projectId, String datasourceName, String modelName, Object id, Map<String, Object> data) {
     return dataService.updateRecord(datasourceName, modelName, id, data);
   }
 
-  public void deleteRecord(String datasourceName, String modelName, Object id) {
+  public void deleteRecord(String projectId, String datasourceName, String modelName, Object id) {
     dataService.deleteRecord(datasourceName, modelName, id);
   }
 
-  public Map<String, Object> updateRecordIgnoreNull(String datasourceName, String modelName, String id, Map<String, Object> record) {
+  public Map<String, Object> updateRecordIgnoreNull(String projectId, String datasourceName, String modelName, String id, Map<String, Object> record) {
     Map<String, Object> oldData = dataService.findOneRecord(datasourceName, modelName, id, false);
     Map<String, Object> mergeData = new HashMap<>(oldData);
     mergeData.putAll(record);

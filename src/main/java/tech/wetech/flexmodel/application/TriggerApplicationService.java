@@ -68,7 +68,7 @@ public class TriggerApplicationService {
     return dto;
   }
 
-  public TriggerDTO findById(String id) {
+  public TriggerDTO findById(String projecjtId, String id) {
     return toTriggerDTO(triggerService.findById(id));
   }
 
@@ -87,7 +87,7 @@ public class TriggerApplicationService {
   }
 
   //  @Transactional
-  public Trigger create(Trigger trigger) {
+  public Trigger create(String projectId, Trigger trigger) {
     TriggerConfig triggerConfig = JsonUtils.getInstance().convertValue(trigger.getConfig(), TriggerConfig.class);
     trigger.setJobGroup(getJobGroup(trigger, triggerConfig));
     trigger = triggerService.save(trigger);
@@ -107,7 +107,7 @@ public class TriggerApplicationService {
   }
 
   //  @Transactional
-  public Trigger update(Trigger req) {
+  public Trigger update(String projectId, Trigger req) {
     Trigger record = triggerService.findById(req.getId());
     if (record == null) {
       throw new TriggerException("记录不存在");
@@ -144,7 +144,7 @@ public class TriggerApplicationService {
   }
 
   public void deleteById(String id) {
-    Trigger record = findById(id);
+    Trigger record = findById(id, id);
     if (record != null) {
       // 实现定时任务调度
       try {

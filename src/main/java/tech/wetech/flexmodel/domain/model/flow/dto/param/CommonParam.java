@@ -9,12 +9,12 @@ public class CommonParam {
     this.caller = caller;
   }
 
-  public String getTenant() {
+  public String getProjectId() {
     return projectId;
   }
 
-  public void setTenant(String tenant) {
-    this.projectId = tenant;
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
   }
 
   public String getCaller() {

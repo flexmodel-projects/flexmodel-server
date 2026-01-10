@@ -2,21 +2,21 @@ package tech.wetech.flexmodel.interfaces.rest;
 
 import graphql.ExecutionResult;
 import jakarta.inject.Inject;
+import jakarta.websocket.server.PathParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.domain.model.api.GraphQLManger;
-import tech.wetech.flexmodel.shared.SessionContextHolder;
 
 import java.util.Map;
 
 /**
  * @author cjbi
  */
-@Tag(name = "【Flexmodel】GraphQL", description = "GraphQL接口信息")
-@Path("/f/graphql")
+@Tag(name = "GraphQL", description = "GraphQL接口信息")
+@Path("/f/projects/{projectId}/graphql")
 public class GraphQLResource {
 
   @Inject
@@ -24,8 +24,8 @@ public class GraphQLResource {
 
   @Operation(summary = "执行GraphQL查询")
   @POST
-  public ExecutionResult execute(GraphQLRequest request) {
-    return graphQLApplicationService.execute(SessionContextHolder.getProjectId(), request.operationName(), request.query(), request.variables());
+  public ExecutionResult execute(@PathParam("projectId") String projectId, GraphQLRequest request) {
+    return graphQLApplicationService.execute(projectId, request.operationName(), request.query(), request.variables());
   }
 
   public record GraphQLRequest(@Schema(description = "操作名称") String operationName,

@@ -45,11 +45,11 @@ public class FlowApplicationService {
   @Inject
   FlowDeploymentService flowDeploymentService;
 
-  public List<NodeInstance> getHistoryUserTaskList(String flowInstanceId, boolean effectiveForSubFlowInstance) {
+  public List<NodeInstance> getHistoryUserTaskList(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance) {
     return processService.getHistoryUserTaskList(flowInstanceId, effectiveForSubFlowInstance).getNodeInstanceList();
   }
 
-  public List<ElementInstance> getHistoryElementList(String flowInstanceId) {
+  public List<ElementInstance> getHistoryElementList(String flowInstanceId, String instanceId) {
     return processService.getHistoryElementList(flowInstanceId).getElementInstanceList();
   }
 
@@ -149,7 +149,7 @@ public class FlowApplicationService {
     return processService.updateFlow(updateFlowParam);
   }
 
-  public void deleteFlow(String flowModuleId) {
+  public void deleteFlow(String flowModuleId, String moduleId) {
     log.info("删除流程，流程模块ID: {}", flowModuleId);
     processService.deleteFlow(flowModuleId);
   }
@@ -166,7 +166,7 @@ public class FlowApplicationService {
   /**
    * 启动流程实例
    */
-  public StartProcessResult startProcess(StartProcessParam startProcessParam) {
+  public StartProcessResult startProcess(String projectId, StartProcessParam startProcessParam) {
     log.info("启动流程实例，流程模块ID: {}, 流程部署ID: {}",
       startProcessParam.getFlowModuleId(), startProcessParam.getFlowDeployId());
     return processService.startProcess(startProcessParam);
@@ -175,7 +175,7 @@ public class FlowApplicationService {
   /**
    * 提交任务
    */
-  public CommitTaskResult commitTask(CommitTaskParam commitTaskParam) {
+  public CommitTaskResult commitTask(String projectId, CommitTaskParam commitTaskParam) {
     log.info("提交任务，流程实例ID: {}, 任务实例ID: {}",
       commitTaskParam.getFlowInstanceId(), commitTaskParam.getTaskInstanceId());
     return processService.commitTask(commitTaskParam);
@@ -184,7 +184,7 @@ public class FlowApplicationService {
   /**
    * 回滚任务
    */
-  public RollbackTaskResult rollbackTask(RollbackTaskParam rollbackTaskParam) {
+  public RollbackTaskResult rollbackTask(String projectId, RollbackTaskParam rollbackTaskParam) {
     log.info("回滚任务，流程实例ID: {}, 任务实例ID: {}",
       rollbackTaskParam.getFlowInstanceId(), rollbackTaskParam.getTaskInstanceId());
     return processService.rollbackTask(rollbackTaskParam);
@@ -193,7 +193,7 @@ public class FlowApplicationService {
   /**
    * 终止流程实例
    */
-  public TerminateResult terminateProcess(String flowInstanceId, boolean effectiveForSubFlowInstance) {
+  public TerminateResult terminateProcess(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance) {
     log.info("终止流程实例: {}, 对子流程实例生效: {}", flowInstanceId, effectiveForSubFlowInstance);
     if (StringUtils.isBlank(flowInstanceId)) {
       throw new IllegalArgumentException("流程实例ID不能为空");
@@ -204,7 +204,7 @@ public class FlowApplicationService {
   /**
    * 获取流程实例信息
    */
-  public FlowInstance findFlowInstance(String flowInstanceId) {
+  public FlowInstance findFlowInstance(String flowInstanceId, String instanceId) {
     log.info("获取流程实例信息: {}", flowInstanceId);
     if (StringUtils.isBlank(flowInstanceId)) {
       throw new IllegalArgumentException("流程实例ID不能为空");
@@ -212,7 +212,7 @@ public class FlowApplicationService {
     return flowInstanceService.findById(flowInstanceId);
   }
 
-  public Map<String, Object> getInstanceData(String flowInstanceId, String instanceDataId) {
+  public Map<String, Object> getInstanceData(String flowInstanceId, String instanceDataId, String dataId) {
     return null;
   }
 }

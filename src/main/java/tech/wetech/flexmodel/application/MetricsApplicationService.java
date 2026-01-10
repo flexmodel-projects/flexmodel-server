@@ -64,9 +64,8 @@ public class MetricsApplicationService {
   @Inject
   JobExecutionLogService jobExecutionLogService;
 
-  public FmMetricsResponse getFmMetrics() {
+  public FmMetricsResponse getFmMetrics(String projectId) {
     try {
-      String projectId = SessionContextHolder.getProjectId();
       List<ApiDefinition> definitions = projectId != null ? apiDefinitionService.findList(projectId) : apiDefinitionService.findAll();
       List<Datasource> datasources = datasourceService.findAll();
       int modelCount = 0;
@@ -922,7 +921,7 @@ public class MetricsApplicationService {
       // 并行获取所有指标
       CompletableFuture<FmMetricsResponse> fmFuture = CompletableFuture.supplyAsync(()->{
         SessionContextHolder.setProjectId(projectId);
-        return getFmMetrics();
+        return getFmMetrics(projectId);
       });
 
       CompletableFuture<JvmMetricsResponse> jvmFuture =

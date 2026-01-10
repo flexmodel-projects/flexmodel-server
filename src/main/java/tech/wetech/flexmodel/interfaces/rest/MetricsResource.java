@@ -3,6 +3,7 @@ package tech.wetech.flexmodel.interfaces.rest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -27,8 +28,8 @@ import java.util.Map;
  *
  * @author cjbi
  */
-@Path("/f/metrics")
-@Tag(name = "【Flexmodel】系统监控", description = "系统监控相关接口，包括JVM、CPU、内存、线程、磁盘（含I/O）、网络等监控信息")
+@Path("/f/projects/{projectId}/metrics")
+@Tag(name = "系统监控", description = "系统监控相关接口，包括JVM、CPU、内存、线程、磁盘（含I/O）、网络等监控信息")
 @SecurityRequirement(name = "BearerAuth")
 public class MetricsResource {
   @Inject
@@ -37,8 +38,8 @@ public class MetricsResource {
 
   @GET
   @Path("/fm")
-  public FmMetricsResponse getFmMetrics() {
-    return metricsApplicationService.getFmMetrics();
+  public FmMetricsResponse getFmMetrics(@PathParam("projectId") String projectId) {
+    return metricsApplicationService.getFmMetrics(projectId);
   }
 
   /**

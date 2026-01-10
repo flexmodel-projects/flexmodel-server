@@ -64,7 +64,7 @@ public class ParamValidator {
     if (commonParam == null) {
       throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "param is null");
     }
-    if (StringUtils.isBlank(commonParam.getTenant())) {
+    if (StringUtils.isBlank(commonParam.getProjectId())) {
       throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "tenant is null");
     }
     if (StringUtils.isBlank(commonParam.getCaller())) {

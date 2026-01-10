@@ -16,19 +16,19 @@ public class IdentityProviderApplicationService {
   @Inject
   IdentityProviderService identityProviderService;
 
-  public List<IdentityProvider> findAll() {
+  public List<IdentityProvider> findAll(String projectId) {
     return identityProviderService.findAll();
   }
 
-  public IdentityProvider createProvider(IdentityProvider identityProvider) {
+  public IdentityProvider createProvider(String projectId, IdentityProvider identityProvider) {
     return identityProviderService.create(identityProvider);
   }
 
-  public IdentityProvider updateProvider(IdentityProvider identityProvider) {
+  public IdentityProvider updateProvider(String projectId, IdentityProvider identityProvider) {
     return identityProviderService.update(identityProvider);
   }
 
-  public void deleteProvider(String id) {
+  public void deleteProvider(String id, String name) {
     identityProviderService.delete(id);
   }
 

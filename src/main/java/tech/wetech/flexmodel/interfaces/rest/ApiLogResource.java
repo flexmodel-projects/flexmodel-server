@@ -25,8 +25,8 @@ import java.time.format.DateTimeFormatter;
 /**
  * @author cjbi
  */
-@Tag(name = "【Flexmodel】接口日志", description = "接口日志管理")
-@Path("/f/logs")
+@Tag(name = "接口日志", description = "接口日志管理")
+@Path("/f/projects/{projectId}/logs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ApiLogResource {
@@ -55,14 +55,15 @@ public class ApiLogResource {
     })
   @Operation(summary = "获取接口日志列表")
   @GET
-  public PageDTO<ApiRequestLog> findApiLogs(@QueryParam("page") @DefaultValue("1") int page,
+  public PageDTO<ApiRequestLog> findApiLogs(@PathParam("projectId") String projectId,
+                                            @QueryParam("page") @DefaultValue("1") int page,
                                             @QueryParam("size") @DefaultValue("50") int size,
                                             @QueryParam("keyword") String keyword,
                                             @QueryParam("dateRange") String dateRange,
                                             @QueryParam("isSuccess") Boolean isSuccess
   ) {
     RequestResult result = parseQuery(dateRange, isSuccess);
-    return apiRuntimeApplicationService.findApiLogs(page, size, keyword, result.startDate(), result.endDate(), isSuccess);
+    return apiRuntimeApplicationService.findApiLogs(projectId, page, size, keyword, result.startDate(), result.endDate(), isSuccess);
   }
 
   @Parameter(name = "keyword", description = "关键字", in = ParameterIn.QUERY)
@@ -82,11 +83,12 @@ public class ApiLogResource {
   @Operation(summary = "统计接口日志")
   @GET
   @Path("/stat")
-  public LogStatResponse stat(@QueryParam("keyword") String keyword,
+  public LogStatResponse stat(@PathParam("projectId") String projectId,
+                              @QueryParam("keyword") String keyword,
                               @QueryParam("dateRange") String dateRange,
                               @QueryParam("isSuccess") Boolean isSuccess) {
     RequestResult result = parseQuery(dateRange, isSuccess);
-    return apiRuntimeApplicationService.stat(keyword, result.startDate(), result.endDate(), isSuccess);
+    return apiRuntimeApplicationService.stat(projectId, keyword, result.startDate(), result.endDate(), isSuccess);
   }
 
   private static RequestResult parseQuery(String dateRange, Boolean isSuccess) {

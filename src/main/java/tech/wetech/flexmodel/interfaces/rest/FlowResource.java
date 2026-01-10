@@ -30,8 +30,8 @@ import java.util.Map;
 /**
  * @author cjbi
  */
-@Tag(name = "【Flexmodel】服务编排", description = "服务编排管理")
-@Path("/f/flows")
+@Tag(name = "服务编排", description = "服务编排管理")
+@Path("/f/projects/{projectId}/flows")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FlowResource {
@@ -54,11 +54,12 @@ public class FlowResource {
   @GET
   @Path("/instances/{flowInstanceId}/user-tasks")
   public List<NodeInstance> getHistoryUserTaskList(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH, required = true, example = "flow_inst_001")
     @PathParam("flowInstanceId") String flowInstanceId,
     @Parameter(name = "effectiveForSubFlowInstance", description = "是否对子流程实例生效", in = ParameterIn.QUERY, example = "true")
     @QueryParam("effectiveForSubFlowInstance") @DefaultValue("true") boolean effectiveForSubFlowInstance) {
-    return flowApplicationService.getHistoryUserTaskList(flowInstanceId, effectiveForSubFlowInstance);
+    return flowApplicationService.getHistoryUserTaskList(projectId, flowInstanceId, effectiveForSubFlowInstance);
   }
 
   @Operation(summary = "获取流程实例历史元素列表", description = "获取指定流程实例的历史元素列表，主要用于显示流程快照视图。包含流程中已执行的所有节点信息。")
@@ -76,16 +77,18 @@ public class FlowResource {
   @GET
   @Path("/instances/{flowInstanceId}/elements")
   public List<ElementInstance> getHistoryElementList(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH, required = true, example = "flow_inst_001")
     @PathParam("flowInstanceId") String flowInstanceId) {
-    return flowApplicationService.getHistoryElementList(flowInstanceId);
+    return flowApplicationService.getHistoryElementList(projectId, flowInstanceId);
   }
 
   @Operation(summary = "获取流程实例元素实例数据")
   @Path("/instances/{flowInstanceId}/data/{instanceDataId}")
-  public Map<String, Object> getElementInstanceData(@PathParam("flowInstanceId") String flowInstanceId,
+  public Map<String, Object> getElementInstanceData(@PathParam("projectId") String projectId,
+                                                    @PathParam("flowInstanceId") String flowInstanceId,
                                                     @PathParam("instanceDataId") String instanceDataId) {
-    return flowApplicationService.getInstanceData(flowInstanceId, instanceDataId);
+    return flowApplicationService.getInstanceData(projectId, flowInstanceId, instanceDataId);
   }
 
   @Operation(summary = "获取流程列表")
@@ -101,6 +104,7 @@ public class FlowResource {
     )})
   @GET
   public PageDTO<FlowModuleResponse> findFlowList(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowKey", description = "流程模块ID", in = ParameterIn.QUERY)
     @QueryParam("flowModuleId") String flowModuleId,
     @QueryParam("flowKey") String flowKey,
@@ -111,6 +115,7 @@ public class FlowResource {
     @Parameter(name = "size", description = "每页大小", in = ParameterIn.QUERY)
     @QueryParam("size") @DefaultValue("20") Integer size) {
     FlowModuleListRequest request = new FlowModuleListRequest();
+    request.setProjectId(projectId);
     request.setFlowModuleId(flowModuleId);
     request.setFlowKey(flowKey);
     request.setFlowName(flowName);
@@ -133,6 +138,7 @@ public class FlowResource {
   @GET
   @Path("/instances")
   public PageDTO<FlowInstanceResponse> findFlowInstanceList(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.QUERY)
     @QueryParam("flowInstanceId") String flowInstanceId,
     @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.QUERY)
@@ -148,6 +154,7 @@ public class FlowResource {
     @Parameter(name = "size", description = "每页大小", in = ParameterIn.QUERY)
     @QueryParam("size") @DefaultValue("20") Integer size) {
     FlowInstanceListRequest request = new FlowInstanceListRequest();
+    request.setProjectId(projectId);
     request.setFlowInstanceId(flowInstanceId);
     request.setFlowModuleId(flowModuleId);
     request.setFlowDeployId(flowDeployId);
@@ -179,8 +186,9 @@ public class FlowResource {
         implementation = CreateFlowResultSchema.class
       )
     )})
-  public CreateFlowResult createFlow(CreateFlowParam createFlowParam) {
-    createFlowParam.setTenant("default");
+  public CreateFlowResult createFlow(@PathParam("projectId") String projectId, CreateFlowParam createFlowParam) {
+
+    createFlowParam.setProjectId(projectId);
     createFlowParam.setCaller("admin");
     createFlowParam.setOperator("admin");
     return flowApplicationService.createFlow(createFlowParam);
@@ -209,11 +217,12 @@ public class FlowResource {
       )
     )})
   public DeployFlowResult deployFlow(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.PATH)
     @PathParam("flowModuleId") String flowModuleId,
     DeployFlowParam deployFlowParam) {
+    deployFlowParam.setProjectId(projectId);
     deployFlowParam.setFlowModuleId(flowModuleId);
-    deployFlowParam.setTenant("default");
     deployFlowParam.setCaller("admin");
     deployFlowParam.setOperator("admin");
     return flowApplicationService.deployFlow(deployFlowParam);
@@ -242,21 +251,22 @@ public class FlowResource {
       )
     )})
   public UpdateFlowResult updateFlow(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.PATH)
     @PathParam("flowModuleId") String flowModuleId,
     UpdateFlowParam updateFlowParam) {
     updateFlowParam.setFlowModuleId(flowModuleId);
-    updateFlowParam.setTenant("default");
-    updateFlowParam.setCaller("admin");
-    updateFlowParam.setOperator("admin");
+    updateFlowParam.setProjectId(projectId);
+    updateFlowParam.setCaller(updateFlowParam.getCaller());
+    updateFlowParam.setOperator(updateFlowParam.getOperator());
     return flowApplicationService.updateFlow(updateFlowParam);
   }
 
   @DELETE
   @Path("/{flowModuleId}")
-  public void deleteFlow(@Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.PATH)
-                         @PathParam("flowModuleId") String flowModuleId) {
-    flowApplicationService.deleteFlow(flowModuleId);
+  public void deleteFlow(@PathParam("projectId") String projectId, @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.PATH)
+  @PathParam("flowModuleId") String flowModuleId) {
+    flowApplicationService.deleteFlow(projectId, flowModuleId);
   }
 
   @Operation(summary = "获取流程模块信息")
@@ -273,11 +283,13 @@ public class FlowResource {
   @GET
   @Path("/{flowModuleId}")
   public FlowModuleResult getFlowModule(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowModuleId", description = "流程模块ID", in = ParameterIn.PATH)
     @PathParam("flowModuleId") String flowModuleId,
     @Parameter(name = "flowDeployId", description = "流程部署ID", in = ParameterIn.QUERY)
     @QueryParam("flowDeployId") String flowDeployId) {
     GetFlowModuleParam param = new GetFlowModuleParam();
+    param.setProjectId(projectId);
     param.setFlowModuleId(flowModuleId);
     param.setFlowDeployId(flowDeployId);
     return flowApplicationService.getFlowModule(param);
@@ -305,8 +317,8 @@ public class FlowResource {
         implementation = StartProcessResultSchema.class
       )
     )})
-  public StartProcessResult startProcess(StartProcessParam startProcessParam) {
-    return flowApplicationService.startProcess(startProcessParam);
+  public StartProcessResult startProcess(@PathParam("projectId") String projectId, StartProcessParam startProcessParam) {
+    return flowApplicationService.startProcess(projectId, startProcessParam);
   }
 
   @Operation(summary = "提交任务")
@@ -332,11 +344,12 @@ public class FlowResource {
       )
     )})
   public CommitTaskResult commitTask(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH)
     @PathParam("flowInstanceId") String flowInstanceId,
     CommitTaskParam commitTaskParam) {
     commitTaskParam.setFlowInstanceId(flowInstanceId);
-    return flowApplicationService.commitTask(commitTaskParam);
+    return flowApplicationService.commitTask(projectId, commitTaskParam);
   }
 
   @Operation(summary = "回滚任务")
@@ -362,11 +375,12 @@ public class FlowResource {
       )
     )})
   public RollbackTaskResult rollbackTask(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH)
     @PathParam("flowInstanceId") String flowInstanceId,
     RollbackTaskParam rollbackTaskParam) {
     rollbackTaskParam.setFlowInstanceId(flowInstanceId);
-    return flowApplicationService.rollbackTask(rollbackTaskParam);
+    return flowApplicationService.rollbackTask(projectId, rollbackTaskParam);
   }
 
   @Operation(summary = "终止流程实例")
@@ -383,11 +397,12 @@ public class FlowResource {
       )
     )})
   public TerminateResult terminateProcess(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH)
     @PathParam("flowInstanceId") String flowInstanceId,
     @Parameter(name = "effectiveForSubFlowInstance", description = "是否对子流程实例生效", in = ParameterIn.QUERY)
     @QueryParam("effectiveForSubFlowInstance") @DefaultValue("true") boolean effectiveForSubFlowInstance) {
-    return flowApplicationService.terminateProcess(flowInstanceId, effectiveForSubFlowInstance);
+    return flowApplicationService.terminateProcess(projectId, flowInstanceId, effectiveForSubFlowInstance);
   }
 
   @Operation(summary = "获取流程实例信息")
@@ -404,9 +419,10 @@ public class FlowResource {
   @GET
   @Path("/instances/{flowInstanceId}")
   public FlowInstance getFlowInstance(
+    @PathParam("projectId") String projectId,
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH)
     @PathParam("flowInstanceId") String flowInstanceId) {
-    return flowApplicationService.findFlowInstance(flowInstanceId);
+    return flowApplicationService.findFlowInstance(projectId, flowInstanceId);
   }
 
   @Schema(

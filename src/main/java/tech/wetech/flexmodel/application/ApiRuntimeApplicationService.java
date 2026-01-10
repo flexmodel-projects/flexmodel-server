@@ -94,13 +94,13 @@ public class ApiRuntimeApplicationService {
   @Inject
   Request request;
 
-  public PageDTO<ApiRequestLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
+  public PageDTO<ApiRequestLog> findApiLogs(String projectId, int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
     List<ApiRequestLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, isSuccess), current, pageSize);
     long total = apiLogService.count(getCondition(keyword, startDate, endDate, isSuccess));
     return new PageDTO<>(list, total);
   }
 
-  public LogStatResponse stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
+  public LogStatResponse stat(String projectId, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
 
     LogStatResponse.ApiChart statDTO = null;
     List<String> dateList = new ArrayList<>();

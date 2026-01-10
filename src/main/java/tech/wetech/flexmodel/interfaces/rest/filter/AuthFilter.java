@@ -88,7 +88,7 @@ public class AuthFilter implements ContainerRequestFilter {
   }
 
   private void fillSessionContext(ContainerRequestContext requestContext) {
-    String projectId = requestContext.getHeaderString("X-Tenant-Id");
+    String projectId = requestContext.getUriInfo().getPathParameters().getFirst("projectId");
     String accessToken = Objects.toString(requestContext.getHeaderString("Authorization"), "")
       .replaceFirst("Bearer ", "");
     String userId = JwtUtil.getAccount(accessToken);
