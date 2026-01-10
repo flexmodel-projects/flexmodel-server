@@ -20,25 +20,26 @@ public class ApiDefinitionFmRepository implements ApiDefinitionRepository {
   Session session;
 
   @Override
-  public void deleteByParentId(String parentId) {
+  public void deleteByParentId(String projectId, String parentId) {
     session.dsl()
       .deleteFrom(ApiDefinition.class)
-      .where(field(ApiDefinition::getParentId).eq(parentId))
+      .where(field(ApiDefinition::getProjectId).eq(projectId).and(field(ApiDefinition::getParentId).eq(parentId)))
       .execute();
   }
 
   @Override
-  public ApiDefinition findById(String id) {
+  public ApiDefinition findById(String projectId, String id) {
     return session.dsl()
       .selectFrom(ApiDefinition.class)
-      .where(field(ApiDefinition::getId).eq(id))
+      .where(field(ApiDefinition::getProjectId).eq(projectId).and(field(ApiDefinition::getId).eq(id)))
       .executeOne();
   }
 
   @Override
-  public List<ApiDefinition> findAll() {
+  public List<ApiDefinition> findAll(String projectId) {
     return session.dsl()
       .selectFrom(ApiDefinition.class)
+      .where(field(ApiDefinition::getProjectId).eq(projectId))
       .execute();
   }
 
@@ -57,9 +58,9 @@ public class ApiDefinitionFmRepository implements ApiDefinitionRepository {
   }
 
   @Override
-  public void delete(String id) {
+  public void delete(String projectId, String id) {
     session.dsl().deleteFrom(ApiDefinition.class)
-      .where(field(ApiDefinition::getId).eq(id))
+      .where(field(ApiDefinition::getProjectId).eq(projectId).and(field(ApiDefinition::getId).eq(id)))
       .execute();
   }
 

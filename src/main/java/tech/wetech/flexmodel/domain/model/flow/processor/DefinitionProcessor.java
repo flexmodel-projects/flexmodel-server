@@ -108,11 +108,15 @@ public class DefinitionProcessor {
   }
 
 
-  public void delete(String flowModuleId) {
+  public void delete(String projectId, String flowModuleId) {
     if (StringUtils.isBlank(flowModuleId)) {
       throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModuleId is null");
     }
-    FlowDefinition flowDefinition = flowDefinitionRepository.selectByModuleId(flowModuleId);
+    FlowDefinition flowDefinition = flowDefinitionRepository.selectByModuleId(projectId, flowModuleId);
+    if (null == flowDefinition) {
+      LOGGER.warn("delete flow failed: flow is not exist.||projectId={}, flowModuleId={}", projectId, flowModuleId);
+      throw new DefinitionException(ErrorEnum.FLOW_NOT_EXIST);
+    }
     flowDefinition.setIsDeleted(true);
     flowDefinition.setModifyTime(LocalDateTime.now());
     flowDefinitionRepository.updateByModuleId(flowDefinition);
@@ -123,7 +127,7 @@ public class DefinitionProcessor {
     try {
       ParamValidator.validate(deployFlowParam);
 
-      FlowDefinition flowDefinitionPO = flowDefinitionRepository.selectByModuleId(deployFlowParam.getFlowModuleId());
+      FlowDefinition flowDefinitionPO = flowDefinitionRepository.selectByModuleId(deployFlowParam.getProjectId(), deployFlowParam.getFlowModuleId());
       if (null == flowDefinitionPO) {
         LOGGER.warn("deploy flow failed: flow is not exist.||deployFlowParam={}", deployFlowParam);
         throw new DefinitionException(ErrorEnum.FLOW_NOT_EXIST);
@@ -159,15 +163,16 @@ public class DefinitionProcessor {
   }
 
   public FlowModuleResult getFlowModule(GetFlowModuleParam getFlowModuleParam) {
+    String projectId = getFlowModuleParam.getProjectId();
     FlowModuleResult flowModuleResult = new FlowModuleResult();
     try {
       ParamValidator.validate(getFlowModuleParam);
       String flowModuleId = getFlowModuleParam.getFlowModuleId();
       String flowDeployId = getFlowModuleParam.getFlowDeployId();
       if (StringUtils.isNotBlank(flowDeployId)) {
-        flowModuleResult = getFlowModuleByFlowDeployId(flowDeployId);
+        flowModuleResult = getFlowModuleByFlowDeployId(projectId, flowDeployId);
       } else {
-        flowModuleResult = getFlowModuleByFlowModuleId(flowModuleId);
+        flowModuleResult = getFlowModuleByFlowModuleId(projectId, flowModuleId);
       }
       fillCommonResult(flowModuleResult, ErrorEnum.SUCCESS);
     } catch (TurboException te) {
@@ -176,8 +181,8 @@ public class DefinitionProcessor {
     return flowModuleResult;
   }
 
-  private FlowModuleResult getFlowModuleByFlowModuleId(String flowModuleId) throws ParamException {
-    FlowDefinition flowDefinitionPO = flowDefinitionRepository.selectByModuleId(flowModuleId);
+  private FlowModuleResult getFlowModuleByFlowModuleId(String projectId, String flowModuleId) throws ParamException {
+    FlowDefinition flowDefinitionPO = flowDefinitionRepository.selectByModuleId(projectId, flowModuleId);
     if (flowDefinitionPO == null) {
       LOGGER.warn("getFlowModuleByFlowModuleId failed: can not find flowDefinitionPO.||flowModuleId={}", flowModuleId);
       throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDefinitionPO is not exist");
@@ -189,11 +194,11 @@ public class DefinitionProcessor {
     return flowModuleResult;
   }
 
-  private FlowModuleResult getFlowModuleByFlowDeployId(String flowDeployId) throws ParamException {
-    FlowDeployment flowDeploymentPO = flowDeploymentRepository.findByDeployId(flowDeployId);
+  private FlowModuleResult getFlowModuleByFlowDeployId(String projectId, String flowDeployId) throws ParamException {
+    FlowDeployment flowDeploymentPO = flowDeploymentRepository.findByDeployId(projectId, flowDeployId);
     if (flowDeploymentPO == null) {
-      LOGGER.warn("getFlowModuleByFlowDeployId failed: can not find flowDefinitionPO.||flowDeployId={}", flowDeployId);
-      throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDefinitionPO is not exist");
+      LOGGER.warn("getFlowModuleByFlowDeployId failed: can not find flowDeploymentPO.||projectId={}, flowDeployId={}", projectId, flowDeployId);
+      throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDeploymentPO is not exist");
     }
     FlowModuleResult flowModuleResult = JsonUtils.getInstance().convertValue(flowDeploymentPO, FlowModuleResult.class);
     Integer status = FlowModuleEnum.getStatusByDeploymentStatus(flowDeploymentPO.getStatus());

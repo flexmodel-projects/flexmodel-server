@@ -9,16 +9,16 @@ import java.util.List;
  */
 public interface ApiDefinitionRepository {
 
-  void deleteByParentId(String parentId);
+  void deleteByParentId(String projectId, String parentId);
 
-  ApiDefinition findById(String id);
+  ApiDefinition findById(String projectId, String id);
 
-  List<ApiDefinition> findAll();
+  List<ApiDefinition> findAll(String projectId);
 
   List<ApiDefinition> findByProjectId(String projectId);
 
   ApiDefinition save(ApiDefinition record);
 
-  void delete(String id);
+  void delete(String projectId, String id);
 
 }

@@ -15,41 +15,41 @@ public class InstanceDataFmRepository implements InstanceDataRepository {
   Session session;
 
   @Override
-  public InstanceData select(String flowInstanceId, String instanceDataId) {
+  public InstanceData select(String projectId, String flowInstanceId, String instanceDataId) {
     return session.dsl().selectFrom(InstanceData.class)
-      .where(field(InstanceData::getFlowInstanceId).eq(flowInstanceId)
-        .and(field(InstanceData::getInstanceDataId).eq(instanceDataId)))
+      .where(field(InstanceData::getProjectId).eq(projectId).and(field(InstanceData::getFlowInstanceId).eq(flowInstanceId)
+        .and(field(InstanceData::getInstanceDataId).eq(instanceDataId))))
       .executeOne();
   }
 
   @Override
-  public InstanceData selectRecentOne(String flowInstanceId) {
+  public InstanceData selectRecentOne(String projectId, String flowInstanceId) {
     return session.dsl().selectFrom(InstanceData.class)
-      .where(field(InstanceData::getFlowInstanceId).eq(flowInstanceId))
+      .where(field(InstanceData::getProjectId).eq(projectId).and(field(InstanceData::getFlowInstanceId).eq(flowInstanceId)))
       .orderByDesc(InstanceData::getId)
       .limit(1)
       .executeOne();
   }
 
   @Override
-  public int insert(InstanceData instanceData) {
+  public int insert(String projectId, InstanceData instanceData) {
     return session.dsl().insertInto(InstanceData.class).values(instanceData).execute();
   }
 
   @Override
-  public int updateData(InstanceData instanceData) {
+  public int updateData(String projectId, InstanceData instanceData) {
     return session.dsl().update(InstanceData.class)
       .values(instanceData)
-      .where(field(InstanceData::getId).eq(instanceData.getId()))
+      .where(field(InstanceData::getProjectId).eq(projectId).and(field(InstanceData::getId).eq(instanceData.getId())))
       .execute();
   }
 
   @Override
-  public int insertOrUpdate(InstanceData mergeEntity) {
+  public int insertOrUpdate(String projectId, InstanceData mergeEntity) {
     if (mergeEntity.getId() != null) {
-      return updateData(mergeEntity);
+      return updateData(projectId, mergeEntity);
     }
-    return insert(mergeEntity);
+    return insert(projectId, mergeEntity);
   }
 }
 

@@ -20,57 +20,57 @@ public class ModelService {
   @Inject
   ModelRepository modelRepository;
 
-  public List<SchemaObject> findAll(String datasourceName) {
-    return modelRepository.findAll(datasourceName);
+  public List<SchemaObject> findAll(String projectId, String datasourceName) {
+    return modelRepository.findAll(projectId, datasourceName);
   }
 
-  public Optional<SchemaObject> findModel(String datasourceName, String modelName) {
-    return modelRepository.findModel(datasourceName, modelName);
+  public Optional<SchemaObject> findModel(String projectId, String datasourceName, String modelName) {
+    return modelRepository.findModel(projectId, datasourceName, modelName);
   }
 
-  public SchemaObject createModel(String datasourceName, SchemaObject model) {
-    return modelRepository.createModel(datasourceName, model);
+  public SchemaObject createModel(String projectId, String datasourceName, SchemaObject model) {
+    return modelRepository.createModel(projectId, datasourceName, model);
   }
 
-  public void dropModel(String datasourceName, String modelName) {
-    modelRepository.dropModel(datasourceName, modelName);
+  public void dropModel(String projectId, String datasourceName, String modelName) {
+    modelRepository.dropModel(projectId, datasourceName, modelName);
   }
 
-  public TypedField<?, ?> createField(String datasourceName, TypedField<?, ?> field) {
-    return modelRepository.createField(datasourceName, field);
+  public TypedField<?, ?> createField(String projectId, String datasourceName, TypedField<?, ?> field) {
+    return modelRepository.createField(projectId, datasourceName, field);
   }
 
-  public TypedField<?, ?> modifyField(String datasourceName, TypedField<?, ?> field) {
-    return modelRepository.modifyField(datasourceName, field);
+  public TypedField<?, ?> modifyField(String projectId, String datasourceName, TypedField<?, ?> field) {
+    return modelRepository.modifyField(projectId, datasourceName, field);
   }
 
-  public void dropField(String datasourceName, String modelName, String fieldName) {
-    modelRepository.dropField(datasourceName, modelName, fieldName);
+  public void dropField(String projectId, String datasourceName, String modelName, String fieldName) {
+    modelRepository.dropField(projectId, datasourceName, modelName, fieldName);
   }
 
-  public IndexDefinition createIndex(String datasourceName, IndexDefinition index) {
-    return modelRepository.createIndex(datasourceName, index);
+  public IndexDefinition createIndex(String projectId, String datasourceName, IndexDefinition index) {
+    return modelRepository.createIndex(projectId, datasourceName, index);
   }
 
-  public IndexDefinition modifyIndex(String datasourceName, IndexDefinition index) {
-    modelRepository.dropIndex(datasourceName, index.getModelName(), index.getName());
-    modelRepository.createIndex(datasourceName, index);
+  public IndexDefinition modifyIndex(String projectId, String datasourceName, IndexDefinition index) {
+    modelRepository.dropIndex(projectId, datasourceName, index.getModelName(), index.getName());
+    modelRepository.createIndex(projectId, datasourceName, index);
     return index;
   }
 
-  public void dropIndex(String datasourceName, String modelName, String indexName) {
-    modelRepository.dropIndex(datasourceName, modelName, indexName);
+  public void dropIndex(String projectId, String datasourceName, String modelName, String indexName) {
+    modelRepository.dropIndex(projectId, datasourceName, modelName, indexName);
   }
 
-  public List<SchemaObject> syncModels(String datasourceName, Set<String> models) {
-    return modelRepository.syncModels(datasourceName, models);
+  public List<SchemaObject> syncModels(String projectId, String datasourceName, Set<String> models) {
+    return modelRepository.syncModels(projectId, datasourceName, models);
   }
 
-  public void importModels(String datasourceName, String script, String type) {
-    modelRepository.importModels(datasourceName, script, type);
+  public void importModels(String projectId, String datasourceName, String script, String type) {
+    modelRepository.importModels(projectId, datasourceName, script, type);
   }
 
-  public List<SchemaObject> executeIdl(String datasourceName, String idl) throws ParseException {
-    return modelRepository.executeIdl(datasourceName, idl);
+  public List<SchemaObject> executeIdl(String projectId, String datasourceName, String idl) throws ParseException {
+    return modelRepository.executeIdl(projectId, datasourceName, idl);
   }
 }

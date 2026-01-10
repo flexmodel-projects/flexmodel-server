@@ -66,19 +66,19 @@ public class MetricsApplicationService {
 
   public FmMetricsResponse getFmMetrics(String projectId) {
     try {
-      List<ApiDefinition> definitions = projectId != null ? apiDefinitionService.findList(projectId) : apiDefinitionService.findAll();
-      List<Datasource> datasources = datasourceService.findAll();
+      List<ApiDefinition> definitions = apiDefinitionService.findList(projectId);
+      List<Datasource> datasources = datasourceService.findAll(projectId);
       int modelCount = 0;
       for (Datasource datasource : datasources) {
-        List<SchemaObject> list = modelService.findAll(datasource.getName());
+        List<SchemaObject> list = modelService.findAll(projectId, datasource.getName());
         if (list != null) {
           modelCount += list.size();
         }
       }
-      long reqLogCount = apiLogService.count(TRUE);
-      long flowDefCount = flowDefService.count(Expressions.field(FlowDefinition::getIsDeleted).eq(false));
-      long flowInsCount = flowInstanceService.count(TRUE);
-      long triggerCount = triggerService.count(TRUE);
+      long reqLogCount = apiLogService.count(projectId, TRUE);
+      long flowDefCount = flowDefService.count(projectId, Expressions.field(FlowDefinition::getIsDeleted).eq(false));
+      long flowInsCount = flowInstanceService.count(projectId, TRUE);
+      long triggerCount = triggerService.count(projectId, TRUE);
       long jobSuccessCount = jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("SUCCESS"));
       long jobFailureCount = jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("FAILED"));
 
@@ -90,7 +90,7 @@ public class MetricsApplicationService {
         if (apiDefinition.getMeta() instanceof Map<?, ?>) {
           ApiDefinitionMeta meta = JsonUtils.convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
           ApiDefinitionMeta.Execution execution = meta.getExecution();
-          if(execution == null) {
+          if (execution == null) {
             continue;
           }
           String query = execution.getQuery();
@@ -919,7 +919,7 @@ public class MetricsApplicationService {
     try {
       String projectId = SessionContextHolder.getProjectId();
       // 并行获取所有指标
-      CompletableFuture<FmMetricsResponse> fmFuture = CompletableFuture.supplyAsync(()->{
+      CompletableFuture<FmMetricsResponse> fmFuture = CompletableFuture.supplyAsync(() -> {
         SessionContextHolder.setProjectId(projectId);
         return getFmMetrics(projectId);
       });

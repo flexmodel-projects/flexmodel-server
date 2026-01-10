@@ -29,7 +29,8 @@ public class DataFmRepository implements DataRepository {
   SessionFactory sessionFactory;
 
   @Override
-  public List<Map<String, Object>> findRecords(String datasourceName,
+  public List<Map<String, Object>> findRecords(String projectId,
+                                               String datasourceName,
                                                String modelName,
                                                Integer page,
                                                Integer size,
@@ -69,7 +70,7 @@ public class DataFmRepository implements DataRepository {
   }
 
   @Override
-  public long countRecords(String datasourceName, String modelName, String filter) {
+  public long countRecords(String projectId, String datasourceName, String modelName, String filter) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
 
       DSLQueryBuilder queryBuilder = session.dsl()
@@ -84,7 +85,7 @@ public class DataFmRepository implements DataRepository {
   }
 
   @Override
-  public Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id, boolean nestedQuery) {
+  public Map<String, Object> findOneRecord(String projectId, String datasourceName, String modelName, Object id, boolean nestedQuery) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
 
       DSLQueryBuilder queryBuilder = session.dsl()
@@ -100,7 +101,7 @@ public class DataFmRepository implements DataRepository {
   }
 
   @Override
-  public Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data) {
+  public Map<String, Object> createRecord(String projectId, String datasourceName, String modelName, Map<String, Object> data) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       session.dsl()
         .insertInto(modelName)
@@ -111,7 +112,7 @@ public class DataFmRepository implements DataRepository {
   }
 
   @Override
-  public Map<String, Object> updateRecord(String datasourceName, String modelName, Object id, Map<String, Object> data) {
+  public Map<String, Object> updateRecord(String projectId, String datasourceName, String modelName, Object id, Map<String, Object> data) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       EntityDefinition entity = (EntityDefinition) session.schema().getModel(modelName);
       Optional<TypedField<?, ?>> idField = entity.findIdField();
@@ -127,7 +128,7 @@ public class DataFmRepository implements DataRepository {
   }
 
   @Override
-  public void deleteRecord(String datasourceName, String modelName, Object id) {
+  public void deleteRecord(String projectId, String datasourceName, String modelName, Object id) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
 
       EntityDefinition entity = (EntityDefinition) session.schema().getModel(modelName);

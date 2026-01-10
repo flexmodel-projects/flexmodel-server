@@ -10,13 +10,13 @@ import java.util.List;
  */
 public interface AiChatConversationRepository {
 
-  List<AiChatConversation> findAll();
+  List<AiChatConversation> findAll(String projectId);
 
-  List<AiChatConversation> find(Predicate filter);
+  List<AiChatConversation> find(String projectId, Predicate filter);
 
-  AiChatConversation findById(String id);
+  AiChatConversation findById(String projectId, String id);
 
-  AiChatConversation save(AiChatConversation conversation);
+  AiChatConversation save(String projectId, AiChatConversation conversation);
 
-  void delete(String id);
+  void delete(String projectId, String id);
 }

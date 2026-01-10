@@ -34,7 +34,7 @@ public class ScriptExecutionStrategy extends AbstractExecutionStrategy {
     try {
       Map<String, Object> data = new HashMap<>(contextMap);
       Map<String, ScriptExecutionDB> dbs = new HashMap<>();
-      for (Datasource datasource : datasourceService.findAll()) {
+      for (Datasource datasource : datasourceService.findAll(apiDefinition.getProjectId())) {
         dbs.put(datasource.getName(), new ScriptExecutionDB(datasource.getName(), sessionFactory));
       }
       data.put("dbs", dbs);

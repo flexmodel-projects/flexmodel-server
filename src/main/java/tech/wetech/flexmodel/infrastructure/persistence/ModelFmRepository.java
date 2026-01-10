@@ -28,20 +28,20 @@ public class ModelFmRepository implements ModelRepository {
 
   @Override
   @SuppressWarnings("all")
-  public List<SchemaObject> findAll(String datasourceName) {
+  public List<SchemaObject> findAll(String projectId, String datasourceName) {
     return sessionFactory.getModels(datasourceName);
   }
 
 
   @Override
-  public Optional<SchemaObject> findModel(String datasourceName, String modelName) {
+  public Optional<SchemaObject> findModel(String projectId, String datasourceName, String modelName) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
       return Optional.ofNullable(session.schema().getModel(modelName));
     }
   }
 
   @Override
-  public SchemaObject createModel(String datasourceName, SchemaObject model) {
+  public SchemaObject createModel(String projectId, String datasourceName, SchemaObject model) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
       if (model instanceof EntityDefinition entity) {
         return session.schema().createEntity(entity);
@@ -57,14 +57,14 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @Override
-  public void dropModel(String datasourceName, String modelName) {
+  public void dropModel(String projectId, String datasourceName, String modelName) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
       session.schema().dropModel(modelName);
     }
   }
 
   @Override
-  public TypedField<?, ?> createField(String datasourceName, TypedField<?, ?> field) {
+  public TypedField<?, ?> createField(String projectId, String datasourceName, TypedField<?, ?> field) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
       session.schema().createField(field);
       return field;
@@ -72,7 +72,7 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @Override
-  public TypedField<?, ?> modifyField(String datasourceName, TypedField<?, ?> field) {
+  public TypedField<?, ?> modifyField(String projectId, String datasourceName, TypedField<?, ?> field) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
       session.schema().modifyField(field);
       return field;
@@ -80,14 +80,14 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @Override
-  public void dropField(String datasourceName, String modelName, String fieldName) {
+  public void dropField(String projectId, String datasourceName, String modelName, String fieldName) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
       session.schema().dropField(modelName, fieldName);
     }
   }
 
   @Override
-  public IndexDefinition createIndex(String datasourceName, IndexDefinition index) {
+  public IndexDefinition createIndex(String projectId, String datasourceName, IndexDefinition index) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
       session.schema().createIndex(index);
       return index;
@@ -95,21 +95,21 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @Override
-  public void dropIndex(String datasourceName, String modelName, String indexName) {
+  public void dropIndex(String projectId, String datasourceName, String modelName, String indexName) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
       session.schema().dropIndex(modelName, indexName);
     }
   }
 
   @Override
-  public List<SchemaObject> syncModels(String datasourceName, Set<String> modelNames) {
+  public List<SchemaObject> syncModels(String projectId, String datasourceName, Set<String> modelNames) {
     try (Session session = this.sessionFactory.createSession(datasourceName)) {
       return session.schema().loadModels(modelNames);
     }
   }
 
   @Override
-  public void importModels(String datasourceName, String script, String type) {
+  public void importModels(String projectId, String datasourceName, String script, String type) {
     if (type.equals("JSON")) {
       sessionFactory.loadJSONString(datasourceName, script);
     } else if (type.equals("IDL")) {
@@ -120,7 +120,7 @@ public class ModelFmRepository implements ModelRepository {
   }
 
   @Override
-  public List<SchemaObject> executeIdl(String datasourceName, String idlString) throws ParseException {
+  public List<SchemaObject> executeIdl(String projectId, String datasourceName, String idlString) throws ParseException {
     ModelParser parser = new ModelParser(new StringReader(idlString));
     List<ModelParser.ASTNode> ast = parser.CompilationUnit();
     List<SchemaObject> schema = new ArrayList<>();

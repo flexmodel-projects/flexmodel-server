@@ -9,13 +9,13 @@ import java.util.List;
  * @author cjbi
  */
 public interface TriggerRepository {
-  Trigger findById(String id);
+  Trigger findById(String projectId, String id);
 
-  Trigger save(Trigger trigger);
+  Trigger save(String projectId, Trigger trigger);
 
-  void deleteById(String id);
+  void deleteById(String projectId, String id);
 
-  List<Trigger> find(Predicate filter, Integer page, Integer size);
+  List<Trigger> find(String projectId, Predicate filter, Integer page, Integer size);
 
-  long count(Predicate filter);
+  long count(String projectId, Predicate filter);
 }

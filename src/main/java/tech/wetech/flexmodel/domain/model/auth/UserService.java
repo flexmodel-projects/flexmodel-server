@@ -13,7 +13,7 @@ public class UserService {
   @Inject
   UserRepository userRepository;
 
-  public User login(String username, String password) {
+  public User login(String projectId, String username, String password) {
     User user = userRepository.findByUsername(username);
     if (user == null || !validateUser(username, password, user)) {
       throw new AuthException("Wrong username or password");
@@ -29,7 +29,7 @@ public class UserService {
     }
   }
 
-  public User getUser(String userId) {
+  public User getUser(String projectId, String userId) {
     return userRepository.findById(userId);
   }
 }

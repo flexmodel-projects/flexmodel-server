@@ -30,24 +30,24 @@ public class NodeInstanceService {
   @Inject
   FlowInstanceService flowInstanceService;
 
-  public NodeInstance selectByNodeInstanceId(String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance) {
-    NodeInstance nodeInstance = nodeInstanceRepository.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
+  public NodeInstance selectByNodeInstanceId(String projectId, String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance) {
+    NodeInstance nodeInstance = nodeInstanceRepository.selectByNodeInstanceId(projectId, flowInstanceId, nodeInstanceId);
     if (!effectiveForSubFlowInstance) {
       return nodeInstance;
     }
     if (nodeInstance != null) {
       return nodeInstance;
     }
-    String subFlowInstanceId = flowInstanceService.getFlowInstanceIdByRootFlowInstanceIdAndNodeInstanceId(flowInstanceId, nodeInstanceId);
-    return nodeInstanceRepository.selectByNodeInstanceId(subFlowInstanceId, nodeInstanceId);
+    String subFlowInstanceId = flowInstanceService.getFlowInstanceIdByRootFlowInstanceIdAndNodeInstanceId(projectId, flowInstanceId, nodeInstanceId);
+    return nodeInstanceRepository.selectByNodeInstanceId(projectId, subFlowInstanceId, nodeInstanceId);
   }
 
-  public NodeInstance selectRecentEndNode(String flowInstanceId) {
-    FlowInstance rootFlowInstance = processInstanceRepository.selectByFlowInstanceId(flowInstanceId);
-    FlowDeployment rootFlowDeployment = flowDeploymentRepository.findByDeployId(rootFlowInstance.getFlowDeployId());
+  public NodeInstance selectRecentEndNode(String projectId, String flowInstanceId) {
+    FlowInstance rootFlowInstance = processInstanceRepository.selectByFlowInstanceId(projectId, flowInstanceId);
+    FlowDeployment rootFlowDeployment = flowDeploymentRepository.findByDeployId(projectId, rootFlowInstance.getFlowDeployId());
     Map<String, FlowElement> rootFlowElementMap = FlowModelUtil.getFlowElementMap(rootFlowDeployment.getFlowModel());
 
-    List<NodeInstance> nodeInstanceList = nodeInstanceRepository.selectDescByFlowInstanceId(flowInstanceId);
+    List<NodeInstance> nodeInstanceList = nodeInstanceRepository.selectDescByFlowInstanceId(projectId, flowInstanceId);
     for (NodeInstance nodeInstance : nodeInstanceList) {
       int elementType = FlowModelUtil.getElementType(nodeInstance.getNodeKey(), rootFlowElementMap);
       if (elementType == FlowElementType.END_EVENT) {

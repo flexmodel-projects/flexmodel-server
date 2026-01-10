@@ -9,12 +9,12 @@ import tech.wetech.flexmodel.query.Predicate;
 public interface FlowDeploymentRepository {
   int insert(FlowDeployment flowDeployment);
 
-  FlowDeployment findByDeployId(String flowDeployId);
+  FlowDeployment findByDeployId(String projectId, String flowDeployId);
 
-  FlowDeployment findRecentByFlowModuleId(String flowModuleId);
+  FlowDeployment findRecentByFlowModuleId(String projectId, String flowModuleId);
 
-  void deleteById(Long id);
+  void deleteById(String projectId, Long id);
 
-  long count(Predicate filter);
+  long count(String projectId, Predicate filter);
 
 }

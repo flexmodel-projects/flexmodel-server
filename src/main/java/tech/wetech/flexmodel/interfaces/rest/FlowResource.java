@@ -318,7 +318,8 @@ public class FlowResource {
       )
     )})
   public StartProcessResult startProcess(@PathParam("projectId") String projectId, StartProcessParam startProcessParam) {
-    return flowApplicationService.startProcess(projectId, startProcessParam);
+    startProcessParam.setProjectId(projectId);
+    return flowApplicationService.startProcess(startProcessParam);
   }
 
   @Operation(summary = "提交任务")
@@ -348,8 +349,9 @@ public class FlowResource {
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH)
     @PathParam("flowInstanceId") String flowInstanceId,
     CommitTaskParam commitTaskParam) {
+    commitTaskParam.setProjectId(projectId);
     commitTaskParam.setFlowInstanceId(flowInstanceId);
-    return flowApplicationService.commitTask(projectId, commitTaskParam);
+    return flowApplicationService.commitTask(commitTaskParam);
   }
 
   @Operation(summary = "回滚任务")
@@ -379,8 +381,9 @@ public class FlowResource {
     @Parameter(name = "flowInstanceId", description = "流程实例ID", in = ParameterIn.PATH)
     @PathParam("flowInstanceId") String flowInstanceId,
     RollbackTaskParam rollbackTaskParam) {
+    rollbackTaskParam.setProjectId(projectId);
     rollbackTaskParam.setFlowInstanceId(flowInstanceId);
-    return flowApplicationService.rollbackTask(projectId, rollbackTaskParam);
+    return flowApplicationService.rollbackTask(rollbackTaskParam);
   }
 
   @Operation(summary = "终止流程实例")

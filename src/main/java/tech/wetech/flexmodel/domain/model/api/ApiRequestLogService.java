@@ -28,20 +28,20 @@ public class ApiRequestLogService {
     return apiLogRepository.save(apiRequestLog);
   }
 
-  public List<ApiRequestLog> find(Predicate filter, Integer current, Integer pageSize) {
-    return apiLogRepository.find(filter, current, pageSize);
+  public List<ApiRequestLog> find(String projectId, Predicate filter, Integer current, Integer pageSize) {
+    return apiLogRepository.find(projectId, filter, current, pageSize);
   }
 
-  public long count(Predicate filter) {
-    return apiLogRepository.count(filter);
+  public long count(String projectId, Predicate filter) {
+    return apiLogRepository.count(projectId, filter);
   }
 
-  public List<LogStat> stat(Predicate filter, String fmt) {
-    return apiLogRepository.stat(filter, fmt);
+  public List<LogStat> stat(String projectId, Predicate filter, String fmt) {
+    return apiLogRepository.stat(projectId, filter, fmt);
   }
 
-  public List<LogApiRank> ranking(Predicate filter) {
-    return apiLogRepository.ranking(filter);
+  public List<LogApiRank> ranking(String projectId, Predicate filter) {
+    return apiLogRepository.ranking(projectId, filter);
   }
 
   public void purgeOldLogs(int maxDays) {

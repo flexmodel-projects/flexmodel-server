@@ -27,31 +27,31 @@ public class FlowDefinitionFmRepository implements FlowDefinitionRepository {
     return session.dsl()
       .update(FlowDefinition.class)
       .values(flowDefinition)
-      .where(field(FlowDefinition::getFlowModuleId).eq(flowDefinition.getFlowModuleId()))
+      .where(field(FlowDefinition::getProjectId).eq(flowDefinition.getProjectId()).and(field(FlowDefinition::getFlowModuleId).eq(flowDefinition.getFlowModuleId())))
       .execute();
   }
 
   @Override
-  public FlowDefinition selectByModuleId(String flowModuleId) {
+  public FlowDefinition selectByModuleId(String projectId, String flowModuleId) {
     return session.dsl()
       .selectFrom(FlowDefinition.class)
-      .where(field(FlowDefinition::getFlowModuleId).eq(flowModuleId))
+      .where(field(FlowDefinition::getProjectId).eq(projectId).and(field(FlowDefinition::getFlowModuleId).eq(flowModuleId)))
       .executeOne();
   }
 
   @Override
-  public List<FlowDefinition> find(Predicate filter, Integer page, Integer size) {
+  public List<FlowDefinition> find(String projectId, Predicate filter, Integer page, Integer size) {
     return session.dsl().selectFrom(FlowDefinition.class)
       .page(page, size)
-      .where(filter)
+      .where(field(FlowDefinition::getProjectId).eq(projectId).and(filter))
       .orderByDesc("id")
       .execute();
   }
 
   @Override
-  public long count(Predicate filter) {
+  public long count(String projectId, Predicate filter) {
     return session.dsl().selectFrom(FlowDefinition.class)
-      .where(filter)
+      .where(field(FlowDefinition::getProjectId).eq(projectId).and(filter))
       .count();
   }
 }

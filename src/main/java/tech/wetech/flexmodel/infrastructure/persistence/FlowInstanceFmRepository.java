@@ -18,49 +18,49 @@ public class FlowInstanceFmRepository implements FlowInstanceRepository {
   Session session;
 
   @Override
-  public FlowInstance selectByFlowInstanceId(String flowInstanceId) {
+  public FlowInstance selectByFlowInstanceId(String projectId, String flowInstanceId) {
     return session.dsl()
       .selectFrom(FlowInstance.class)
-      .where(field(FlowInstance::getFlowInstanceId).eq(flowInstanceId))
+      .where(field(FlowInstance::getProjectId).eq(projectId).and(field(FlowInstance::getFlowInstanceId).eq(flowInstanceId)))
       .executeOne();
   }
 
   @Override
-  public int insert(FlowInstance flowInstance) {
+  public int insert(String projectId, FlowInstance flowInstance) {
     return session.dsl().insertInto(FlowInstance.class).values(flowInstance).execute();
   }
 
   @Override
-  public void updateStatus(String flowInstanceId, int status) {
+  public void updateStatus(String projectId, String flowInstanceId, int status) {
     session.dsl()
       .update(FlowInstance.class)
       .set(FlowInstance::getStatus, status)
-      .where(field(FlowInstance::getFlowInstanceId).eq(flowInstanceId))
+      .where(field(FlowInstance::getProjectId).eq(projectId).and(field(FlowInstance::getFlowInstanceId).eq(flowInstanceId)))
       .execute();
   }
 
   @Override
-  public void updateStatus(FlowInstance flowInstance, int status) {
+  public void updateStatus(String projectId, FlowInstance flowInstance, int status) {
     session.dsl()
       .update(FlowInstance.class)
       .set(FlowInstance::getStatus, status)
-      .where(field(FlowInstance::getFlowInstanceId).eq(flowInstance.getFlowInstanceId()))
+      .where(field(FlowInstance::getProjectId).eq(projectId).and(field(FlowInstance::getFlowInstanceId).eq(flowInstance.getFlowInstanceId())))
       .execute();
   }
 
   @Override
-  public long count(Predicate predicate) {
+  public long count(String projectId, Predicate predicate) {
     return session.dsl()
       .selectFrom(FlowInstance.class)
-      .where(predicate)
+      .where(field(FlowInstance::getProjectId).eq(projectId).and(predicate))
       .count();
   }
 
   @Override
-  public List<FlowInstance> find(Predicate predicate, Integer page, Integer size) {
+  public List<FlowInstance> find(String projectId, Predicate predicate, Integer page, Integer size) {
     return session.dsl()
       .selectFrom(FlowInstance.class)
-      .where(predicate)
+      .where(field(FlowInstance::getProjectId).eq(projectId).and(predicate))
       .page(page, size)
       .orderByDesc(FlowInstance::getCreateTime)
       .execute();

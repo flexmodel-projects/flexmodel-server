@@ -35,7 +35,7 @@ public class JobExecutionLogService {
     public JobExecutionLog create(JobExecutionLog jobExecutionLog) {
         log.debug("创建作业执行日志: triggerId={}, jobId={}",
             jobExecutionLog.getTriggerId(), jobExecutionLog.getJobId());
-        return jobExecutionLogRepository.save(jobExecutionLog);
+        return jobExecutionLogRepository.save(jobExecutionLog.getProjectId(), jobExecutionLog);
     }
 
     /**
@@ -57,7 +57,7 @@ public class JobExecutionLogService {
     public JobExecutionLog update(JobExecutionLog jobExecutionLog) {
         log.debug("更新作业执行日志: id={}, status={}",
             jobExecutionLog.getId(), jobExecutionLog.getExecutionStatus());
-        return jobExecutionLogRepository.save(jobExecutionLog);
+        return jobExecutionLogRepository.save(jobExecutionLog.getProjectId(), jobExecutionLog);
     }
 
     /**
@@ -69,7 +69,7 @@ public class JobExecutionLogService {
      * @return 作业执行日志列表
      */
     public List<JobExecutionLog> find(Predicate filter, Integer page, Integer size) {
-        return jobExecutionLogRepository.find(filter, page, size);
+        return jobExecutionLogRepository.find("", filter, page, size);
     }
 
     /**
@@ -79,7 +79,7 @@ public class JobExecutionLogService {
      * @return 日志数量
      */
     public long count(Predicate filter) {
-        return jobExecutionLogRepository.count(filter);
+        return jobExecutionLogRepository.count("", filter);
     }
 
     /**
@@ -149,7 +149,7 @@ public class JobExecutionLogService {
      * @param errorStackTrace 错误堆栈
      * @param executionDuration 执行时长（毫秒）
      */
-    public void recordJobFailure(String logId, String errorMessage, Object errorStackTrace, Long executionDuration) {
+    public void recordJobFailure( String logId, String errorMessage, Object errorStackTrace, Long executionDuration) {
         JobExecutionLog log = findById(logId);
         if (log != null) {
             log.setExecutionStatus("FAILED");
@@ -173,14 +173,9 @@ public class JobExecutionLogService {
         LocalDateTime purgeDate = LocalDateTime.now().minusDays(days);
         Predicate filter = field(JobExecutionLog::getCreatedAt).lte(purgeDate);
 
-        // 先统计要删除的记录数
-        long count = count(filter);
+        jobExecutionLogRepository.delete("", filter);
 
-        // 执行删除
-        jobExecutionLogRepository.delete(filter);
-
-        log.info("已清理 {} 条作业执行日志", count);
-        return (int) count;
+        return 0;
     }
 
     /**

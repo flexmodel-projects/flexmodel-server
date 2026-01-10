@@ -7,10 +7,18 @@ import java.util.Map;
 public class StartProcessParam {
   // For internal transmission runtimeContext
   private RuntimeContext runtimeContext;
-
+  private String projectId;
   private String flowModuleId;
   private String flowDeployId;
   private Map<String, Object> variables;
+
+  public String getProjectId() {
+    return projectId;
+  }
+
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
 
   public String getFlowModuleId() {
     return flowModuleId;

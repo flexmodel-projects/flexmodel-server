@@ -61,7 +61,7 @@ public class TriggerApplicationService {
     dto.setState(trigger.getState());
     dto.setCreatedAt(trigger.getCreatedAt());
     dto.setUpdatedAt(trigger.getUpdatedAt());
-    FlowDeployment flowDeployment = flowService.findRecentByFlowModuleId(trigger.getJobId());
+    FlowDeployment flowDeployment = flowService.findRecentByFlowModuleId(trigger.getProjectId(), trigger.getJobId());
     if (flowDeployment != null) {
       dto.setJobName(flowDeployment.getFlowName());
     }
@@ -69,7 +69,7 @@ public class TriggerApplicationService {
   }
 
   public TriggerDTO findById(String projecjtId, String id) {
-    return toTriggerDTO(triggerService.findById(id));
+    return toTriggerDTO(triggerService.findById(projecjtId, id));
   }
 
   private String getJobGroup(Trigger trigger, TriggerConfig triggerConfig) {
@@ -77,7 +77,7 @@ public class TriggerApplicationService {
       return eventTriggerConfig.getDatasourceName() + "_" + eventTriggerConfig.getModelName();
     } else {
       if (triggerConfig instanceof ScheduledTriggerConfig) {
-        FlowDeployment flowDeployment = flowService.findRecentByFlowModuleId(trigger.getJobId());
+        FlowDeployment flowDeployment = flowService.findRecentByFlowModuleId(trigger.getProjectId(), trigger.getJobId());
         if (flowDeployment != null) {
           return flowDeployment.getFlowKey();
         }
@@ -90,7 +90,7 @@ public class TriggerApplicationService {
   public Trigger create(String projectId, Trigger trigger) {
     TriggerConfig triggerConfig = JsonUtils.getInstance().convertValue(trigger.getConfig(), TriggerConfig.class);
     trigger.setJobGroup(getJobGroup(trigger, triggerConfig));
-    trigger = triggerService.save(trigger);
+    trigger = triggerService.save(projectId, trigger);
     // 规则校验
     triggerConfig.validate();
     if (triggerConfig instanceof ScheduledTriggerConfig scheduledTriggerConfig) {
@@ -108,7 +108,7 @@ public class TriggerApplicationService {
 
   //  @Transactional
   public Trigger update(String projectId, Trigger req) {
-    Trigger record = triggerService.findById(req.getId());
+    Trigger record = triggerService.findById(projectId, req.getId());
     if (record == null) {
       throw new TriggerException("记录不存在");
     }
@@ -121,7 +121,7 @@ public class TriggerApplicationService {
     // 规则校验
     triggerConfig.validate();
     req.setJobGroup(getJobGroup(req, triggerConfig));
-    Trigger trigger = triggerService.save(req);
+    Trigger trigger = triggerService.save(projectId, req);
 
     if (triggerConfig instanceof ScheduledTriggerConfig scheduledTriggerConfig) {
       try {
@@ -143,8 +143,8 @@ public class TriggerApplicationService {
     return trigger;
   }
 
-  public void deleteById(String id) {
-    Trigger record = findById(id, id);
+  public void deleteById(String projectId, String id) {
+    Trigger record = triggerService.findById(projectId, id);
     if (record != null) {
       // 实现定时任务调度
       try {
@@ -155,10 +155,10 @@ public class TriggerApplicationService {
         throw new TriggerException("删除定时任务失败: " + e.getMessage(), e);
       }
     }
-    triggerService.deleteById(id);
+    triggerService.deleteById(projectId, id);
   }
 
-  public PageDTO<TriggerDTO> findPage(TriggerPageRequest request) {
+  public PageDTO<TriggerDTO> findPage(String projectId, TriggerPageRequest request) {
     Predicate filter = Expressions.TRUE;
     if (request.getName() != null) {
       filter = filter.and(Expressions.field(Trigger::getName).eq(request.getName()));
@@ -172,20 +172,20 @@ public class TriggerApplicationService {
     if (request.getJobGroup() != null) {
       filter = filter.and(Expressions.field(Trigger::getJobGroup).eq(request.getJobGroup()));
     }
-    long total = triggerService.count(filter);
+    long total = triggerService.count(projectId, filter);
     if (total == 0) {
       return PageDTO.empty();
     }
-    List<TriggerDTO> triggers = triggerService.find(filter, request.getPage(), request.getSize()).stream()
+    List<TriggerDTO> triggers = triggerService.find(projectId, filter, request.getPage(), request.getSize()).stream()
       .map(this::toTriggerDTO)
       .toList();
     return new PageDTO<>(triggers, total);
   }
 
-  public Trigger executeNow(String id) {
+  public Trigger executeNow(String projectId, String id) {
     try {
       // 查找触发器
-      Trigger trigger = triggerService.findById(id);
+      Trigger trigger = triggerService.findById(projectId, id);
       if (trigger == null) {
         throw new TriggerException("触发器不存在: " + id);
       }
@@ -198,11 +198,11 @@ public class TriggerApplicationService {
       log.info("开始立即执行触发器: triggerId={}, jobId={}, jobType={}",
         trigger.getId(), trigger.getJobId(), trigger.getJobType());
 
-      String projectId = SessionContextHolder.getProjectId();
+      String projectId2 = SessionContextHolder.getProjectId();
 
       // 构建启动流程参数
       StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
-      startProcessParam.setProjectId(projectId);
+      startProcessParam.setProjectId(projectId2);
       startProcessParam.setUserId(SessionContextHolder.getUserId());
       startProcessParam.setFlowModuleId(trigger.getJobId());
       startProcessParam.setVariables(Map.of());
@@ -210,7 +210,7 @@ public class TriggerApplicationService {
 
       JobExecutionLog jobExecutionLog = jobExecutionLogService.recordJobStart(trigger.getId(), trigger.getJobId(), trigger.getJobGroup(),
         trigger.getJobType(), trigger.getName(), trigger.getName(), trigger.getName(), System.currentTimeMillis(),
-        System.currentTimeMillis(), startProcessParam, projectId);
+        System.currentTimeMillis(), startProcessParam, projectId2);
 
       startProcessParam.setEventId(jobExecutionLog.getId());
 

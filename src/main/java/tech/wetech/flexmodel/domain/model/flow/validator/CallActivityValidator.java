@@ -96,14 +96,14 @@ public class CallActivityValidator extends ElementValidator {
       String caller = commonParam.getCaller();
       callActivityNestedLevel = businessConfig.getCallActivityNestedLevel(caller);
     }
-      int nestedLevel = getNestedLevel(flowElement, flowElement, new HashMap<>());
+      int nestedLevel = getNestedLevel(commonParam != null ? commonParam.getProjectId() : null, flowElement, flowElement, new HashMap<>());
     if (callActivityNestedLevel < nestedLevel) {
       throwElementValidatorException(flowElement, ErrorEnum.FLOW_NESTED_LEVEL_EXCEEDED);
     }
   }
 
   // DFS
-  private int getNestedLevel(FlowElement rootFlowElement, FlowElement flowElement, Map<String, Integer> flowModuleId2NestLevelCache) throws DefinitionException {
+  private int getNestedLevel(String projectId, FlowElement rootFlowElement, FlowElement flowElement, Map<String, Integer> flowModuleId2NestLevelCache) throws DefinitionException {
     if (flowElement.getType() != FlowElementType.CALL_ACTIVITY) {
       return 0;
     }
@@ -123,7 +123,7 @@ public class CallActivityValidator extends ElementValidator {
       flowModuleId2NestLevelCache.put(callActivityFlowModuleId, BusinessConfig.COMPUTING_FLOW_NESTED_LEVEL);
     }
 
-    FlowDefinition flowDefinition = flowDefinitionRepository.selectByModuleId(callActivityFlowModuleId);
+    FlowDefinition flowDefinition = flowDefinitionRepository.selectByModuleId(projectId, callActivityFlowModuleId);
     if (flowDefinition == null) {
       throwElementValidatorException(rootFlowElement, ErrorEnum.MODEL_UNKNOWN_ELEMENT_VALUE);
     }
@@ -131,7 +131,7 @@ public class CallActivityValidator extends ElementValidator {
     List<FlowElement> flowElementList = flowModel == null ? new ArrayList<>() : flowModel.getFlowElementList();
     int maxNestedLevel = 0;
     for (FlowElement element : flowElementList) {
-      int nestedLevel = getNestedLevel(rootFlowElement, element, flowModuleId2NestLevelCache);
+      int nestedLevel = getNestedLevel(projectId, rootFlowElement, element, flowModuleId2NestLevelCache);
       if (maxNestedLevel < nestedLevel) {
         maxNestedLevel = nestedLevel;
       }

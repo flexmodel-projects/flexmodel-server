@@ -9,16 +9,16 @@ import java.util.List;
  * @author cjbi
  */
 public interface FlowInstanceRepository {
-  FlowInstance selectByFlowInstanceId(String flowInstanceId);
+  FlowInstance selectByFlowInstanceId(String projectId, String flowInstanceId);
 
-  int insert(FlowInstance flowInstance);
+  int insert(String projectId, FlowInstance flowInstance);
 
-  void updateStatus(String flowInstanceId, int status);
+  void updateStatus(String projectId, String flowInstanceId, int status);
 
-  void updateStatus(FlowInstance flowInstance, int status);
+  void updateStatus(String projectId, FlowInstance flowInstance, int status);
 
-  long count(Predicate predicate);
+  long count(String projectId, Predicate predicate);
 
-  List<FlowInstance> find(Predicate predicate, Integer page, Integer size);
+  List<FlowInstance> find(String projectId, Predicate predicate, Integer page, Integer size);
 
 }

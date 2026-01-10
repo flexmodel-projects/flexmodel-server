@@ -10,17 +10,17 @@ import java.util.List;
  */
 public interface AiChatMessageRepository {
 
-  List<AiChatMessage> findAll();
+  List<AiChatMessage> findAll(String projectId);
 
-  List<AiChatMessage> find(Predicate filter);
+  List<AiChatMessage> find(String projectId, Predicate filter);
 
-  List<AiChatMessage> findByConversationId(String conversationId);
+  List<AiChatMessage> findByConversationId(String projectId, String conversationId);
 
-  AiChatMessage findById(String id);
+  AiChatMessage findById(String projectId, String id);
 
-  AiChatMessage save(AiChatMessage message);
+  AiChatMessage save(String projectId, AiChatMessage message);
 
-  void delete(String id);
+  void delete(String projectId, String id);
 
-  void deleteByConversationId(String conversationId);
+  void deleteByConversationId(String projectId, String conversationId);
 }

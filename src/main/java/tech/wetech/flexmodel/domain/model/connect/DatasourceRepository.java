@@ -10,11 +10,11 @@ import java.util.List;
  */
 public interface DatasourceRepository {
 
-  List<Datasource> findAll();
+  List<Datasource> findAll(String projectId);
 
-  List<Datasource> find(Predicate filter);
+  List<Datasource> find(String projectId, Predicate filter);
 
   Datasource save(Datasource datasource);
 
-  void delete(String id);
+  void delete(String projectId, String name);
 }

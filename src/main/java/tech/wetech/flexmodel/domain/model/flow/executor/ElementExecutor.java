@@ -67,7 +67,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     NodeInstanceBO sourceNodeInstance = runtimeContext.getCurrentNodeInstance();
     if (sourceNodeInstance != null) {
       // TODO: 2019/12/30 cache
-      NodeInstance nodeInstance = nodeInstanceRepository.selectBySourceInstanceId(flowInstanceId,
+      NodeInstance nodeInstance = nodeInstanceRepository.selectBySourceInstanceId(runtimeContext.getProjectId(), flowInstanceId,
         sourceNodeInstance.getNodeInstanceId(), nodeKey);
       //reentrant check
       if (nodeInstance != null) {
@@ -174,7 +174,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     } else {
       //case2
       nodeInstanceId = runtimeContext.getCurrentNodeInstance().getSourceNodeInstanceId();
-      NodeInstance currentNodeInstancePO = nodeInstanceRepository.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
+      NodeInstance currentNodeInstancePO = nodeInstanceRepository.selectByNodeInstanceId(runtimeContext.getProjectId(), flowInstanceId, nodeInstanceId);
       if (currentNodeInstancePO == null) {
         LOGGER.warn("preRollback failed: cannot find currentNodeInstancePO from db."
                     + "||flowInstanceId={}||nodeInstanceId={}", flowInstanceId, nodeInstanceId);
@@ -184,7 +184,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
       String currentInstanceDataId = currentNodeInstance.getInstanceDataId();
       runtimeContext.setInstanceDataId(currentInstanceDataId);
-      tech.wetech.flexmodel.codegen.entity.InstanceData instanceData = instanceDataRepository.select(flowInstanceId, currentInstanceDataId);
+      tech.wetech.flexmodel.codegen.entity.InstanceData instanceData = instanceDataRepository.select(runtimeContext.getProjectId(), flowInstanceId, currentInstanceDataId);
       Map<String, Object> currentInstanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceData.getInstanceData());
       runtimeContext.setInstanceDataMap(currentInstanceDataMap);
     }
@@ -239,7 +239,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     // TODO: 2019/12/13 get from cache
-    tech.wetech.flexmodel.codegen.entity.NodeInstance sourceNodeInstancePO = nodeInstanceRepository.selectByNodeInstanceId(flowInstanceId, sourceNodeInstanceId);
+    tech.wetech.flexmodel.codegen.entity.NodeInstance sourceNodeInstancePO = nodeInstanceRepository.selectByNodeInstanceId(runtimeContext.getProjectId(), flowInstanceId, sourceNodeInstanceId);
     if (sourceNodeInstancePO == null) {
       LOGGER.warn("getRollbackExecutor failed: cannot find sourceNodeInstance from db."
                   + "||flowInstanceId={}||sourceNodeInstanceId={}", flowInstanceId, sourceNodeInstanceId);

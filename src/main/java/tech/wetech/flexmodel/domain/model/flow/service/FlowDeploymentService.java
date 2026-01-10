@@ -15,15 +15,15 @@ public class FlowDeploymentService {
   @Inject
   FlowDeploymentRepository flowDeploymentRepository;
 
-  public long count(Predicate filter) {
-    return flowDeploymentRepository.count(filter);
+  public long count(String projectId, Predicate filter) {
+    return flowDeploymentRepository.count(projectId, filter);
   }
 
-  public FlowDeployment findRecentByFlowModuleId(String flowKey) {
-    return flowDeploymentRepository.findRecentByFlowModuleId(flowKey);
+  public FlowDeployment findRecentByFlowModuleId(String projectId, String flowKey) {
+    return flowDeploymentRepository.findRecentByFlowModuleId(projectId, flowKey);
   }
 
-  public FlowDeployment findByFlowDeployId(String flowDeployId) {
-    return flowDeploymentRepository.findByDeployId(flowDeployId);
+  public FlowDeployment findByFlowDeployId(String projectId, String flowDeployId) {
+    return flowDeploymentRepository.findByDeployId(projectId, flowDeployId);
   }
 }

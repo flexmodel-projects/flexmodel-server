@@ -122,8 +122,8 @@ public class DatasourceResource {
   @Operation(summary = "获取物理数据库表名称")
   @POST
   @Path("/physics/names")
-  public List<String> getPhysicsModelNames(@PathParam("projectId") String projectId, Datasource datasource) {
-    return modelingApplicationService.getPhysicsModelNames(projectId, datasource);
+  public List<String> getPhysicsModelNames(Datasource datasource) {
+    return modelingApplicationService.getPhysicsModelNames(datasource);
   }
 
   @APIResponse(
@@ -188,8 +188,8 @@ public class DatasourceResource {
     })
   @Operation(summary = "创建数据源")
   @POST
-  public Datasource createDatasource(Datasource datasource) {
-    return modelingApplicationService.createDatasource(datasource);
+  public Datasource createDatasource(@PathParam("projectId") String projectId, Datasource datasource) {
+    return modelingApplicationService.createDatasource(projectId, datasource);
   }
 
   @RequestBody(

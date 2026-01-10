@@ -26,31 +26,31 @@ public class DataApplicationService {
                                                         String filter,
                                                         String sort,
                                                         boolean nestedQuery) {
-    List<Map<String, Object>> list = dataService.findRecords(datasourceName, modelName, page, size, filter, sort, nestedQuery);
-    long total = dataService.countRecords(datasourceName, modelName, filter);
+    List<Map<String, Object>> list = dataService.findRecords(projectId, datasourceName, modelName, page, size, filter, sort, nestedQuery);
+    long total = dataService.countRecords(projectId, datasourceName, modelName, filter);
     return new PageDTO<>(list, total);
   }
 
   public Map<String, Object> findOneRecord(String projectId, String datasourceName, String modelName, String id, boolean nestedQuery) {
-    return dataService.findOneRecord(datasourceName, modelName, id, nestedQuery);
+    return dataService.findOneRecord(projectId, datasourceName, modelName, id, nestedQuery);
   }
 
   public Map<String, Object> createRecord(String projectId, String datasourceName, String modelName, Map<String, Object> data) {
-    return dataService.createRecord(datasourceName, modelName, data);
+    return dataService.createRecord(projectId, datasourceName, modelName, data);
   }
 
   public Map<String, Object> updateRecord(String projectId, String datasourceName, String modelName, Object id, Map<String, Object> data) {
-    return dataService.updateRecord(datasourceName, modelName, id, data);
+    return dataService.updateRecord(projectId, datasourceName, modelName, id, data);
   }
 
   public void deleteRecord(String projectId, String datasourceName, String modelName, Object id) {
-    dataService.deleteRecord(datasourceName, modelName, id);
+    dataService.deleteRecord(projectId, datasourceName, modelName, id);
   }
 
   public Map<String, Object> updateRecordIgnoreNull(String projectId, String datasourceName, String modelName, String id, Map<String, Object> record) {
-    Map<String, Object> oldData = dataService.findOneRecord(datasourceName, modelName, id, false);
+    Map<String, Object> oldData = dataService.findOneRecord(projectId, datasourceName, modelName, id, false);
     Map<String, Object> mergeData = new HashMap<>(oldData);
     mergeData.putAll(record);
-    return dataService.updateRecord(datasourceName, modelName, id, mergeData);
+    return dataService.updateRecord(projectId, datasourceName, modelName, id, mergeData);
   }
 }

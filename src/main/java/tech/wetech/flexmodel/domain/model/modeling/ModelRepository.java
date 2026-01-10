@@ -14,27 +14,27 @@ import java.util.Set;
  */
 public interface ModelRepository {
 
-  List<SchemaObject> findAll(String datasourceName);
+  List<SchemaObject> findAll(String projectId, String datasourceName);
 
-  Optional<SchemaObject> findModel(String datasourceName, String modelName);
+  Optional<SchemaObject> findModel(String projectId, String datasourceName, String modelName);
 
-  SchemaObject createModel(String datasourceName, SchemaObject model);
+  SchemaObject createModel(String projectId, String datasourceName, SchemaObject model);
 
-  void dropModel(String datasourceName, String modelName);
+  void dropModel(String projectId, String datasourceName, String modelName);
 
-  TypedField<?, ?> createField(String datasourceName, TypedField<?, ?> field);
+  TypedField<?, ?> createField(String projectId, String datasourceName, TypedField<?, ?> field);
 
-  TypedField<?, ?> modifyField(String datasourceName, TypedField<?, ?> field);
+  TypedField<?, ?> modifyField(String projectId, String datasourceName, TypedField<?, ?> field);
 
-  void dropField(String datasourceName, String modelName, String fieldName);
+  void dropField(String projectId, String datasourceName, String modelName, String fieldName);
 
-  IndexDefinition createIndex(String datasourceName, IndexDefinition index);
+  IndexDefinition createIndex(String projectId, String datasourceName, IndexDefinition index);
 
-  void dropIndex(String datasourceName, String modelName, String indexName);
+  void dropIndex(String projectId, String datasourceName, String modelName, String indexName);
 
-  List<SchemaObject> syncModels(String datasourceName, Set<String> modelName);
+  List<SchemaObject> syncModels(String projectId, String datasourceName, Set<String> modelName);
 
-  void importModels(String datasourceName, String script, String type);
+  void importModels(String projectId, String datasourceName, String script, String type);
 
-  List<SchemaObject> executeIdl(String datasourceName, String idl) throws ParseException;
+  List<SchemaObject> executeIdl(String projectId, String datasourceName, String idl) throws ParseException;
 }

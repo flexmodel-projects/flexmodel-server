@@ -50,8 +50,9 @@ public class TriggerDataChangedEventListener implements EventListener {
   public void onPreChange(PreChangeEvent event) {
     try {
       String groupName = event.getSchemaName() + "_" + event.getModelName();
+      String projectId = SessionContextHolder.getProjectId();
       // 最多支持触发100个事件
-      List<Trigger> triggers = triggerService.find(
+      List<Trigger> triggers = triggerService.find(projectId,
         Expressions.field(Trigger::getJobGroup).eq(groupName)
           .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
 
@@ -96,8 +97,9 @@ public class TriggerDataChangedEventListener implements EventListener {
   public void onChanged(ChangedEvent event) {
     try {
       String groupName = event.getSchemaName() + "_" + event.getModelName();
+      String projectId = SessionContextHolder.getProjectId();
       // 最多支持触发100个事件
-      List<Trigger> triggers = triggerService.find(
+      List<Trigger> triggers = triggerService.find(projectId,
         Expressions.field(Trigger::getJobGroup).eq(groupName)
           .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
 

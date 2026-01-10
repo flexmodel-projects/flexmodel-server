@@ -137,7 +137,7 @@ public class ApiDefinitionResource {
     )})
   public ApiDefinition updateIgnoreNull(@PathParam("projectId") String projectId, @PathParam("id") String id, ApiDefinition request) {
     request.setId(id);
-    ApiDefinition record = apiDesignApplicationService.findApiDefinition(id);
+    ApiDefinition record = apiDesignApplicationService.findApiDefinition(projectId, id);
     if (request.getName() != null) {
       record.setName(request.getName());
     }

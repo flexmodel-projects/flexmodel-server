@@ -29,7 +29,7 @@ public class TriggerFlowEventConsumer {
     SessionContextHolder.setUserId(param.getUserId());
     StartProcessResult result = null;
     try {
-      result = flowApplicationService.startProcess(param.getProjectId(), param);
+      result = flowApplicationService.startProcess(param);
       log.info("flow.start.||startProcessParam={}||result={}", param, result);
     } catch (Exception e) {
       if (param.getEventId() != null) {

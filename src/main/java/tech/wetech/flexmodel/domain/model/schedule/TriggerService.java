@@ -16,24 +16,24 @@ public class TriggerService {
   @Inject
   TriggerRepository triggerRepository;
 
-  public Trigger findById(String id) {
-    return triggerRepository.findById(id);
+  public Trigger findById(String projectId, String id) {
+    return triggerRepository.findById(projectId, id);
   }
 
-  public Trigger save(Trigger trigger) {
-    return triggerRepository.save(trigger);
+  public Trigger save(String projectId, Trigger trigger) {
+    return triggerRepository.save(projectId, trigger);
   }
 
-  public void deleteById(String id) {
-    triggerRepository.deleteById(id);
+  public void deleteById(String projectId, String id) {
+    triggerRepository.deleteById(projectId, id);
   }
 
-  public long count(Predicate filter) {
-    return triggerRepository.count(filter);
+  public long count(String projectId, Predicate filter) {
+    return triggerRepository.count(projectId, filter);
   }
 
-  public List<Trigger> find(Predicate filter, Integer page, Integer size) {
-    return triggerRepository.find(filter, page, size);
+  public List<Trigger> find(String projectId, Predicate filter, Integer page, Integer size) {
+    return triggerRepository.find(projectId, filter, page, size);
   }
 
 }

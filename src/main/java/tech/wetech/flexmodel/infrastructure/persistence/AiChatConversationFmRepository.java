@@ -22,31 +22,32 @@ public class AiChatConversationFmRepository implements AiChatConversationReposit
   Session session;
 
   @Override
-  public List<AiChatConversation> findAll() {
+  public List<AiChatConversation> findAll(String projectId) {
     return session.dsl()
       .selectFrom(AiChatConversation.class)
+      .where(field(AiChatConversation::getProjectId).eq(projectId))
       .orderBy("created_at", Direction.DESC)
       .execute();
   }
 
   @Override
-  public List<AiChatConversation> find(Predicate filter) {
+  public List<AiChatConversation> find(String projectId, Predicate filter) {
     return session.dsl()
       .selectFrom(AiChatConversation.class)
-      .where(filter)
+      .where(field(AiChatConversation::getProjectId).eq(projectId).and(filter))
       .execute();
   }
 
   @Override
-  public AiChatConversation findById(String id) {
+  public AiChatConversation findById(String projectId, String id) {
     return session.dsl()
       .selectFrom(AiChatConversation.class)
-      .where(field(AiChatConversation::getId).eq(id))
+      .where(field(AiChatConversation::getProjectId).eq(projectId).and(field(AiChatConversation::getId).eq(id)))
       .executeOne();
   }
 
   @Override
-  public AiChatConversation save(AiChatConversation conversation) {
+  public AiChatConversation save(String projectId, AiChatConversation conversation) {
     session.dsl()
       .mergeInto(AiChatConversation.class)
       .values(conversation)
@@ -56,9 +57,9 @@ public class AiChatConversationFmRepository implements AiChatConversationReposit
   }
 
   @Override
-  public void delete(String id) {
+  public void delete(String projectId, String id) {
     session.dsl().deleteFrom(AiChatConversation.class)
-      .where(field(AiChatConversation::getId).eq(id))
+      .where(field(AiChatConversation::getProjectId).eq(projectId).and(field(AiChatConversation::getId).eq(id)))
       .execute();
   }
 }

@@ -286,7 +286,7 @@ public class DocumentApplicationService {
     typeMapping.put(ScalarType.BOOLEAN.getType(), Map.of("type", "boolean"));
 //    typeMapping.put("", Map.of("type", "array"));
     typeMapping.put(ScalarType.JSON.getType(), Map.of("type", "object"));
-    EntityDefinition entity = (EntityDefinition) modelService.findModel(datasourceName, modelName).orElseThrow();
+    EntityDefinition entity = (EntityDefinition) modelService.findModel(SessionContextHolder.getProjectId(), datasourceName, modelName).orElseThrow();
     if (entity == null) {
       return null;
     }
@@ -413,6 +413,7 @@ public class DocumentApplicationService {
 
     }
     // if graphql endpoint is enabled
+    String projectId = apis.isEmpty() ? "" : apis.get(0).getProjectId();
     Settings settings = settingsService.getSettings();
     Map<String, Object> graphqlPath = new HashMap<>();
     Map<String, Object> typeProperties = new HashMap<>();

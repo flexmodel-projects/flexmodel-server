@@ -46,7 +46,7 @@ public class TriggerResource {
     request.setJobGroup(jobGroup);
     request.setPage(page);
     request.setSize(size);
-    return scheduleApplicationService.findPage(request);
+    return scheduleApplicationService.findPage(projectId, request);
   }
 
   @Operation(summary = "创建触发器")
@@ -80,14 +80,14 @@ public class TriggerResource {
   @DELETE
   @Path("/{id}")
   public void deleteById(@PathParam("projectId") String projectId, @PathParam("id") String id) {
-    scheduleApplicationService.deleteById(id);
+    scheduleApplicationService.deleteById(projectId, id);
   }
 
   @Operation(summary = "立即执行触发器")
   @POST
   @Path("/{id}/execute")
   public Trigger executeNow(@PathParam("projectId") String projectId, @PathParam("id") String id) {
-    return scheduleApplicationService.executeNow(id);
+    return scheduleApplicationService.executeNow(projectId, id);
   }
 
 }

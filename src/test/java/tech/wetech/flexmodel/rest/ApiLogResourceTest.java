@@ -29,7 +29,7 @@ public class ApiLogResourceTest {
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
-      .get(Resources.ROOT_PATH + "/logs/stat")
+      .get(Resources.ROOT_PATH + "/projects/dev_test/logs/stat")
       .then()
       .statusCode(200);
   }

@@ -29,6 +29,7 @@ import tech.wetech.flexmodel.domain.model.idp.provider.Provider;
 import tech.wetech.flexmodel.domain.model.idp.provider.ValidateParam;
 import tech.wetech.flexmodel.domain.model.idp.provider.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
+import tech.wetech.flexmodel.domain.model.auth.ProjectService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.query.Expressions;
@@ -94,9 +95,12 @@ public class ApiRuntimeApplicationService {
   @Inject
   Request request;
 
+  @Inject
+  ProjectService projectService;
+
   public PageDTO<ApiRequestLog> findApiLogs(String projectId, int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
-    List<ApiRequestLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, isSuccess), current, pageSize);
-    long total = apiLogService.count(getCondition(keyword, startDate, endDate, isSuccess));
+    List<ApiRequestLog> list = apiLogService.find(projectId, getCondition(keyword, startDate, endDate, isSuccess), current, pageSize);
+    long total = apiLogService.count(projectId, getCondition(keyword, startDate, endDate, isSuccess));
     return new PageDTO<>(list, total);
   }
 
@@ -151,8 +155,8 @@ public class ApiRuntimeApplicationService {
 
     Predicate condition = getCondition(keyword, startDate, endDate, isSuccess);
 
-    Map<String, Long> successMap = apiLogService.stat(condition.and(field(ApiRequestLog::getIsSuccess).eq(true)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
-    Map<String, Long> failMap = apiLogService.stat(condition.and(field(ApiRequestLog::getIsSuccess).eq(false)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
+    Map<String, Long> successMap = apiLogService.stat(projectId, condition.and(field(ApiRequestLog::getIsSuccess).eq(true)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
+    Map<String, Long> failMap = apiLogService.stat(projectId, condition.and(field(ApiRequestLog::getIsSuccess).eq(false)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
     statDTO = new LogStatResponse.ApiChart();
     List<Long> successData = new ArrayList<>();
     List<Long> failData = new ArrayList<>();
@@ -164,9 +168,9 @@ public class ApiRuntimeApplicationService {
     statDTO.setSuccessData(successData);
     statDTO.setFailData(failData);
 
-    List<LogStat> stat = apiLogService.stat(condition, fmt);
+    List<LogStat> stat = apiLogService.stat(projectId, condition, fmt);
 
-    List<LogApiRank> apiRankList = apiLogService.ranking(condition);
+    List<LogApiRank> apiRankList = apiLogService.ranking(projectId, condition);
 
     return LogStatResponse.builder().apiStatList(stat).apiRankingList(apiRankList).apiChart(statDTO).build();
   }
@@ -193,7 +197,7 @@ public class ApiRuntimeApplicationService {
   private void doRequest(RoutingContext routingContext) {
     boolean isMatching = false;
 
-    List<ApiDefinition> apis = apiDefinitionService.findAll();
+    List<ApiDefinition> apis = apiDefinitionService.findAll("");
     Settings settings = settingsService.getSettings();
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {

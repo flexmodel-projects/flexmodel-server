@@ -68,8 +68,8 @@ public class ApiDefinitionApplicationService {
    * @param apiDefinitionId
    * @return
    */
-  public List<ApiDefinitionHistory> findApiDefinitionHistories(String appDefinitionId, String apiDefinitionId) {
-    return apiDefinitionService.findApiDefinitionHistories(appDefinitionId);
+  public List<ApiDefinitionHistory> findApiDefinitionHistories(String projectId, String apiDefinitionId) {
+    return apiDefinitionService.findApiDefinitionHistories(projectId, apiDefinitionId);
   }
 
   private List<ApiDefinitionTreeDTO> getChildren(ApiDefinitionTreeDTO treeDTO, List<ApiDefinition> list) {
@@ -93,7 +93,7 @@ public class ApiDefinitionApplicationService {
   }
 
   public void deleteApiDefinition(String projectId, String id) {
-    apiDefinitionService.delete(id);
+    apiDefinitionService.delete(projectId, id);
   }
 
   @Transactional
@@ -101,7 +101,7 @@ public class ApiDefinitionApplicationService {
     List<String> generateAPIs = dto.getGenerateAPIs();
     try (Session session = sessionFactory.createSession(dto.getDatasourceName())) {
       EntityDefinition entity = (EntityDefinition) session.schema().getModel(dto.getModelName());
-      ApiDefinition apiFolder = createApiFolder(dto);
+      ApiDefinition apiFolder = createApiFolder(projectId, dto);
       for (String type : generateAPIs) {
         ApiDefinitionGenerator apiDefinitionGenerator = templateMap.get(type);
         if (apiDefinitionGenerator != null) {
@@ -111,6 +111,7 @@ public class ApiDefinitionApplicationService {
           generationContext.putVariable("idFieldOfPath", dto.getIdFieldOfPath());
           generationContext.putVariable("apiParentId", apiFolder.getId());
           ApiDefinition apiDefinition = apiDefinitionGenerator.createApiDefinition(generationContext);
+          apiDefinition.setProjectId(projectId);
           apiDefinitionService.create(apiDefinition);
         }
       }
@@ -118,7 +119,7 @@ public class ApiDefinitionApplicationService {
     eventBus.publish("graphql.refresh", new GraphQLRefreshEvent());
   }
 
-  private ApiDefinition createApiFolder(GenerateAPIsDTO dto) {
+  private ApiDefinition createApiFolder(String projectId, GenerateAPIsDTO dto) {
     ApiDefinition folder = new ApiDefinition();
     folder.setParentId(null);
     folder.setMethod(null);
@@ -126,18 +127,20 @@ public class ApiDefinitionApplicationService {
     folder.setName(dto.getApiFolder());
     folder.setEnabled(false);
     folder.setType(ApiType.FOLDER);
+    folder.setProjectId(projectId);
     return apiDefinitionService.create(folder);
   }
 
-  public ApiDefinition findApiDefinition(String id) {
-    return apiDefinitionService.findApiDefinition(id);
+  public ApiDefinition findApiDefinition(String projectId, String id) {
+    return apiDefinitionService.findApiDefinition(projectId, id);
   }
 
   public ApiDefinitionHistory restoreApiDefinition(String projectId, String historyId) {
-    ApiDefinitionHistory apiDefinitionHistory = apiDefinitionService.findApiDefinitionHistory(historyId);
+    ApiDefinitionHistory apiDefinitionHistory = apiDefinitionService.findApiDefinitionHistory(projectId, historyId);
     if (apiDefinitionHistory != null) {
       ApiDefinition apiDefinition = JsonUtils.convertValue(apiDefinitionHistory, ApiDefinition.class);
       apiDefinition.setId(apiDefinitionHistory.getApiDefinitionId());
+      apiDefinition.setProjectId(projectId);
       apiDefinitionService.update(apiDefinition);
     }
     return apiDefinitionHistory;

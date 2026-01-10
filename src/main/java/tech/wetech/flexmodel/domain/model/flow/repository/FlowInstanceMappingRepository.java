@@ -8,11 +8,11 @@ import java.util.List;
  * @author cjbi
  */
 public interface FlowInstanceMappingRepository {
-  List<FlowInstanceMapping> selectFlowInstanceMappingList(String flowInstanceId, String nodeInstanceId);
+  List<FlowInstanceMapping> selectFlowInstanceMappingList(String projectId, String flowInstanceId, String nodeInstanceId);
 
-  FlowInstanceMapping selectFlowInstanceMapping(String flowInstanceId, String nodeInstanceId);
+  FlowInstanceMapping selectFlowInstanceMapping(String projectId, String flowInstanceId, String nodeInstanceId);
 
-  int insert(FlowInstanceMapping flowInstanceMapping);
+  int insert(String projectId, FlowInstanceMapping flowInstanceMapping);
 
-  void updateType(String flowInstanceId, String nodeInstanceId, int type);
+  void updateType(String projectId, String flowInstanceId, String nodeInstanceId, int type);
 }

@@ -31,8 +31,8 @@ public class DatasourceService {
     return sessionDatasource.getPhysicsModelNames(datasource);
   }
 
-  public Datasource createDatasource(Datasource datasource) {
-    Optional<Datasource> optional = findOne(datasource.getName());
+  public Datasource createDatasource(String projectId, Datasource datasource) {
+    Optional<Datasource> optional = findOne(projectId, datasource.getName());
     if (optional.isPresent()) {
       throw new ConnectException("The data source name is duplicated");
     }
@@ -42,8 +42,8 @@ public class DatasourceService {
     return datasource;
   }
 
-  public Datasource updateDatasource(Datasource datasource) {
-    Optional<Datasource> optional = findOne(datasource.getName());
+  public Datasource updateDatasource(String projectId, Datasource datasource) {
+    Optional<Datasource> optional = findOne(projectId, datasource.getName());
     if (optional.isEmpty()) {
       return datasource;
     }
@@ -56,22 +56,22 @@ public class DatasourceService {
     return datasource;
   }
 
-  public List<Datasource> findAll() {
-    return datasourceRepository.find(field(Datasource::getEnabled).eq(true));
+  public List<Datasource> findAll(String projectId) {
+    return datasourceRepository.find(projectId, field(Datasource::getEnabled).eq(true));
   }
 
-  public Optional<Datasource> findOne(String datasourceName) {
-    return datasourceRepository.find(field(Datasource::getName).eq(datasourceName))
+  public Optional<Datasource> findOne(String projectId, String datasourceName) {
+    return datasourceRepository.find(projectId, field(Datasource::getName).eq(datasourceName))
       .stream()
       .findFirst();
   }
 
-  public void deleteDatasource(String datasourceName) {
-    datasourceRepository.delete(datasourceName);
+  public void deleteDatasource(String projectId, String datasourceName) {
+    datasourceRepository.delete(projectId, datasourceName);
     sessionDatasource.delete(datasourceName);
   }
 
-  public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
+  public NativeQueryResult executeNativeQuery(String projectId, String datasourceName, String statement, Map<String, Object> parameters) {
     return sessionDatasource.executeNativeQuery(datasourceName, statement, parameters);
   }
 }

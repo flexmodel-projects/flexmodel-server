@@ -37,9 +37,9 @@ public class FlexmodelRestAPIHandler {
   void handle(@Observes StartupEvent startupEvent, Router router) {
 
     List<Project> projects = authApplicationService.findProjects();
-    for (Project tenant : projects) {
+    for (Project project : projects) {
       router.route()
-        .pathRegex(config.apiRootPath() + "/" + tenant.getId() + "/.*")
+        .pathRegex(config.apiRootPath() + "/" + project.getId() + "/.*")
         .handler(BodyHandler.create())
         .blockingHandler(apiRuntimeApplicationService::accept);
     }

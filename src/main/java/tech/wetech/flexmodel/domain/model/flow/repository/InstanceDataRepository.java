@@ -6,13 +6,13 @@ import tech.wetech.flexmodel.codegen.entity.InstanceData;
  * @author cjbi
  */
 public interface InstanceDataRepository {
-  InstanceData select(String flowInstanceId, String instanceDataId);
+  InstanceData select(String projectId, String flowInstanceId, String instanceDataId);
 
-  InstanceData selectRecentOne(String flowInstanceId);
+  InstanceData selectRecentOne(String projectId, String flowInstanceId);
 
-  int insert(InstanceData instanceData);
+  int insert(String projectId, InstanceData instanceData);
 
-  int updateData(InstanceData instanceData);
+  int updateData(String projectId, InstanceData instanceData);
 
-  int insertOrUpdate(InstanceData mergeEntity);
+  int insertOrUpdate(String projectId, InstanceData mergeEntity);
 }

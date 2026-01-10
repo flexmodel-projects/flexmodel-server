@@ -141,7 +141,7 @@ public class FlexmodelRestAPIResourceTest {
       .when()
       .contentType(ContentType.JSON)
       .body(body)
-      .post(Resources.ROOT_PATH + "/datasources/dev_test/import")
+      .post(Resources.ROOT_PATH + "/projects/dev_test/datasources/dev_test/import")
       .then()
       .statusCode(204);
 

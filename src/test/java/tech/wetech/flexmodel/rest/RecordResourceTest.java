@@ -40,7 +40,7 @@ class RecordResourceTest {
       .param("current", "1")
       .param("pageSize", "20")
       .param("nestedQuery", "true")
-      .get(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records", "dev_test", "Classes")
+      .get(Resources.ROOT_PATH + "/projects/{projectId}/datasources/{datasourceName}/models/{modelName}/records", "dev_test", "dev_test", "Classes")
       .then()
       .statusCode(200)
       .body(
@@ -68,7 +68,7 @@ class RecordResourceTest {
               }
             }
         """)
-      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records", "dev_test", "Student")
+      .post(Resources.ROOT_PATH + "/projects/{projectId}/datasources/{datasourceName}/models/{modelName}/records", "dev_test", "dev_test", "Student")
       .then()
       .statusCode(200);
   }
@@ -92,7 +92,7 @@ class RecordResourceTest {
               }
             }
         """)
-      .put(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "dev_test", "Student", 100000)
+      .put(Resources.ROOT_PATH + "/projects/{projectId}/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "dev_test", "dev_test", "Student", 100000)
       .then()
       .statusCode(200);
     // todo 级联更新
@@ -108,7 +108,7 @@ class RecordResourceTest {
       .param("current", "1")
       .param("pageSize", "20")
       .param("nestedQuery", "true")
-      .get(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "dev_test", "Student", 100000)
+      .get(Resources.ROOT_PATH + "/projects/{projectId}/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "dev_test", "dev_test", "Student", 100000)
       .then()
       .statusCode(200)
       .body(
@@ -123,7 +123,7 @@ class RecordResourceTest {
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
-      .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "dev_test", "Student", 100000)
+      .delete(Resources.ROOT_PATH + "/projects/{projectId}/datasources/{datasourceName}/models/{modelName}/records/{recordId}", "dev_test", "dev_test", "Student", 100000)
       .then()
       .statusCode(204);
   }

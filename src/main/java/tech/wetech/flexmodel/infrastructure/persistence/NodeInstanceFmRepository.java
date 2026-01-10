@@ -37,89 +37,89 @@ public class NodeInstanceFmRepository implements NodeInstanceRepository {
   }
 
   @Override
-  public NodeInstance selectByNodeInstanceId(String flowInstanceId, String nodeInstanceId) {
+  public NodeInstance selectByNodeInstanceId(String projectId, String flowInstanceId, String nodeInstanceId) {
     return session.dsl().selectFrom(NodeInstance.class)
-      .where(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
-        .and(field(NodeInstance::getNodeInstanceId).eq(nodeInstanceId)))
+      .where(field(NodeInstance::getProjectId).eq(projectId).and(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
+        .and(field(NodeInstance::getNodeInstanceId).eq(nodeInstanceId))))
       .executeOne();
   }
 
   @Override
-  public NodeInstance selectBySourceInstanceId(String flowInstanceId, String sourceNodeInstanceId, String nodeKey) {
+  public NodeInstance selectBySourceInstanceId(String projectId, String flowInstanceId, String sourceNodeInstanceId, String nodeKey) {
     return session.dsl().selectFrom(NodeInstance.class)
-      .where(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
+      .where(field(NodeInstance::getProjectId).eq(projectId).and(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
         .and(field(NodeInstance::getSourceNodeInstanceId).eq(sourceNodeInstanceId))
-        .and(field(NodeInstance::getNodeKey).eq(nodeKey)))
+        .and(field(NodeInstance::getNodeKey).eq(nodeKey))))
       .executeOne();
   }
 
   @Override
-  public NodeInstance selectRecentOne(String flowInstanceId) {
+  public NodeInstance selectRecentOne(String projectId, String flowInstanceId) {
     return session.dsl().selectFrom(NodeInstance.class)
-      .where(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId))
+      .where(field(NodeInstance::getProjectId).eq(projectId).and(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)))
       .orderByDesc(NodeInstance::getId)
       .limit(1)
       .executeOne();
   }
 
   @Override
-  public NodeInstance selectRecentActiveOne(String flowInstanceId) {
+  public NodeInstance selectRecentActiveOne(String projectId, String flowInstanceId) {
     return session.dsl().selectFrom(NodeInstance.class)
-      .where(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
-        .and(field(NodeInstance::getStatus).eq(NodeInstanceStatus.ACTIVE)))
+      .where(field(NodeInstance::getProjectId).eq(projectId).and(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
+        .and(field(NodeInstance::getStatus).eq(NodeInstanceStatus.ACTIVE))))
       .orderByDesc(NodeInstance::getId)
       .limit(1)
       .executeOne();
   }
 
   @Override
-  public NodeInstance selectRecentCompletedOne(String flowInstanceId) {
+  public NodeInstance selectRecentCompletedOne(String projectId, String flowInstanceId) {
     return session.dsl().selectFrom(NodeInstance.class)
-      .where(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
-        .and(field(NodeInstance::getStatus).eq(NodeInstanceStatus.COMPLETED)))
+      .where(field(NodeInstance::getProjectId).eq(projectId).and(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
+        .and(field(NodeInstance::getStatus).eq(NodeInstanceStatus.COMPLETED))))
       .orderByDesc(NodeInstance::getId)
       .limit(1)
       .executeOne();
   }
 
   @Override
-  public NodeInstance selectEnabledOne(String flowInstanceId) {
-    NodeInstance active = selectRecentActiveOne(flowInstanceId);
+  public NodeInstance selectEnabledOne(String projectId, String flowInstanceId) {
+    NodeInstance active = selectRecentActiveOne(projectId, flowInstanceId);
     if (active != null) {
       return active;
     }
-    return selectRecentCompletedOne(flowInstanceId);
+    return selectRecentCompletedOne(projectId, flowInstanceId);
   }
 
   @Override
-  public List<NodeInstance> selectByFlowInstanceId(String flowInstanceId) {
+  public List<NodeInstance> selectByFlowInstanceId(String projectId, String flowInstanceId) {
     return session.dsl().selectFrom(NodeInstance.class)
-      .where(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId))
+      .where(field(NodeInstance::getProjectId).eq(projectId).and(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)))
       .orderBy(NodeInstance::getId)
       .execute();
   }
 
   @Override
-  public List<NodeInstance> selectDescByFlowInstanceId(String flowInstanceId) {
+  public List<NodeInstance> selectDescByFlowInstanceId(String projectId, String flowInstanceId) {
     return session.dsl().selectFrom(NodeInstance.class)
-      .where(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId))
+      .where(field(NodeInstance::getProjectId).eq(projectId).and(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)))
       .orderByDesc(NodeInstance::getId)
       .execute();
   }
 
   @Override
-  public void updateStatus(NodeInstance nodeInstance, int status) {
+  public void updateStatus(String projectId, NodeInstance nodeInstance, int status) {
     session.dsl().update(NodeInstance.class)
       .set(NodeInstance::getStatus, status)
-      .where(field(NodeInstance::getId).eq(nodeInstance.getId()))
+      .where(field(NodeInstance::getProjectId).eq(projectId).and(field(NodeInstance::getId).eq(nodeInstance.getId())))
       .execute();
   }
 
   @Override
-  public List<NodeInstance> selectByFlowInstanceIdAndNodeKey(String flowInstanceId, String nodeKey) {
+  public List<NodeInstance> selectByFlowInstanceIdAndNodeKey(String projectId, String flowInstanceId, String nodeKey) {
     return session.dsl().selectFrom(NodeInstance.class)
-      .where(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
-        .and(field(NodeInstance::getNodeKey).eq(nodeKey)))
+      .where(field(NodeInstance::getProjectId).eq(projectId).and(field(NodeInstance::getFlowInstanceId).eq(flowInstanceId)
+        .and(field(NodeInstance::getNodeKey).eq(nodeKey))))
       .execute();
   }
 }
