@@ -15,7 +15,7 @@ import java.util.Map;
  * @author cjbi
  */
 @Tag(name = "接口文档", description = "接口文档管理")
-@Path("/f/projects/{projectId}/docs")
+@Path("/v1/projects/{projectId}/docs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DocumentResource {

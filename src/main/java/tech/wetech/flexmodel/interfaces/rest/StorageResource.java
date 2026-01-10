@@ -12,11 +12,9 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.media.SchemaProperty;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.dto.FileItem;
-import tech.wetech.flexmodel.application.dto.ValidateStorageResult;
 import tech.wetech.flexmodel.codegen.entity.Storage;
 import tech.wetech.flexmodel.domain.model.storage.StorageService;
 
@@ -27,7 +25,7 @@ import java.util.List;
  * @author cjbi
  */
 @Tag(name = "文件存储", description = "文件存储管理")
-@Path("/f/projects/{projectId}/storages")
+@Path("/v1/projects/{projectId}/storages")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class StorageResource {

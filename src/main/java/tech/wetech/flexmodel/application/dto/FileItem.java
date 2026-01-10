@@ -24,7 +24,7 @@ public class FileItem {
   private String path;
 
   public enum FileType {
-    FILE,
-    FOLDER
+    file,
+    folder
   }
 }

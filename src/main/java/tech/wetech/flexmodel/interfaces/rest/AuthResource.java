@@ -21,7 +21,7 @@ import java.util.Map;
  * @author cjbi
  */
 @Slf4j
-@Path("/f/auth")
+@Path("/v1/auth")
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthResource {
 

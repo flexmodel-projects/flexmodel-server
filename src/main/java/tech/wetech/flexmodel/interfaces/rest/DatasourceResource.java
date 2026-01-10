@@ -30,7 +30,7 @@ import java.util.Set;
  * @author cjbi
  */
 @Tag(name = "数据源", description = "数据源管理")
-@Path("/f/projects/{projectId}/datasources")
+@Path("/v1/projects/{projectId}/datasources")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class DatasourceResource {

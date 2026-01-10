@@ -22,7 +22,7 @@ import java.util.List;
  * @author cjbi
  */
 @Tag(name = "身份源", description = "身份源管理")
-@Path("/f/projects/{projectId}/identity-providers")
+@Path("/v1/projects/{projectId}/identity-providers")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class IdentityProviderResource {

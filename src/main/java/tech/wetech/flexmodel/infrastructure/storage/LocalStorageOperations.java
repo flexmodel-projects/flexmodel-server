@@ -46,7 +46,7 @@ public class LocalStorageOperations implements StorageOperations {
           String relativePath = basePath.relativize(p).toString();
           items.add(FileItem.builder()
             .name(p.getFileName().toString())
-            .type(attrs.isDirectory() ? FileItem.FileType.FOLDER : FileItem.FileType.FILE)
+            .type(attrs.isDirectory() ? FileItem.FileType.folder : FileItem.FileType.file)
             .size(attrs.isDirectory() ? null : attrs.size())
             .lastModified(attrs.lastModifiedTime().toInstant())
             .path(relativePath)
@@ -75,7 +75,7 @@ public class LocalStorageOperations implements StorageOperations {
       String relativePath = basePath.relativize(targetPath).toString();
       return FileItem.builder()
         .name(targetPath.getFileName().toString())
-        .type(attrs.isDirectory() ? FileItem.FileType.FOLDER : FileItem.FileType.FILE)
+        .type(attrs.isDirectory() ? FileItem.FileType.folder : FileItem.FileType.file)
         .size(attrs.isDirectory() ? null : attrs.size())
         .lastModified(attrs.lastModifiedTime().toInstant())
         .path(relativePath)
@@ -159,6 +159,7 @@ public class LocalStorageOperations implements StorageOperations {
   }
 
   private Path resolvePath(String path) {
+    path = path.startsWith("/") ? path.substring(1) : path;
     Path resolved = basePath.resolve(path).normalize();
     if (!resolved.startsWith(basePath)) {
       throw new SecurityException("Attempted to access path outside base directory: " + path);

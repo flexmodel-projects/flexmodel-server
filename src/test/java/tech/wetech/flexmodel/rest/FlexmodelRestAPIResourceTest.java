@@ -147,7 +147,6 @@ public class FlexmodelRestAPIResourceTest {
 
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
-      .header("X-Tenant-Id", "dev_test")
       .when()
       .contentType(ContentType.JSON)
       .body("""

@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @ApplicationScoped
-@ServerEndpoint("/api/f/json-rpc-ws")
+@ServerEndpoint("/api/v1/json-rpc-ws")
 public class JsonRpcWebSocket {
 
   private static final Map<String, Session> sessions = new ConcurrentHashMap<>();

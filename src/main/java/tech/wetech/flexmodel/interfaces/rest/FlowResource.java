@@ -31,7 +31,7 @@ import java.util.Map;
  * @author cjbi
  */
 @Tag(name = "服务编排", description = "服务编排管理")
-@Path("/f/projects/{projectId}/flows")
+@Path("/v1/projects/{projectId}/flows")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FlowResource {

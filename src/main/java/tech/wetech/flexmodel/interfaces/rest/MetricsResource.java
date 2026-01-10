@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author cjbi
  */
-@Path("/f/projects/{projectId}/metrics")
+@Path("/v1/projects/{projectId}/metrics")
 @Tag(name = "系统监控", description = "系统监控相关接口，包括JVM、CPU、内存、线程、磁盘（含I/O）、网络等监控信息")
 @SecurityRequirement(name = "BearerAuth")
 public class MetricsResource {

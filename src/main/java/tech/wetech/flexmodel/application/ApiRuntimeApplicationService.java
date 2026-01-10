@@ -196,8 +196,7 @@ public class ApiRuntimeApplicationService {
 
   private void doRequest(RoutingContext routingContext) {
     boolean isMatching = false;
-    UriTemplate uriRootTemplate = new UriTemplate("/api/{projectId}/.*");
-    Map<String, String> projectIdMap = uriRootTemplate.match(new UriTemplate(routingContext.normalizedPath()));
+    Map<String, String> projectIdMap = new UriTemplate("/api/{projectId}/.*").match(new UriTemplate(routingContext.normalizedPath()));
     String projectId = projectIdMap.get("projectId");
     SessionContextHolder.setProjectId(projectId);
     List<ApiDefinition> apis = apiDefinitionService.findAll(projectId);

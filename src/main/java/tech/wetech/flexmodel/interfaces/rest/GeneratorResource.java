@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @Slf4j
 @Tag(name = "生成器", description = "生成器管理")
-@Path("/f/codegen")
+@Path("/v1/codegen")
 public class GeneratorResource {
 
   @Inject

@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter;
  * @author cjbi
  */
 @Tag(name = "接口日志", description = "接口日志管理")
-@Path("/f/projects/{projectId}/logs")
+@Path("/v1/projects/{projectId}/logs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ApiLogResource {

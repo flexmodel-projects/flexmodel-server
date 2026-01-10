@@ -5,6 +5,6 @@ package tech.wetech.flexmodel.rest;
  */
 public class Resources {
 
-  public static final String ROOT_PATH = "/api/f";
+  public static final String ROOT_PATH = "/api/v1";
 
 }

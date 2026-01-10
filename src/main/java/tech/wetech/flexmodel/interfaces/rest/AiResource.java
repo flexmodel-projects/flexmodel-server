@@ -29,7 +29,7 @@ import java.util.UUID;
 
 
 @Slf4j
-@Path("/f/ai")
+@Path("/v1/ai")
 @ApplicationScoped
 public class AiResource {
 

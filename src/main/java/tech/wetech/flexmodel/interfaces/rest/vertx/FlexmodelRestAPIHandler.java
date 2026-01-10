@@ -44,7 +44,7 @@ public class FlexmodelRestAPIHandler {
         .blockingHandler(apiRuntimeApplicationService::accept);
     }
 
-    router.route().pathRegex("/f/datasources.*")
+    router.route().pathRegex("/v1/datasources.*")
       .handler(handle -> {
 
         handle.addEndHandler(v -> {

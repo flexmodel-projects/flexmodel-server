@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author cjbi
  */
-@Path("/f/projects")
+@Path("/v1/projects")
 public class ProjectResource {
 
   @Inject

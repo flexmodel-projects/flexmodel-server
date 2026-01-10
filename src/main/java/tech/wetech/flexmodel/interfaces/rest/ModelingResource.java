@@ -23,7 +23,7 @@ import java.util.List;
  * @author cjbi
  */
 @Tag(name = "模型", description = "模型管理")
-@Path("/f/projects/{projectId}/datasources/{datasourceName}/models")
+@Path("/v1/projects/{projectId}/datasources/{datasourceName}/models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ModelingResource {

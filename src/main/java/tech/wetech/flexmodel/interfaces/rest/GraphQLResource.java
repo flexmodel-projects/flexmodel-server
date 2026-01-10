@@ -16,7 +16,7 @@ import java.util.Map;
  * @author cjbi
  */
 @Tag(name = "GraphQL", description = "GraphQL接口信息")
-@Path("/f/projects/{projectId}/graphql")
+@Path("/v1/projects/{projectId}/graphql")
 public class GraphQLResource {
 
   @Inject

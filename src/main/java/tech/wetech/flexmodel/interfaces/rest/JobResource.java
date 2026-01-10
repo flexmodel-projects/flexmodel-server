@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  */
 @ApplicationScoped
 @Tag(name = "任务", description = "任务管理")
-@Path("/f/projects/{projectId}/jobs")
+@Path("/v1/projects/{projectId}/jobs")
 public class JobResource {
 
   @Inject

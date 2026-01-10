@@ -24,7 +24,7 @@ import java.util.List;
  * @author cjbi
  */
 @Tag(name = "接口定义", description = "接口定义管理")
-@Path("/f/projects/{projectId}/apis")
+@Path("/v1/projects/{projectId}/apis")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ApiDefinitionResource {
