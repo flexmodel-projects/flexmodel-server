@@ -11,7 +11,7 @@ import java.util.List;
 public interface FlowInstanceRepository {
   FlowInstance selectByFlowInstanceId(String projectId, String flowInstanceId);
 
-  int insert(String projectId, FlowInstance flowInstance);
+  int insert(FlowInstance flowInstance);
 
   void updateStatus(String projectId, String flowInstanceId, int status);
 

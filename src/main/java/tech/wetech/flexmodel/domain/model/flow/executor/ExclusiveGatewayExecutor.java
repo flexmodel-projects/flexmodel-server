@@ -93,12 +93,13 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
   private String saveInstanceData(RuntimeContext runtimeContext) {
     String instanceDataId = genId();
     InstanceData instanceData = buildHookInstanceData(instanceDataId, runtimeContext);
-    instanceDataRepository.insert(runtimeContext.getProjectId(), instanceData);
+    instanceDataRepository.insert(instanceData);
     return instanceDataId;
   }
 
   private InstanceData buildHookInstanceData(String instanceDataId, RuntimeContext runtimeContext) {
     InstanceData instanceDataPO = JsonUtils.getInstance().convertValue(runtimeContext, InstanceData.class);
+    instanceDataPO.setProjectId(runtimeContext.getProjectId());
     instanceDataPO.setInstanceDataId(instanceDataId);
     instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataStr(runtimeContext.getInstanceDataMap()));
     instanceDataPO.setNodeInstanceId(runtimeContext.getCurrentNodeInstance().getNodeInstanceId());

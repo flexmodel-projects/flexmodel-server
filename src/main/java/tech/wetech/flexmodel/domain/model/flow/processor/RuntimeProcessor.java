@@ -544,6 +544,9 @@ public class RuntimeProcessor {
   }
 
   private RuntimeResult fillRuntimeResult(RuntimeResult runtimeResult, RuntimeContext runtimeContext, int errNo, String errMsg) {
+    if (runtimeResult == null) {
+      runtimeResult = new RuntimeResult();
+    }
     runtimeResult.setErrCode(errNo);
     runtimeResult.setErrMsg(errMsg);
     if (runtimeContext != null) {

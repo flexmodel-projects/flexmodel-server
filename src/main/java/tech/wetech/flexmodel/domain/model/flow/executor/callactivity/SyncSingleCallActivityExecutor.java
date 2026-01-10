@@ -164,6 +164,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
 
   private void saveFlowInstanceMapping(RuntimeContext runtimeContext, String subFlowInstanceId) {
     FlowInstanceMapping flowInstanceMapping = new FlowInstanceMapping();
+    flowInstanceMapping.setProjectId(runtimeContext.getProjectId());
     flowInstanceMapping.setFlowInstanceId(runtimeContext.getFlowInstanceId());
     NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
     flowInstanceMapping.setNodeKey(currentNodeInstance.getNodeKey());
@@ -174,7 +175,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     flowInstanceMapping.setCaller(runtimeContext.getCaller());
     flowInstanceMapping.setCreateTime(LocalDateTime.now());
     flowInstanceMapping.setModifyTime(LocalDateTime.now());
-    flowInstanceMappingRepository.insert(runtimeContext.getProjectId(), flowInstanceMapping);
+    flowInstanceMappingRepository.insert(flowInstanceMapping);
   }
 
   private void handleReentrantSubFlowInstance(RuntimeContext runtimeContext, FlowInstanceMapping flowInstanceMappingPO) throws ProcessException {
@@ -273,10 +274,11 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
 
     FlowInstanceMapping newFlowInstanceMappingPO = JsonUtils.getInstance().convertValue(oldFlowInstanceMappingPO, FlowInstanceMapping.class);
     newFlowInstanceMappingPO.setId(null);
+    newFlowInstanceMappingPO.setProjectId(runtimeContext.getProjectId());
     newFlowInstanceMappingPO.setNodeInstanceId(newNodeInstanceId);
     newFlowInstanceMappingPO.setCreateTime(LocalDateTime.now());
     newFlowInstanceMappingPO.setModifyTime(LocalDateTime.now());
-    flowInstanceMappingRepository.insert(runtimeContext.getProjectId(), newFlowInstanceMappingPO);
+    flowInstanceMappingRepository.insert(newFlowInstanceMappingPO);
   }
 
   /**
@@ -325,7 +327,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     // 2.save data
     String instanceDataId = genId();
     tech.wetech.flexmodel.codegen.entity.InstanceData instanceDataPO = buildCallActivityEndInstanceData(instanceDataId, runtimeContext);
-    instanceDataRepository.insert(runtimeContext.getProjectId(), instanceDataPO);
+    instanceDataRepository.insert(instanceDataPO);
     runtimeContext.setInstanceDataId(instanceDataId);
     // 3.set currentNode completed
     currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());

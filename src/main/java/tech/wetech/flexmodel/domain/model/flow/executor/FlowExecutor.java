@@ -78,7 +78,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
   private FlowInstance saveFlowInstance(RuntimeContext runtimeContext) throws ProcessException {
     FlowInstance flowInstance = buildFlowInstance(runtimeContext);
-    int result = flowInstanceRepository.insert(runtimeContext.getProjectId(), flowInstance);
+    int result = flowInstanceRepository.insert(flowInstance);
     if (result == 1) {
       return flowInstance;
     }
@@ -108,7 +108,7 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     InstanceData instanceDataPO = buildInstanceDataPO(flowInstancePO, instanceDataMap);
-    int result = instanceDataRepository.insert(flowInstancePO.getProjectId(), instanceDataPO);
+    int result = instanceDataRepository.insert(instanceDataPO);
     if (result == 1) {
       return instanceDataPO.getInstanceDataId();
     }
@@ -130,6 +130,7 @@ public class FlowExecutor extends RuntimeExecutor {
     instanceDataPO.setNodeKey("");
     instanceDataPO.setCreateTime(LocalDateTime.now());
     instanceDataPO.setType(InstanceDataType.INIT);
+    instanceDataPO.setProjectId(flowInstancePO.getProjectId());
     return instanceDataPO;
   }
 
@@ -276,7 +277,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
       InstanceData commitInstanceDataPO = buildCommitInstanceData(runtimeContext, nodeInstanceId,
         nodeInstancePO.getNodeKey(), instanceDataId, instanceDataMap);
-      instanceDataRepository.insert(runtimeContext.getProjectId(), commitInstanceDataPO);
+      instanceDataRepository.insert(commitInstanceDataPO);
     }
 
     //3.update runtimeContext
@@ -286,7 +287,7 @@ public class FlowExecutor extends RuntimeExecutor {
   private InstanceData buildCommitInstanceData(RuntimeContext runtimeContext, String nodeInstanceId, String nodeKey,
                                                String newInstanceDataId, Map<String, Object> instanceDataMap) {
     InstanceData instanceDataPO = JsonUtils.getInstance().convertValue(runtimeContext, InstanceData.class);
-
+    instanceDataPO.setProjectId(runtimeContext.getProjectId());
     instanceDataPO.setNodeInstanceId(nodeInstanceId);
     instanceDataPO.setNodeKey(nodeKey);
     instanceDataPO.setType(InstanceDataType.COMMIT);
@@ -602,6 +603,7 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     NodeInstance nodeInstancePO = JsonUtils.getInstance().convertValue(nodeInstanceBO, NodeInstance.class);
+    nodeInstancePO.setProjectId(runtimeContext.getProjectId());
     nodeInstancePO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
     nodeInstancePO.setFlowDeployId(runtimeContext.getFlowDeployId());
     nodeInstancePO.setProjectId(runtimeContext.getProjectId());

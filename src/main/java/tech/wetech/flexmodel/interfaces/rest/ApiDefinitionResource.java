@@ -83,6 +83,7 @@ public class ApiDefinitionResource {
       )
     )})
   public ApiDefinition create(@PathParam("projectId") String projectId, ApiDefinition apiDefinition) {
+    apiDefinition.setProjectId(projectId);
     return apiDesignApplicationService.createApiDefinition(projectId, apiDefinition);
   }
 
@@ -110,6 +111,7 @@ public class ApiDefinitionResource {
     )})
   public ApiDefinition update(@PathParam("projectId") String projectId, @PathParam("id") String id, ApiDefinition apiDefinition) {
     apiDefinition.setId(id);
+    apiDefinition.setProjectId(projectId);
     return apiDesignApplicationService.updateApiDefinition(projectId, apiDefinition);
   }
 
@@ -141,7 +143,7 @@ public class ApiDefinitionResource {
     if (request.getName() != null) {
       record.setName(request.getName());
     }
-    if(request.getEnabled()!=null) {
+    if (request.getEnabled() != null) {
       record.setEnabled(request.getEnabled());
     }
     apiDesignApplicationService.updateApiDefinition(projectId, record);

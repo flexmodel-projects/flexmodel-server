@@ -159,7 +159,7 @@ public class FlexmodelRestAPIResourceTest {
             "generateAPIs":["list", "pagination", "view", "create", "update", "delete"]
          }
         """)
-      .post(Resources.ROOT_PATH + "/apis/generate")
+      .post(Resources.ROOT_PATH + "/projects/dev_test/apis/generate")
       .then()
       .statusCode(204);
 

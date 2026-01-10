@@ -10,7 +10,7 @@ public interface InstanceDataRepository {
 
   InstanceData selectRecentOne(String projectId, String flowInstanceId);
 
-  int insert(String projectId, InstanceData instanceData);
+  int insert(InstanceData instanceData);
 
   int updateData(String projectId, InstanceData instanceData);
 

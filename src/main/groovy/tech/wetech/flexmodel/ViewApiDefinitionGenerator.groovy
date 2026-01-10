@@ -19,7 +19,7 @@ class ViewApiDefinitionGenerator extends ApiDefinitionGenerator {
     out.println "query MyViewQuery( \$${id}: ${typeMapping[((TypedField) idField.original).type]} ) {"
     out.println "  ${schemaName}_find_one_${modelName}(where: {${id}: {_eq: \$${id}} }) {"
     context.getModelClass().getAllFields().each {
-      if(!it.isRelationField()) {
+      if (!it.isRelationField()) {
         out.println "    ${it.name}"
       }
     }
@@ -28,8 +28,9 @@ class ViewApiDefinitionGenerator extends ApiDefinitionGenerator {
   }
 
   @Override
-  ApiDefinition createApiDefinition(GenerationContext context) {
+  ApiDefinition createApiDefinition(String projectId, GenerationContext context) {
     ApiDefinition apiDefinition = new ApiDefinition()
+    apiDefinition.setProjectId(projectId)
     apiDefinition.setParentId(context.getVariable("apiParentId"))
     apiDefinition.setName("Fetch a single ${context.getModelClass().getName()} record")
     apiDefinition.setType("API" as ApiType)

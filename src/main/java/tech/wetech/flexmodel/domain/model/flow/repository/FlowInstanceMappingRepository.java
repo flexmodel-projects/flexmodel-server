@@ -12,7 +12,7 @@ public interface FlowInstanceMappingRepository {
 
   FlowInstanceMapping selectFlowInstanceMapping(String projectId, String flowInstanceId, String nodeInstanceId);
 
-  int insert(String projectId, FlowInstanceMapping flowInstanceMapping);
+  int insert(FlowInstanceMapping flowInstanceMapping);
 
   void updateType(String projectId, String flowInstanceId, String nodeInstanceId, int type);
 }

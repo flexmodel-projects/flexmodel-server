@@ -36,7 +36,7 @@ public class FlowInstanceMappingFmRepository implements FlowInstanceMappingRepos
   }
 
   @Override
-  public int insert(String projectId, FlowInstanceMapping flowInstanceMapping) {
+  public int insert(FlowInstanceMapping flowInstanceMapping) {
     return session.dsl().insertInto(FlowInstanceMapping.class).values(flowInstanceMapping).execute();
   }
 

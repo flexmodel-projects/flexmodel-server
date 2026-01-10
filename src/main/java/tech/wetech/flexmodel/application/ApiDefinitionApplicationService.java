@@ -64,7 +64,7 @@ public class ApiDefinitionApplicationService {
   /**
    * 查询API定义历史
    *
-   * @param appDefinitionId
+   * @param projectId
    * @param apiDefinitionId
    * @return
    */
@@ -110,7 +110,7 @@ public class ApiDefinitionApplicationService {
           generationContext.setModelClass(modelClass);
           generationContext.putVariable("idFieldOfPath", dto.getIdFieldOfPath());
           generationContext.putVariable("apiParentId", apiFolder.getId());
-          ApiDefinition apiDefinition = apiDefinitionGenerator.createApiDefinition(generationContext);
+          ApiDefinition apiDefinition = apiDefinitionGenerator.createApiDefinition(projectId, generationContext);
           apiDefinition.setProjectId(projectId);
           apiDefinitionService.create(apiDefinition);
         }

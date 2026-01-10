@@ -363,7 +363,7 @@ class ModelResourceTest {
           "indexes": []
         }
         """)
-      .post(Resources.ROOT_PATH + "/datasources/{datasourceName}/models", "sqlite_test")
+      .post(Resources.ROOT_PATH + "/projects/dev_test/datasources/{datasourceName}/models", "sqlite_test")
       .then()
       .statusCode(200);
     given()

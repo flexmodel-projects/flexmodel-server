@@ -196,8 +196,11 @@ public class ApiRuntimeApplicationService {
 
   private void doRequest(RoutingContext routingContext) {
     boolean isMatching = false;
-
-    List<ApiDefinition> apis = apiDefinitionService.findAll("");
+    UriTemplate uriRootTemplate = new UriTemplate("/api/{projectId}/.*");
+    Map<String, String> projectIdMap = uriRootTemplate.match(new UriTemplate(routingContext.normalizedPath()));
+    String projectId = projectIdMap.get("projectId");
+    SessionContextHolder.setProjectId(projectId);
+    List<ApiDefinition> apis = apiDefinitionService.findAll(projectId);
     Settings settings = settingsService.getSettings();
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
@@ -212,8 +215,6 @@ public class ApiRuntimeApplicationService {
         // 匹配成功
         isMatching = true;
         log.debug("Matched request for api: {}", apiDefinition);
-        String projectId = pathParameters.get("projectId");
-        SessionContextHolder.setProjectId(projectId);
         if (isRateLimiting(routingContext, apiDefinition, meta)) return;
         boolean isAuth = meta.isAuth();
         if (isAuth) {

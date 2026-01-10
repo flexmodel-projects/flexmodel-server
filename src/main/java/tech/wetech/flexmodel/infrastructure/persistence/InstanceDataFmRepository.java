@@ -32,7 +32,7 @@ public class InstanceDataFmRepository implements InstanceDataRepository {
   }
 
   @Override
-  public int insert(String projectId, InstanceData instanceData) {
+  public int insert(InstanceData instanceData) {
     return session.dsl().insertInto(InstanceData.class).values(instanceData).execute();
   }
 
@@ -49,7 +49,7 @@ public class InstanceDataFmRepository implements InstanceDataRepository {
     if (mergeEntity.getId() != null) {
       return updateData(projectId, mergeEntity);
     }
-    return insert(projectId, mergeEntity);
+    return insert(mergeEntity);
   }
 }
 

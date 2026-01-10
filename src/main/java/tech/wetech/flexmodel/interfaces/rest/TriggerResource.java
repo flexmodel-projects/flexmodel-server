@@ -52,6 +52,7 @@ public class TriggerResource {
   @Operation(summary = "创建触发器")
   @POST
   public Trigger create(@PathParam("projectId") String projectId, Trigger trigger) {
+    trigger.setProjectId(projectId);
     return scheduleApplicationService.create(projectId, trigger);
   }
 

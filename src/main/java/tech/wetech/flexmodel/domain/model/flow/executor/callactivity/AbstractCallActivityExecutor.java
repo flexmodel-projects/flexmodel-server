@@ -110,6 +110,7 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
     instanceDataPO.setNodeKey(runtimeContext.getCurrentNodeModel().getKey());
     instanceDataPO.setType(InstanceDataType.UPDATE);
     instanceDataPO.setCreateTime(LocalDateTime.now());
+    instanceDataPO.setProjectId(runtimeContext.getProjectId());
     return instanceDataPO;
   }
 }

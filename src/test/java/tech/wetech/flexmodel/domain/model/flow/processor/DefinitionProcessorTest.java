@@ -78,6 +78,7 @@ public class DefinitionProcessorTest {
     Assertions.assertEquals(updateFlowResult.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
 
     flowModuleParam.setFlowModuleId(updateFlowParam.getFlowModuleId());
+    flowModuleParam.setProjectId(deployFlowParam.getProjectId());
     FlowModuleResult flowModuleResultByFlowModuleId = definitionProcessor.getFlowModule(flowModuleParam);
     Assertions.assertEquals(flowModuleResultByFlowModuleId.getFlowModuleId(), createFlowResult.getFlowModuleId());
 

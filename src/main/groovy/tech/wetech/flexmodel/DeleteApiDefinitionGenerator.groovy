@@ -26,8 +26,9 @@ class DeleteApiDefinitionGenerator extends ApiDefinitionGenerator {
   }
 
   @Override
-  ApiDefinition createApiDefinition(GenerationContext context) {
+  ApiDefinition createApiDefinition(String projectId, GenerationContext context) {
     ApiDefinition apiDefinition = new ApiDefinition()
+    apiDefinition.setProjectId(projectId)
     apiDefinition.setParentId(context.getVariable("apiParentId"))
     apiDefinition.setName("Delete ${context.getModelClass().getName()} record")
     apiDefinition.setType("API" as ApiType)

@@ -26,7 +26,7 @@ public class FlowInstanceFmRepository implements FlowInstanceRepository {
   }
 
   @Override
-  public int insert(String projectId, FlowInstance flowInstance) {
+  public int insert(FlowInstance flowInstance) {
     return session.dsl().insertInto(FlowInstance.class).values(flowInstance).execute();
   }
 

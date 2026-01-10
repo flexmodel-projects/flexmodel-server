@@ -49,13 +49,14 @@ public class RuntimeProcessorTest {
 
     // start process
     StartProcessParam startProcessParam = new StartProcessParam();
+    startProcessParam.setProjectId("dev_test");
     startProcessParam.setFlowDeployId(flowDeployment.getFlowDeployId());
     Map<String, Object> variables = new HashMap<>();
     variables.put("orderId", "123");
     variables.put("orderStatus", "1");
     startProcessParam.setVariables(variables);
     // build
-    return runtimeProcessor.startProcess(flowDeployment.getProjectId(), startProcessParam);
+    return runtimeProcessor.startProcess(startProcessParam);
   }
 
   @Test
@@ -71,6 +72,7 @@ public class RuntimeProcessorTest {
     StartProcessResult startProcessResult = startProcess();
 
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -89,6 +91,7 @@ public class RuntimeProcessorTest {
     StartProcessResult startProcessResult = startProcess();
 
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -108,6 +111,7 @@ public class RuntimeProcessorTest {
     StartProcessResult startProcessResult = startProcess();
 
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -128,6 +132,7 @@ public class RuntimeProcessorTest {
     StartProcessResult startProcessResult = startProcess();
 
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -148,6 +153,7 @@ public class RuntimeProcessorTest {
     runtimeProcessor.terminateProcess(startProcessResult.getProjectId(), startProcessResult.getFlowInstanceId(), false);
 
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -164,6 +170,7 @@ public class RuntimeProcessorTest {
     // start process
     StartProcessResult startProcessResult = startProcess();
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -193,6 +200,7 @@ public class RuntimeProcessorTest {
     // start process
     StartProcessResult startProcessResult = startProcess();
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     String branchUserTaskNodeInstanceId = startProcessResult.getActiveTaskInstance().getNodeInstanceId();
     commitTaskParam.setTaskInstanceId(branchUserTaskNodeInstanceId);
@@ -205,6 +213,7 @@ public class RuntimeProcessorTest {
 
     // StartEvent <- UserTask
     RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+    rollbackTaskParam.setProjectId(startProcessResult.getProjectId());
     rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     // Previous UserTask node
     rollbackTaskParam.setTaskInstanceId(branchUserTaskNodeInstanceId);
@@ -223,6 +232,7 @@ public class RuntimeProcessorTest {
     // start process
     StartProcessResult startProcessResult = startProcess();
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -234,6 +244,7 @@ public class RuntimeProcessorTest {
 
     // UserTask <- ExclusiveGateway <- UserTask
     RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+    rollbackTaskParam.setProjectId(startProcessResult.getProjectId());
     rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
     RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
@@ -249,6 +260,7 @@ public class RuntimeProcessorTest {
     // start process
     StartProcessResult startProcessResult = startProcess();
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -260,12 +272,14 @@ public class RuntimeProcessorTest {
 
     // UserTask <- ExclusiveGateway <- UserTask
     RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+    rollbackTaskParam.setProjectId(startProcessResult.getProjectId());
     rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
     RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
     // StartEvent <- UserTask
     rollbackTaskParam = new RollbackTaskParam();
+    rollbackTaskParam.setProjectId(startProcessResult.getProjectId());
     rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     rollbackTaskParam.setTaskInstanceId(rollbackTaskResult.getActiveTaskInstance().getNodeInstanceId());
     rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
@@ -279,6 +293,7 @@ public class RuntimeProcessorTest {
     // start process
     StartProcessResult startProcessResult = startProcess();
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -290,6 +305,7 @@ public class RuntimeProcessorTest {
 
     // rollback EndEvent
     RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+    rollbackTaskParam.setProjectId(startProcessResult.getProjectId());
     rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
     RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
@@ -341,6 +357,7 @@ public class RuntimeProcessorTest {
   public void testGetFailedHistoryElementList() throws Exception {
     StartProcessResult startProcessResult = startProcess();
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -373,6 +390,7 @@ public class RuntimeProcessorTest {
   public void testGetCompletedHistoryElementList() throws Exception {
     StartProcessResult startProcessResult = startProcess();
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -407,6 +425,7 @@ public class RuntimeProcessorTest {
     log.info("testGetInstanceData 1.||instanceDataList={}", instanceDataList);
 
     CommitTaskParam commitTaskParam = new CommitTaskParam();
+    commitTaskParam.setProjectId(startProcessResult.getProjectId());
     commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables = new HashMap<>();
@@ -419,6 +438,7 @@ public class RuntimeProcessorTest {
 
     // UserTask -> UserTask
     CommitTaskParam commitTaskParam1 = new CommitTaskParam();
+    commitTaskParam1.setProjectId(startProcessResult.getProjectId());
     commitTaskParam1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     commitTaskParam1.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
     Map<String, Object> variables1 = new HashMap<>();
@@ -432,13 +452,14 @@ public class RuntimeProcessorTest {
 
     // UserTask <- UserTask
     RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+    rollbackTaskParam.setProjectId(startProcessResult.getProjectId());
     rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     rollbackTaskParam.setTaskInstanceId(commitTaskResult1.getActiveTaskInstance().getNodeInstanceId());
     RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
     log.info("rollbackTaskResult 3.||rollbackTaskResult.variables={}", rollbackTaskResult.getVariables());
-
     // UserTask <- ExclusiveGateway <- UserTask
     RollbackTaskParam rollbackTaskParam1 = new RollbackTaskParam();
+    rollbackTaskParam1.setProjectId(startProcessResult.getProjectId());
     rollbackTaskParam1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
     rollbackTaskParam1.setTaskInstanceId(rollbackTaskResult.getActiveTaskInstance().getNodeInstanceId());
     RollbackTaskResult rollbackTaskResult1 = runtimeProcessor.rollback(rollbackTaskParam1);
