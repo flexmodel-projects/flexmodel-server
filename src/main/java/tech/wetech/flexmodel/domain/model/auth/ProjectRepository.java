@@ -11,4 +11,5 @@ public interface ProjectRepository {
 
   List<Project> findProjects();
 
+  Project findProject(String projectId);
 }

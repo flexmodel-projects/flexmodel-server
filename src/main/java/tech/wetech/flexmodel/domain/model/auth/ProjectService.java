@@ -19,4 +19,7 @@ public class ProjectService {
     return tenantRepository.findProjects();
   }
 
+  public Project findProject(String projectId) {
+    return tenantRepository.findProject(projectId);
+  }
 }

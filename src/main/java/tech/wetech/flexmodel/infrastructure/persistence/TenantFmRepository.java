@@ -24,4 +24,11 @@ public class TenantFmRepository implements ProjectRepository {
     return session.dsl().selectFrom(Project.class).where(Expressions.field(Project::getEnabled).eq(true)).execute().stream()
       .toList();
   }
+
+  @Override
+  public Project findProject(String projectId) {
+    return session.dsl().selectFrom(Project.class)
+      .where(Expressions.field(Project::getId).eq(projectId))
+      .executeOne();
+  }
 }

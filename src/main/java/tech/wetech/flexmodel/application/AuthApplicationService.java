@@ -35,4 +35,7 @@ public class AuthApplicationService {
     return userService.getUser("", userId);
   }
 
+  public Project findProject(String projectId) {
+    return tenantService.findProject(projectId);
+  }
 }

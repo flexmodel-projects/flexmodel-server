@@ -7,14 +7,14 @@
           "id": "default",
           "name": "系统默认",
           "description": "默认项目",
-          "ownerId": "admin",
+          "owner_id": "admin",
           "enabled": true
         },
         {
           "id": "dev_test",
           "name": "开发测试",
           "description": "开发测试项目",
-          "ownerId": "admin",
+          "owner_id": "admin",
           "enabled": true
         }
       ]
