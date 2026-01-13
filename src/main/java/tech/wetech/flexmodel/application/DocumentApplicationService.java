@@ -367,6 +367,19 @@ public class DocumentApplicationService {
         content.put("summary", api.getName());
         content.put("operationId", api.getId());
 
+        // 接口是否鉴权
+        boolean isAuth = meta.isAuth();
+        if (isAuth) {
+          content.put("security", List.of(Map.of("bearerAuth", List.of())));
+        }
+        path.put(api.getMethod().toLowerCase(), content);
+        if (paths.containsKey(api.getPath())) {
+          Map<String, Object> existPath = (Map<String, Object>) paths.get(api.getPath());
+          existPath.put(api.getMethod().toLowerCase(), content);
+        } else {
+          paths.put(api.getPath(), path);
+        }
+
         Map<String, Object> responses = new HashMap<>();
         responses.put("200", buildResponse200(api));
         responses.put("400", Map.of("description", "invalid input"));
@@ -379,36 +392,22 @@ public class DocumentApplicationService {
         Map<String, Object> variables = execution.getVariables();
         Map<String, Object> headers = execution.getHeaders();
 
-        UriTemplate uriTemplate = new UriTemplate(api.getPath());
-        Map<String, String> pathParamters = uriTemplate.match(new UriTemplate(api.getPath()));
+        if (meta.getExecution().getExecutionType().equals("graphql")) {
+          Parser parser = new Parser();
+          Document document = parser.parse(query);
 
-        Parser parser = new Parser();
-        Document document = parser.parse(query);
-
-        boolean supportsBody = !(api.getMethod().equals("GET") || api.getMethod().equals("DELETE"));
-        content.put("parameters", buildParameters(api, meta, document, supportsBody));
-        if (supportsBody) {
-          content.put("requestBody",
-            Map.of(
-              "required", true,
-              "description", "json body",
-              "content",
-              Map.of("application/json",
-                Map.of("schema",
-                  Map.of("$ref", "#/components/schemas/" + sanitizeName + "Request")))));
-        }
-
-        // 接口是否鉴权
-        boolean isAuth = meta.isAuth();
-        if (isAuth) {
-          content.put("security", List.of(Map.of("bearerAuth", List.of())));
-        }
-        path.put(api.getMethod().toLowerCase(), content);
-        if (paths.containsKey(api.getPath())) {
-          Map<String, Object> existPath = (Map<String, Object>) paths.get(api.getPath());
-          existPath.put(api.getMethod().toLowerCase(), content);
-        } else {
-          paths.put(api.getPath(), path);
+          boolean supportsBody = !(api.getMethod().equals("GET") || api.getMethod().equals("DELETE"));
+          content.put("parameters", buildParameters(api, meta, document, supportsBody));
+          if (supportsBody) {
+            content.put("requestBody",
+              Map.of(
+                "required", true,
+                "description", "json body",
+                "content",
+                Map.of("application/json",
+                  Map.of("schema",
+                    Map.of("$ref", "#/components/schemas/" + sanitizeName + "Request")))));
+          }
         }
       } catch (Exception e) {
         log.error("Build api doc error: {}", e.getMessage(), e);
