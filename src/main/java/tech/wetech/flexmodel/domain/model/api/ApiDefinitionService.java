@@ -32,6 +32,10 @@ public class ApiDefinitionService {
     return apiDefinitionRepository.findByProjectId(projectId);
   }
 
+  public Integer count(String projectId) {
+    return apiDefinitionRepository.count(projectId);
+  }
+
   @CacheResult(cacheName = "apiDefinitionList")
   public List<ApiDefinition> findAll(String projectId) {
     return apiDefinitionRepository.findAll(projectId);

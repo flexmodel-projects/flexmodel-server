@@ -111,4 +111,8 @@ public class StorageService {
     StorageOperations operations = StorageOperationsFactory.create(storage);
     return operations.getFileSize(path);
   }
+
+  public Integer count(String projectId) {
+    return storageRepository.count(projectId);
+  }
 }

@@ -20,4 +20,6 @@ public interface StorageRepository {
   Storage save(Storage storage);
 
   void delete(String projectId, String name);
+
+  Integer count(String projectId);
 }

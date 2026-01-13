@@ -21,4 +21,5 @@ public interface ApiDefinitionRepository {
 
   void delete(String projectId, String id);
 
+  Integer count(String projectId);
 }

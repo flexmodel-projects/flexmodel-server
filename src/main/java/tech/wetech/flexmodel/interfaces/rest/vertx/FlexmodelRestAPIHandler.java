@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.application.ApiRuntimeApplicationService;
 import tech.wetech.flexmodel.application.AuthApplicationService;
 import tech.wetech.flexmodel.application.dto.GraphQLRefreshEvent;
+import tech.wetech.flexmodel.application.dto.ProjectListRequest;
+import tech.wetech.flexmodel.application.dto.ProjectResponse;
 import tech.wetech.flexmodel.codegen.entity.Project;
 import tech.wetech.flexmodel.shared.FlexmodelConfig;
 
@@ -36,7 +38,7 @@ public class FlexmodelRestAPIHandler {
 
   void handle(@Observes StartupEvent startupEvent, Router router) {
 
-    List<Project> projects = authApplicationService.findProjects();
+    List<ProjectResponse> projects = authApplicationService.findProjects(new ProjectListRequest(null));
     for (Project project : projects) {
       router.route()
         .pathRegex(config.apiRootPath() + "/" + project.getId() + "/.*")

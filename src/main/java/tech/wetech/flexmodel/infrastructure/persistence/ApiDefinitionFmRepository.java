@@ -64,4 +64,11 @@ public class ApiDefinitionFmRepository implements ApiDefinitionRepository {
       .execute();
   }
 
+  @Override
+  public Integer count(String projectId) {
+    return (int) session.dsl().selectFrom(ApiDefinition.class)
+      .where(field(ApiDefinition::getProjectId).eq(projectId))
+      .count();
+  }
+
 }

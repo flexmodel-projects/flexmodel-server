@@ -53,4 +53,11 @@ public class DatasourceFmRepository implements DatasourceRepository {
       .where(field(Datasource::getProjectId).eq(projectId).and(field(Datasource::getName).eq(name)))
       .execute();
   }
+
+  @Override
+  public Integer count(String projectId) {
+    return (int) session.dsl().selectFrom(Datasource.class)
+      .where(field(Datasource::getProjectId).eq(projectId))
+      .count();
+  }
 }

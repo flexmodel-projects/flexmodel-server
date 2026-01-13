@@ -8,10 +8,12 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import tech.wetech.flexmodel.JsonUtils;
 import tech.wetech.flexmodel.codegen.entity.ApiDefinition;
+import tech.wetech.flexmodel.codegen.entity.Project;
 import tech.wetech.flexmodel.codegen.enumeration.ApiType;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionMeta;
 import tech.wetech.flexmodel.domain.model.api.ApiDefinitionService;
 import tech.wetech.flexmodel.domain.model.api.GraphQLManger;
+import tech.wetech.flexmodel.domain.model.auth.ProjectService;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
@@ -35,6 +37,9 @@ import static tech.wetech.flexmodel.codegen.StringUtils.*;
 @Slf4j
 @SuppressWarnings("all")
 public class DocumentApplicationService {
+
+  @Inject
+  ProjectService projectService;
 
   @Inject
   ApiDefinitionService apiDefinitionService;
@@ -67,7 +72,7 @@ public class DocumentApplicationService {
     List<ApiDefinition> apis = apiDefinitionService.findList(projectId);
     Map<String, Object> openAPI = new HashMap<>();
     openAPI.put("openapi", "3.0.3");
-    openAPI.put("info", buildInfo());
+    openAPI.put("info", buildInfo(projectId));
     openAPI.put("components", buildComponents(apis));
     openAPI.put("servers", List.of(Map.of("url", config.apiRootPath() + "/" + projectId)));
     openAPI.put("schemas", List.of("https", "http"));
@@ -76,13 +81,11 @@ public class DocumentApplicationService {
     return openAPI;
   }
 
-  private Map<String, String> buildInfo() {
+  private Map<String, String> buildInfo(String projectId) {
+    Project project = projectService.findProject(projectId);
     return Map.of(
-      "title", "Flexmodel API document",
-      "description", """
-        Interact with Flexmodel programmatically
-        """
-    );
+      "title", project.getName(),
+      "description", project.getDescription());
   }
 
   private GraphQLFieldDefinition getGraphQLFieldDefinition(GraphQLSchema graphQLSchema, Field field) {

@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDeploymentRepository;
+import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.query.Predicate;
 
 /**
@@ -17,6 +18,10 @@ public class FlowDeploymentService {
 
   public long count(String projectId, Predicate filter) {
     return flowDeploymentRepository.count(projectId, filter);
+  }
+
+  public Integer count(String projetId) {
+    return (int)flowDeploymentRepository.count(projetId, Expressions.TRUE);
   }
 
   public FlowDeployment findRecentByFlowModuleId(String projectId, String flowKey) {

@@ -122,6 +122,7 @@ public class StorageResource {
     @Parameter(name = "storageName", in = ParameterIn.PATH, description = "存储名称", required = true)
     @PathParam("storageName") String storageName,
     Storage storage) {
+    storage.setProjectId(projectId);
     return storageService.updateStorage(projectId, storage);
   }
 

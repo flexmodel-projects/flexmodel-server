@@ -17,4 +17,6 @@ public interface DatasourceRepository {
   Datasource save(Datasource datasource);
 
   void delete(String projectId, String name);
+
+  Integer count(String projectId);
 }

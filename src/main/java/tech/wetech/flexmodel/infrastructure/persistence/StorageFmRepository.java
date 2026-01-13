@@ -64,4 +64,11 @@ public class StorageFmRepository implements StorageRepository {
       .where(field(Storage::getProjectId).eq(projectId).and(field(Storage::getName).eq(name)))
       .execute();
   }
+
+  @Override
+  public Integer count(String projectId) {
+    return (int) session.dsl().selectFrom(Storage.class)
+      .where(field(Storage::getProjectId).eq(projectId))
+      .count();
+  }
 }

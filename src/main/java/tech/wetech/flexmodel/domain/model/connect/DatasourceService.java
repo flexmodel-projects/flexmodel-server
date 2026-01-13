@@ -51,7 +51,7 @@ public class DatasourceService {
     datasource.setType(optional.orElseThrow().getType());
     datasource.setCreatedAt(optional.orElseThrow().getCreatedAt());
     datasource = datasourceRepository.save(datasource);
-    sessionDatasource.delete(datasource.getName());
+    sessionDatasource.delete(projectId, datasource.getName());
     sessionDatasource.add(datasource);
     return datasource;
   }
@@ -68,10 +68,13 @@ public class DatasourceService {
 
   public void deleteDatasource(String projectId, String datasourceName) {
     datasourceRepository.delete(projectId, datasourceName);
-    sessionDatasource.delete(datasourceName);
   }
 
   public NativeQueryResult executeNativeQuery(String projectId, String datasourceName, String statement, Map<String, Object> parameters) {
-    return sessionDatasource.executeNativeQuery(datasourceName, statement, parameters);
+    return sessionDatasource.executeNativeQuery(projectId, datasourceName, statement, parameters);
+  }
+
+  public Integer count(String projectId) {
+    return datasourceRepository.count(projectId);
   }
 }
