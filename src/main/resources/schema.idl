@@ -12,13 +12,15 @@ model f_project {
 }
 model f_user {
   id : String @id @default(uuid()),
-  username : String @length("255") @comment("用户名"),
+  name : String @length("255") @comment("用户名"),
+  email : String @length("255") @comment("邮箱"),
+  phone : String @length("255") @comment("电话"),
   password_hash : String @length("255") @comment("密码HASH"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
   updated_at?: DateTime @default(now()) @comment("更新时间"),
-  @index(name : "IDX_USERNAME", unique: "true", fields: [username]),
+  @index(name : "IDX_NAME", unique: "true", fields: [name]),
   @comment("用户")
 }
 model f_config {

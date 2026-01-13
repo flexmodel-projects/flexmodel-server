@@ -113,7 +113,7 @@ public class AuthResource {
     UserinfoResponse userinfo = new UserinfoResponse();
     userinfo.setToken(accessToken);
     userinfo.setExpiresIn(300000L);
-    userinfo.setUser(new UserinfoResponse.UserResponse(user.getId(), user.getUsername()));
+    userinfo.setUser(new UserinfoResponse.UserResponse(user.getId(), user.getId()));
     return userinfo;
   }
 

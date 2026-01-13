@@ -21,7 +21,7 @@ public class UserFmRepository implements UserRepository {
   public User findByUsername(String username) {
     return session.dsl()
       .selectFrom(User.class)
-      .where(field(User::getUsername).eq(username))
+      .where(field(User::getId).eq(username))
       .executeOne();
   }
 

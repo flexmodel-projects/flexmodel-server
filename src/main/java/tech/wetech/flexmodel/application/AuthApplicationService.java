@@ -54,11 +54,11 @@ public class AuthApplicationService {
   }
 
   public User login(String username, String password) {
-    return userService.login("", username, password);
+    return userService.login(username, password);
   }
 
   public User getUser(String userId) {
-    return userService.getUser("", userId);
+    return userService.getUser(userId);
   }
 
   public Project findProject(String projectId) {
