@@ -11,6 +11,7 @@ import jakarta.ws.rs.sse.OutboundSseEvent;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.AiApplicationService;
 import tech.wetech.flexmodel.codegen.entity.AiChatConversation;
 import tech.wetech.flexmodel.codegen.entity.AiChatMessage;
@@ -179,6 +180,7 @@ public class AiResource {
   }
 
   public static class CreateConversationRequest {
+    public String projectId;
     public String title;
   }
 

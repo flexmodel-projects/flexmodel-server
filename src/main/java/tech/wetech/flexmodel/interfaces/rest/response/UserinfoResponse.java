@@ -18,7 +18,7 @@ public class UserinfoResponse {
   private UserResponse user;
   private List<String> permissions = List.of("*");
 
-  public record UserResponse(String id, String username) {
+  public record UserResponse(String id, String username, String email) {
   }
 
 }

@@ -6,6 +6,8 @@ import tech.wetech.flexmodel.codegen.entity.User;
 import tech.wetech.flexmodel.domain.model.auth.UserRepository;
 import tech.wetech.flexmodel.session.Session;
 
+import java.util.List;
+
 import static tech.wetech.flexmodel.query.Expressions.field;
 
 /**
@@ -21,7 +23,8 @@ public class UserFmRepository implements UserRepository {
   public User findByUsername(String username) {
     return session.dsl()
       .selectFrom(User.class)
-      .where(field(User::getId).eq(username))
+      .where(field(User::getId).eq(username)
+        .or(field(User::getEmail).eq(username)))
       .executeOne();
   }
 
@@ -31,5 +34,29 @@ public class UserFmRepository implements UserRepository {
       .selectFrom(User.class)
       .where(field(User::getId).eq(userId))
       .executeOne();
+  }
+
+  @Override
+  public List<User> findAll() {
+    return session.dsl()
+      .selectFrom(User.class)
+      .execute();
+  }
+
+  @Override
+  public User save(User user) {
+    session.dsl()
+      .mergeInto(User.class)
+      .values(user)
+      .execute();
+    return user;
+  }
+
+  @Override
+  public void delete(String userId) {
+    session.dsl()
+      .deleteFrom(User.class)
+      .where(field(User::getId).eq(userId))
+      .execute();
   }
 }

@@ -39,6 +39,7 @@ public class GeneratorResource {
   @Path("/{template}.zip")
   @PermitAll
   public Response generate(@PathParam("template") String template,
+                           @QueryParam("projectId") String projectId,
                            @QueryParam("datasource") String datasource,
                            @QueryParam("variables") String variablesString
   ) throws Exception {

@@ -5,6 +5,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.AuthApplicationService;
 import tech.wetech.flexmodel.application.dto.ProjectListRequest;
 import tech.wetech.flexmodel.application.dto.ProjectResponse;
@@ -15,6 +16,7 @@ import java.util.List;
 /**
  * @author cjbi
  */
+@Tag(name = "项目", description = "项目管理")
 @Path("/v1/projects")
 public class ProjectResource {
 
