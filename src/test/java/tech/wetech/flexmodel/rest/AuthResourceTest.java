@@ -41,7 +41,7 @@ class AuthResourceTest {
       .body("token", notNullValue())
       .body("expiresIn", is(300000))
       .body("user.id", notNullValue())
-      .body("user.username", is("admin"))
+      .body("user.name", is("Admin"))
       .body("permissions", hasSize(1))
       .body("permissions[0]", is("*"))
       .cookie("refreshToken", notNullValue());
@@ -129,7 +129,7 @@ class AuthResourceTest {
       .body("token", notNullValue())
       .body("expiresIn", is(300000))
       .body("user.id", notNullValue())
-      .body("user.username", is("admin"));
+      .body("user.name", is("Admin"));
   }
 
   /**
@@ -173,7 +173,7 @@ class AuthResourceTest {
       .body("token", is(accessToken))
       .body("expiresIn", is(300000))
       .body("user.id", is("admin"))
-      .body("user.username", is("admin"));
+      .body("user.name", is("Admin"));
   }
 
   /**
@@ -288,7 +288,7 @@ class AuthResourceTest {
       .then()
       .statusCode(200)
       .body("token", is(accessToken))
-      .body("user.username", is("admin"));
+      .body("user.name", is("Admin"));
 
     // 3. 使用refreshToken刷新accessToken
     String newAccessToken = given()
@@ -308,6 +308,6 @@ class AuthResourceTest {
       .then()
       .statusCode(200)
       .body("token", is(newAccessToken))
-      .body("user.username", is("admin"));
+      .body("user.name", is("Admin"));
   }
 }

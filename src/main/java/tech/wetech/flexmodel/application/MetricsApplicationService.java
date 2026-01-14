@@ -66,15 +66,9 @@ public class MetricsApplicationService {
 
   public FmMetricsResponse getFmMetrics(String projectId) {
     try {
-      List<ApiDefinition> definitions = apiDefinitionService.findList(projectId);
-      List<Datasource> datasources = datasourceService.findAll(projectId);
-      int modelCount = 0;
-      for (Datasource datasource : datasources) {
-        List<SchemaObject> list = modelService.findAll(projectId, datasource.getName());
-        if (list != null) {
-          modelCount += list.size();
-        }
-      }
+      Integer modelCount = modelService.count(projectId);
+      Integer customApiCount = apiDefinitionService.count(projectId);
+      Integer datasourceCount = datasourceService.count(projectId);
       long reqLogCount = apiLogService.count(projectId, TRUE);
       long flowDefCount = flowDefService.count(projectId, Expressions.field(FlowDefinition::getIsDeleted).eq(false));
       long flowInsCount = flowInstanceService.count(projectId, TRUE);
@@ -82,16 +76,9 @@ public class MetricsApplicationService {
       long jobSuccessCount = jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("SUCCESS"));
       long jobFailureCount = jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("FAILED"));
 
-      int queryCount = 0;
-      int mutationCount = 0;
-      int subscribeCount = 0;
-
       return FmMetricsResponse.builder()
-        .queryCount(queryCount)
-        .mutationCount(mutationCount)
-        .subscribeCount(subscribeCount)
-        .dataSourceCount(datasources.size())
-        .customApiCount(definitions.size())
+        .dataSourceCount(datasourceCount)
+        .customApiCount(customApiCount)
         .requestCount((int) reqLogCount)
         .flowDefCount((int) flowDefCount)
         .flowExecCount((int) flowInsCount)

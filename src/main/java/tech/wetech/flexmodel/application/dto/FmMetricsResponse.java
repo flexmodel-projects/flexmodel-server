@@ -21,18 +21,6 @@ public class FmMetricsResponse {
    */
   private int requestCount;
   /**
-   * 查询数量
-   */
-  private int queryCount;
-  /**
-   * 变更数量
-   */
-  private int mutationCount;
-  /**
-   * 订阅数量
-   */
-  private int subscribeCount;
-  /**
    * 数据源数量
    */
   private int dataSourceCount;

@@ -20,6 +20,10 @@ public class ModelService {
   @Inject
   ModelRepository modelRepository;
 
+  public Integer count(String projectId) {
+    return modelRepository.count(projectId);
+  }
+
   public List<SchemaObject> findAll(String projectId, String datasourceName) {
     return modelRepository.findAll(projectId, datasourceName);
   }
