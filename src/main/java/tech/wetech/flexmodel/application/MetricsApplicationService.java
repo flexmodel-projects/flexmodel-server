@@ -86,24 +86,6 @@ public class MetricsApplicationService {
       int mutationCount = 0;
       int subscribeCount = 0;
 
-      for (ApiDefinition apiDefinition : definitions) {
-        if (apiDefinition.getMeta() instanceof Map<?, ?>) {
-          ApiDefinitionMeta meta = JsonUtils.convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
-          ApiDefinitionMeta.Execution execution = meta.getExecution();
-          if (execution == null) {
-            continue;
-          }
-          String query = execution.getQuery();
-          if (query.startsWith("query")) {
-            queryCount++;
-          } else if (query.startsWith("mutation")) {
-            mutationCount++;
-          } else if (query.startsWith("subscription")) {
-            subscribeCount++;
-          }
-        }
-      }
-
       return FmMetricsResponse.builder()
         .queryCount(queryCount)
         .mutationCount(mutationCount)

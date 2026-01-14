@@ -1,19 +1,17 @@
 package tech.wetech.flexmodel.application.dto;
 
 import lombok.Getter;
+import lombok.Setter;
 import tech.wetech.flexmodel.codegen.entity.Project;
 
 /**
  * @author cjbi
  */
+@Setter
 @Getter
 public class ProjectResponse extends Project {
 
-  private Integer apiCount;
-  private Integer datasourceCount;
-  private Integer flowCount;
-  private Integer storageCount;
-
+  private ProjectStats stats;
   public static ProjectResponse fromProject(Project project) {
     ProjectResponse response = new ProjectResponse();
     response.setId(project.getId());
@@ -27,23 +25,7 @@ public class ProjectResponse extends Project {
     return response;
   }
 
-  public ProjectResponse setApiCount(Integer apiCount) {
-    this.apiCount = apiCount;
-    return this;
+  public record ProjectStats(Integer apiCount, Integer datasourceCount, Integer flowCount, Integer storageCount) {
   }
 
-  public ProjectResponse setDatasourceCount(Integer datasourceCount) {
-    this.datasourceCount = datasourceCount;
-    return this;
-  }
-
-  public ProjectResponse setFlowCount(Integer flowCount) {
-    this.flowCount = flowCount;
-    return this;
-  }
-
-  public ProjectResponse setStorageCount(Integer storageCount) {
-    this.storageCount = storageCount;
-    return this;
-  }
 }

@@ -43,10 +43,13 @@ public class AuthApplicationService {
       .map(project -> {
           ProjectResponse response = ProjectResponse.fromProject(project);
           if (Objects.equals(request.getIncldue(), "stats")) {
-            response.setApiCount(apiDefinitionService.count(project.getId()))
-              .setFlowCount(flowDeploymentService.count(project.getId()))
-              .setDatasourceCount(datasourceService.count(project.getId()))
-              .setStorageCount(storageService.count(project.getId()));
+            ProjectResponse.ProjectStats projectStats = new ProjectResponse.ProjectStats(
+              apiDefinitionService.count(project.getId()),
+              flowDeploymentService.count(project.getId()),
+              datasourceService.count(project.getId()),
+              storageService.count(project.getId())
+            );
+            response.setStats(projectStats);
           }
           return response;
         }
