@@ -13,6 +13,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.codegen.CodeGenerationService;
 import tech.wetech.flexmodel.codegen.TemplateInfo;
 import tech.wetech.flexmodel.domain.model.codegen.ZipService;
+import tech.wetech.flexmodel.model.SchemaObject;
+import tech.wetech.flexmodel.session.SessionFactory;
 import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.util.List;
@@ -22,24 +24,28 @@ import java.util.Map;
  * @author cjbi
  */
 @Slf4j
-@Tag(name = "【Flexmodel】生成器", description = "生成器管理")
-@Path("/f/codegen")
+@Tag(name = "生成器", description = "生成器管理")
+@Path("/v1/codegen")
 public class GeneratorResource {
 
   @Inject
   CodeGenerationService codeGenerationService;
   @Inject
   ZipService zipService;
+  @Inject
+  SessionFactory sessionFactory;
 
   @GET
   @Path("/{template}.zip")
   @PermitAll
   public Response generate(@PathParam("template") String template,
+                           @QueryParam("projectId") String projectId,
                            @QueryParam("datasource") String datasource,
                            @QueryParam("variables") String variablesString
   ) throws Exception {
     try {
-      java.nio.file.Path codeDir = codeGenerationService.generateCode(datasource, template, JsonUtils.getInstance().parseToObject(variablesString, Map.class));
+      List<SchemaObject> models = sessionFactory.getModels(datasource);
+      java.nio.file.Path codeDir = codeGenerationService.generateCode(datasource, models, template, JsonUtils.getInstance().parseToObject(variablesString, Map.class));
       StreamingOutput stream = out -> zipService.zipDirectory(datasource, codeDir, out);
       String fileName = datasource + ".zip";
       return Response.ok(stream)

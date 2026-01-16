@@ -16,8 +16,8 @@ public interface SessionDatasource {
 
   void add(Datasource datasource);
 
-  void delete(String datasourceName);
+  void delete(String projectId, String datasourceName);
 
-  NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters);
+  NativeQueryResult executeNativeQuery(String projectId, String datasourceName, String statement, Map<String, Object> parameters);
 
 }

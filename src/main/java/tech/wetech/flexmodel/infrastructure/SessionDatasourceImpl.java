@@ -139,13 +139,13 @@ public class SessionDatasourceImpl implements SessionDatasource {
   }
 
   @Override
-  public void delete(String datasourceName) {
+  public void delete(String projectId, String datasourceName) {
     sessionFactory.removeDataSourceProvider(datasourceName);
   }
 
   @Override
   @SuppressWarnings("all")
-  public NativeQueryResult executeNativeQuery(String datasourceName, String statement, Map<String, Object> parameters) {
+  public NativeQueryResult executeNativeQuery(String projectId, String datasourceName, String statement, Map<String, Object> parameters) {
     try (Session session = sessionFactory.createSession(datasourceName)) {
       long beginTime = System.currentTimeMillis();
       Object result = session.data().executeNativeStatement(statement, parameters);

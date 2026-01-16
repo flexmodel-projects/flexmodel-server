@@ -42,7 +42,7 @@ public class AuthFilter implements ContainerRequestFilter {
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
     String path = requestContext.getUriInfo().getPath();
-    boolean isFlexmodelPath = path.startsWith("/f/");
+    boolean isFlexmodelPath = path.startsWith("/v1/");
     if (isFlexmodelPath) {
       PermitAll permitAll = resourceInfo.getResourceMethod().getAnnotation(PermitAll.class);
       if (permitAll == null) {
@@ -88,13 +88,13 @@ public class AuthFilter implements ContainerRequestFilter {
   }
 
   private void fillSessionContext(ContainerRequestContext requestContext) {
-    String tenantId = requestContext.getHeaderString("X-Tenant-Id");
+    String projectId = requestContext.getUriInfo().getPathParameters().getFirst("projectId");
     String accessToken = Objects.toString(requestContext.getHeaderString("Authorization"), "")
       .replaceFirst("Bearer ", "");
     String userId = JwtUtil.getAccount(accessToken);
-    SessionContextHolder.setTenantId(tenantId);
+    SessionContextHolder.setProjectId(projectId);
     SessionContextHolder.setUserId(userId);
-    requestContext.setProperty("tenantId", tenantId);
+    requestContext.setProperty("projectId", projectId);
     requestContext.setProperty("userId", userId);
   }
 

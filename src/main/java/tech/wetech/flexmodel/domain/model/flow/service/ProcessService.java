@@ -117,7 +117,7 @@ public interface ProcessService {
    * @param flowInstanceId
    * @return {@link TerminateResult} similar to {@link #commitTask(CommitTaskParam)} without activeTaskInstance.
    */
-  TerminateResult terminateProcess(String flowInstanceId);
+  TerminateResult terminateProcess(String projectId, String flowInstanceId);
 
   /**
    * Terminate process
@@ -128,7 +128,7 @@ public interface ProcessService {
    * @param effectiveForSubFlowInstance
    * @return {@link TerminateResult} similar to {@link #commitTask(CommitTaskParam)} without activeTaskInstance.
    */
-  TerminateResult terminateProcess(String flowInstanceId, boolean effectiveForSubFlowInstance);
+  TerminateResult terminateProcess(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance);
 
   /**
    * Get historical UserTask list
@@ -141,7 +141,7 @@ public interface ProcessService {
    *
    * @param flowInstanceId
    */
-  NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId);
+  NodeInstanceListResult getHistoryUserTaskList(String projectId, String flowInstanceId);
 
   /**
    * Get historical UserTask list
@@ -152,7 +152,7 @@ public interface ProcessService {
    * @param flowInstanceId
    * @param effectiveForSubFlowInstance
    */
-  NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId, boolean effectiveForSubFlowInstance);
+  NodeInstanceListResult getHistoryUserTaskList(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance);
 
   /**
    * Get processed element instance list for the specified flow instance, and mainly used to show the view of the snapshot.
@@ -163,16 +163,16 @@ public interface ProcessService {
    * @param flowInstanceId flowInstance ID
    * @return {@link ElementInstanceListResult} the list of nodes executed in history
    */
-  ElementInstanceListResult getHistoryElementList(String flowInstanceId);
+  ElementInstanceListResult getHistoryElementList(String projectId, String flowInstanceId);
 
   /**
    * Get processed element instance list for the specified flow instance, and mainly used to show the view of the snapshot.
    *
-   * @param flowInstanceId              flowInstance ID
+   * @param flowInstanceId flowInstance ID
    * @param effectiveForSubFlowInstance
    * @return {@link ElementInstanceListResult} the list of nodes executed in history
    */
-  ElementInstanceListResult getHistoryElementList(String flowInstanceId, boolean effectiveForSubFlowInstance);
+  ElementInstanceListResult getHistoryElementList(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance);
 
   /**
    * Get latest {@link InstanceDataListResult} list of the specified flow instance.
@@ -182,7 +182,7 @@ public interface ProcessService {
    *
    * @param flowInstanceId
    */
-  InstanceDataListResult getInstanceData(String flowInstanceId);
+  InstanceDataListResult getInstanceData(String projectId, String flowInstanceId);
 
   /**
    * Get latest {@link InstanceDataListResult} list of the specified flow instance.
@@ -190,7 +190,7 @@ public interface ProcessService {
    * @param flowInstanceId
    * @param effectiveForSubFlowInstance
    */
-  InstanceDataListResult getInstanceData(String flowInstanceId, boolean effectiveForSubFlowInstance);
+  InstanceDataListResult getInstanceData(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance);
 
   /**
    * Get {@link InstanceDataListResult} list of the specified instance data.
@@ -201,7 +201,7 @@ public interface ProcessService {
    * @param flowInstanceId
    * @param instanceDataId
    */
-  InstanceDataListResult getInstanceData(String flowInstanceId, String instanceDataId);
+  InstanceDataListResult getInstanceData(String projectId, String flowInstanceId, String instanceDataId);
 
   /**
    * Get {@link InstanceDataListResult} list of the specified instance data.
@@ -210,7 +210,7 @@ public interface ProcessService {
    * @param instanceDataId
    * @param effectiveForSubFlowInstance
    */
-  InstanceDataListResult getInstanceData(String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance);
+  InstanceDataListResult getInstanceData(String projectId, String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance);
 
   /**
    * According to the flow instance and node instance given in, get node instance info.
@@ -221,7 +221,7 @@ public interface ProcessService {
    * @param flowInstanceId
    * @param nodeInstanceId
    */
-  NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId);
+  NodeInstanceResult getNodeInstance(String projectId, String flowInstanceId, String nodeInstanceId);
 
   /**
    * According to the flow instance and node instance given in, get node instance info.
@@ -230,14 +230,14 @@ public interface ProcessService {
    * @param nodeInstanceId
    * @param effectiveForSubFlowInstance
    */
-  NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance);
+  NodeInstanceResult getNodeInstance(String projectId, String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance);
 
   /**
    * According to the flow instance given in, get flow instance info.
    *
    * @param flowInstanceId
    */
-  FlowInstanceResult getFlowInstance(String flowInstanceId);
+  FlowInstanceResult getFlowInstance(String projectId, String flowInstanceId);
 
-  void deleteFlow(String flowModuleId);
+  void deleteFlow(String projectId, String flowModuleId);
 }

@@ -23,6 +23,6 @@ abstract class ApiDefinitionGenerator extends AbstractGenerator {
     (JSON.type)    : "JSON",
   ]
 
-  abstract ApiDefinition createApiDefinition(GenerationContext context)
+  abstract ApiDefinition createApiDefinition(String projectId, GenerationContext context)
 
 }

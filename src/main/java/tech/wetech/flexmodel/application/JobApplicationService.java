@@ -26,17 +26,18 @@ public class JobApplicationService {
   /**
    * 分页查询作业执行日志
    *
+   * @param projectId
    * @param triggerId 触发器ID（可选）
-   * @param jobId 作业ID（可选）
-   * @param status 执行状态（可选）
+   * @param jobId     作业ID（可选）
+   * @param status    执行状态（可选）
    * @param startTime 开始时间（可选）
-   * @param endTime 结束时间（可选）
+   * @param endTime   结束时间（可选）
    * @param isSuccess 是否成功（可选）
-   * @param page 页码（从0开始）
-   * @param size 每页大小
+   * @param page      页码（从0开始）
+   * @param size      每页大小
    * @return 分页结果
    */
-  public PageDTO<JobExecutionLog> findLogPage(String triggerId, String jobId, String status,
+  public PageDTO<JobExecutionLog> findLogPage(String projectId, String triggerId, String jobId, String status,
                                               LocalDateTime startTime, LocalDateTime endTime,
                                               Boolean isSuccess, Integer page, Integer size) {
     List<JobExecutionLog> logs = jobExecutionLogService.findWithConditions(

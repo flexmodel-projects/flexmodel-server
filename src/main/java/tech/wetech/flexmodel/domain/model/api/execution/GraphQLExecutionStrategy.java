@@ -19,7 +19,7 @@ public class GraphQLExecutionStrategy extends AbstractExecutionStrategy {
     @Override
     protected Map<String, Object> doExecute(ApiDefinition apiDefinition, ApiDefinitionMeta.Execution execution,
                                        Map<String, String> pathParameters, HttpScriptContext httpScriptContext) {
-        String tenantId = apiDefinition.getTenantId();
+        String projectId = apiDefinition.getProjectId();
         String method = httpScriptContext.getRequest().method();
         String operationName = execution.getOperationName();
         String query = execution.getQuery();
@@ -44,7 +44,7 @@ public class GraphQLExecutionStrategy extends AbstractExecutionStrategy {
             executionData.putAll(pathParameters);
         }
 
-        graphql.ExecutionResult result = graphQLManger.execute(tenantId, operationName, query, executionData);
+        graphql.ExecutionResult result = graphQLManger.execute(projectId, operationName, query, executionData);
 
         Map<String, Object> resMap = new HashMap<>();
         resMap.put("data", result.getData());

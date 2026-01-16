@@ -34,7 +34,7 @@ public class JobExecutionLogFmRepository implements JobExecutionLogRepository {
   }
 
   @Override
-  public JobExecutionLog save(JobExecutionLog jobExecutionLog) {
+  public JobExecutionLog save(String projectId, JobExecutionLog jobExecutionLog) {
     session.dsl()
       .mergeInto(JobExecutionLog.class)
       .values(jobExecutionLog)
@@ -43,18 +43,18 @@ public class JobExecutionLogFmRepository implements JobExecutionLogRepository {
   }
 
   @Override
-  public void delete(Predicate filter) {
+  public void delete(String projectId, Predicate filter) {
     session.dsl()
       .deleteFrom(JobExecutionLog.class)
-      .where(filter)
+      .where(field(JobExecutionLog::getProjectId).eq(projectId).and(filter))
       .execute();
   }
 
   @Override
-  public List<JobExecutionLog> find(Predicate filter, Integer page, Integer size) {
+  public List<JobExecutionLog> find(String projectId, Predicate filter, Integer page, Integer size) {
     var query = session.dsl()
       .selectFrom(JobExecutionLog.class)
-      .where(filter)
+      .where(field(JobExecutionLog::getProjectId).eq(projectId).and(filter))
       .page(page, size)
       .orderByDesc(JobExecutionLog::getStartTime);
 
@@ -62,23 +62,23 @@ public class JobExecutionLogFmRepository implements JobExecutionLogRepository {
   }
 
   @Override
-  public long count(Predicate filter) {
+  public long count(String projectId, Predicate filter) {
     return session.dsl()
       .selectFrom(JobExecutionLog.class)
-      .where(filter)
+      .where(field(JobExecutionLog::getProjectId).eq(projectId).and(filter))
       .count();
   }
 
   @Override
-  public int purgeOldLogs(int days) {
+  public int purgeOldLogs(String projectId, int days) {
     LocalDateTime purgeDate = LocalDateTime.now().minusDays(days);
     Predicate filter = field(JobExecutionLog::getCreatedAt).lte(purgeDate);
 
     // 先统计要删除的记录数
-    long count = count(filter);
+    long count = count(projectId, filter);
 
     // 执行删除
-    delete(filter);
+    delete(projectId, filter);
 
     return (int) count;
   }

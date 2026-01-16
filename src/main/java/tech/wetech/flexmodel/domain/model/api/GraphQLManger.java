@@ -22,23 +22,23 @@ public class GraphQLManger {
   private GraphQL defaultGraphql;
   private final Map<String, GraphQL> tenantGraphqlMap = new HashMap<>();
 
-  public GraphQL getGraphQL(String tenantId) {
-    if (StringUtils.isEmpty(tenantId)) {
+  public GraphQL getGraphQL(String projectId) {
+    if (StringUtils.isEmpty(projectId)) {
       return defaultGraphql;
     }
-    return tenantGraphqlMap.get(tenantId);
+    return tenantGraphqlMap.get(projectId);
   }
 
   public void addDefaultGraphQL(GraphQL graphQL) {
     defaultGraphql = graphQL;
   }
 
-  public void addGraphQL(String tenantId, GraphQL graphQL) {
-    tenantGraphqlMap.put(tenantId, graphQL);
+  public void addGraphQL(String projectId, GraphQL graphQL) {
+    tenantGraphqlMap.put(projectId, graphQL);
   }
 
-  public ExecutionResult execute(String tenantId, String operationName, String query, Map<String, Object> variables) {
-    GraphQL graphQL = getGraphQL(tenantId);
+  public ExecutionResult execute(String projectId, String operationName, String query, Map<String, Object> variables) {
+    GraphQL graphQL = getGraphQL(projectId);
     if (variables == null) {
       variables = new HashMap<>();
     }

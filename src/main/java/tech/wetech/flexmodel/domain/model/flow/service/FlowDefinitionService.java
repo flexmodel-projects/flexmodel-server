@@ -17,12 +17,12 @@ public class FlowDefinitionService {
   @Inject
   FlowDefinitionRepository flowDefinitionRepository;
 
-  public List<FlowDefinition> find(Predicate filter, Integer page, Integer size) {
-    return flowDefinitionRepository.find(filter, page, size);
+  public List<FlowDefinition> find(String projectId, Predicate filter, Integer page, Integer size) {
+    return flowDefinitionRepository.find(projectId, filter, page, size);
   }
 
-  public long count(Predicate filter) {
-    return flowDefinitionRepository.count(filter);
+  public long count(String projectId, Predicate filter) {
+    return flowDefinitionRepository.count(projectId, filter);
   }
 
 }

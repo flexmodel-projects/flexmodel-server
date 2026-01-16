@@ -15,34 +15,35 @@ public class DataService {
   @Inject
   DataRepository dataRepository;
 
-  public List<Map<String, Object>> findRecords(String datasourceName,
+  public List<Map<String, Object>> findRecords(String projectId,
+                                               String datasourceName,
                                                String modelName,
                                                Integer page,
                                                Integer size,
                                                String filter,
                                                String sort,
                                                boolean nestedQueryEnabled) {
-    return dataRepository.findRecords(datasourceName, modelName, page, size, filter, sort, nestedQueryEnabled);
+    return dataRepository.findRecords(projectId, datasourceName, modelName, page, size, filter, sort, nestedQueryEnabled);
   }
 
-  public long countRecords(String datasourceName, String modelName, String filter) {
-    return dataRepository.countRecords(datasourceName, modelName, filter);
+  public long countRecords(String projectId, String datasourceName, String modelName, String filter) {
+    return dataRepository.countRecords(projectId, datasourceName, modelName, filter);
   }
 
-  public Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id, boolean nestedQuery) {
-    return dataRepository.findOneRecord(datasourceName, modelName, id, nestedQuery);
+  public Map<String, Object> findOneRecord(String projectId, String datasourceName, String modelName, Object id, boolean nestedQuery) {
+    return dataRepository.findOneRecord(projectId, datasourceName, modelName, id, nestedQuery);
   }
 
-  public Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data) {
-    return dataRepository.createRecord(datasourceName, modelName, data);
+  public Map<String, Object> createRecord(String projectId, String datasourceName, String modelName, Map<String, Object> data) {
+    return dataRepository.createRecord(projectId, datasourceName, modelName, data);
   }
 
-  public Map<String, Object> updateRecord(String datasourceName, String modelName, Object id, Map<String, Object> data) {
-    return dataRepository.updateRecord(datasourceName, modelName, id, data);
+  public Map<String, Object> updateRecord(String projectId, String datasourceName, String modelName, Object id, Map<String, Object> data) {
+    return dataRepository.updateRecord(projectId, datasourceName, modelName, id, data);
   }
 
-  public void deleteRecord(String datasourceName, String modelName, Object id) {
-    dataRepository.deleteRecord(datasourceName, modelName, id);
+  public void deleteRecord(String projectId, String datasourceName, String modelName, Object id) {
+    dataRepository.deleteRecord(projectId, datasourceName, modelName, id);
   }
 
 }

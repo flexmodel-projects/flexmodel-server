@@ -54,12 +54,12 @@ public class FlowInstanceService {
    * @param commitNodeInstanceId
    * @return
    */
-  public Stack<String> getNodeInstanceIdStack(String rootFlowInstanceId, String commitNodeInstanceId) {
+  public Stack<String> getNodeInstanceIdStack(String projectId, String rootFlowInstanceId, String commitNodeInstanceId) {
     if (StringUtils.isBlank(commitNodeInstanceId)) {
       LOGGER.info("getNodeInstanceId2RootStack result is empty.||rootFlowInstanceId={}||commitNodeInstanceId={}", rootFlowInstanceId, commitNodeInstanceId);
       return new Stack<>();
     }
-    FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(rootFlowInstanceId,
+    FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(projectId, rootFlowInstanceId,
       nodeInstancePO -> nodeInstancePO.getNodeInstanceId().equals(commitNodeInstanceId));
     NodeInstancePOJO rightNodeInstance = flowInstanceTreeResult.getInterruptNodeInstancePOJO();
     Stack<String> stack = new Stack<>();
@@ -77,8 +77,8 @@ public class FlowInstanceService {
    * @param rootFlowInstanceId
    * @return
    */
-  public Set<String> getAllSubFlowInstanceIds(String rootFlowInstanceId) {
-    FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(rootFlowInstanceId, null);
+  public Set<String> getAllSubFlowInstanceIds(String projectId, String rootFlowInstanceId) {
+    FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(projectId, rootFlowInstanceId, null);
     FlowInstancePOJO flowInstancePOJO = flowInstanceTreeResult.getRootFlowInstancePOJO();
     Set<String> result = getAllSubFlowInstanceIdsInternal(flowInstancePOJO);
     result.remove(rootFlowInstanceId);
@@ -113,11 +113,11 @@ public class FlowInstanceService {
    * @param nodeInstanceId
    * @return
    */
-  public String getFlowInstanceIdByRootFlowInstanceIdAndNodeInstanceId(String rootFlowInstanceId, String nodeInstanceId) {
+  public String getFlowInstanceIdByRootFlowInstanceIdAndNodeInstanceId(String projectId, String rootFlowInstanceId, String nodeInstanceId) {
     if (StringUtils.isBlank(nodeInstanceId)) {
       return "";
     }
-    FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(rootFlowInstanceId,
+    FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(projectId, rootFlowInstanceId,
       nodeInstancePO -> nodeInstancePO.getNodeInstanceId().equals(nodeInstanceId));
     NodeInstancePOJO rightNodeInstance = flowInstanceTreeResult.getInterruptNodeInstancePOJO();
     if (rightNodeInstance == null) {
@@ -134,11 +134,11 @@ public class FlowInstanceService {
    * @param instanceDataId
    * @return
    */
-  public String getFlowInstanceIdByRootFlowInstanceIdAndInstanceDataId(String rootFlowInstanceId, String instanceDataId) {
+  public String getFlowInstanceIdByRootFlowInstanceIdAndInstanceDataId(String projectId, String rootFlowInstanceId, String instanceDataId) {
     if (StringUtils.isBlank(instanceDataId)) {
       return "";
     }
-    FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(rootFlowInstanceId,
+    FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(projectId, rootFlowInstanceId,
       nodeInstancePO -> nodeInstancePO.getInstanceDataId().equals(instanceDataId));
     NodeInstancePOJO rightNodeInstance = flowInstanceTreeResult.getInterruptNodeInstancePOJO();
     if (rightNodeInstance == null) {
@@ -148,17 +148,17 @@ public class FlowInstanceService {
   }
 
   // common : build a flowInstanceAndNodeInstance tree
-  private FlowInstanceTreeResult buildFlowInstanceTree(String rootFlowInstanceId, InterruptCondition interruptCondition) {
+  private FlowInstanceTreeResult buildFlowInstanceTree(String projectId, String rootFlowInstanceId, InterruptCondition interruptCondition) {
     FlowInstanceTreeResult flowInstanceTreeResult = new FlowInstanceTreeResult();
     FlowInstancePOJO flowInstance = new FlowInstancePOJO();
     flowInstance.setId(rootFlowInstanceId);
     flowInstanceTreeResult.setRootFlowInstancePOJO(flowInstance);
 
-    FlowInstance rootFlowInstance = flowInstanceRepository.selectByFlowInstanceId(rootFlowInstanceId);
-    FlowDeployment rootFlowDeployment = flowDeploymentRepository.findByDeployId(rootFlowInstance.getFlowDeployId());
+    FlowInstance rootFlowInstance = flowInstanceRepository.selectByFlowInstanceId(projectId, rootFlowInstanceId);
+    FlowDeployment rootFlowDeployment = flowDeploymentRepository.findByDeployId(projectId, rootFlowInstance.getFlowDeployId());
     Map<String, FlowElement> rootFlowElementMap = FlowModelUtil.getFlowElementMap(rootFlowDeployment.getFlowModel());
 
-    List<NodeInstance> nodeInstancePOList = nodeInstanceRepository.selectDescByFlowInstanceId(rootFlowInstanceId);
+    List<NodeInstance> nodeInstancePOList = nodeInstanceRepository.selectDescByFlowInstanceId(projectId, rootFlowInstanceId);
     for (NodeInstance nodeInstancePO : nodeInstancePOList) {
       NodeInstancePOJO nodeInstance = new NodeInstancePOJO();
       nodeInstance.setId(nodeInstancePO.getNodeInstanceId());
@@ -174,9 +174,9 @@ public class FlowInstanceService {
       if (elementType != FlowElementType.CALL_ACTIVITY) {
         continue;
       }
-      List<FlowInstanceMapping> flowInstanceMappingPOS = flowInstanceMappingRepository.selectFlowInstanceMappingList(nodeInstancePO.getFlowInstanceId(), nodeInstancePO.getNodeInstanceId());
+      List<FlowInstanceMapping> flowInstanceMappingPOS = flowInstanceMappingRepository.selectFlowInstanceMappingList(projectId, nodeInstancePO.getFlowInstanceId(), nodeInstancePO.getNodeInstanceId());
       for (FlowInstanceMapping flowInstanceMappingPO : flowInstanceMappingPOS) {
-        FlowInstanceTreeResult subFlowInstanceTreeResult = buildFlowInstanceTree(flowInstanceMappingPO.getSubFlowInstanceId(), interruptCondition);
+        FlowInstanceTreeResult subFlowInstanceTreeResult = buildFlowInstanceTree(projectId, flowInstanceMappingPO.getSubFlowInstanceId(), interruptCondition);
         FlowInstancePOJO subFlowInstance = subFlowInstanceTreeResult.getRootFlowInstancePOJO();
         subFlowInstance.setBelongNodeInstance(nodeInstance);
         nodeInstance.getSubFlowInstanceList().add(subFlowInstance);
@@ -189,16 +189,16 @@ public class FlowInstanceService {
     return flowInstanceTreeResult;
   }
 
-  public long count(Predicate predicate) {
-    return flowInstanceRepository.count(predicate);
+  public long count(String projectId, Predicate predicate) {
+    return flowInstanceRepository.count(projectId, predicate);
   }
 
-  public List<FlowInstance> find(Predicate predicate, Integer page, Integer size) {
-    return flowInstanceRepository.find(predicate, page, size);
+  public List<FlowInstance> find(String projectId, Predicate predicate, Integer page, Integer size) {
+    return flowInstanceRepository.find(projectId, predicate, page, size);
   }
 
-  public FlowInstance findById(String flowInstanceId) {
-    return flowInstanceRepository.selectByFlowInstanceId(flowInstanceId);
+  public FlowInstance findById(String projectId, String flowInstanceId) {
+    return flowInstanceRepository.selectByFlowInstanceId(projectId, flowInstanceId);
   }
 
   private static class FlowInstancePOJO {

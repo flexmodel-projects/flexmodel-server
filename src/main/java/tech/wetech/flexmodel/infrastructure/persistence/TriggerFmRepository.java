@@ -21,16 +21,16 @@ public class TriggerFmRepository implements TriggerRepository {
   Session session;
 
   @Override
-  public Trigger findById(String id) {
+  public Trigger findById(String projectId, String id) {
     return session.dsl()
       .select()
       .from(Trigger.class)
-      .where(field(Trigger::getId).eq(id))
+      .where(field(Trigger::getProjectId).eq(projectId).and(field(Trigger::getId).eq(id)))
       .executeOne();
   }
 
   @Override
-  public Trigger save(Trigger trigger) {
+  public Trigger save(String projectId, Trigger trigger) {
     session.dsl()
       .mergeInto(Trigger.class)
       .values(trigger)
@@ -39,30 +39,30 @@ public class TriggerFmRepository implements TriggerRepository {
   }
 
   @Override
-  public void deleteById(String id) {
+  public void deleteById(String projectId, String id) {
     session.dsl()
       .deleteFrom(Trigger.class)
-      .where(field(Trigger::getId).eq(id))
+      .where(field(Trigger::getProjectId).eq(projectId).and(field(Trigger::getId).eq(id)))
       .execute();
   }
 
   @Override
-  public List<Trigger> find(Predicate filter, Integer page, Integer size) {
+  public List<Trigger> find(String projectId, Predicate filter, Integer page, Integer size) {
     return session.dsl()
       .select()
       .from(Trigger.class)
-      .where(filter)
+      .where(field(Trigger::getProjectId).eq(projectId).and(filter))
       .page(page, size)
       .orderByDesc(Trigger::getCreatedAt)
       .execute();
   }
 
   @Override
-  public long count(Predicate filter) {
+  public long count(String projectId, Predicate filter) {
     return session.dsl()
       .select()
       .from(Trigger.class)
-      .where(filter)
+      .where(field(Trigger::getProjectId).eq(projectId).and(filter))
       .count();
   }
 

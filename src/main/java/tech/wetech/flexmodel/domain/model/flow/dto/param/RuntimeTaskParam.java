@@ -6,11 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RuntimeTaskParam {
+  private String projectId;
   private String flowInstanceId;
   private String taskInstanceId;
   // For internal transmission runtimeContext
   private RuntimeContext runtimeContext;
   private Map<String, Object> extendProperties = new HashMap<>(16);
+
+  public String getProjectId() {
+    return projectId;
+  }
+
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
 
   public String getFlowInstanceId() {
     return flowInstanceId;

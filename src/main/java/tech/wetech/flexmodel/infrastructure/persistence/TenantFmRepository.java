@@ -2,8 +2,8 @@ package tech.wetech.flexmodel.infrastructure.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import tech.wetech.flexmodel.codegen.entity.Tenant;
-import tech.wetech.flexmodel.domain.model.auth.TenantRepository;
+import tech.wetech.flexmodel.codegen.entity.Project;
+import tech.wetech.flexmodel.domain.model.auth.ProjectRepository;
 import tech.wetech.flexmodel.query.Expressions;
 import tech.wetech.flexmodel.session.Session;
 
@@ -14,14 +14,21 @@ import java.util.List;
  * @author cjbi
  */
 @ApplicationScoped
-public class TenantFmRepository implements TenantRepository {
+public class TenantFmRepository implements ProjectRepository {
 
   @Inject
   Session session;
 
   @Override
-  public List<Tenant> findTenants() {
-    return session.dsl().selectFrom(Tenant.class).where(Expressions.field(Tenant::getEnabled).eq(true)).execute().stream()
+  public List<Project> findProjects() {
+    return session.dsl().selectFrom(Project.class).where(Expressions.field(Project::getEnabled).eq(true)).execute().stream()
       .toList();
+  }
+
+  @Override
+  public Project findProject(String projectId) {
+    return session.dsl().selectFrom(Project.class)
+      .where(Expressions.field(Project::getId).eq(projectId))
+      .executeOne();
   }
 }

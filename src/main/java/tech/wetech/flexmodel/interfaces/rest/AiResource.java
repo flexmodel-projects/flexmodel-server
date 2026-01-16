@@ -11,6 +11,7 @@ import jakarta.ws.rs.sse.OutboundSseEvent;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.AiApplicationService;
 import tech.wetech.flexmodel.codegen.entity.AiChatConversation;
 import tech.wetech.flexmodel.codegen.entity.AiChatMessage;
@@ -29,7 +30,7 @@ import java.util.UUID;
 
 
 @Slf4j
-@Path("/f/ai")
+@Path("/v1/ai")
 @ApplicationScoped
 public class AiResource {
 
@@ -78,7 +79,7 @@ public class AiResource {
     if (request.content == null || request.content.isBlank()) {
       return Response.status(Response.Status.BAD_REQUEST).entity("content is required").build();
     }
-    String tenantId = SessionContextHolder.getTenantId();
+    String projectId = SessionContextHolder.getProjectId();
     // 会话不存在则创建会话
     String conversationId = StringUtils.isBlank(request.conversationId) ?
       aiApplicationService.createConversation(request.content).getId() : request.conversationId;
@@ -86,7 +87,7 @@ public class AiResource {
     userMsg.setRole("user");
     userMsg.setContent(request.content);
     userMsg.setConversationId(conversationId);
-    userMsg.setTenantId(tenantId);
+    userMsg.setProjectId(projectId);
     aiApplicationService.saveMessage(userMsg);
     String requestId = UUID.randomUUID().toString();
     try {
@@ -103,7 +104,7 @@ public class AiResource {
             aiMsg.setRole("assistant");
             aiMsg.setContent(chatResponse.aiMessage().text());
             aiMsg.setConversationId(conversationId);
-            aiMsg.setTenantId(tenantId);
+            aiMsg.setProjectId(projectId);
             aiApplicationService.saveMessage(aiMsg);
           }
           sendDoneEvent(eventSink);
@@ -179,6 +180,7 @@ public class AiResource {
   }
 
   public static class CreateConversationRequest {
+    public String projectId;
     public String title;
   }
 

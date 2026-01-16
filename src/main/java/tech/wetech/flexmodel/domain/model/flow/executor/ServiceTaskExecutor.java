@@ -136,7 +136,7 @@ public class ServiceTaskExecutor extends ElementExecutor {
     instanceData.setType(InstanceDataType.EXECUTE);
     instanceData.setCreateTime(LocalDateTime.now());
     instanceData.setCaller(runtimeContext.getCaller());
-    instanceData.setTenantId(runtimeContext.getTenantId());
+    instanceData.setProjectId(runtimeContext.getProjectId());
     instanceDataRepository.insert(instanceData);
     return instanceDataId;
   }

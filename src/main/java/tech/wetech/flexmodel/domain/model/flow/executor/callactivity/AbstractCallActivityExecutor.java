@@ -58,7 +58,7 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
   protected Map<String, Object> calculateCallActivityInParamFromMainFlow(RuntimeContext runtimeContext) throws ProcessException {
     FlowElement currentNodeModel = runtimeContext.getCurrentNodeModel();
 
-    InstanceData instanceDataPO = instanceDataRepository.select(runtimeContext.getFlowInstanceId(), runtimeContext.getInstanceDataId());
+    InstanceData instanceDataPO = instanceDataRepository.select(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), runtimeContext.getInstanceDataId());
     Map<String, Object> mainInstanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
 
     return calculateCallActivityDataTransfer(currentNodeModel, mainInstanceDataMap,
@@ -110,6 +110,7 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
     instanceDataPO.setNodeKey(runtimeContext.getCurrentNodeModel().getKey());
     instanceDataPO.setType(InstanceDataType.UPDATE);
     instanceDataPO.setCreateTime(LocalDateTime.now());
+    instanceDataPO.setProjectId(runtimeContext.getProjectId());
     return instanceDataPO;
   }
 }

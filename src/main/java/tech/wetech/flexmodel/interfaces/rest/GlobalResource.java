@@ -22,9 +22,9 @@ import java.util.Map;
 /**
  * @author cjbi
  */
-@Tag(name = "【Flexmodel】系统", description = "系统信息")
+@Tag(name = "系统", description = "系统信息")
 @Slf4j
-@Path("/f/global")
+@Path("/v1/global")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class GlobalResource {

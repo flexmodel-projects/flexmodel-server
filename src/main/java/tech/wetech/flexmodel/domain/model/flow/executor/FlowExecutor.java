@@ -97,7 +97,7 @@ public class FlowExecutor extends RuntimeExecutor {
     flowInstance.setStatus(FlowInstanceStatus.RUNNING);
     flowInstance.setCreateTime(LocalDateTime.now());
     flowInstance.setModifyTime(LocalDateTime.now());
-    flowInstance.setTenantId(runtimeContext.getTenantId());
+    flowInstance.setProjectId(runtimeContext.getProjectId());
     flowInstance.setCaller(runtimeContext.getCaller());
     return flowInstance;
   }
@@ -130,6 +130,7 @@ public class FlowExecutor extends RuntimeExecutor {
     instanceDataPO.setNodeKey("");
     instanceDataPO.setCreateTime(LocalDateTime.now());
     instanceDataPO.setType(InstanceDataType.INIT);
+    instanceDataPO.setProjectId(flowInstancePO.getProjectId());
     return instanceDataPO;
   }
 
@@ -184,10 +185,10 @@ public class FlowExecutor extends RuntimeExecutor {
     //3.update flowInstance status while completed
     if (isCompleted(runtimeContext)) {
       if (isSubFlowInstance(runtimeContext)) {
-        flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.END);
+        flowInstanceRepository.updateStatus(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), FlowInstanceStatus.END);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.END);
       } else {
-        flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.COMPLETED);
+        flowInstanceRepository.updateStatus(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), FlowInstanceStatus.COMPLETED);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
       }
       LOGGER.info("postExecute: flowInstance process completely.||flowInstanceId={}", runtimeContext.getFlowInstanceId());
@@ -230,7 +231,7 @@ public class FlowExecutor extends RuntimeExecutor {
     String nodeInstanceId = suspendNodeInstance.getNodeInstanceId();
 
     //1.get instanceData from db
-    NodeInstance nodeInstancePO = nodeInstanceRepository.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
+    NodeInstance nodeInstancePO = nodeInstanceRepository.selectByNodeInstanceId(runtimeContext.getProjectId(), flowInstanceId, nodeInstanceId);
     if (nodeInstancePO == null) {
       LOGGER.warn("preCommit failed: cannot find nodeInstancePO from db.||flowInstanceId={}||nodeInstanceId={}",
         flowInstanceId, nodeInstanceId);
@@ -255,7 +256,7 @@ public class FlowExecutor extends RuntimeExecutor {
     if (StringUtils.isBlank(instanceDataId)) {
       instanceDataMap = new HashMap<>();
     } else {
-      InstanceData instanceDataPO = instanceDataRepository.select(flowInstanceId, instanceDataId);
+      InstanceData instanceDataPO = instanceDataRepository.select(runtimeContext.getProjectId(), flowInstanceId, instanceDataId);
       if (instanceDataPO == null) {
         LOGGER.warn("preCommit failed: cannot find instanceDataPO from db." +
                     "||flowInstanceId={}||instanceDataId={}", flowInstanceId, instanceDataId);
@@ -286,7 +287,7 @@ public class FlowExecutor extends RuntimeExecutor {
   private InstanceData buildCommitInstanceData(RuntimeContext runtimeContext, String nodeInstanceId, String nodeKey,
                                                String newInstanceDataId, Map<String, Object> instanceDataMap) {
     InstanceData instanceDataPO = JsonUtils.getInstance().convertValue(runtimeContext, InstanceData.class);
-
+    instanceDataPO.setProjectId(runtimeContext.getProjectId());
     instanceDataPO.setNodeInstanceId(nodeInstanceId);
     instanceDataPO.setNodeKey(nodeKey);
     instanceDataPO.setType(InstanceDataType.COMMIT);
@@ -331,10 +332,10 @@ public class FlowExecutor extends RuntimeExecutor {
 
     if (isCompleted(runtimeContext)) {
       if (isSubFlowInstance(runtimeContext)) {
-        flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.END);
+        flowInstanceRepository.updateStatus(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), FlowInstanceStatus.END);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.END);
       } else {
-        flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.COMPLETED);
+        flowInstanceRepository.updateStatus(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), FlowInstanceStatus.COMPLETED);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
       }
 
@@ -368,7 +369,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
     //1.check node: only the latest enabled(ACTIVE or COMPLETED) nodeInstance can be rollbacked.
     String suspendNodeInstanceId = runtimeContext.getSuspendNodeInstance().getNodeInstanceId();
-    NodeInstance rollbackNodeInstance = getActiveNodeForRollback(flowInstanceId, suspendNodeInstanceId,
+    NodeInstance rollbackNodeInstance = getActiveNodeForRollback(runtimeContext.getProjectId(), flowInstanceId, suspendNodeInstanceId,
       runtimeContext.getFlowElementMap());
     if (rollbackNodeInstance == null) {
       LOGGER.warn("preRollback failed: cannot rollback.||runtimeContext={}", runtimeContext);
@@ -391,7 +392,7 @@ public class FlowExecutor extends RuntimeExecutor {
     if (StringUtils.isBlank(instanceDataId)) {
       instanceDataMap = new HashMap<>();
     } else {
-      InstanceData instanceDataPO = instanceDataRepository.select(flowInstanceId, instanceDataId);
+      InstanceData instanceDataPO = instanceDataRepository.select(runtimeContext.getProjectId(), flowInstanceId, instanceDataId);
       if (instanceDataPO == null) {
         LOGGER.warn("preRollback failed: cannot find instanceDataPO from db."
                     + "||flowInstanceId={}||instanceDataId={}", flowInstanceId, instanceDataId);
@@ -405,9 +406,9 @@ public class FlowExecutor extends RuntimeExecutor {
   }
 
   // if(canRollback): only the active Node or the lasted completed Node can be rollback
-  private NodeInstance getActiveNodeForRollback(String flowInstanceId, String suspendNodeInstanceId,
+  private NodeInstance getActiveNodeForRollback(String projectId, String flowInstanceId, String suspendNodeInstanceId,
                                                 Map<String, FlowElement> flowElementMap) {
-    List<NodeInstance> nodeInstancePOList = nodeInstanceRepository.selectDescByFlowInstanceId(flowInstanceId);
+    List<NodeInstance> nodeInstancePOList = nodeInstanceRepository.selectDescByFlowInstanceId(projectId, flowInstanceId);
     if (CollectionUtils.isEmpty(nodeInstancePOList)) {
       LOGGER.warn("getActiveNodeForRollback: nodeInstancePOList is empty."
                   + "||flowInstanceId={}||suspendNodeInstanceId={}", flowInstanceId, suspendNodeInstanceId);
@@ -474,10 +475,10 @@ public class FlowExecutor extends RuntimeExecutor {
 
     if (FlowModelUtil.isElementType(runtimeContext.getCurrentNodeModel().getKey(), runtimeContext.getFlowElementMap(), FlowElementType.START_EVENT)) {
       runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.TERMINATED);
-      flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.TERMINATED);
+      flowInstanceRepository.updateStatus(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), FlowInstanceStatus.TERMINATED);
     } else if (runtimeContext.getFlowInstanceStatus() == FlowInstanceStatus.END) {
       runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.RUNNING);
-      flowInstanceRepository.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.RUNNING);
+      flowInstanceRepository.updateStatus(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), FlowInstanceStatus.RUNNING);
     }
   }
 
@@ -602,9 +603,10 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     NodeInstance nodeInstancePO = JsonUtils.getInstance().convertValue(nodeInstanceBO, NodeInstance.class);
+    nodeInstancePO.setProjectId(runtimeContext.getProjectId());
     nodeInstancePO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
     nodeInstancePO.setFlowDeployId(runtimeContext.getFlowDeployId());
-    nodeInstancePO.setTenantId(runtimeContext.getTenantId());
+    nodeInstancePO.setProjectId(runtimeContext.getProjectId());
     nodeInstancePO.setCaller(runtimeContext.getCaller());
     LocalDateTime currentTime = LocalDateTime.now();
     nodeInstancePO.setCreateTime(currentTime);
@@ -616,7 +618,7 @@ public class FlowExecutor extends RuntimeExecutor {
     NodeInstanceLog nodeInstanceLogPO = JsonUtils.getInstance().convertValue(nodeInstancePO, NodeInstanceLog.class);
     nodeInstanceLogPO.setId(null);
     nodeInstanceLogPO.setType(nodeInstanceType);
-    nodeInstanceLogPO.setTenantId(nodeInstancePO.getTenantId());
+    nodeInstanceLogPO.setProjectId(nodeInstancePO.getProjectId());
     return nodeInstanceLogPO;
   }
 

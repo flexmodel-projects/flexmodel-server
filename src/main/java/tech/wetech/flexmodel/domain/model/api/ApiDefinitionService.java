@@ -28,22 +28,25 @@ public class ApiDefinitionService {
   EventBus eventBus;
 
   @CacheResult(cacheName = "apiDefinitionList")
-  public List<ApiDefinition> findList(String tenantId) {
-    return apiDefinitionRepository.findByTenantId(tenantId);
+  public List<ApiDefinition> findList(String projectId) {
+    return apiDefinitionRepository.findByProjectId(projectId);
+  }
+
+  public Integer count(String projectId) {
+    return apiDefinitionRepository.count(projectId);
   }
 
   @CacheResult(cacheName = "apiDefinitionList")
-  public List<ApiDefinition> findAll() {
-    SessionContextHolder.setTenantId(null);
-    return apiDefinitionRepository.findAll();
+  public List<ApiDefinition> findAll(String projectId) {
+    return apiDefinitionRepository.findAll(projectId);
   }
 
-  public List<ApiDefinitionHistory> findApiDefinitionHistories(String apiDefinitionId) {
-    return apiDefinitionHistoryRepository.findByApiDefinitionId(apiDefinitionId);
+  public List<ApiDefinitionHistory> findApiDefinitionHistories(String projectId, String apiDefinitionId) {
+    return apiDefinitionHistoryRepository.findByApiDefinitionId(projectId, apiDefinitionId);
   }
 
   public ApiDefinitionHistory saveApiDefinitionHistory(ApiDefinitionHistory apiDefinitionHistory) {
-    return apiDefinitionHistoryRepository.save(apiDefinitionHistory);
+    return apiDefinitionHistoryRepository.save(apiDefinitionHistory.getProjectId(), apiDefinitionHistory);
   }
 
   @CacheInvalidateAll(cacheName = "apiDefinitionList")
@@ -58,7 +61,7 @@ public class ApiDefinitionService {
 
   @CacheInvalidateAll(cacheName = "apiDefinitionList")
   public ApiDefinition update(ApiDefinition apiDefinition) {
-    ApiDefinition older = apiDefinitionRepository.findById(apiDefinition.getId());
+    ApiDefinition older = apiDefinitionRepository.findById(apiDefinition.getProjectId(), apiDefinition.getId());
     if (older == null) {
       return apiDefinition;
     }
@@ -71,16 +74,16 @@ public class ApiDefinitionService {
   }
 
   @CacheInvalidateAll(cacheName = "apiDefinitionList")
-  public void delete(String id) {
-    apiDefinitionRepository.delete(id);
-    apiDefinitionRepository.deleteByParentId(id);
+  public void delete(String projectId, String id) {
+    apiDefinitionRepository.delete(projectId, id);
+    apiDefinitionRepository.deleteByParentId(projectId, id);
   }
 
-  public ApiDefinition findApiDefinition(String id) {
-    return apiDefinitionRepository.findById(id);
+  public ApiDefinition findApiDefinition(String projectId, String id) {
+    return apiDefinitionRepository.findById(projectId, id);
   }
 
-  public ApiDefinitionHistory findApiDefinitionHistory(String historyId) {
-    return apiDefinitionHistoryRepository.findById(historyId);
+  public ApiDefinitionHistory findApiDefinitionHistory(String projectId, String historyId) {
+    return apiDefinitionHistoryRepository.findById(projectId, historyId);
   }
 }

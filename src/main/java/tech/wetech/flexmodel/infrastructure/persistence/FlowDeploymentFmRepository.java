@@ -1,8 +1,6 @@
 package tech.wetech.flexmodel.infrastructure.persistence;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.control.ActivateRequestContext;
-import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import tech.wetech.flexmodel.codegen.entity.FlowDeployment;
 import tech.wetech.flexmodel.domain.model.flow.repository.FlowDeploymentRepository;
@@ -23,35 +21,35 @@ public class FlowDeploymentFmRepository implements FlowDeploymentRepository {
   }
 
   @Override
-  public FlowDeployment findByDeployId(String flowDeployId) {
+  public FlowDeployment findByDeployId(String projectId, String flowDeployId) {
     return session.dsl()
       .selectFrom(FlowDeployment.class)
-      .where(field(FlowDeployment::getFlowDeployId).eq(flowDeployId))
+      .where(field(FlowDeployment::getProjectId).eq(projectId).and(field(FlowDeployment::getFlowDeployId).eq(flowDeployId)))
       .executeOne();
   }
 
   @Override
-  public FlowDeployment findRecentByFlowModuleId(String flowModuleId) {
+  public FlowDeployment findRecentByFlowModuleId(String projectId, String flowModuleId) {
     return session.dsl()
       .selectFrom(FlowDeployment.class)
-      .where(field(FlowDeployment::getFlowModuleId).eq(flowModuleId))
+      .where(field(FlowDeployment::getProjectId).eq(projectId).and(field(FlowDeployment::getFlowModuleId).eq(flowModuleId)))
       .orderByDesc(FlowDeployment::getId)
       .limit(1)
       .executeOne();
   }
 
   @Override
-  public void deleteById(Long id) {
+  public void deleteById(String projectId, Long id) {
     session.dsl().deleteFrom(FlowDeployment.class)
-      .where(field(FlowDeployment::getId).eq(id))
+      .where(field(FlowDeployment::getProjectId).eq(projectId).and(field(FlowDeployment::getId).eq(id)))
       .execute();
   }
 
   @Override
-  public long count(Predicate filter) {
+  public long count(String projectId, Predicate filter) {
     return session.dsl()
       .selectFrom(FlowDeployment.class)
-      .where(filter)
+      .where(field(FlowDeployment::getProjectId).eq(projectId).and(filter))
       .count();
   }
 

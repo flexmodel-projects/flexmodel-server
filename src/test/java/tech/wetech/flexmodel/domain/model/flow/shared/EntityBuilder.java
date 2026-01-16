@@ -380,7 +380,7 @@ public class EntityBuilder {
     flowInstance.setCreateTime(LocalDateTime.now());
     flowInstance.setModifyTime(LocalDateTime.now());
     flowInstance.setCaller("caller");
-    flowInstance.setTenantId("tenant");
+    flowInstance.setProjectId("project");
     return flowInstance;
   }
 
@@ -403,7 +403,7 @@ public class EntityBuilder {
     nodeInstance.setCreateTime(LocalDateTime.now());
     nodeInstance.setModifyTime(LocalDateTime.now());
     nodeInstance.setCaller("caller");
-    nodeInstance.setTenantId("tenant");
+    nodeInstance.setProjectId("project");
     return nodeInstance;
   }
 
@@ -424,7 +424,7 @@ public class EntityBuilder {
     nodeInstanceLog.setStatus(NodeInstanceStatus.ACTIVE);
     nodeInstanceLog.setCreateTime(LocalDateTime.now());
     nodeInstanceLog.setCaller("caller");
-    nodeInstanceLog.setTenantId("tenant");
+    nodeInstanceLog.setProjectId("project");
     return nodeInstanceLog;
   }
 
@@ -438,7 +438,7 @@ public class EntityBuilder {
     nodeInstanceLog.setStatus(NodeInstanceStatus.ACTIVE);
     nodeInstanceLog.setCreateTime(LocalDateTime.now());
     nodeInstanceLog.setCaller("caller");
-    nodeInstanceLog.setTenantId("tenant");
+    nodeInstanceLog.setProjectId("project");
     return nodeInstanceLog;
   }
 
@@ -455,7 +455,7 @@ public class EntityBuilder {
     instanceData.setType(InstanceDataType.EXECUTE);
     instanceData.setCreateTime(LocalDateTime.now());
     instanceData.setCaller("caller");
-    instanceData.setTenantId("tenant");
+    instanceData.setProjectId("project");
     return instanceData;
   }
 
@@ -466,7 +466,7 @@ public class EntityBuilder {
   }
 
   public static CreateFlowParam buildCreateFlowParam() {
-    CreateFlowParam createFlowParam = new CreateFlowParam("testTenant", "testCaller");
+    CreateFlowParam createFlowParam = new CreateFlowParam("dev_test", "testCaller");
     createFlowParam.setOperator(operator);
     createFlowParam.setFlowKey(flowKey);
     createFlowParam.setFlowName(flowName);
@@ -475,7 +475,7 @@ public class EntityBuilder {
   }
 
   public static UpdateFlowParam buildUpdateFlowParam() {
-    UpdateFlowParam updateFlowParam = new UpdateFlowParam("testTenant", "testCaller");
+    UpdateFlowParam updateFlowParam = new UpdateFlowParam("dev_test", "testCaller");
     updateFlowParam.setOperator(operator);
     updateFlowParam.setFlowKey(flowKey);
     updateFlowParam.setFlowName(flowName);
@@ -485,7 +485,7 @@ public class EntityBuilder {
   }
 
   public static DeployFlowParam buildDeployFlowParm() {
-    DeployFlowParam deployFlowParam = new DeployFlowParam("testTenant", "testCaller");
+    DeployFlowParam deployFlowParam = new DeployFlowParam("dev_test", "testCaller");
     deployFlowParam.setFlowModuleId(flowModuleId);
     return deployFlowParam;
   }
@@ -865,6 +865,7 @@ public class EntityBuilder {
     flowDeployment.setModifyTime(LocalDateTime.now());
     flowDeployment.setOperator(operator);
     flowDeployment.setRemark(remark);
+    flowDeployment.setProjectId("dev_test");
     return flowDeployment;
   }
 

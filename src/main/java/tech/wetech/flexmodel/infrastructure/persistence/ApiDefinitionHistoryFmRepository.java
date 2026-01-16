@@ -20,15 +20,15 @@ public class ApiDefinitionHistoryFmRepository implements ApiDefinitionHistoryRep
   Session session;
 
   @Override
-  public List<ApiDefinitionHistory> findByApiDefinitionId(String apiDefinitionId) {
+  public List<ApiDefinitionHistory> findByApiDefinitionId(String projectId, String apiDefinitionId) {
     return session.dsl().selectFrom(ApiDefinitionHistory.class)
-      .where(field(ApiDefinitionHistory::getApiDefinitionId).eq(apiDefinitionId))
+      .where(field(ApiDefinitionHistory::getProjectId).eq(projectId).and(field(ApiDefinitionHistory::getApiDefinitionId).eq(apiDefinitionId)))
       .orderByDesc(ApiDefinitionHistory::getCreatedAt)
       .execute();
   }
 
   @Override
-  public ApiDefinitionHistory save(ApiDefinitionHistory apiDefinitionHistory) {
+  public ApiDefinitionHistory save(String projectId, ApiDefinitionHistory apiDefinitionHistory) {
     session.dsl().insertInto(ApiDefinitionHistory.class)
       .values(apiDefinitionHistory)
       .execute();
@@ -36,9 +36,9 @@ public class ApiDefinitionHistoryFmRepository implements ApiDefinitionHistoryRep
   }
 
   @Override
-  public ApiDefinitionHistory findById(String historyId) {
+  public ApiDefinitionHistory findById(String projectId, String historyId) {
     return session.dsl().selectFrom(ApiDefinitionHistory.class)
-      .where(field(ApiDefinitionHistory::getId).eq(historyId))
+      .where(field(ApiDefinitionHistory::getProjectId).eq(projectId).and(field(ApiDefinitionHistory::getId).eq(historyId)))
       .executeOne();
   }
 }

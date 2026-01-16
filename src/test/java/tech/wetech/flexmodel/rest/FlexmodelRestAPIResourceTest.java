@@ -140,15 +140,13 @@ public class FlexmodelRestAPIResourceTest {
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
-      .header("X-Tenant-Id", "dev_test")
       .body(body)
-      .post(Resources.ROOT_PATH + "/datasources/dev_test/import")
+      .post(Resources.ROOT_PATH + "/projects/dev_test/datasources/dev_test/import")
       .then()
       .statusCode(204);
 
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
-      .header("X-Tenant-Id", "dev_test")
       .when()
       .contentType(ContentType.JSON)
       .body("""
@@ -160,7 +158,7 @@ public class FlexmodelRestAPIResourceTest {
             "generateAPIs":["list", "pagination", "view", "create", "update", "delete"]
          }
         """)
-      .post(Resources.ROOT_PATH + "/apis/generate")
+      .post(Resources.ROOT_PATH + "/projects/dev_test/apis/generate")
       .then()
       .statusCode(204);
 

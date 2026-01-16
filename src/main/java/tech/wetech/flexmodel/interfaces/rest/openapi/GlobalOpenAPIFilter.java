@@ -22,8 +22,6 @@ public class GlobalOpenAPIFilter implements OASFilter {
   @Override
   public Operation filterOperation(Operation operation) {
 
-    operation.addParameter(new Parameter().name("X-Tenant-Id").in(In.HEADER));
-
     // 引用预定义的500响应
     operation
       .getResponses()

@@ -31,34 +31,34 @@ public class InstanceDataService {
   @Inject
   FlowInstanceService flowInstanceService;
 
-  public InstanceData select(String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance) {
-    InstanceData instanceData = instanceDataRepository.select(flowInstanceId, instanceDataId);
+  public InstanceData select(String projectId, String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance) {
+    InstanceData instanceData = instanceDataRepository.select(projectId, flowInstanceId, instanceDataId);
     if (!effectiveForSubFlowInstance) {
       return instanceData;
     }
     if (instanceData != null) {
       return instanceData;
     }
-    String subFlowInstanceId = flowInstanceService.getFlowInstanceIdByRootFlowInstanceIdAndInstanceDataId(flowInstanceId, instanceDataId);
-    return instanceDataRepository.select(subFlowInstanceId, instanceDataId);
+    String subFlowInstanceId = flowInstanceService.getFlowInstanceIdByRootFlowInstanceIdAndInstanceDataId(projectId, flowInstanceId, instanceDataId);
+    return instanceDataRepository.select(projectId, subFlowInstanceId, instanceDataId);
   }
 
-  public InstanceData select(String flowInstanceId, boolean effectiveForSubFlowInstance) {
-    InstanceData instanceData = instanceDataRepository.selectRecentOne(flowInstanceId);
+  public InstanceData select(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance) {
+    InstanceData instanceData = instanceDataRepository.selectRecentOne(projectId, flowInstanceId);
     if (!effectiveForSubFlowInstance) {
       return instanceData;
     }
-    FlowInstance flowInstance = flowInstanceRepository.selectByFlowInstanceId(flowInstanceId);
-    FlowDeployment flowDeployment = flowDeploymentRepository.findByDeployId(flowInstance.getFlowDeployId());
+    FlowInstance flowInstance = flowInstanceRepository.selectByFlowInstanceId(projectId, flowInstanceId);
+    FlowDeployment flowDeployment = flowDeploymentRepository.findByDeployId(projectId, flowInstance.getFlowDeployId());
     Map<String, FlowElement> flowElementMap = FlowModelUtil.getFlowElementMap(flowDeployment.getFlowModel());
 
-    NodeInstance nodeInstance = nodeInstanceRepository.selectRecentOne(flowInstanceId);
+    NodeInstance nodeInstance = nodeInstanceRepository.selectRecentOne(projectId, flowInstanceId);
     int elementType = FlowModelUtil.getElementType(nodeInstance.getNodeKey(), flowElementMap);
     if (elementType != FlowElementType.CALL_ACTIVITY) {
-      return instanceDataRepository.selectRecentOne(flowInstanceId);
+      return instanceDataRepository.selectRecentOne(projectId, flowInstanceId);
     } else {
-      FlowInstanceMapping flowInstanceMapping = flowInstanceMappingRepository.selectFlowInstanceMapping(flowInstanceId, nodeInstance.getNodeInstanceId());
-      return select(flowInstanceMapping.getSubFlowInstanceId(), true);
+      FlowInstanceMapping flowInstanceMapping = flowInstanceMappingRepository.selectFlowInstanceMapping(projectId, flowInstanceId, nodeInstance.getNodeInstanceId());
+      return select(projectId, flowInstanceMapping.getSubFlowInstanceId(), true);
     }
   }
 }

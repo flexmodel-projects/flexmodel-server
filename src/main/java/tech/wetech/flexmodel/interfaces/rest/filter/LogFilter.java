@@ -16,6 +16,7 @@ import tech.wetech.flexmodel.shared.utils.JsonUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -56,7 +57,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     CompletableFuture.runAsync(() -> {
       Settings settings = settingsApplicationService.getSettings();
       boolean isLoggingEnabled = settings.getLog().isConsoleLoggingEnabled();
-      boolean isLogRequest = requestContext.getUriInfo().getPath().startsWith("/f/logs");
+      boolean isLogRequest = requestContext.getUriInfo().getPath().startsWith("/v1/logs");
       if (isLoggingEnabled && !isLogRequest) {
         saveLog(requestContext, responseContext, execTime);
       }
@@ -71,7 +72,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
     apiLog.setRequestHeaders(requestContext.getHeaders());
     apiLog.setRequestBody(requestContext.getProperty("requestBody"));
     apiLog.setIsSuccess(true);
-    apiLog.setTenantId(requestContext.getHeaderString("X-Tenant-Id"));
+    apiLog.setProjectId(Objects.toString(requestContext.getProperty("projectId"), null));
 //      apiData.setRemoteIp(null);
     int statusCode = responseContext.getStatus();
     apiLog.setStatusCode(statusCode);

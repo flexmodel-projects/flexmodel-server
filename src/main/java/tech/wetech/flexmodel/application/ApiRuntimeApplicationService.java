@@ -29,6 +29,7 @@ import tech.wetech.flexmodel.domain.model.idp.provider.Provider;
 import tech.wetech.flexmodel.domain.model.idp.provider.ValidateParam;
 import tech.wetech.flexmodel.domain.model.idp.provider.ValidateResult;
 import tech.wetech.flexmodel.domain.model.modeling.ModelService;
+import tech.wetech.flexmodel.domain.model.auth.ProjectService;
 import tech.wetech.flexmodel.domain.model.settings.Settings;
 import tech.wetech.flexmodel.domain.model.settings.SettingsService;
 import tech.wetech.flexmodel.query.Expressions;
@@ -94,13 +95,16 @@ public class ApiRuntimeApplicationService {
   @Inject
   Request request;
 
-  public PageDTO<ApiRequestLog> findApiLogs(int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
-    List<ApiRequestLog> list = apiLogService.find(getCondition(keyword, startDate, endDate, isSuccess), current, pageSize);
-    long total = apiLogService.count(getCondition(keyword, startDate, endDate, isSuccess));
+  @Inject
+  ProjectService projectService;
+
+  public PageDTO<ApiRequestLog> findApiLogs(String projectId, int current, int pageSize, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
+    List<ApiRequestLog> list = apiLogService.find(projectId, getCondition(keyword, startDate, endDate, isSuccess), current, pageSize);
+    long total = apiLogService.count(projectId, getCondition(keyword, startDate, endDate, isSuccess));
     return new PageDTO<>(list, total);
   }
 
-  public LogStatResponse stat(String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
+  public LogStatResponse stat(String projectId, String keyword, LocalDateTime startDate, LocalDateTime endDate, Boolean isSuccess) {
 
     LogStatResponse.ApiChart statDTO = null;
     List<String> dateList = new ArrayList<>();
@@ -151,8 +155,8 @@ public class ApiRuntimeApplicationService {
 
     Predicate condition = getCondition(keyword, startDate, endDate, isSuccess);
 
-    Map<String, Long> successMap = apiLogService.stat(condition.and(field(ApiRequestLog::getIsSuccess).eq(true)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
-    Map<String, Long> failMap = apiLogService.stat(condition.and(field(ApiRequestLog::getIsSuccess).eq(false)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
+    Map<String, Long> successMap = apiLogService.stat(projectId, condition.and(field(ApiRequestLog::getIsSuccess).eq(true)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
+    Map<String, Long> failMap = apiLogService.stat(projectId, condition.and(field(ApiRequestLog::getIsSuccess).eq(false)), fmt).stream().collect(Collectors.toMap(LogStat::getDate, LogStat::getTotal));
     statDTO = new LogStatResponse.ApiChart();
     List<Long> successData = new ArrayList<>();
     List<Long> failData = new ArrayList<>();
@@ -164,9 +168,9 @@ public class ApiRuntimeApplicationService {
     statDTO.setSuccessData(successData);
     statDTO.setFailData(failData);
 
-    List<LogStat> stat = apiLogService.stat(condition, fmt);
+    List<LogStat> stat = apiLogService.stat(projectId, condition, fmt);
 
-    List<LogApiRank> apiRankList = apiLogService.ranking(condition);
+    List<LogApiRank> apiRankList = apiLogService.ranking(projectId, condition);
 
     return LogStatResponse.builder().apiStatList(stat).apiRankingList(apiRankList).apiChart(statDTO).build();
   }
@@ -192,8 +196,10 @@ public class ApiRuntimeApplicationService {
 
   private void doRequest(RoutingContext routingContext) {
     boolean isMatching = false;
-
-    List<ApiDefinition> apis = apiDefinitionService.findAll();
+    Map<String, String> projectIdMap = new UriTemplate("/api/{projectId}/.*").match(new UriTemplate(routingContext.normalizedPath()));
+    String projectId = projectIdMap.get("projectId");
+    SessionContextHolder.setProjectId(projectId);
+    List<ApiDefinition> apis = apiDefinitionService.findAll(projectId);
     Settings settings = settingsService.getSettings();
     // 从apiDefinition处理请求
     for (ApiDefinition apiDefinition : apis) {
@@ -201,15 +207,13 @@ public class ApiRuntimeApplicationService {
         continue;
       }
       ApiDefinitionMeta meta = JsonUtils.getInstance().convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
-      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{tenantId}" + apiDefinition.getPath());
+      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{projectId}" + apiDefinition.getPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals(apiDefinition.getMethod())) {
         // 匹配成功
         isMatching = true;
         log.debug("Matched request for api: {}", apiDefinition);
-        String tenantId = pathParameters.get("tenantId");
-        SessionContextHolder.setTenantId(tenantId);
         if (isRateLimiting(routingContext, apiDefinition, meta)) return;
         boolean isAuth = meta.isAuth();
         if (isAuth) {
@@ -249,7 +253,7 @@ public class ApiRuntimeApplicationService {
 
     // 从设置中的GraphQL端点处理请求
     if (!isMatching) {
-      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{tenantId}" + settings.getSecurity().getGraphqlEndpointPath());
+      UriTemplate uriTemplate = new UriTemplate(config.apiRootPath() + "/{projectId}" + settings.getSecurity().getGraphqlEndpointPath());
       Map<String, String> pathParameters = uriTemplate.match(new UriTemplate(routingContext.normalizedPath()));
       String method = routingContext.request().method().name();
       if (pathParameters != null && method.equals("POST")) {
@@ -276,7 +280,7 @@ public class ApiRuntimeApplicationService {
           sendBadRequestFail(routingContext, "Parse body error:" + e.getMessage(), -1);
           return;
         }
-        ExecutionResult result = graphQLManger.execute(SessionContextHolder.getTenantId(), (String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
+        ExecutionResult result = graphQLManger.execute(SessionContextHolder.getProjectId(), (String) body.get("operationName"), (String) body.get("query"), (Map<String, Object>) body.get("variables"));
         routingContext.response().putHeader("Content-Type", "application/json").end(JsonUtils.getInstance().stringify(result));
       }
     }

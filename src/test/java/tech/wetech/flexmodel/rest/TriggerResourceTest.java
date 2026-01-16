@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.*;
 @QuarkusTestResource(SQLiteTestResource.class)
 public class TriggerResourceTest {
 
-  private static final String BASE_PATH = "/api/f/triggers";
+  private static final String BASE_PATH = "/api/v1/projects/dev_test/triggers";
 
   // 测试数据中的触发器ID
   private static final String INTERVAL_TRIGGER_ID = "bf492f37-1f01-4eb8-b76d-d319299b4d8e";

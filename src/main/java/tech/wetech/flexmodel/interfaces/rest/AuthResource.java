@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import tech.wetech.flexmodel.application.AuthApplicationService;
 import tech.wetech.flexmodel.codegen.entity.User;
 import tech.wetech.flexmodel.interfaces.rest.jwt.JwtUtil;
@@ -20,8 +21,9 @@ import java.util.Map;
 /**
  * @author cjbi
  */
+@Tag(name = "认证", description = "认证授权管理")
 @Slf4j
-@Path("/f/auth")
+@Path("/v1/auth")
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthResource {
 
@@ -113,7 +115,7 @@ public class AuthResource {
     UserinfoResponse userinfo = new UserinfoResponse();
     userinfo.setToken(accessToken);
     userinfo.setExpiresIn(300000L);
-    userinfo.setUser(new UserinfoResponse.UserResponse(user.getId(), user.getUsername()));
+    userinfo.setUser(new UserinfoResponse.UserResponse(user.getId(), user.getName(), user.getEmail()));
     return userinfo;
   }
 

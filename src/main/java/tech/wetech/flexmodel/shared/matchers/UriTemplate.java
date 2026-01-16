@@ -73,26 +73,30 @@ public class UriTemplate {
 
     Map<String, String> result = new HashMap<>();
 
-    // Should not happen but for safety
-    if (candidate.getSegmentCount() != getSegmentCount()) {
-      return null;
-    }
+    List<Segment> candidateSegments = candidate.getSegments();
+    int candidateIndex = 0;
 
-    Iterator<Segment> targetSegments = segments.iterator();
-
-    for (Segment candidateSegment : candidate.getSegments()) {
-      Segment targetSegment = targetSegments.next();
+    for (Segment targetSegment : segments) {
+      if (candidateIndex >= candidateSegments.size()) {
+        return null;
+      }
 
       if (targetSegment.getParameterIndex() == -1) {
-        // Not a parameter - values must match
-        if (!targetSegment.getValue().equals(candidateSegment.getValue())) {
-          // Not a match. Stop here
+        if (".*".equals(targetSegment.getValue())) {
+          return result;
+        }
+        if (!targetSegment.getValue().equals(candidateSegments.get(candidateIndex).getValue())) {
           return null;
         }
+        candidateIndex++;
       } else {
-        // Parameter
-        result.put(targetSegment.getValue(), candidateSegment.getValue());
+        result.put(targetSegment.getValue(), candidateSegments.get(candidateIndex).getValue());
+        candidateIndex++;
       }
+    }
+
+    if (candidateIndex != candidateSegments.size()) {
+      return null;
     }
 
     return result;

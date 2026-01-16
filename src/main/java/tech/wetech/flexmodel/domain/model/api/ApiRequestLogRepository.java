@@ -10,16 +10,16 @@ import java.util.List;
  */
 public interface ApiRequestLogRepository {
 
-  List<ApiRequestLog> find(Predicate filter, Integer page, Integer size);
+  List<ApiRequestLog> find(String projectId, Predicate filter, Integer page, Integer size);
 
-  List<LogStat> stat(Predicate filter, String fmt);
+  List<LogStat> stat(String projectId, Predicate filter, String fmt);
 
-  List<LogApiRank> ranking(Predicate filter);
+  List<LogApiRank> ranking(String projectId, Predicate filter);
 
   ApiRequestLog save(ApiRequestLog record);
 
   void delete(Predicate filter);
 
-  long count(Predicate filter);
+  long count(String projectId, Predicate filter);
 
 }

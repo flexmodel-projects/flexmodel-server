@@ -16,7 +16,6 @@ import java.util.List;
 import static tech.wetech.flexmodel.query.Query.dateFormat;
 import static tech.wetech.flexmodel.query.Query.field;
 
-
 /**
  * @author cjbi
  */
@@ -27,9 +26,9 @@ public class ApiLogFmRepository implements ApiRequestLogRepository {
   Session session;
 
   @Override
-  public List<ApiRequestLog> find(Predicate filter, Integer page, Integer size) {
+  public List<ApiRequestLog> find(String projectId, Predicate filter, Integer page, Integer size) {
     return session.dsl().selectFrom(ApiRequestLog.class)
-      .where(filter)
+      .where(tech.wetech.flexmodel.query.Expressions.field(ApiRequestLog::getProjectId).eq(projectId).and(filter))
       .orderBy("id", Direction.DESC)
       .page(page, size)
       .execute();
@@ -37,25 +36,25 @@ public class ApiLogFmRepository implements ApiRequestLogRepository {
 
 
   @Override
-  public List<LogStat> stat(Predicate filter, String fmt) {
+  public List<LogStat> stat(String projectId, Predicate filter, String fmt) {
     return session.dsl()
       .select(query -> query
         .field("date", dateFormat(field("created_at"), fmt))
         .field("total", Query.count(field("id"))))
       .from(ApiRequestLog.class)
-      .where(filter)
+      .where(tech.wetech.flexmodel.query.Expressions.field(ApiRequestLog::getProjectId).eq(projectId).and(filter))
       .groupBy("date")
       .execute(LogStat.class);
   }
 
   @Override
-  public List<LogApiRank> ranking(Predicate filter) {
+  public List<LogApiRank> ranking(String projectId, Predicate filter) {
     return session.dsl()
       .select(query -> query
         .field("name", field("path"))
         .field("total", Query.count(field("id"))))
       .from(ApiRequestLog.class)
-      .where(filter)
+      .where(tech.wetech.flexmodel.query.Expressions.field(ApiRequestLog::getProjectId).eq(projectId).and(filter))
       .groupBy("path")
       .orderBy("total", Direction.DESC)
       .page(1, 20)
@@ -80,11 +79,10 @@ public class ApiLogFmRepository implements ApiRequestLogRepository {
   }
 
   @Override
-  public long count(Predicate filter) {
+  public long count(String projectId, Predicate filter) {
     return session.dsl()
       .selectFrom(ApiRequestLog.class)
-      .where(filter)
+      .where(tech.wetech.flexmodel.query.Expressions.field(ApiRequestLog::getProjectId).eq(projectId).and(filter))
       .count();
   }
-
 }

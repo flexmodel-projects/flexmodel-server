@@ -45,12 +45,12 @@ public class FlowApplicationService {
   @Inject
   FlowDeploymentService flowDeploymentService;
 
-  public List<NodeInstance> getHistoryUserTaskList(String flowInstanceId, boolean effectiveForSubFlowInstance) {
-    return processService.getHistoryUserTaskList(flowInstanceId, effectiveForSubFlowInstance).getNodeInstanceList();
+  public List<NodeInstance> getHistoryUserTaskList(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance) {
+    return processService.getHistoryUserTaskList(projectId, flowInstanceId, effectiveForSubFlowInstance).getNodeInstanceList();
   }
 
-  public List<ElementInstance> getHistoryElementList(String flowInstanceId) {
-    return processService.getHistoryElementList(flowInstanceId).getElementInstanceList();
+  public List<ElementInstance> getHistoryElementList(String projectId, String flowInstanceId) {
+    return processService.getHistoryElementList(projectId, flowInstanceId).getElementInstanceList();
   }
 
   /**
@@ -68,16 +68,16 @@ public class FlowApplicationService {
     if (StringUtils.isNotBlank(request.getFlowName())) {
       predicate = predicate.and(Expressions.field(FlowDefinition::getFlowName).contains(request.getFlowName()));
     }
-    long count = flowDefinitionService.count(predicate);
+    long count = flowDefinitionService.count(request.getProjectId(), predicate);
     if (count == 0) {
       return PageDTO.empty();
     }
 
-    List<FlowDefinition> list = flowDefinitionService.find(predicate, request.getPage(), request.getSize());
+    List<FlowDefinition> list = flowDefinitionService.find(request.getProjectId(), predicate, request.getPage(), request.getSize());
     List<FlowModuleResponse> flowModuleList = new ArrayList<>();
     for (FlowDefinition entity : list) {
       FlowModuleResponse response = new FlowModuleResponse(entity);
-      long deploymentCount = flowDeploymentService.count(Expressions.field(
+      long deploymentCount = flowDeploymentService.count(request.getProjectId(), Expressions.field(
           FlowDeployment::getFlowModuleId).eq(entity.getFlowModuleId())
         .and(Expressions.field(FlowDeployment::getStatus).eq(FlowDeploymentStatus.DEPLOYED))
       );
@@ -108,14 +108,14 @@ public class FlowApplicationService {
     if (request.getStatus() != null) {
       predicate = predicate.and(Expressions.field(FlowInstance::getStatus).eq(request.getStatus()));
     }
-    long count = flowInstanceService.count(predicate);
+    long count = flowInstanceService.count(request.getProjectId(), predicate);
     if (count == 0) {
       return PageDTO.empty();
     }
-    List<FlowInstanceResponse> list = flowInstanceService.find(predicate, request.getPage(), request.getSize()).stream()
+    List<FlowInstanceResponse> list = flowInstanceService.find(request.getProjectId(), predicate, request.getPage(), request.getSize()).stream()
       .map(entity -> {
         FlowInstanceResponse response = JsonUtils.getInstance().convertValue(entity, FlowInstanceResponse.class);
-        FlowDeployment flowDeployment = flowDeploymentService.findByFlowDeployId(entity.getFlowDeployId());
+        FlowDeployment flowDeployment = flowDeploymentService.findByFlowDeployId(request.getProjectId(), entity.getFlowDeployId());
         if (flowDeployment != null) {
           response.setFlowName(flowDeployment.getFlowName());
           response.setFlowKey(flowDeployment.getFlowKey());
@@ -149,9 +149,9 @@ public class FlowApplicationService {
     return processService.updateFlow(updateFlowParam);
   }
 
-  public void deleteFlow(String flowModuleId) {
+  public void deleteFlow(String projectId, String flowModuleId) {
     log.info("删除流程，流程模块ID: {}", flowModuleId);
-    processService.deleteFlow(flowModuleId);
+    processService.deleteFlow(projectId, flowModuleId);
   }
 
   /**
@@ -193,26 +193,26 @@ public class FlowApplicationService {
   /**
    * 终止流程实例
    */
-  public TerminateResult terminateProcess(String flowInstanceId, boolean effectiveForSubFlowInstance) {
+  public TerminateResult terminateProcess(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance) {
     log.info("终止流程实例: {}, 对子流程实例生效: {}", flowInstanceId, effectiveForSubFlowInstance);
     if (StringUtils.isBlank(flowInstanceId)) {
       throw new IllegalArgumentException("流程实例ID不能为空");
     }
-    return processService.terminateProcess(flowInstanceId, effectiveForSubFlowInstance);
+    return processService.terminateProcess(projectId, flowInstanceId, effectiveForSubFlowInstance);
   }
 
   /**
    * 获取流程实例信息
    */
-  public FlowInstance findFlowInstance(String flowInstanceId) {
+  public FlowInstance findFlowInstance(String projectId, String flowInstanceId) {
     log.info("获取流程实例信息: {}", flowInstanceId);
     if (StringUtils.isBlank(flowInstanceId)) {
       throw new IllegalArgumentException("流程实例ID不能为空");
     }
-    return flowInstanceService.findById(flowInstanceId);
+    return flowInstanceService.findById(projectId, flowInstanceId);
   }
 
-  public Map<String, Object> getInstanceData(String flowInstanceId, String instanceDataId) {
+  public Map<String, Object> getInstanceData(String flowInstanceId, String instanceDataId, String dataId) {
     return null;
   }
 }

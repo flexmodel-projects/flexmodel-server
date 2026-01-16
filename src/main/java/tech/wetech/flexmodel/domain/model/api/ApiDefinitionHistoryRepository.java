@@ -11,18 +11,20 @@ public interface ApiDefinitionHistoryRepository {
   /**
    * 根据apiDefinitionId查询历史记录
    *
+   * @param projectId projectId
    * @param apiDefinitionId apiDefinitionId
    * @return apiDefinitionHistory
    */
-  List<ApiDefinitionHistory> findByApiDefinitionId(String apiDefinitionId);
+  List<ApiDefinitionHistory> findByApiDefinitionId(String projectId, String apiDefinitionId);
 
   /**
    * 保存历史记录
    *
+   * @param projectId projectId
    * @param apiDefinitionHistory apiDefinitionHistory
    * @return apiDefinitionHistory
    */
-  ApiDefinitionHistory save(ApiDefinitionHistory apiDefinitionHistory);
+  ApiDefinitionHistory save(String projectId, ApiDefinitionHistory apiDefinitionHistory);
 
-  ApiDefinitionHistory findById(String historyId);
+  ApiDefinitionHistory findById(String projectId, String historyId);
 }

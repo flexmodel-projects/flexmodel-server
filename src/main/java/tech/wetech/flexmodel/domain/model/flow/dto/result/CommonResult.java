@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class CommonResult implements Serializable {
 
+  private String projectId;
   private int errCode;
   private String errMsg;
 
@@ -16,6 +17,14 @@ public class CommonResult implements Serializable {
   public CommonResult(ErrorEnum errorEnum) {
     this.errCode = errorEnum.getErrNo();
     this.errMsg = errorEnum.getErrMsg();
+  }
+
+  public String getProjectId() {
+    return projectId;
+  }
+
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
   }
 
   public int getErrCode() {

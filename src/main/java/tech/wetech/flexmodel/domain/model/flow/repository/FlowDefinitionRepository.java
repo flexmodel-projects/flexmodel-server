@@ -13,10 +13,10 @@ public interface FlowDefinitionRepository {
 
   int updateByModuleId(FlowDefinition flowDefinition);
 
-  FlowDefinition selectByModuleId(String flowModuleId);
+  FlowDefinition selectByModuleId(String projectId, String flowModuleId);
 
-  List<FlowDefinition> find(Predicate filter, Integer page, Integer size);
+  List<FlowDefinition> find(String projectId, Predicate filter, Integer page, Integer size);
 
-  long count(Predicate filter);
+  long count(String projectId, Predicate filter);
 
 }

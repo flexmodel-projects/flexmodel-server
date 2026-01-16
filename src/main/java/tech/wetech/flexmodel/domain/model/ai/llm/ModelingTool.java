@@ -26,8 +26,8 @@ public class ModelingTool {
 
   @Tool("获取数据源列表")
   @NonBlocking
-  public String listDatasources() {
-    List<Datasource> dataSources = datasourceService.findAll();
+  public String listDatasources(@P("项目ID") String projectId) {
+    List<Datasource> dataSources = datasourceService.findAll(projectId);
     if (dataSources.isEmpty()) {
       return "No data sources are currently available.";
     }
@@ -44,13 +44,13 @@ public class ModelingTool {
 
   @Tool("获取某个数据源中所有可用数据模型的列表")
   @NonBlocking
-  public String listModelsByDatasource(@P("数据源名称") String datasourceName) {
+  public String listModelsByDatasource(@P("项目ID") String projectId, @P("数据源名称") String datasourceName) {
     if (datasourceName == null || datasourceName.trim().isEmpty()) {
       datasourceName = "dev_test"; // default datasource
     }
 
     try {
-      List<SchemaObject> models = modelService.findAll(datasourceName.trim());
+      List<SchemaObject> models = modelService.findAll(projectId, datasourceName.trim());
 
       if (models.isEmpty()) {
         return String.format("No models are currently available in the datasource '%s'.", datasourceName);
@@ -80,7 +80,7 @@ public class ModelingTool {
 
   @Tool("获取某个数据源中某个数据模型详细信息")
   @NonBlocking
-  public String getModelByName(@P("数据源名称") String datasourceName, @P("模型名称") String modelName) {
+  public String getModelByName(@P("项目ID") String projectId, @P("数据源名称") String datasourceName, @P("模型名称") String modelName) {
     if (datasourceName == null || datasourceName.trim().isEmpty()) {
       datasourceName = "dev_test"; // default datasource
     }
@@ -88,7 +88,7 @@ public class ModelingTool {
       return "No model name provided.";
     }
     try {
-      return modelService.findModel(datasourceName.trim(), modelName.trim())
+      return modelService.findModel(projectId, datasourceName.trim(), modelName.trim())
         .map(SchemaObject::getIdl)
         .orElse("No model exists");
     } catch (Exception e) {
@@ -98,13 +98,13 @@ public class ModelingTool {
 
   @NonBlocking
   @Tool("在指定数据源下面执行IDL语句")
-  public String modelingByIdl(@P("数据源名称") String datasourceName, @P("模型IDL") String idl) {
+  public String modelingByIdl(@P("项目ID") String projectId, @P("数据源名称") String datasourceName, @P("模型IDL") String idl) {
     if (datasourceName == null || datasourceName.trim().isEmpty()) {
       datasourceName = "dev_test"; // default datasource
     }
     String replacedIdl = idl.replaceAll("\n", "");
     try {
-      modelService.importModels(datasourceName, replacedIdl, "idl");
+      modelService.importModels(projectId, datasourceName, replacedIdl, "idl");
       // success
       return "success";
     } catch (Exception e) {

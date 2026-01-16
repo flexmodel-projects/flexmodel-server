@@ -8,7 +8,8 @@ import java.util.Map;
  */
 public interface DataRepository {
 
-  List<Map<String, Object>> findRecords(String datasourceName,
+  List<Map<String, Object>> findRecords(String projectId,
+                                        String datasourceName,
                                         String modelName,
                                         Integer page,
                                         Integer size,
@@ -16,13 +17,13 @@ public interface DataRepository {
                                         String sort,
                                         boolean nestedQueryEnabled);
 
-  long countRecords(String datasourceName, String modelName, String filter);
+  long countRecords(String projectId, String datasourceName, String modelName, String filter);
 
-  Map<String, Object> findOneRecord(String datasourceName, String modelName, Object id, boolean nestedQueryEnabled);
+  Map<String, Object> findOneRecord(String projectId, String datasourceName, String modelName, Object id, boolean nestedQueryEnabled);
 
-  Map<String, Object> createRecord(String datasourceName, String modelName, Map<String, Object> data);
+  Map<String, Object> createRecord(String projectId, String datasourceName, String modelName, Map<String, Object> data);
 
-  Map<String, Object> updateRecord(String datasourceName, String modelName, Object id, Map<String, Object> data);
+  Map<String, Object> updateRecord(String projectId, String datasourceName, String modelName, Object id, Map<String, Object> data);
 
-  void deleteRecord(String datasourceName, String modelName, Object id);
+  void deleteRecord(String projectId, String datasourceName, String modelName, Object id);
 }

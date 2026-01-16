@@ -92,12 +92,12 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
   @Override
   protected void doRollback(RuntimeContext runtimeContext) throws ProcessException {
     NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
-    FlowInstanceMapping flowInstanceMappingPO = flowInstanceMappingRepository.selectFlowInstanceMapping(runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId());
+    FlowInstanceMapping flowInstanceMappingPO = flowInstanceMappingRepository.selectFlowInstanceMapping(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId());
     String subFlowInstanceId = flowInstanceMappingPO.getSubFlowInstanceId();
 
     String taskInstanceId = null;
     if (CollectionUtils.isEmpty(runtimeContext.getSuspendNodeInstanceStack())) {
-      NodeInstance nodeInstancePO = nodeInstanceService.selectRecentEndNode(subFlowInstanceId);
+      NodeInstance nodeInstancePO = nodeInstanceService.selectRecentEndNode(runtimeContext.getProjectId(), subFlowInstanceId);
       taskInstanceId = nodeInstancePO.getNodeInstanceId();
     } else {
       taskInstanceId = runtimeContext.getSuspendNodeInstanceStack().pop();
@@ -107,6 +107,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     rollbackTaskParam.setRuntimeContext(runtimeContext);
     rollbackTaskParam.setFlowInstanceId(subFlowInstanceId);
     rollbackTaskParam.setTaskInstanceId(taskInstanceId);
+    rollbackTaskParam.setProjectId(runtimeContext.getProjectId());
     RollbackTaskResult rollbackTaskResult = runtimeProcessorInstance.get().rollback(rollbackTaskParam);
     LOGGER.info("callActivity rollback.||rollbackTaskParam={}||rollbackTaskResult={}", rollbackTaskParam, rollbackTaskResult);
     // 4.update flowInstance mapping
@@ -123,7 +124,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
   protected void startProcessCallActivity(RuntimeContext runtimeContext) throws ProcessException {
     NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
     // 1.check reentrant execute
-    FlowInstanceMapping flowInstanceMappingPO = flowInstanceMappingRepository.selectFlowInstanceMapping(runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId());
+    FlowInstanceMapping flowInstanceMappingPO = flowInstanceMappingRepository.selectFlowInstanceMapping(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId());
     if (flowInstanceMappingPO != null) {
       handleReentrantSubFlowInstance(runtimeContext, flowInstanceMappingPO);
       return;
@@ -163,13 +164,14 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
 
   private void saveFlowInstanceMapping(RuntimeContext runtimeContext, String subFlowInstanceId) {
     FlowInstanceMapping flowInstanceMapping = new FlowInstanceMapping();
+    flowInstanceMapping.setProjectId(runtimeContext.getProjectId());
     flowInstanceMapping.setFlowInstanceId(runtimeContext.getFlowInstanceId());
     NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
     flowInstanceMapping.setNodeKey(currentNodeInstance.getNodeKey());
     flowInstanceMapping.setNodeInstanceId(currentNodeInstance.getNodeInstanceId());
     flowInstanceMapping.setSubFlowInstanceId(subFlowInstanceId);
     flowInstanceMapping.setType(FlowInstanceMappingType.EXECUTE);
-    flowInstanceMapping.setTenantId(runtimeContext.getTenantId());
+    flowInstanceMapping.setProjectId(runtimeContext.getProjectId());
     flowInstanceMapping.setCaller(runtimeContext.getCaller());
     flowInstanceMapping.setCreateTime(LocalDateTime.now());
     flowInstanceMapping.setModifyTime(LocalDateTime.now());
@@ -178,7 +180,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
 
   private void handleReentrantSubFlowInstance(RuntimeContext runtimeContext, FlowInstanceMapping flowInstanceMappingPO) throws ProcessException {
     String subFlowInstanceId = flowInstanceMappingPO.getSubFlowInstanceId();
-    RuntimeResult subFlowInstanceFirstUserTask = getSubFlowInstanceFirstUserTask(subFlowInstanceId);
+    RuntimeResult subFlowInstanceFirstUserTask = getSubFlowInstanceFirstUserTask(runtimeContext.getProjectId(), subFlowInstanceId);
     if (subFlowInstanceFirstUserTask != null) {
       runtimeContext.setCallActivityRuntimeResultList(Arrays.asList(subFlowInstanceFirstUserTask));
       throw new SuspendException(ErrorEnum.COMMIT_SUSPEND);
@@ -186,23 +188,23 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     LOGGER.info("callActivity did not find userTask.||subFlowInstanceId={}", subFlowInstanceId);
   }
 
-  private RuntimeResult getSubFlowInstanceFirstUserTask(String subFlowInstanceId) {
-    FlowInstance subFlowInstance = processInstanceRepository.selectByFlowInstanceId(subFlowInstanceId);
-    FlowDeployment subFlowDeploymentPO = flowDeploymentRepository.findByDeployId(subFlowInstance.getFlowDeployId());
+  private RuntimeResult getSubFlowInstanceFirstUserTask(String projectId, String subFlowInstanceId) {
+    FlowInstance subFlowInstance = processInstanceRepository.selectByFlowInstanceId(projectId, subFlowInstanceId);
+    FlowDeployment subFlowDeploymentPO = flowDeploymentRepository.findByDeployId(projectId, subFlowInstance.getFlowDeployId());
     Map<String, FlowElement> subFlowElementMap = FlowModelUtil.getFlowElementMap(subFlowDeploymentPO.getFlowModel());
 
-    List<tech.wetech.flexmodel.codegen.entity.NodeInstance> nodeInstancePOList = nodeInstanceRepository.selectByFlowInstanceId(subFlowInstanceId);
+    List<tech.wetech.flexmodel.codegen.entity.NodeInstance> nodeInstancePOList = nodeInstanceRepository.selectByFlowInstanceId(projectId, subFlowInstanceId);
     for (tech.wetech.flexmodel.codegen.entity.NodeInstance nodeInstancePO : nodeInstancePOList) {
       int elementType = FlowModelUtil.getElementType(nodeInstancePO.getNodeKey(), subFlowElementMap);
       if (elementType == FlowElementType.USER_TASK) {
-        return buildCallActivityFirstUserTaskRuntimeResult(subFlowInstance, subFlowElementMap, nodeInstancePO);
+        return buildCallActivityFirstUserTaskRuntimeResult(projectId, subFlowInstance, subFlowElementMap, nodeInstancePO);
       } else if (elementType == FlowElementType.CALL_ACTIVITY) {
-        FlowInstanceMapping flowInstanceMapping = flowInstanceMappingRepository.selectFlowInstanceMapping(subFlowInstanceId, nodeInstancePO.getNodeInstanceId());
+        FlowInstanceMapping flowInstanceMapping = flowInstanceMappingRepository.selectFlowInstanceMapping(projectId, subFlowInstanceId, nodeInstancePO.getNodeInstanceId());
         if (flowInstanceMapping == null) {
           LOGGER.warn("callActivity did not find instanceMapping.||subFlowInstanceId={}", subFlowInstanceId);
           break;
         }
-        RuntimeResult runtimeResult = getSubFlowInstanceFirstUserTask(flowInstanceMapping.getSubFlowInstanceId());
+        RuntimeResult runtimeResult = getSubFlowInstanceFirstUserTask(projectId, flowInstanceMapping.getSubFlowInstanceId());
         if (runtimeResult != null) {
           return runtimeResult;
         }
@@ -211,7 +213,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     return null;
   }
 
-  private RuntimeResult buildCallActivityFirstUserTaskRuntimeResult(FlowInstance subFlowInstance, Map<String, FlowElement> subFlowElementMap, tech.wetech.flexmodel.codegen.entity.NodeInstance nodeInstancePO) {
+  private RuntimeResult buildCallActivityFirstUserTaskRuntimeResult(String projectId, FlowInstance subFlowInstance, Map<String, FlowElement> subFlowElementMap, tech.wetech.flexmodel.codegen.entity.NodeInstance nodeInstancePO) {
     RuntimeResult runtimeResult = new RuntimeResult();
     runtimeResult.setErrCode(ErrorEnum.COMMIT_SUSPEND.getErrNo());
     runtimeResult.setErrMsg(ErrorEnum.COMMIT_SUSPEND.getErrMsg());
@@ -227,7 +229,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     nodeInstance.setProperties(flowElement.getProperties());
 
     runtimeResult.setActiveTaskInstance(nodeInstance);
-    tech.wetech.flexmodel.codegen.entity.InstanceData instanceDataPO = instanceDataRepository.select(subFlowInstance.getFlowInstanceId(), nodeInstancePO.getInstanceDataId());
+    tech.wetech.flexmodel.codegen.entity.InstanceData instanceDataPO = instanceDataRepository.select(projectId, subFlowInstance.getFlowInstanceId(), nodeInstancePO.getInstanceDataId());
     Map<String, Object> instanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
     runtimeResult.setVariables(instanceDataMap);
     return runtimeResult;
@@ -235,7 +237,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
 
   protected void commitCallActivity(RuntimeContext runtimeContext) throws ProcessException {
     NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
-    FlowInstanceMapping flowInstanceMappingPO = flowInstanceMappingRepository.selectFlowInstanceMapping(runtimeContext.getFlowInstanceId(), suspendNodeInstance.getNodeInstanceId());
+    FlowInstanceMapping flowInstanceMappingPO = flowInstanceMappingRepository.selectFlowInstanceMapping(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), suspendNodeInstance.getNodeInstanceId());
     String subFlowInstanceId = flowInstanceMappingPO.getSubFlowInstanceId();
 
     CommitTaskParam commitTaskParam = new CommitTaskParam();
@@ -245,8 +247,8 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     commitTaskParam.setVariables(runtimeContext.getInstanceDataMap());
     // transparent transmission callActivity param
     commitTaskParam.setCallActivityFlowModuleId(runtimeContext.getCallActivityFlowModuleId());
+    commitTaskParam.setProjectId(runtimeContext.getProjectId());
     runtimeContext.setCallActivityFlowModuleId(null); // avoid misuse
-
     CommitTaskResult commitTaskResult = runtimeProcessorInstance.get().commit(commitTaskParam);
     LOGGER.info("callActivity commit.||commitTaskParam={}||commitTaskResult={}", commitTaskParam, commitTaskResult);
     handleCallActivityResult(runtimeContext, commitTaskResult);
@@ -267,11 +269,12 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     newNodeInstanceBO.setStatus(NodeInstanceStatus.ACTIVE);
     runtimeContext.setCurrentNodeInstance(newNodeInstanceBO);
 
-    FlowInstanceMapping oldFlowInstanceMappingPO = flowInstanceMappingRepository.selectFlowInstanceMapping(runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId());
-    flowInstanceMappingRepository.updateType(oldFlowInstanceMappingPO.getFlowInstanceId(), oldFlowInstanceMappingPO.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
+    FlowInstanceMapping oldFlowInstanceMappingPO = flowInstanceMappingRepository.selectFlowInstanceMapping(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId());
+    flowInstanceMappingRepository.updateType(runtimeContext.getProjectId(), oldFlowInstanceMappingPO.getFlowInstanceId(), oldFlowInstanceMappingPO.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
 
     FlowInstanceMapping newFlowInstanceMappingPO = JsonUtils.getInstance().convertValue(oldFlowInstanceMappingPO, FlowInstanceMapping.class);
     newFlowInstanceMappingPO.setId(null);
+    newFlowInstanceMappingPO.setProjectId(runtimeContext.getProjectId());
     newFlowInstanceMappingPO.setNodeInstanceId(newNodeInstanceId);
     newFlowInstanceMappingPO.setCreateTime(LocalDateTime.now());
     newFlowInstanceMappingPO.setModifyTime(LocalDateTime.now());
@@ -306,7 +309,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     if (runtimeResult.getStatus() == FlowInstanceStatus.TERMINATED) {
       // The subFlow rollback from the StartNode to the MainFlow
       currentNodeInstance.setStatus(NodeInstanceStatus.DISABLED);
-      flowInstanceMappingRepository.updateType(runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
+      flowInstanceMappingRepository.updateType(runtimeContext.getProjectId(), runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
     } else if (runtimeResult.getStatus() == FlowInstanceStatus.END) {
       // The subFlow is completed from the EndNode to the MainFlow
       currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);

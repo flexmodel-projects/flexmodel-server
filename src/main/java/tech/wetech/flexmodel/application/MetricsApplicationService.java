@@ -64,53 +64,21 @@ public class MetricsApplicationService {
   @Inject
   JobExecutionLogService jobExecutionLogService;
 
-  public FmMetricsResponse getFmMetrics() {
+  public FmMetricsResponse getFmMetrics(String projectId) {
     try {
-      String tenantId = SessionContextHolder.getTenantId();
-      List<ApiDefinition> definitions = tenantId != null ? apiDefinitionService.findList(tenantId) : apiDefinitionService.findAll();
-      List<Datasource> datasources = datasourceService.findAll();
-      int modelCount = 0;
-      for (Datasource datasource : datasources) {
-        List<SchemaObject> list = modelService.findAll(datasource.getName());
-        if (list != null) {
-          modelCount += list.size();
-        }
-      }
-      long reqLogCount = apiLogService.count(TRUE);
-      long flowDefCount = flowDefService.count(Expressions.field(FlowDefinition::getIsDeleted).eq(false));
-      long flowInsCount = flowInstanceService.count(TRUE);
-      long triggerCount = triggerService.count(TRUE);
+      Integer modelCount = modelService.count(projectId);
+      Integer customApiCount = apiDefinitionService.count(projectId);
+      Integer datasourceCount = datasourceService.count(projectId);
+      long reqLogCount = apiLogService.count(projectId, TRUE);
+      long flowDefCount = flowDefService.count(projectId, Expressions.field(FlowDefinition::getIsDeleted).eq(false));
+      long flowInsCount = flowInstanceService.count(projectId, TRUE);
+      long triggerCount = triggerService.count(projectId, TRUE);
       long jobSuccessCount = jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("SUCCESS"));
       long jobFailureCount = jobExecutionLogService.count(Expressions.field(JobExecutionLog::getExecutionStatus).eq("FAILED"));
 
-      int queryCount = 0;
-      int mutationCount = 0;
-      int subscribeCount = 0;
-
-      for (ApiDefinition apiDefinition : definitions) {
-        if (apiDefinition.getMeta() instanceof Map<?, ?>) {
-          ApiDefinitionMeta meta = JsonUtils.convertValue(apiDefinition.getMeta(), ApiDefinitionMeta.class);
-          ApiDefinitionMeta.Execution execution = meta.getExecution();
-          if(execution == null) {
-            continue;
-          }
-          String query = execution.getQuery();
-          if (query.startsWith("query")) {
-            queryCount++;
-          } else if (query.startsWith("mutation")) {
-            mutationCount++;
-          } else if (query.startsWith("subscription")) {
-            subscribeCount++;
-          }
-        }
-      }
-
       return FmMetricsResponse.builder()
-        .queryCount(queryCount)
-        .mutationCount(mutationCount)
-        .subscribeCount(subscribeCount)
-        .dataSourceCount(datasources.size())
-        .customApiCount(definitions.size())
+        .dataSourceCount(datasourceCount)
+        .customApiCount(customApiCount)
         .requestCount((int) reqLogCount)
         .flowDefCount((int) flowDefCount)
         .flowExecCount((int) flowInsCount)
@@ -918,11 +886,11 @@ public class MetricsApplicationService {
   public AllMetricsResponse getAllMetrics() {
     long startTime = System.currentTimeMillis();
     try {
-      String tenantId = SessionContextHolder.getTenantId();
+      String projectId = SessionContextHolder.getProjectId();
       // 并行获取所有指标
-      CompletableFuture<FmMetricsResponse> fmFuture = CompletableFuture.supplyAsync(()->{
-        SessionContextHolder.setTenantId(tenantId);
-        return getFmMetrics();
+      CompletableFuture<FmMetricsResponse> fmFuture = CompletableFuture.supplyAsync(() -> {
+        SessionContextHolder.setProjectId(projectId);
+        return getFmMetrics(projectId);
       });
 
       CompletableFuture<JvmMetricsResponse> jvmFuture =

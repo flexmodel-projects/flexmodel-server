@@ -12,6 +12,8 @@ import tech.wetech.flexmodel.application.AuditDataEventListener;
 import tech.wetech.flexmodel.application.TriggerDataChangedEventListener;
 import tech.wetech.flexmodel.application.dto.GraphQLRefreshEvent;
 import tech.wetech.flexmodel.codegen.entity.Datasource;
+import tech.wetech.flexmodel.codegen.entity.Project;
+import tech.wetech.flexmodel.domain.model.auth.ProjectService;
 import tech.wetech.flexmodel.domain.model.connect.DatasourceService;
 import tech.wetech.flexmodel.domain.model.connect.SessionDatasource;
 import tech.wetech.flexmodel.session.SessionFactory;
@@ -31,11 +33,15 @@ public class SessionConfig {
 
   public void installDatasource(@Observes StartupEvent startupEvent,
                                 SessionDatasource sessionDatasource,
+                                ProjectService projectService,
                                 DatasourceService datasourceService) {
     long beginTime = System.currentTimeMillis();
-    List<Datasource> datasourceList = datasourceService.findAll();
-    for (Datasource datasource : datasourceList) {
-      sessionDatasource.add(datasource);
+    List<Project> projects = projectService.findProjects();
+    for (Project project : projects) {
+      List<Datasource> datasourceList = datasourceService.findAll(project.getId());
+      for (Datasource datasource : datasourceList) {
+        sessionDatasource.add(datasource);
+      }
     }
     log.info("========== Engine init successful in {} ms!", System.currentTimeMillis() - beginTime);
   }

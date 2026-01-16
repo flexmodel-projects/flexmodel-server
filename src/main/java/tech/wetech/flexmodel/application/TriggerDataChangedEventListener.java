@@ -50,8 +50,9 @@ public class TriggerDataChangedEventListener implements EventListener {
   public void onPreChange(PreChangeEvent event) {
     try {
       String groupName = event.getSchemaName() + "_" + event.getModelName();
+      String projectId = SessionContextHolder.getProjectId();
       // 最多支持触发100个事件
-      List<Trigger> triggers = triggerService.find(
+      List<Trigger> triggers = triggerService.find(projectId,
         Expressions.field(Trigger::getJobGroup).eq(groupName)
           .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
 
@@ -73,7 +74,7 @@ public class TriggerDataChangedEventListener implements EventListener {
 
               // 构建启动流程参数
               StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
-              startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+              startProcessParam.setProjectId(SessionContextHolder.getProjectId());
               startProcessParam.setUserId(SessionContextHolder.getUserId());
               startProcessParam.setFlowModuleId(trigger.getJobId());
               @SuppressWarnings("unchecked")
@@ -96,8 +97,9 @@ public class TriggerDataChangedEventListener implements EventListener {
   public void onChanged(ChangedEvent event) {
     try {
       String groupName = event.getSchemaName() + "_" + event.getModelName();
+      String projectId = SessionContextHolder.getProjectId();
       // 最多支持触发100个事件
-      List<Trigger> triggers = triggerService.find(
+      List<Trigger> triggers = triggerService.find(projectId,
         Expressions.field(Trigger::getJobGroup).eq(groupName)
           .and(Expressions.field(Trigger::getState).eq(true)), 1, 100);
 
@@ -119,7 +121,7 @@ public class TriggerDataChangedEventListener implements EventListener {
 
               // 构建启动流程参数
               StartProcessParamEvent startProcessParam = new StartProcessParamEvent();
-              startProcessParam.setTenantId(SessionContextHolder.getTenantId());
+              startProcessParam.setProjectId(SessionContextHolder.getProjectId());
               startProcessParam.setUserId(SessionContextHolder.getUserId());
               startProcessParam.setFlowModuleId(trigger.getJobId());
               startProcessParam.setEventId(logId);
@@ -170,7 +172,7 @@ public class TriggerDataChangedEventListener implements EventListener {
         System.currentTimeMillis(),
         System.currentTimeMillis(),
         inputData,
-        trigger.getTenantId()
+        trigger.getProjectId()
       );
 
       log.debug("已记录事件触发日志: triggerId={}, phase={}, mutationType={}",

@@ -40,7 +40,7 @@ class DatasourceResourceTest {
              }
            }
         """)
-      .post(Resources.ROOT_PATH + "/datasources/validate")
+      .post(Resources.ROOT_PATH + "/projects/dev_test/datasources/validate")
       .then()
       .statusCode(200)
       .body("success", is(true));
@@ -65,7 +65,7 @@ class DatasourceResourceTest {
       .when()
       .contentType(ContentType.JSON)
       .body(body)
-      .post(Resources.ROOT_PATH + "/datasources/system/import")
+      .post(Resources.ROOT_PATH + "/projects/dev_test/datasources/system/import")
       .then()
       .statusCode(204);
   }
@@ -75,7 +75,7 @@ class DatasourceResourceTest {
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
-      .get(Resources.ROOT_PATH + "/datasources")
+      .get(Resources.ROOT_PATH + "/projects/dev_test/datasources")
       .then()
       .statusCode(200)
       .body("size()", greaterThanOrEqualTo(1));
@@ -100,7 +100,7 @@ class DatasourceResourceTest {
              }
           }
         """)
-      .post(Resources.ROOT_PATH + "/datasources")
+      .post(Resources.ROOT_PATH + "/projects/dev_test/datasources")
       .then()
       .statusCode(200);
   }
@@ -123,7 +123,7 @@ class DatasourceResourceTest {
             }
           }
         """)
-      .put(Resources.ROOT_PATH + "/datasources/{datasourceName}", "sqlite_test")
+      .put(Resources.ROOT_PATH + "/projects/dev_test/datasources/{datasourceName}", "sqlite_test")
       .then()
       .statusCode(200);
   }
@@ -146,14 +146,14 @@ class DatasourceResourceTest {
              }
            }
         """)
-      .post(Resources.ROOT_PATH + "/datasources")
+      .post(Resources.ROOT_PATH + "/projects/dev_test/datasources")
       .then()
       .statusCode(200);
     given()
       .header("Authorization", TestTokenHelper.getAuthorizationHeader())
       .when()
       .contentType(ContentType.JSON)
-      .delete(Resources.ROOT_PATH + "/datasources/{datasourceName}", "mysql_test3")
+      .delete(Resources.ROOT_PATH + "/projects/dev_test/datasources/{datasourceName}", "mysql_test3")
       .then()
       .statusCode(204);
   }

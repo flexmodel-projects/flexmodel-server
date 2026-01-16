@@ -43,85 +43,85 @@ public class ProcessEngineImpl implements ProcessService {
 
   @Override
   public CommitTaskResult commitTask(CommitTaskParam commitTaskParam) {
-    runtimeProcessor.checkIsSubFlowInstance(commitTaskParam.getFlowInstanceId());
+    runtimeProcessor.checkIsSubFlowInstance(commitTaskParam.getProjectId(), commitTaskParam.getFlowInstanceId());
     return runtimeProcessor.commit(commitTaskParam);
   }
 
   @Override
   public RollbackTaskResult rollbackTask(RollbackTaskParam rollbackTaskParam) {
-    runtimeProcessor.checkIsSubFlowInstance(rollbackTaskParam.getFlowInstanceId());
+    runtimeProcessor.checkIsSubFlowInstance(rollbackTaskParam.getProjectId(), rollbackTaskParam.getFlowInstanceId());
     return runtimeProcessor.rollback(rollbackTaskParam);
   }
 
   @Override
-  public TerminateResult terminateProcess(String flowInstanceId) {
-    runtimeProcessor.checkIsSubFlowInstance(flowInstanceId);
-    return runtimeProcessor.terminateProcess(flowInstanceId, true);
+  public TerminateResult terminateProcess(String projectId, String flowInstanceId) {
+    runtimeProcessor.checkIsSubFlowInstance(projectId, flowInstanceId);
+    return runtimeProcessor.terminateProcess(projectId, flowInstanceId, true);
   }
 
   @Override
-  public TerminateResult terminateProcess(String flowInstanceId, boolean effectiveForSubFlowInstance) {
-    runtimeProcessor.checkIsSubFlowInstance(flowInstanceId);
-    return runtimeProcessor.terminateProcess(flowInstanceId, effectiveForSubFlowInstance);
+  public TerminateResult terminateProcess(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance) {
+    runtimeProcessor.checkIsSubFlowInstance(projectId, flowInstanceId);
+    return runtimeProcessor.terminateProcess(projectId, flowInstanceId, effectiveForSubFlowInstance);
   }
 
   @Override
-  public NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId) {
-    return runtimeProcessor.getHistoryUserTaskList(flowInstanceId, true);
+  public NodeInstanceListResult getHistoryUserTaskList(String projectId, String flowInstanceId) {
+    return runtimeProcessor.getHistoryUserTaskList(projectId, flowInstanceId, true);
   }
 
   @Override
-  public NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId, boolean effectiveForSubFlowInstance) {
-    return runtimeProcessor.getHistoryUserTaskList(flowInstanceId, effectiveForSubFlowInstance);
+  public NodeInstanceListResult getHistoryUserTaskList(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance) {
+    return runtimeProcessor.getHistoryUserTaskList(projectId, flowInstanceId, effectiveForSubFlowInstance);
   }
 
   @Override
-  public ElementInstanceListResult getHistoryElementList(String flowInstanceId) {
-    return runtimeProcessor.getHistoryElementList(flowInstanceId, true);
+  public ElementInstanceListResult getHistoryElementList(String projectId, String flowInstanceId) {
+    return runtimeProcessor.getHistoryElementList(projectId, flowInstanceId, true);
   }
 
   @Override
-  public ElementInstanceListResult getHistoryElementList(String flowInstanceId, boolean effectiveForSubFlowInstance) {
-    return runtimeProcessor.getHistoryElementList(flowInstanceId, effectiveForSubFlowInstance);
+  public ElementInstanceListResult getHistoryElementList(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance) {
+    return runtimeProcessor.getHistoryElementList(projectId, flowInstanceId, effectiveForSubFlowInstance);
   }
 
   @Override
-  public InstanceDataListResult getInstanceData(String flowInstanceId) {
-    return runtimeProcessor.getInstanceData(flowInstanceId, true);
+  public InstanceDataListResult getInstanceData(String projectId, String flowInstanceId) {
+    return runtimeProcessor.getInstanceData(projectId, flowInstanceId, true);
   }
 
   @Override
-  public InstanceDataListResult getInstanceData(String flowInstanceId, boolean effectiveForSubFlowInstance) {
-    return runtimeProcessor.getInstanceData(flowInstanceId, effectiveForSubFlowInstance);
+  public InstanceDataListResult getInstanceData(String projectId, String flowInstanceId, boolean effectiveForSubFlowInstance) {
+    return runtimeProcessor.getInstanceData(projectId, flowInstanceId, effectiveForSubFlowInstance);
   }
 
   @Override
-  public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId) {
-    return runtimeProcessor.getNodeInstance(flowInstanceId, nodeInstanceId, true);
+  public NodeInstanceResult getNodeInstance(String projectId, String flowInstanceId, String nodeInstanceId) {
+    return runtimeProcessor.getNodeInstance(projectId, flowInstanceId, nodeInstanceId, true);
   }
 
   @Override
-  public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance) {
-    return runtimeProcessor.getNodeInstance(flowInstanceId, nodeInstanceId, effectiveForSubFlowInstance);
+  public NodeInstanceResult getNodeInstance(String projectId, String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance) {
+    return runtimeProcessor.getNodeInstance(projectId, flowInstanceId, nodeInstanceId, effectiveForSubFlowInstance);
   }
 
   @Override
-  public FlowInstanceResult getFlowInstance(String flowInstanceId) {
-    return runtimeProcessor.getFlowInstance(flowInstanceId);
+  public FlowInstanceResult getFlowInstance(String projectId, String flowInstanceId) {
+    return runtimeProcessor.getFlowInstance(projectId, flowInstanceId);
   }
 
   @Override
-  public void deleteFlow(String flowModuleId) {
-    definitionProcessor.delete(flowModuleId);
+  public void deleteFlow(String projectId, String flowModuleId) {
+    definitionProcessor.delete(projectId, flowModuleId);
   }
 
   @Override
-  public InstanceDataListResult getInstanceData(String flowInstanceId, String instanceDataId) {
-    return runtimeProcessor.getInstanceData(flowInstanceId, instanceDataId, true);
+  public InstanceDataListResult getInstanceData(String projectId, String flowInstanceId, String instanceDataId) {
+    return runtimeProcessor.getInstanceData(projectId, flowInstanceId, instanceDataId, true);
   }
 
   @Override
-  public InstanceDataListResult getInstanceData(String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance) {
-    return runtimeProcessor.getInstanceData(flowInstanceId, instanceDataId, effectiveForSubFlowInstance);
+  public InstanceDataListResult getInstanceData(String projectId, String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance) {
+    return runtimeProcessor.getInstanceData(projectId, flowInstanceId, instanceDataId, effectiveForSubFlowInstance);
   }
 }

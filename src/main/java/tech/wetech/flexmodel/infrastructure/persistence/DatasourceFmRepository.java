@@ -21,17 +21,18 @@ public class DatasourceFmRepository implements DatasourceRepository {
   Session session;
 
   @Override
-  public List<Datasource> findAll() {
+  public List<Datasource> findAll(String projectId) {
     return session.dsl()
       .selectFrom(Datasource.class)
+      .where(field(Datasource::getProjectId).eq(projectId))
       .execute();
   }
 
   @Override
-  public List<Datasource> find(Predicate filter) {
+  public List<Datasource> find(String projectId, Predicate filter) {
     return session.dsl()
       .selectFrom(Datasource.class)
-      .where(filter)
+      .where(field(Datasource::getProjectId).eq(projectId).and(filter))
       .execute();
   }
 
@@ -47,9 +48,16 @@ public class DatasourceFmRepository implements DatasourceRepository {
   }
 
   @Override
-  public void delete(String id) {
+  public void delete(String projectId, String name) {
     session.dsl().deleteFrom(Datasource.class)
-      .where(field(Datasource::getName).eq(id))
+      .where(field(Datasource::getProjectId).eq(projectId).and(field(Datasource::getName).eq(name)))
       .execute();
+  }
+
+  @Override
+  public Integer count(String projectId) {
+    return (int) session.dsl().selectFrom(Datasource.class)
+      .where(field(Datasource::getProjectId).eq(projectId))
+      .count();
   }
 }

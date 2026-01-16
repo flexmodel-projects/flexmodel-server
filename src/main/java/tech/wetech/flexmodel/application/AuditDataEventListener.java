@@ -37,20 +37,20 @@ public class AuditDataEventListener implements EventListener {
 
   private void invokeData(PreChangeEvent event) {
     Map<String, Object> newData = event.getNewData();
-    String tenantId = SessionContextHolder.getTenantId();
+    String projectId = SessionContextHolder.getProjectId();
     String userId = SessionContextHolder.getUserId();
     if (newData == null) {
       return;
     }
     SessionFactory sf = event.getSource();
     EntityDefinition entity = (EntityDefinition) sf.getModelRegistry().getRegistered(event.getSchemaName(), event.getModelName());
-    TypedField<?, ?> tenantIdField = entity.getField("tenant_id");
+    TypedField<?, ?> projectIdField = entity.getField("tenant_id");
     TypedField<?, ?> createdByField = entity.getField("created_by");
     TypedField<?, ?> updatedByField = entity.getField("updated_by");
     TypedField<?, ?> createdAtField = entity.getField("created_at");
     TypedField<?, ?> updatedAtField = entity.getField("updated_at");
-    if (tenantIdField != null && newData.get("tenant_id") == null && tenantId != null) {
-      newData.put("tenant_id", tenantId);
+    if (projectIdField != null && newData.get("tenant_id") == null && projectId != null) {
+      newData.put("tenant_id", projectId);
     }
     if (event instanceof PreInsertEvent) {
       if (createdByField != null && newData.get("created_by") == null && userId != null) {
@@ -75,18 +75,18 @@ public class AuditDataEventListener implements EventListener {
     if (query == null) {
       return;
     }
-    String tenantId = SessionContextHolder.getTenantId();
-    if (tenantId == null) {
+    String projectId = SessionContextHolder.getProjectId();
+    if (projectId == null) {
       return;
     }
     SessionFactory sf = event.getSource();
     EntityDefinition entity = (EntityDefinition) sf.getModelRegistry().getRegistered(event.getSchemaName(), event.getModelName());
-    TypedField<?, ?> tenantIdField = entity.getField("tenant_id");
-    if (tenantIdField == null) {
+    TypedField<?, ?> projectIdField = entity.getField("tenant_id");
+    if (projectIdField == null) {
       return;
     }
     List<Map<String, Object>> andList = new ArrayList<>();
-    andList.add(Map.of("tenant_id", Map.of("_eq", tenantId)));
+    andList.add(Map.of("tenant_id", Map.of("_eq", projectId)));
     if (query.getFilter() != null) {
       @SuppressWarnings("all")
       Map<String, Object> filterMap = JsonUtils.getInstance().parseToObject(query.getFilter(), Map.class);
