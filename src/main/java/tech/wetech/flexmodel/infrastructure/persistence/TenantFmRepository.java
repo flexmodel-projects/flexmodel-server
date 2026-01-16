@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * 租户
+ *
  * @author cjbi
  */
 @ApplicationScoped
@@ -28,7 +29,21 @@ public class TenantFmRepository implements ProjectRepository {
   @Override
   public Project findProject(String projectId) {
     return session.dsl().selectFrom(Project.class)
-      .where(Expressions.field(Project::getId).eq(projectId))
-      .executeOne();
+        .where(Expressions.field(Project::getId).eq(projectId))
+        .executeOne();
+  }
+
+  @Override
+  public Project save(Project project) {
+    session.dsl().mergeInto(Project.class)
+        .values(project).execute();
+    return project;
+  }
+
+  @Override
+  public void delete(String projectId) {
+    session.dsl().deleteFrom(Project.class)
+        .where(Expressions.field(Project::getId).eq(projectId))
+        .execute();
   }
 }

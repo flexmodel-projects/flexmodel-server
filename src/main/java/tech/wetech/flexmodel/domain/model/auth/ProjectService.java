@@ -22,4 +22,16 @@ public class ProjectService {
   public Project findProject(String projectId) {
     return tenantRepository.findProject(projectId);
   }
+
+  public Project createProject(Project project) {
+    return tenantRepository.save(project);
+  }
+
+  public Project updateProject(Project project) {
+    return tenantRepository.save(project);
+  }
+
+  public void deleteProject(String projectId) {
+    tenantRepository.delete(projectId);
+  }
 }

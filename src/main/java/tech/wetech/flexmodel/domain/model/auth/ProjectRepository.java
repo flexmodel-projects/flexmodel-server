@@ -12,4 +12,8 @@ public interface ProjectRepository {
   List<Project> findProjects();
 
   Project findProject(String projectId);
+
+  Project save(Project project);
+
+  void delete(String projectId);
 }
