@@ -85,7 +85,9 @@ public class DocumentApplicationService {
     Project project = projectService.findProject(projectId);
     return Map.of(
       "title", project.getName(),
-      "description", project.getDescription());
+      "description", project.getDescription(),
+      "version:", "0.0.1"
+    );
   }
 
   private GraphQLFieldDefinition getGraphQLFieldDefinition(GraphQLSchema graphQLSchema, Field field) {
