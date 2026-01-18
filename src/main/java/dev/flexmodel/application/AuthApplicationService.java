@@ -14,6 +14,7 @@ import dev.flexmodel.domain.model.connect.DatasourceService;
 import dev.flexmodel.domain.model.flow.service.FlowDeploymentService;
 import dev.flexmodel.domain.model.storage.StorageService;
 import dev.flexmodel.shared.SessionContextHolder;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -70,31 +71,14 @@ public class AuthApplicationService {
   }
 
   public Project createProject(Project project) {
-    if (project.getId() != null && findProject(project.getId()) != null) {
-      throw new IllegalArgumentException("项目ID已经存在");
-    }
-    project.setOwnerId(SessionContextHolder.getUserId());
     return projectService.createProject(project);
   }
 
   public Project updateProject(Project project) {
-    if ("default".equals(project.getId())) {
-      throw new IllegalArgumentException("默认项目不能修改");
-    }
-    Project existingProject = findProject(project.getId());
-    if (existingProject == null) {
-      throw new IllegalArgumentException("项目不存在");
-    }
-    project.setCreatedAt(existingProject.getCreatedAt());
-    project.setCreatedBy(existingProject.getCreatedBy());
-    project.setOwnerId(existingProject.getOwnerId());
     return projectService.updateProject(project);
   }
 
   public void deleteProject(String projectId) {
-    if ("default".equals(projectId)) {
-      throw new IllegalArgumentException("默认项目不能删除");
-    }
     projectService.deleteProject(projectId);
   }
 }
