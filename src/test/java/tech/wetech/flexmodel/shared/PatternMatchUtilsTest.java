@@ -1,8 +1,8 @@
-package tech.wetech.flexmodel.shared;
+package dev.flexmodel.shared;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import tech.wetech.flexmodel.shared.utils.PatternMatchUtils;
+import dev.flexmodel.shared.utils.PatternMatchUtils;
 
 /**
  * @author cjbi

@@ -17,7 +17,7 @@
 
 ### 1. 包结构规范
 ```
-tech.wetech.flexmodel/
+dev.flexmodel/
 ├── interfaces/          # 接口层 - REST API、协议适配
 ├── application/         # 应用层 - 用例编排、DTO、事务脚本
 ├── domain/             # 领域层 - 核心业务模型、领域服务
@@ -29,7 +29,7 @@ tech.wetech.flexmodel/
 - **类名**: PascalCase，如 `ChatResource`、`BusinessException`
 - **方法名**: camelCase，如 `sendMessage`、`getSettings`
 - **常量**: UPPER_SNAKE_CASE，如 `ROOT_PATH`
-- **包名**: 全小写，如 `tech.wetech.flexmodel.interfaces.rest`
+- **包名**: 全小写，如 `dev.flexmodel.interfaces.rest`
 
 ### 3. 注解使用规范
 - 使用 `@Slf4j` 进行日志记录

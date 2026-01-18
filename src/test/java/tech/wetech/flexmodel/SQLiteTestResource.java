@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel;
+package dev.flexmodel;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 

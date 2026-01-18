@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.rest;
+package dev.flexmodel.rest;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -8,8 +8,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import tech.wetech.flexmodel.SQLiteTestResource;
-import tech.wetech.flexmodel.interfaces.rest.jwt.JwtUtil;
+import dev.flexmodel.SQLiteTestResource;
+import dev.flexmodel.interfaces.rest.jwt.JwtUtil;
 
 import java.time.Duration;
 

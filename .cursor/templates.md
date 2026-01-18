@@ -2,7 +2,7 @@
 
 ## REST Resource 模板
 ```java
-package tech.wetech.flexmodel.interfaces.rest;
+package dev.flexmodel.interfaces.rest;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -58,7 +58,7 @@ public class {ResourceName}Resource {
 
 ## Application Service 模板
 ```java
-package tech.wetech.flexmodel.application;
+package dev.flexmodel.application;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -100,7 +100,7 @@ public class {ServiceName}ApplicationService {
 
 ## Domain Model 模板
 ```java
-package tech.wetech.flexmodel.domain.model.{domain};
+package dev.flexmodel.domain.model.{domain};
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -134,7 +134,7 @@ public class {ModelName} {
 
 ## Repository 接口模板
 ```java
-package tech.wetech.flexmodel.domain.model.{domain};
+package dev.flexmodel.domain.model.{domain};
 
 import java.util.List;
 import java.util.Optional;
@@ -160,12 +160,12 @@ public interface {ModelName}Repository {
 
 ## 测试类模板
 ```java
-package tech.wetech.flexmodel.rest;
+package dev.flexmodel.rest;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
-import tech.wetech.flexmodel.SQLiteTestResource;
+import dev.flexmodel.SQLiteTestResource;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -271,7 +271,7 @@ public class {ResourceName}ResourceTest {
 
 ## 配置类模板
 ```java
-package tech.wetech.flexmodel.shared;
+package dev.flexmodel.shared;
 
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
@@ -303,49 +303,66 @@ public interface {ConfigName}Config {
 ```
 
 ## 异常类模板
+
 ```java
-package tech.wetech.flexmodel.domain.model.{domain};
+package dev.flexmodel.domain.model.
 
-import tech.wetech.flexmodel.domain.model.BusinessException;
+{domain};
 
-/**
- * @author cjbi
- */
-public abstract class {DomainName}Exception extends BusinessException {
-
-  public {DomainName}Exception(String message) {
-    super(message);
-  }
-
-  public {DomainName}Exception(String message, Throwable cause) {
-    super(message, cause);
-  }
-}
+import dev.flexmodel.domain.model.BusinessException;
 
 /**
  * @author cjbi
  */
-public class {ModelName}NotFoundException extends {DomainName}Exception {
+public abstract class {DomainName}Exception extends
 
-  public {ModelName}NotFoundException(String id) {
-    super("未找到ID为 " + id + " 的{model-description}");
-  }
-}
+    BusinessException {
+
+        public {
+            DomainName
+        } Exception(String message) {
+            super(message);
+        }
+
+        public {
+            DomainName
+        } Exception(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 
 /**
  * @author cjbi
  */
-public class {ModelName}ValidationException extends {DomainName}Exception {
+    public class {ModelName}NotFoundException extends{DomainName}
 
-  public {ModelName}ValidationException(String message) {
-    super("数据验证失败: " + message);
-  }
-}
+    Exception {
+
+        public {
+            ModelName
+        } NotFoundException(String id) {
+            super("未找到ID为 " + id + " 的{model-description}");
+        }
+    }
+
+/**
+ * @author cjbi
+ */
+    public class {ModelName}ValidationException extends{DomainName}
+
+    Exception {
+
+        public {
+            ModelName
+        } ValidationException(String message) {
+            super("数据验证失败: " + message);
+        }
+    }
 ```
 
 ## DTO 模板
 ```java
-package tech.wetech.flexmodel.interfaces.rest.request;
+package dev.flexmodel.interfaces.rest.request;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -364,7 +381,7 @@ public class {ModelName}Request {
   // 其他字段...
 }
 
-package tech.wetech.flexmodel.interfaces.rest.response;
+package dev.flexmodel.interfaces.rest.response;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

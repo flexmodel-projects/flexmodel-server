@@ -19,11 +19,11 @@
     }
   },
   "packages": {
-    "interfaces": "tech.wetech.flexmodel.interfaces",
-    "application": "tech.wetech.flexmodel.application",
-    "domain": "tech.wetech.flexmodel.domain",
-    "infrastructure": "tech.wetech.flexmodel.infrastructure",
-    "shared": "tech.wetech.flexmodel.shared"
+    "interfaces": "dev.flexmodel.interfaces",
+    "application": "dev.flexmodel.application",
+    "domain": "dev.flexmodel.domain",
+    "infrastructure": "dev.flexmodel.infrastructure",
+    "shared": "dev.flexmodel.shared"
   },
   "annotations": {
     "logging": "@Slf4j",

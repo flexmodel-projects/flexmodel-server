@@ -1,11 +1,10 @@
-package tech.wetech.flexmodel.shared.matchers;
+package dev.flexmodel.shared.matchers;
 
+import dev.flexmodel.shared.matchers.UriTemplate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author chengjinbao

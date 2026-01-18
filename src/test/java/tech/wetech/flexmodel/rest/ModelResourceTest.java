@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.rest;
+package dev.flexmodel.rest;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;

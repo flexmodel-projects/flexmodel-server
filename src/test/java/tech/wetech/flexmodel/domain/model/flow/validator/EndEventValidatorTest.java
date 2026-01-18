@@ -1,15 +1,16 @@
-package tech.wetech.flexmodel.domain.model.flow.validator;
+package dev.flexmodel.domain.model.flow.validator;
 
+import dev.flexmodel.domain.model.flow.validator.EndEventValidator;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import tech.wetech.flexmodel.SQLiteTestResource;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.FlowElement;
-import tech.wetech.flexmodel.domain.model.flow.exception.DefinitionException;
-import tech.wetech.flexmodel.domain.model.flow.shared.EntityBuilder;
+import dev.flexmodel.SQLiteTestResource;
+import dev.flexmodel.domain.model.flow.dto.model.FlowElement;
+import dev.flexmodel.domain.model.flow.exception.DefinitionException;
+import dev.flexmodel.domain.model.flow.shared.EntityBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;

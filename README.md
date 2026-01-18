@@ -21,15 +21,15 @@
 
 ### 分层架构
 项目采用DDD分层与按职责划分的包结构，便于演进与扩展：
-- 接口层（Interfaces）：`tech.wetech.flexmodel.interfaces`
+- 接口层（Interfaces）：`dev.flexmodel.interfaces`
   - 提供 REST API（如 `rest.ChatResource`），对外暴露 HTTP 接口与协议适配。
-- 应用层（Application）：`tech.wetech.flexmodel.application`
+- 应用层（Application）：`dev.flexmodel.application`
   - 编排领域用例与服务，处理事务脚本、DTO/Assembler、流程处理器等。
-- 领域层（Domain）：`tech.wetech.flexmodel.domain`
+- 领域层（Domain）：`dev.flexmodel.domain`
   - 核心领域模型与领域服务，聚合根、实体、值对象、仓储接口等。
-- 基础设施层（Infrastructure）：`tech.wetech.flexmodel.infrastructrue`
+- 基础设施层（Infrastructure）：`dev.flexmodel.infrastructrue`
   - 外部资源适配与实现，如持久化、会话、消息消费、任务调度等。
-- 公共与工具（shared）：`tech.wetech.flexmodel.shared`
+- 公共与工具（shared）：`dev.flexmodel.shared`
   - 公共工具与通用能力（JSON、字符串、路径匹配等）。
 
 说明：REST 基础路径为 `/api`；OpenAPI/Swagger UI 位于 `/q/swagger-ui`；SSE 流式聊天接口在 `chat` 资源下提供。

@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>tech.wetech.flexmodel</groupId>
+  <groupId>dev.flexmodel</groupId>
   <artifactId>flexmodel-server</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <properties>
@@ -75,22 +75,22 @@
       <artifactId>mongodb-driver-sync</artifactId>
     </dependency>
     <dependency>
-      <groupId>tech.wetech.flexmodel</groupId>
+      <groupId>dev.flexmodel</groupId>
       <artifactId>flexmodel-code-templates</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>tech.wetech.flexmodel</groupId>
+      <groupId>dev.flexmodel</groupId>
       <artifactId>flexmodel-ui</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>tech.wetech.flexmodel</groupId>
+      <groupId>dev.flexmodel</groupId>
       <artifactId>flexmodel-graphql</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>tech.wetech.flexmodel</groupId>
+      <groupId>dev.flexmodel</groupId>
       <artifactId>flexmodel-quarkus</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -181,7 +181,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>tech.wetech.flexmodel</groupId>
+        <groupId>dev.flexmodel</groupId>
         <artifactId>flexmodel-maven-plugin</artifactId>
         <version>${project.version}</version>
         <executions>
@@ -198,14 +198,14 @@
               <schema>
                 <name>system</name>
                 <import-script>src/main/resources/schema.idl,src/main/resources/data.json</import-script>
-                <packageName>tech.wetech.flexmodel.codegen</packageName>
+                <packageName>dev.flexmodel.codegen</packageName>
                 <replaceString>^f_ei_|^f_em_|^f_</replaceString>
               </schema>
               <schema>
                 <name>dev_test</name>
                 <import-script>src/main/resources/dev_test_schema.idl,src/main/resources/dev_test_data.json
                 </import-script>
-                <packageName>tech.wetech.flexmodel.test.codegen</packageName>
+                <packageName>dev.flexmodel.test.codegen</packageName>
               </schema>
             </schemas>
           </generator>

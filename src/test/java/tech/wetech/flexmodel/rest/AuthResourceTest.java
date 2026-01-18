@@ -1,11 +1,11 @@
-package tech.wetech.flexmodel.rest;
+package dev.flexmodel.rest;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-import tech.wetech.flexmodel.SQLiteTestResource;
-import tech.wetech.flexmodel.interfaces.rest.jwt.JwtUtil;
+import dev.flexmodel.SQLiteTestResource;
+import dev.flexmodel.interfaces.rest.jwt.JwtUtil;
 
 import java.time.Duration;
 

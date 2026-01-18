@@ -1,6 +1,6 @@
-package tech.wetech.flexmodel.rest;
+package dev.flexmodel.rest;
 
-import tech.wetech.flexmodel.interfaces.rest.jwt.JwtUtil;
+import dev.flexmodel.interfaces.rest.jwt.JwtUtil;
 
 import java.time.Duration;
 

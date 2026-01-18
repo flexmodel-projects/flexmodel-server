@@ -1,4 +1,4 @@
-package tech.wetech.flexmodel.rest;
+package dev.flexmodel.rest;
 
 /**
  * @author cjbi

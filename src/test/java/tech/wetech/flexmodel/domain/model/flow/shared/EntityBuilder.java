@@ -1,12 +1,12 @@
-package tech.wetech.flexmodel.domain.model.flow.shared;
+package dev.flexmodel.domain.model.flow.shared;
 
-import tech.wetech.flexmodel.codegen.entity.*;
-import tech.wetech.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
-import tech.wetech.flexmodel.domain.model.flow.dto.model.*;
-import tech.wetech.flexmodel.domain.model.flow.dto.param.*;
-import tech.wetech.flexmodel.domain.model.flow.shared.common.*;
-import tech.wetech.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
-import tech.wetech.flexmodel.shared.utils.JsonUtils;
+import dev.flexmodel.domain.model.flow.dto.model.*;
+import dev.flexmodel.domain.model.flow.dto.param.*;
+import dev.flexmodel.domain.model.flow.shared.common.*;
+import dev.flexmodel.codegen.entity.*;
+import dev.flexmodel.domain.model.flow.dto.bo.NodeInstanceBO;
+import dev.flexmodel.domain.model.flow.shared.util.FlowModelUtil;
+import dev.flexmodel.shared.utils.JsonUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -442,8 +442,8 @@ public class EntityBuilder {
     return nodeInstanceLog;
   }
 
-  public static tech.wetech.flexmodel.codegen.entity.InstanceData buildInstanceData() {
-    tech.wetech.flexmodel.codegen.entity.InstanceData instanceData = new tech.wetech.flexmodel.codegen.entity.InstanceData();
+  public static dev.flexmodel.codegen.entity.InstanceData buildInstanceData() {
+    dev.flexmodel.codegen.entity.InstanceData instanceData = new dev.flexmodel.codegen.entity.InstanceData();
     instanceData.setFlowInstanceId(flowInstanceId);
     instanceData.setNodeInstanceId(nodeInstanceId);
     instanceData.setFlowDeployId(flowDeployId);
@@ -459,8 +459,8 @@ public class EntityBuilder {
     return instanceData;
   }
 
-  public static tech.wetech.flexmodel.codegen.entity.InstanceData buildDynamicInstanceData() {
-    tech.wetech.flexmodel.codegen.entity.InstanceData instanceData = buildInstanceData();
+  public static dev.flexmodel.codegen.entity.InstanceData buildDynamicInstanceData() {
+    dev.flexmodel.codegen.entity.InstanceData instanceData = buildInstanceData();
     instanceData.setInstanceDataId("testInstanceDataId_" + System.currentTimeMillis() + new Random().nextInt());
     return instanceData;
   }
