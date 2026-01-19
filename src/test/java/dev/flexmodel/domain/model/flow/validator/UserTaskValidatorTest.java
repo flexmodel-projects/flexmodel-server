@@ -1,6 +1,5 @@
 package dev.flexmodel.domain.model.flow.validator;
 
-import dev.flexmodel.domain.model.flow.validator.EndEventValidator;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -12,31 +11,29 @@ import dev.flexmodel.domain.model.flow.dto.model.FlowElement;
 import dev.flexmodel.domain.model.flow.exception.DefinitionException;
 import dev.flexmodel.domain.model.flow.shared.EntityBuilder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(SQLiteTestResource.class)
-public class EndEventValidatorTest {
+public class UserTaskValidatorTest {
 
   @Inject
-  EndEventValidator endEventValidator;
+  UserTaskValidator userTaskValidator;
 
   /**
-   * Test endEvent's checkIncoming, while incoming is normal.
+   * Check userTask's incoming, whlile normal.
    *
    */
   @Test
-  public void checkIncomingAcess() {
-    FlowElement endEvent = EntityBuilder.buildEndEvent();
+  public void checkIncomingAccess() {
+    FlowElement userTask = EntityBuilder.buildUserTask();
     Map<String, FlowElement> map = new HashMap<>();
-    map.put(endEvent.getKey(), endEvent);
+    map.put(userTask.getKey(), userTask);
     boolean access = false;
     try {
-      endEventValidator.checkIncoming(map, endEvent);
+      userTaskValidator.checkIncoming(map, userTask);
       access = true;
       Assertions.assertTrue(access);
     } catch (DefinitionException e) {
@@ -45,20 +42,19 @@ public class EndEventValidatorTest {
     }
   }
 
-
   /**
-   * Test endEvent's checkIncoming, while incoming is null.
+   * Check userTask's incoming, while incoming is lack.
    *
    */
   @Test
   public void checkWithoutIncoming() {
-    FlowElement endEventInvalid = EntityBuilder.buildEndEvent();
-    endEventInvalid.setIncoming(null);
+    FlowElement userTask = EntityBuilder.buildUserTask();
+    userTask.setIncoming(null);
     Map<String, FlowElement> map = new HashMap<>();
-    map.put(endEventInvalid.getKey(), endEventInvalid);
+    map.put(userTask.getKey(), userTask);
     boolean access = false;
     try {
-      endEventValidator.checkIncoming(map, endEventInvalid);
+      userTaskValidator.checkIncoming(map, userTask);
       access = true;
       Assertions.assertFalse(access);
     } catch (DefinitionException e) {
@@ -67,30 +63,45 @@ public class EndEventValidatorTest {
     }
   }
 
+
   /**
-   * Test endEvent's checkOutgoing, while outgoing is normal.
+   * Check userTask's outgoing, whlile normal.
    *
    */
   @Test
   public void checkOutgoingAccess() {
-    FlowElement endEvent = EntityBuilder.buildEndEvent();
+    FlowElement userTask = EntityBuilder.buildUserTask();
     Map<String, FlowElement> map = new HashMap<>();
-    map.put(endEvent.getKey(), endEvent);
-    endEventValidator.checkOutgoing(map, endEvent);
+    map.put(userTask.getKey(), userTask);
+    boolean access = false;
+    try {
+      userTaskValidator.checkOutgoing(map, userTask);
+      access = true;
+      Assertions.assertTrue(access);
+    } catch (DefinitionException e) {
+      log.error("", e);
+      Assertions.assertTrue(access);
+    }
   }
 
   /**
-   * Test endEvent's checkOutgoing, while outgoing is not null.
+   * Check userTask's outgoing, while outgoing is lack.
    *
    */
   @Test
-  public void checkOutgoingIsNotNull() {
-    FlowElement endEventInvalid = EntityBuilder.buildEndEvent();
-    List<String> setOutgoing = new ArrayList<>();
-    setOutgoing.add("sequenceFlow2");
-    endEventInvalid.setOutgoing(setOutgoing);
+  public void checkWithoutOutgoing() {
+    FlowElement userTask = EntityBuilder.buildUserTask();
+    userTask.setOutgoing(null);
     Map<String, FlowElement> map = new HashMap<>();
-    map.put(endEventInvalid.getKey(), endEventInvalid);
-    endEventValidator.checkOutgoing(map, endEventInvalid);
+    map.put(userTask.getKey(), userTask);
+    boolean access = false;
+    try {
+      userTaskValidator.checkOutgoing(map, userTask);
+      access = true;
+      Assertions.assertFalse(access);
+    } catch (DefinitionException e) {
+      log.error("", e);
+      Assertions.assertFalse(access);
+    }
   }
 }

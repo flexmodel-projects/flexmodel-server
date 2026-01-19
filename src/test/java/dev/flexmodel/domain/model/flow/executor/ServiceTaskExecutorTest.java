@@ -1,6 +1,5 @@
 package dev.flexmodel.domain.model.flow.executor;
 
-import dev.flexmodel.domain.model.flow.executor.ServiceTaskExecutor;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

@@ -1,7 +1,6 @@
 package dev.flexmodel.domain.model.flow.validator;
 
 
-import dev.flexmodel.domain.model.flow.validator.ModelValidator;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

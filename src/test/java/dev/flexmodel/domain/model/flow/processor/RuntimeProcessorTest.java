@@ -1,7 +1,6 @@
 package dev.flexmodel.domain.model.flow.processor;
 
 import dev.flexmodel.domain.model.flow.dto.result.*;
-import dev.flexmodel.domain.model.flow.processor.RuntimeProcessor;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

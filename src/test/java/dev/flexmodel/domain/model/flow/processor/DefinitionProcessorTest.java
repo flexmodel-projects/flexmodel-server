@@ -1,6 +1,5 @@
 package dev.flexmodel.domain.model.flow.processor;
 
-import dev.flexmodel.domain.model.flow.processor.DefinitionProcessor;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

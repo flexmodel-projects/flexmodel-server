@@ -1,7 +1,5 @@
 package dev.flexmodel.domain.model.flow.executor;
 
-import dev.flexmodel.domain.model.flow.executor.ExclusiveGatewayExecutor;
-import dev.flexmodel.domain.model.flow.executor.ExecutorFactory;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

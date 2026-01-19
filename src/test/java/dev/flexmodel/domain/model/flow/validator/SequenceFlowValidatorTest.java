@@ -1,6 +1,5 @@
 package dev.flexmodel.domain.model.flow.validator;
 
-import dev.flexmodel.domain.model.flow.validator.UserTaskValidator;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -12,29 +11,32 @@ import dev.flexmodel.domain.model.flow.dto.model.FlowElement;
 import dev.flexmodel.domain.model.flow.exception.DefinitionException;
 import dev.flexmodel.domain.model.flow.shared.EntityBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 
 @Slf4j
 @QuarkusTest
 @QuarkusTestResource(SQLiteTestResource.class)
-public class UserTaskValidatorTest {
+public class SequenceFlowValidatorTest {
 
   @Inject
-  UserTaskValidator userTaskValidator;
+  SequenceFlowValidator sequenceFlowValidator;
 
   /**
-   * Check userTask's incoming, whlile normal.
+   * Test sequenceFlow's checkIncoming, while incoming is normal.
    *
    */
   @Test
   public void checkIncomingAccess() {
-    FlowElement userTask = EntityBuilder.buildUserTask();
-    Map<String, FlowElement> map = new HashMap<>();
-    map.put(userTask.getKey(), userTask);
+    FlowElement sequenceFlow = EntityBuilder.buildSequenceFlow();
+    Map<String, FlowElement> flowElementMap = new HashMap<>();
+    flowElementMap.put(sequenceFlow.getKey(), sequenceFlow);
     boolean access = false;
     try {
-      userTaskValidator.checkIncoming(map, userTask);
+      sequenceFlowValidator.checkIncoming(flowElementMap, sequenceFlow);
       access = true;
       Assertions.assertTrue(access);
     } catch (DefinitionException e) {
@@ -43,19 +45,23 @@ public class UserTaskValidatorTest {
     }
   }
 
+
   /**
-   * Check userTask's incoming, while incoming is lack.
+   * Test sequenceFlow's checkIncoming, while incoming  is too much.
    *
    */
   @Test
-  public void checkWithoutIncoming() {
-    FlowElement userTask = EntityBuilder.buildUserTask();
-    userTask.setIncoming(null);
-    Map<String, FlowElement> map = new HashMap<>();
-    map.put(userTask.getKey(), userTask);
+  public void checkTooMuchIncoming() {
+    FlowElement sequenceFlow = EntityBuilder.buildSequenceFlow();
+    List<String> sfIncomings = new ArrayList<>();
+    sfIncomings.add("userTask2");
+    sfIncomings.add("userTask1");
+    sequenceFlow.setIncoming(sfIncomings);
+    Map<String, FlowElement> flowElementMap = new HashMap<>();
+    flowElementMap.put(sequenceFlow.getKey(), sequenceFlow);
     boolean access = false;
     try {
-      userTaskValidator.checkIncoming(map, userTask);
+      sequenceFlowValidator.checkIncoming(flowElementMap, sequenceFlow);
       access = true;
       Assertions.assertFalse(access);
     } catch (DefinitionException e) {
@@ -64,19 +70,19 @@ public class UserTaskValidatorTest {
     }
   }
 
-
   /**
-   * Check userTask's outgoing, whlile normal.
+   * Test sequenceFlow's checkOutgoing, while outgoing is normal.
    *
    */
   @Test
   public void checkOutgoingAccess() {
-    FlowElement userTask = EntityBuilder.buildUserTask();
-    Map<String, FlowElement> map = new HashMap<>();
-    map.put(userTask.getKey(), userTask);
+
+    FlowElement sequenceFlow = EntityBuilder.buildSequenceFlow();
+    Map<String, FlowElement> flowElementMap = new HashMap<>();
+    flowElementMap.put(sequenceFlow.getKey(), sequenceFlow);
     boolean access = false;
     try {
-      userTaskValidator.checkOutgoing(map, userTask);
+      sequenceFlowValidator.checkOutgoing(flowElementMap, sequenceFlow);
       access = true;
       Assertions.assertTrue(access);
     } catch (DefinitionException e) {
@@ -86,18 +92,19 @@ public class UserTaskValidatorTest {
   }
 
   /**
-   * Check userTask's outgoing, while outgoing is lack.
+   * Test sequenceFlow's outgoing, while outgoing is lack.
    *
    */
   @Test
   public void checkWithoutOutgoing() {
-    FlowElement userTask = EntityBuilder.buildUserTask();
-    userTask.setOutgoing(null);
-    Map<String, FlowElement> map = new HashMap<>();
-    map.put(userTask.getKey(), userTask);
+
+    FlowElement sequenceFlow = EntityBuilder.buildSequenceFlow();
+    sequenceFlow.setOutgoing(null);
+    Map<String, FlowElement> flowElementMap = new HashMap<>();
+    flowElementMap.put(sequenceFlow.getKey(), sequenceFlow);
     boolean access = false;
     try {
-      userTaskValidator.checkOutgoing(map, userTask);
+      sequenceFlowValidator.checkOutgoing(flowElementMap, sequenceFlow);
       access = true;
       Assertions.assertFalse(access);
     } catch (DefinitionException e) {
