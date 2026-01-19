@@ -15,6 +15,7 @@ model f_user {
   name? : String @length("255") @comment("名称"),
   email? : String @length("255") @comment("邮箱"),
   password_hash : String @length("255") @comment("密码HASH"),
+  role_ids: String @length("255") @comment("角色ID, 逗号分隔"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),
   created_at?: DateTime @default(now()) @comment("创建时间"),
@@ -22,6 +23,33 @@ model f_user {
   @index(name : "IDX_USERNAME", unique: "true", fields: [name]),
   @index(name : "IDX_EMAIL", unique: "true", fields: [email]),
   @comment("用户")
+}
+model f_role {
+  id : String @id @unique @default(uuid()),
+  name : String @length("255"),
+  description? : String @length("255"),
+  resource_ids?: String @length("2000") @comment("资源ID, 逗号分隔"),
+  created_by?: String @comment("创建人"),
+  updated_by?: String @comment("更新人"),
+  created_at?: DateTime @default(now()) @comment("创建时间"),
+  updated_at?: DateTime @default(now()) @comment("更新时间"),
+  @index(name:"IDX_ROLE_NAME", unique: "true", fields: [name]),
+  @comment("角色")
+}
+model f_resource {
+  id: Long @id @default(autoIncrement()),
+  name : String @length("255"),
+  permission: String @length("255") @comment("权限标识"),
+  type: String @length("100") @comment("类型, system: 系统级, platform: 项目级"),
+  parent_id?: Long,
+  @comment("资源")
+}
+model f_resource_template {
+  id: Long @id @default(autoIncrement()),
+  name: String @length("255"),
+  permission: String @length("255") @comment("权限标识"),
+  parent_id?: Long,
+  @comment("资源模版")
 }
 model f_config {
   id : String @id @unique @default(uuid()),
@@ -37,7 +65,7 @@ model f_datasource {
   name : String @id,
   type? : DatasourceType,
   config? : JSON,
-  enabled : Boolean @comment("数据源") @default("true"),
+  enabled : Boolean @comment("禁用状态") @default("true"),
   project_id?: String @comment("项目ID"),
   created_by?: String @comment("创建人"),
   updated_by?: String @comment("更新人"),

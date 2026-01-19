@@ -5,19 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * @author cjbi
- */
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberRequest {
+public class RoleRequest {
 
   private String id;
   private String name;
-  private String email;
-  private String password;
-  private String createdBy;
-  private String updatedBy;
+  private String description;
+  private List<String> resourceIds;
 }

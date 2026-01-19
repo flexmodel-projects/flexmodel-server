@@ -1,23 +1,18 @@
 package dev.flexmodel.application;
 
+import dev.flexmodel.application.dto.*;
+import dev.flexmodel.codegen.entity.Resource;
+import dev.flexmodel.codegen.entity.Role;
+import dev.flexmodel.domain.model.auth.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import dev.flexmodel.application.dto.ProjectListRequest;
-import dev.flexmodel.application.dto.ProjectResponse;
-import dev.flexmodel.codegen.entity.Project;
 import dev.flexmodel.codegen.entity.User;
-import dev.flexmodel.domain.model.api.ApiDefinitionService;
-import dev.flexmodel.domain.model.auth.ProjectService;
-import dev.flexmodel.domain.model.auth.UserService;
-import dev.flexmodel.domain.model.connect.DatasourceService;
-import dev.flexmodel.domain.model.flow.service.FlowDeploymentService;
-import dev.flexmodel.domain.model.storage.StorageService;
-import dev.flexmodel.shared.SessionContextHolder;
-import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author cjbi
@@ -27,36 +22,11 @@ import java.util.Objects;
 public class AuthApplicationService {
 
   @Inject
-  ProjectService projectService;
-
-  @Inject
   UserService userService;
   @Inject
-  ApiDefinitionService apiDefinitionService;
+  RoleService roleService;
   @Inject
-  FlowDeploymentService flowDeploymentService;
-  @Inject
-  DatasourceService datasourceService;
-  @Inject
-  StorageService storageService;
-
-  public List<ProjectResponse> findProjects(ProjectListRequest request) {
-    return projectService.findProjects().stream()
-      .map(project -> {
-          ProjectResponse response = ProjectResponse.fromProject(project);
-          if (Objects.equals(request.getIncldue(), "stats")) {
-            ProjectResponse.ProjectStats projectStats = new ProjectResponse.ProjectStats(
-              apiDefinitionService.count(project.getId()),
-              flowDeploymentService.count(project.getId()),
-              datasourceService.count(project.getId()),
-              storageService.count(project.getId())
-            );
-            response.setStats(projectStats);
-          }
-          return response;
-        }
-      ).toList();
-  }
+  ResourceService resourceService;
 
   public User login(String username, String password) {
     return userService.login(username, password);
@@ -66,19 +36,164 @@ public class AuthApplicationService {
     return userService.getUser(userId);
   }
 
-  public Project findProject(String projectId) {
-    return projectService.findProject(projectId);
+  @Inject
+  UserRepository userRepository;
+
+  public List<UserResponse> findAllUsers() {
+    List<Role> allRoles = roleService.findAll();
+    return userRepository.findAll().stream()
+      .map(user -> UserResponse.fromUser(user, allRoles))
+      .toList();
   }
 
-  public Project createProject(Project project) {
-    return projectService.createProject(project);
+  public UserResponse findUserById(String userId) {
+    User user = userRepository.findById(userId);
+    List<Role> allRoles = roleService.findAll();
+    return user != null ? UserResponse.fromUser(user, allRoles) : null;
   }
 
-  public Project updateProject(Project project) {
-    return projectService.updateProject(project);
+  public UserResponse createUser(UserRequest request) {
+    User user = new User();
+    user.setId(request.getId());
+    user.setName(request.getName());
+    user.setEmail(request.getEmail());
+    user.setCreatedBy(request.getCreatedBy());
+    user.setUpdatedBy(request.getUpdatedBy());
+    user.setRoleIds(String.join(",", request.getRoleIds()));
+
+    if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+      try {
+        user.setPasswordHash(SecurityUtil.md5(request.getId(), request.getPassword()));
+      } catch (Exception e) {
+        throw new RuntimeException("Failed to hash password", e);
+      }
+    }
+
+    User savedUser = userRepository.save(user);
+    List<Role> allRoles = roleService.findAll();
+    return UserResponse.fromUser(savedUser, allRoles);
   }
 
-  public void deleteProject(String projectId) {
-    projectService.deleteProject(projectId);
+  public UserResponse updateUser(UserRequest request) {
+    User existingUser = userRepository.findById(request.getId());
+    if (existingUser == null) {
+      throw new RuntimeException("User not found");
+    }
+
+    User user = new User();
+    user.setId(request.getId());
+    user.setName(request.getName());
+    user.setEmail(request.getEmail());
+    user.setCreatedBy(existingUser.getCreatedBy());
+    user.setUpdatedBy(request.getUpdatedBy());
+    user.setCreatedAt(existingUser.getCreatedAt());
+    user.setRoleIds(String.join(",", request.getRoleIds()));
+
+    if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+      try {
+        user.setPasswordHash(SecurityUtil.md5(request.getId(), request.getPassword()));
+      } catch (Exception e) {
+        throw new RuntimeException("Failed to hash password", e);
+      }
+    } else {
+      user.setPasswordHash(existingUser.getPasswordHash());
+    }
+
+    User savedUser = userRepository.save(user);
+    List<Role> allRoles = roleService.findAll();
+    return UserResponse.fromUser(savedUser, allRoles);
   }
+
+  public void deleteUser(String userId) {
+    userRepository.delete(userId);
+  }
+
+  public List<RoleResponse> findAllRoles() {
+    List<Resource> allResources = resourceService.findAll();
+    return roleService.findAll().stream()
+      .map(role -> RoleResponse.fromRole(role, allResources))
+      .toList();
+  }
+
+  public RoleResponse findRoleById(String roleId) {
+    Role role = roleService.findById(roleId);
+    if (role == null) {
+      return null;
+    }
+    List<Resource> allResources = resourceService.findAll();
+    return RoleResponse.fromRole(role, allResources);
+  }
+
+  public RoleResponse createRole(RoleRequest request) {
+    Role role = new Role();
+    role.setId(request.getId());
+    role.setName(request.getName());
+    role.setDescription(request.getDescription());
+    role.setResourceIds(String.join(",", request.getResourceIds()));
+
+    Role savedRole = roleService.create(role);
+    List<Resource> allResources = resourceService.findAll();
+    return RoleResponse.fromRole(savedRole, allResources);
+  }
+
+  public RoleResponse updateRole(RoleRequest request) {
+    Role existingRole = roleService.findById(request.getId());
+    if (existingRole == null) {
+      throw new RuntimeException("Role not found");
+    }
+
+    Role role = new Role();
+    role.setId(request.getId());
+    role.setName(request.getName());
+    role.setDescription(request.getDescription());
+    role.setResourceIds(String.join(",", request.getResourceIds()));
+    role.setCreatedBy(existingRole.getCreatedBy());
+    role.setCreatedAt(existingRole.getCreatedAt());
+
+    Role savedRole = roleService.update(role);
+    List<Resource> allResources = resourceService.findAll();
+    return RoleResponse.fromRole(savedRole, allResources);
+  }
+
+  public void deleteRole(String roleId) {
+    roleService.delete(roleId);
+  }
+
+  public List<ResourceResponse> findAllResources() {
+    return resourceService.findAll().stream()
+      .map(ResourceResponse::fromResource)
+      .toList();
+  }
+
+  public ResourceResponse findResourceById(Long resourceId) {
+    Resource resource = resourceService.findById(resourceId);
+    return resource != null ? ResourceResponse.fromResource(resource) : null;
+  }
+
+
+  public List<ResourceTreeResponse> findResourceTree() {
+    List<Resource> allResources = resourceService.findAll();
+    List<ResourceTreeResponse> allTreeNodes = allResources.stream()
+      .map(ResourceTreeResponse::fromResource)
+      .toList();
+
+    Map<Long, ResourceTreeResponse> nodeMap = allTreeNodes.stream()
+      .collect(Collectors.toMap(ResourceTreeResponse::getId, node -> node));
+
+    List<ResourceTreeResponse> rootNodes = new ArrayList<>();
+
+    for (ResourceTreeResponse node : allTreeNodes) {
+      Long parentId = node.getParentId();
+      if (parentId == null || parentId == 0) {
+        rootNodes.add(node);
+      } else {
+        ResourceTreeResponse parentNode = nodeMap.get(parentId);
+        if (parentNode != null) {
+          parentNode.addChild(node);
+        }
+      }
+    }
+    return rootNodes;
+  }
+
 }

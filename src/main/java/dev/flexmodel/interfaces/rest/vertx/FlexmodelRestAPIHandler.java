@@ -1,5 +1,6 @@
 package dev.flexmodel.interfaces.rest.vertx;
 
+import dev.flexmodel.application.ProjectApplicationService;
 import io.quarkus.runtime.StartupEvent;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
@@ -34,11 +35,10 @@ public class FlexmodelRestAPIHandler {
   @Inject
   FlexmodelConfig config;
   @Inject
-  AuthApplicationService authApplicationService;
+  ProjectApplicationService projectApplicationService;
 
   void handle(@Observes StartupEvent startupEvent, Router router) {
-
-    List<ProjectResponse> projects = authApplicationService.findProjects(new ProjectListRequest(null));
+    List<ProjectResponse> projects = projectApplicationService.findProjects(new ProjectListRequest(null));
     for (Project project : projects) {
       router.route()
         .pathRegex(config.apiRootPath() + "/" + project.getId() + "/.*")

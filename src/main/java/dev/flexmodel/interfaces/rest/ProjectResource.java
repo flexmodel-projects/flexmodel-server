@@ -1,5 +1,6 @@
 package dev.flexmodel.interfaces.rest;
 
+import dev.flexmodel.application.ProjectApplicationService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -11,7 +12,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import dev.flexmodel.application.AuthApplicationService;
 import dev.flexmodel.application.dto.ProjectListRequest;
 import dev.flexmodel.application.dto.ProjectResponse;
 import dev.flexmodel.codegen.entity.Project;
@@ -28,7 +28,7 @@ import java.util.List;
 public class ProjectResource {
 
   @Inject
-  AuthApplicationService authApplicationService;
+  ProjectApplicationService projectApplicationService;
 
   @APIResponse(
     name = "200",
@@ -47,7 +47,7 @@ public class ProjectResource {
   @Operation(summary = "获取项目列表")
   @GET
   public List<ProjectResponse> findProjects(@QueryParam("include") String include) {
-    return authApplicationService.findProjects(new ProjectListRequest(include));
+    return projectApplicationService.findProjects(new ProjectListRequest(include));
   }
 
   @APIResponse(
@@ -67,7 +67,7 @@ public class ProjectResource {
   @GET
   @Path("/{projectId}")
   public Project findProject(@PathParam("projectId") String projectId) {
-    return authApplicationService.findProject(projectId);
+    return projectApplicationService.findProject(projectId);
   }
 
   @APIResponse(
@@ -86,7 +86,7 @@ public class ProjectResource {
   @Operation(summary = "创建项目")
   @POST
   public Project createProject(Project project) {
-    return authApplicationService.createProject(project);
+    return projectApplicationService.createProject(project);
   }
 
   @APIResponse(
@@ -110,7 +110,7 @@ public class ProjectResource {
     @PathParam("projectId") String projectId,
     Project project) {
     project.setId(projectId);
-    return authApplicationService.updateProject(project);
+    return projectApplicationService.updateProject(project);
   }
 
   @APIResponse(
@@ -133,7 +133,7 @@ public class ProjectResource {
     @Parameter(name = "projectId", in = ParameterIn.PATH, description = "项目ID", required = true)
     @PathParam("projectId") String projectId,
     Project project) {
-    Project existingProject = authApplicationService.findProject(projectId);
+    Project existingProject = projectApplicationService.findProject(projectId);
     if (project.getName() != null) {
       existingProject.setName(project.getName());
     }
@@ -146,7 +146,7 @@ public class ProjectResource {
     if (project.getOwnerId() != null) {
       existingProject.setOwnerId(project.getOwnerId());
     }
-    return authApplicationService.updateProject(existingProject);
+    return projectApplicationService.updateProject(existingProject);
   }
 
   @APIResponse(
@@ -160,7 +160,7 @@ public class ProjectResource {
   public void deleteProject(
     @Parameter(name = "projectId", in = ParameterIn.PATH, description = "项目ID", required = true)
     @PathParam("projectId") String projectId) {
-    authApplicationService.deleteProject(projectId);
+    projectApplicationService.deleteProject(projectId);
   }
 
 }

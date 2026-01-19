@@ -1,5 +1,6 @@
 package dev.flexmodel.interfaces.rest;
 
+import dev.flexmodel.application.AuthApplicationService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -13,23 +14,22 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import dev.flexmodel.application.MemberApplicationService;
-import dev.flexmodel.application.dto.MemberRequest;
-import dev.flexmodel.application.dto.MemberResponse;
+import dev.flexmodel.application.dto.UserRequest;
+import dev.flexmodel.application.dto.UserResponse;
 
 import java.util.List;
 
 /**
  * @author cjbi
  */
-@Tag(name = "成员", description = "成员管理")
-@Path("/v1/members")
+@Tag(name = "用户", description = "用户管理")
+@Path("/v1/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class MemberResource {
+public class UserResource {
 
   @Inject
-  MemberApplicationService memberApplicationService;
+  AuthApplicationService authApplicationService;
 
   @APIResponse(
     name = "200",
@@ -39,22 +39,22 @@ public class MemberResource {
       mediaType = "application/json",
       schema = @Schema(
         type = SchemaType.ARRAY,
-        implementation = MemberResponse.class
+        implementation = UserResponse.class
       )
     )
     })
-  @Operation(summary = "获取成员列表")
+  @Operation(summary = "获取用户列表")
   @GET
-  public List<MemberResponse> findAll() {
-    return memberApplicationService.findAll();
+  public List<UserResponse> findAll() {
+    return authApplicationService.findAllUsers();
   }
 
-  @Parameter(name = "userId", description = "成员ID", in = ParameterIn.PATH)
-  @Operation(summary = "获取成员详情")
+  @Parameter(name = "userId", description = "用户ID", in = ParameterIn.PATH)
+  @Operation(summary = "获取用户详情")
   @GET
   @Path("/{userId}")
-  public MemberResponse findById(@PathParam("userId") String userId) {
-    return memberApplicationService.findById(userId);
+  public UserResponse findById(@PathParam("userId") String userId) {
+    return authApplicationService.findUserById(userId);
   }
 
   @RequestBody(
@@ -62,7 +62,7 @@ public class MemberResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = MemberRequest.class
+        implementation = UserRequest.class
       )
     )}
   )
@@ -73,14 +73,14 @@ public class MemberResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = MemberResponse.class
+        implementation = UserResponse.class
       )
     )
     })
-  @Operation(summary = "创建成员")
+  @Operation(summary = "创建用户")
   @POST
-  public MemberResponse createMember(MemberRequest request) {
-    return memberApplicationService.createMember(request);
+  public UserResponse createUser(UserRequest request) {
+    return authApplicationService.createUser(request);
   }
 
   @RequestBody(
@@ -88,7 +88,7 @@ public class MemberResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = MemberRequest.class
+        implementation = UserRequest.class
       )
     )}
   )
@@ -99,39 +99,40 @@ public class MemberResource {
     content = {@Content(
       mediaType = "application/json",
       schema = @Schema(
-        implementation = MemberResponse.class
+        implementation = UserResponse.class
       )
     )
     })
-  @Parameter(name = "userId", description = "成员ID", in = ParameterIn.PATH)
-  @Operation(summary = "更新成员")
+  @Parameter(name = "userId", description = "用户ID", in = ParameterIn.PATH)
+  @Operation(summary = "更新用户")
   @PUT
   @Path("/{userId}")
-  public MemberResponse updateMember(@PathParam("userId") String userId, MemberRequest request) {
+  public UserResponse updateUser(@PathParam("userId") String userId, UserRequest request) {
     request.setId(userId);
-    return memberApplicationService.updateMember(request);
+    return authApplicationService.updateUser(request);
   }
 
-  @Parameter(name = "userId", description = "成员ID", in = ParameterIn.PATH)
-  @Operation(summary = "删除成员")
+  @Parameter(name = "userId", description = "用户ID", in = ParameterIn.PATH)
+  @Operation(summary = "删除用户")
   @DELETE
   @Path("/{userId}")
-  public void deleteMember(@PathParam("userId") String userId) {
-    memberApplicationService.deleteMember(userId);
+  public void deleteUser(@PathParam("userId") String userId) {
+    authApplicationService.deleteUser(userId);
   }
 
   @Schema(
-    description = "成员请求",
+    description = "用户请求",
     properties = {
       @SchemaProperty(name = "id", description = "ID"),
-      @SchemaProperty(name = "username", description = "用户名"),
+      @SchemaProperty(name = "name", description = "用户名"),
       @SchemaProperty(name = "email", description = "邮箱"),
       @SchemaProperty(name = "password", description = "密码（明文，创建或更新时可选）"),
+      @SchemaProperty(name = "roleIds", description = "角色ID列表"),
       @SchemaProperty(name = "createdBy", description = "创建人"),
       @SchemaProperty(name = "updatedBy", description = "更新人"),
     }
   )
-  public static class MemberRequestSchema extends MemberRequest {
+  public static class UserRequestSchema extends UserRequest {
 
   }
 }
