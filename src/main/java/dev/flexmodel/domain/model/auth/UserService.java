@@ -4,6 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import dev.flexmodel.codegen.entity.User;
 
+import java.util.List;
+
 /**
  * @author cjbi
  */
@@ -12,6 +14,26 @@ public class UserService {
 
   @Inject
   UserRepository userRepository;
+
+  public User findByUsername(String username) {
+    return userRepository.findByUsername(username);
+  }
+
+  public User findById(String userId) {
+    return userRepository.findById(userId);
+  }
+
+  public List<User> findAll() {
+    return userRepository.findAll();
+  }
+
+  public User save(User user) {
+    return userRepository.save(user);
+  }
+
+  public void delete(String userId) {
+    userRepository.delete(userId);
+  }
 
   public User login(String username, String password) {
     User user = userRepository.findByUsername(username);

@@ -4,6 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import dev.flexmodel.codegen.entity.Role;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ApplicationScoped
@@ -11,6 +13,8 @@ public class RoleService {
 
   @Inject
   RoleRepository roleRepository;
+  @Inject
+  ResourceRepository resourceRepository;
 
   public List<Role> findAll() {
     return roleRepository.findAll();
@@ -36,4 +40,19 @@ public class RoleService {
   public void delete(String roleId) {
     roleRepository.delete(roleId);
   }
+
+  public List<String> findPermissions(List<String> roleIds) {
+    List<Role> roles = roleRepository.findByIds(roleIds);
+    List<Long> resourceIds = new ArrayList<>();
+    for (Role role : roles) {
+      resourceIds.addAll(
+        Arrays.stream(role.getResourceIds().split(","))
+          .filter(resourceId -> !resourceId.isEmpty())
+          .map(Long::parseLong)
+          .toList()
+      );
+    }
+    return resourceRepository.findPermissions(resourceIds);
+  }
+
 }

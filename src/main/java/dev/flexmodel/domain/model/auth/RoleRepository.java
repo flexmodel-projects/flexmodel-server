@@ -13,4 +13,7 @@ public interface RoleRepository {
   Role save(Role role);
 
   void delete(String roleId);
+
+  List<Role> findByIds(List<String> roleIds);
+
 }

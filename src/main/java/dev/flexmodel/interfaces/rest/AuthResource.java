@@ -116,6 +116,7 @@ public class AuthResource {
     userinfo.setToken(accessToken);
     userinfo.setExpiresIn(300000L);
     userinfo.setUser(new UserinfoResponse.UserResponse(user.getId(), user.getName(), user.getEmail()));
+    userinfo.setPermissions(authApplicationService.findPermissions(user.getId()));
     return userinfo;
   }
 

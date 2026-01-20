@@ -13,4 +13,6 @@ public interface ResourceRepository {
   Resource save(Resource resource);
 
   void delete(Long resourceId);
+
+  List<String> findPermissions(List<Long> resourceIds);
 }

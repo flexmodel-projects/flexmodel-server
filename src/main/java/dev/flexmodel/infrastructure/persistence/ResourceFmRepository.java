@@ -47,4 +47,15 @@ public class ResourceFmRepository implements ResourceRepository {
       .where(field(Resource::getId).eq(resourceId))
       .execute();
   }
+
+  @Override
+  public List<String> findPermissions(List<Long> resourceIds) {
+    return session.dsl()
+      .selectFrom(Resource.class)
+      .where(field(Resource::getId).in(resourceIds))
+      .execute().stream()
+      .map(Resource::getPermission)
+      .toList();
+
+  }
 }

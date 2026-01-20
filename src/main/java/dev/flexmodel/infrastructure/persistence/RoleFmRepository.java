@@ -47,4 +47,13 @@ public class RoleFmRepository implements RoleRepository {
       .where(field(Role::getId).eq(roleId))
       .execute();
   }
+
+  @Override
+  public List<Role> findByIds(List<String> roleIds) {
+    return session.dsl()
+      .selectFrom(Role.class)
+      .where(field(Role::getId).in(roleIds))
+      .execute();
+
+  }
 }

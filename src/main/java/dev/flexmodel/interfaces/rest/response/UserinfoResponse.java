@@ -16,7 +16,7 @@ public class UserinfoResponse {
   private String token;
   private Long expiresIn;
   private UserResponse user;
-  private List<String> permissions = List.of("*");
+  private List<String> permissions;
 
   public record UserResponse(String id, String name, String email) {
   }
