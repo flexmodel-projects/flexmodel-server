@@ -103,15 +103,6 @@ public class AuthResource {
 
 
   private UserinfoResponse buildUserInfo(String accessToken, User user) {
-    Map<String, Object> appConfig = new HashMap<>();
-    Iterable<String> propertyNames = ConfigProvider.getConfig().getPropertyNames();
-    for (String propertyName : propertyNames) {
-      try {
-        appConfig.put(propertyName, ConfigProvider.getConfig().getValue(propertyName, String.class));
-      } catch (Exception e) {
-        log.warn("get config error, key={}, message={}", propertyName, e.getMessage());
-      }
-    }
     UserinfoResponse userinfo = new UserinfoResponse();
     userinfo.setToken(accessToken);
     userinfo.setExpiresIn(300000L);
